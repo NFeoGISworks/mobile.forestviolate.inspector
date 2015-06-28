@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Project: Forest violations
+  ~ Purpose: Mobile application for registering facts of the forest violations.
+  ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ ******************************************************************************
+  ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <!--indigo from http://www.google.co.uk/design/spec/style/color.html#color-color-palette -->
+    <!-- Light -->
+    <color name="actionBarColor.Light">#8bc34a</color>
+    <color name="primary.Light">#7cb342</color>
+    <color name="primary_dark.Light">#33691e</color>
+    <color name="accent.Light">#64dd17</color>
+    <color name="tabSecondaryTextColor.Light">#c5e1a5</color>
+    <color name="tabTextColor.Light">#ffffff</color>
+    <!-- Dark -->
+    <color name="actionBarColor.Dark">#8bc34a</color>
+    <color name="primary.Dark">#7cb342</color>
+    <color name="primary_dark.Dark">#33691e</color>
+    <color name="accent.Dark">#64dd17</color>
+    <color name="tabSecondaryTextColor.Dark">#c5e1a5</color>
+    <color name="tabTextColor.Dark">#ffffff</color>
+</resources>
