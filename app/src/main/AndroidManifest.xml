@@ -88,6 +88,29 @@
             android:name=".AboutActivity"
             android:label="@string/action_about"
             />
+
+        <service
+            android:name="com.nextgis.maplib.service.NGWSyncService"
+            android:exported="true"
+            android:process=":sync"
+            >
+            <intent-filter>
+                <action
+                    android:name="android.content.SyncAdapter"
+                    />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter"
+                />
+        </service>
+
+        <provider
+            android:name="com.nextgis.maplib.datasource.LayerContentProvider"
+            android:authorities="com.nextgis.forestinspector.provider"
+            android:exported="false"
+            android:syncable="true"
+            />
     </application>
 
 </manifest>

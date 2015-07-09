@@ -23,7 +23,7 @@ package com.nextgis.forestinspector.util;
 
 public interface SettingsConstants
 {
-    String AUTHORITY             = "com.nextgis.safeforest.provider";
+    String AUTHORITY             = "com.nextgis.forestinspector.provider";
     /**
      * preference pages
      */

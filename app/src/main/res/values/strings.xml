@@ -32,4 +32,6 @@
     <string name="action_about">About</string>
     <string name="topo">Topo</string>
     <string name="topo_url">http://{a,b,c}.tile.cart.kosmosnimki.ru/rs/{z}/{x}/{y}.png</string>
+    <string name="geomixer_fv_tiles">GeoMixer violation tiles</string>
+    <string name="geomixer_fv_tiles_url">http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&amp;layername=15CBBFB4151E48ECAE0F699FD4F9223A&amp;srs=EPSG:3857&amp;z={z}&amp;x={x}&amp;y={y}&amp;format=png&amp;Map=1D116AC56D694C0B8CDCA87C06D1961A</string>
 </resources>
