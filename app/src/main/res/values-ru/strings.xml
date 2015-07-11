@@ -22,7 +22,7 @@
 
 <resources>
     <string name="app_name">Лесной инспектор</string>
-
+    <string name="account_name">Лесной инспектор</string>
     <string name="title_notes">Документы</string>
     <string name="title_map">Карта</string>
     <string name="action_settings">Настройки</string>
@@ -32,5 +32,20 @@
     <string name="copyright"><![CDATA[Copyright © <a href=\"http://nextgis.com\">NextGIS</a>, 2015]]></string>
     <string name="action_about">О программе</string>
     <string name="topo">Topo</string>
-    <string name="topo_url">http://{a,b,c}.tile.cart.kosmosnimki.ru/rs/{z}/{x}/{y}.png</string>
+    <string name="fi_login_title">Аккаунт лесного инспектора</string>
+    <string name="fi_login_description"><![CDATA[Введите ваш логин и пароль к серверу учета лесонарушений. После нажатия на кнопку \"Подключить\" приложение выполнит вход на сервер. В случае удачного подключения, будет запущен процесс получения рабочих данных. Данный процесс требует большого количества трафика, поэтому на данном этапе рекомендуется использовать подключение по Wi-Fi.]]></string>
+    <string name="first_run">Первый запуск</string>
+    <string name="fi_url">Адрес сервера</string>
+    <string name="error_init">Ошибка инициализации</string>
+    <string name="initialization">Первоначальная установка</string>
+    <string name="create_base_layers">Создание базовых слоев карты</string>
+    <string name="check_server">Проверка сервера</string>
+    <string name="get_inspector_detailes">Получение подробностей аккаунта</string>
+    <string name="get_forest_cadastre">Получение лесоделения</string>
+    <string name="load_documents">Загрузка документов</string>
+    <string name="load_sheets">Загрузка ведомостей перечета</string>
+    <string name="load_production">Загрузка актов изъятия лесопродукции</string>
+    <string name="load_territory">Загрузка территорий лесонарушений</string>
+    <string name="load_vehicles">Загрузка актов обнаружения орудий лесонарушения</string>
+    <string name="load_notes">Загрузка заметок</string>
 </resources>

@@ -24,6 +24,10 @@ package com.nextgis.forestinspector.util;
 public interface SettingsConstants
 {
     String AUTHORITY             = "com.nextgis.forestinspector.provider";
+    String SITE_URL = "http://176.9.38.120/fv";
+    String KOSOSNIMKI_URL = "http://{a,b,c}.tile.cart.kosmosnimki.ru/rs/{z}/{x}/{y}.png";
+    String VIOLATIONS_URL = "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=15CBBFB4151E48ECAE0F699FD4F9223A&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png&Map=1D116AC56D694C0B8CDCA87C06D1961A";
+
     /**
      * preference pages
      */

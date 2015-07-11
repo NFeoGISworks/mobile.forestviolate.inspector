@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nextgis.forestinspector;
+package com.nextgis.forestinspector.fragment;
 
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -34,6 +34,8 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.nextgis.forestinspector.MainApplication;
+import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.datasource.GeoPoint;

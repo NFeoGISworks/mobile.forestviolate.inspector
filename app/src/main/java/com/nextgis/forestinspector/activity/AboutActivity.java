@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nextgis.forestinspector;
+package com.nextgis.forestinspector.activity;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -27,6 +27,7 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
+import com.nextgis.forestinspector.R;
 import com.nextgis.maplibui.activity.NGActivity;
 
 public class AboutActivity extends NGActivity
