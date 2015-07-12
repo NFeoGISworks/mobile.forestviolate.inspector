@@ -23,8 +23,10 @@ package com.nextgis.forestinspector.activity;
 
 import android.accounts.Account;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,11 +48,35 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.InitStepListAdapter;
 import com.nextgis.forestinspector.fragment.LoginFragment;
 import com.nextgis.forestinspector.fragment.MapFragment;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.forestinspector.util.SettingsConstants;
+import com.nextgis.maplib.datasource.GeoEnvelope;
+import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplib.datasource.GeoGeometryFactory;
+import com.nextgis.maplib.datasource.ngw.Connection;
+import com.nextgis.maplib.datasource.ngw.INGWResource;
 import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.util.GeoConstants;
+import com.nextgis.maplib.util.NGWUtil;
 import com.nextgis.maplibui.activity.NGActivity;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
+import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
+import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener {
 
@@ -151,6 +177,9 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     }
 
     protected void createNormalView(){
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         setContentView(R.layout.activity_main);
 
         setToolbar(R.id.main_toolbar);
@@ -264,7 +293,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         }
     }*/
 
-    /*protected void createBasicLayers(MapBase map){
+    protected void createBasicLayers(MapBase map){
 
         //add OpenStreetMap layer on application first run
         String layerName = getString(R.string.osm);
@@ -309,29 +338,161 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         map.addLayer(mixerLayer);
         //mMap.moveLayer(2, mixerLayer);
 
+        map.save();
+    }
 
-        /*
-        // init vector layers
-        // get layers by keys
-        // 1. get inspector details (name, description, bbox, id) from "inspectors"
+    protected boolean checkServerLayers(INGWResource resource, Map<String, Integer> keys){
+        for(int i = 0; i < resource.getChildrenCount(); ++i){
+            INGWResource childResource = resource.getChild(i);
 
+            if(keys.containsKey(childResource.getKey()))
+                keys.put(childResource.getKey(), childResource.getId());
+
+            if(keys.get(Constants.KEY_INSPECTORS) > 0 &&
+               keys.get(Constants.KEY_DOCUMENTS) > 0 &&
+               keys.get(Constants.KEY_SHEET) > 0 &&
+               keys.get(Constants.KET_PRODUCTION) > 0 &&
+               keys.get(Constants.KEY_NOTES) > 0 &&
+               keys.get(Constants.KEY_TERRITORY) > 0 &&
+               keys.get(Constants.KEY_VEHICLES) > 0 &&
+               keys.get(Constants.KEY_CADASTRE) > 0){
+                return true;
+            }
+
+            if(childResource.getChildrenCount() > 0){
+                if(checkServerLayers(childResource, keys))
+                    return true;
+            }
+        }
+
+        return keys.get(Constants.KEY_INSPECTORS) > 0 &&
+                keys.get(Constants.KEY_DOCUMENTS) > 0 &&
+                keys.get(Constants.KEY_SHEET) > 0 &&
+                keys.get(Constants.KET_PRODUCTION) > 0 &&
+                keys.get(Constants.KEY_NOTES) > 0 &&
+                keys.get(Constants.KEY_TERRITORY) > 0 &&
+                keys.get(Constants.KEY_VEHICLES) > 0 &&
+                keys.get(Constants.KEY_CADASTRE) > 0;
+
+    }
+
+    protected boolean getInspectorDetail(Connection connection, int resourceId, String login){
+
+        String sURL = NGWUtil.getFeaturesUrl(connection.getURL(), resourceId, "login=" + login);
+
+        try {
+            HttpGet get = new HttpGet(sURL);
+            get.setHeader("Cookie", connection.getCookie());
+            get.setHeader("Accept", "*/*");
+            HttpResponse response = connection.getHttpClient().execute(get);
+            HttpEntity entity = response.getEntity();
+
+            JSONArray features = new JSONArray(EntityUtils.toString(entity));
+            if(features.length() == 0)
+                return false;
+
+            JSONObject jsonDetail = features.getJSONObject(0);
+            int id = jsonDetail.getInt(NGWUtil.NGWKEY_ID);
+            GeoGeometry geom = GeoGeometryFactory.fromWKT(jsonDetail.getString(NGWUtil.NGWKEY_GEOM));
+            GeoEnvelope env = geom.getEnvelope();
+
+            JSONObject fields = jsonDetail.getJSONObject(NGWUtil.NGWKEY_FIELDS);
+            String sUserName = fields.getString(Constants.KEY_INSPECTOR_USER);
+            String sUserDescription = fields.getString(Constants.KEY_INSPECTOR_USER_DESC);
+
+            // if no exception store data in config
+            final SharedPreferences.Editor edit =
+                    PreferenceManager.getDefaultSharedPreferences(this).edit();
+            edit.putInt(SettingsConstants.KEY_PREF_USERID, id);
+            edit.putString(SettingsConstants.KEY_PREF_USER, sUserName);
+            edit.putString(SettingsConstants.KEY_PREF_USERDESC, sUserDescription);
+            edit.putFloat(SettingsConstants.KEY_PREF_USERMINX, (float) env.getMinX());
+            edit.putFloat(SettingsConstants.KEY_PREF_USERMINY, (float) env.getMinY());
+            edit.putFloat(SettingsConstants.KEY_PREF_USERMAXX, (float) env.getMaxX());
+            edit.putFloat(SettingsConstants.KEY_PREF_USERMAXY, (float) env.getMaxY());
+            return edit.commit();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    protected boolean loadForestCadastre(int resourceId, String accountName, MapBase map){
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
 
         NGWVectorLayerUI ngwVectorLayer =
-                new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage());
-        ngwVectorLayer.setName("GeoMixer violations vector");
-        ngwVectorLayer.setRemoteId(34);
-        ngwVectorLayer.setVisible(false);
-        ngwVectorLayer.setAccountName(account.name);
+                new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_CADASTRE));
+        ngwVectorLayer.setName(getString(R.string.cadastre));
+        ngwVectorLayer.setRemoteId(resourceId);
+        //TODO: ngwVectorLayer.setWhereClause(); //add bbox=
+        ngwVectorLayer.setVisible(true);
+        //TODO: add layer draw default style and quarter labels
+        ngwVectorLayer.setAccountName(accountName);
+        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
         ngwVectorLayer.setMinZoom(0);
         ngwVectorLayer.setMaxZoom(100);
 
         map.addLayer(ngwVectorLayer);
 
-        ngwVectorLayer.downloadAsync();
-        *//*
+        return ngwVectorLayer.download() == null;
+    }
 
-        map.save();
-    }*/
+    protected boolean loadDocuments(int resourceId, String accountName, MapBase map){
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+
+        NGWVectorLayerUI ngwVectorLayer =
+                new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_DOCUMENTS));
+        ngwVectorLayer.setName(getString(R.string.title_notes));
+        ngwVectorLayer.setRemoteId(resourceId);
+        //TODO: ngwVectorLayer.setWhereClause(); //add bbox=
+        ngwVectorLayer.setVisible(true);
+        //TODO: add layer draw default style and quarter labels
+        ngwVectorLayer.setAccountName(accountName);
+        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+        ngwVectorLayer.setMinZoom(0);
+        ngwVectorLayer.setMaxZoom(100);
+
+        map.addLayer(ngwVectorLayer);
+
+        return ngwVectorLayer.download() == null;
+    }
+
+    protected boolean loadLinkedTables(Connection connection, String layerName, int resourceId, MapBase map){
+        //TODO:
+        return true;
+    }
+
+    protected boolean loadNotes(int resourceId, String accountName, MapBase map){
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+
+        NGWVectorLayerUI ngwVectorLayer =
+                new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_NOTES));
+        ngwVectorLayer.setName(getString(R.string.notes));
+        ngwVectorLayer.setRemoteId(resourceId);
+        //TODO: ngwVectorLayer.setWhereClause(); //add bbox=
+        ngwVectorLayer.setVisible(true);
+        //TODO: add layer draw default style and quarter labels
+        ngwVectorLayer.setAccountName(accountName);
+        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+        ngwVectorLayer.setMinZoom(0);
+        ngwVectorLayer.setMaxZoom(100);
+
+        map.addLayer(ngwVectorLayer);
+
+        return ngwVectorLayer.download() == null;
+    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -425,36 +586,308 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            int counter = 0;
-            while(true) {
-                if(counter > 9)
-                    counter = 0;
 
-                mMessage = "Working...";
-                publishProgress(counter, 1);
+            // step 1: connect to server
+            int nStep = 0;
+            int nTimeout = 2000;
+            final MainApplication app = (MainApplication) getApplication();
+            final String sLogin = app.getAccountLogin(mAccount);
+            final String sPassword = app.getAccountPassword(mAccount);
+            final String sURL = app.getAccountUrl(mAccount);
+            Connection connection = new Connection("tmp", sLogin, sPassword, sURL);
+            mMessage = getString(R.string.connecting);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if(!connection.connect()){
+                mMessage = getString(R.string.error_connect_failed);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
 
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(nTimeout);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
-                mMessage = "Done";
-                publishProgress(counter, 2);
-
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                counter++;
-
-                if(isCancelled())
-                    return false;
+                return false;
+            }
+            else{
+                mMessage = getString(R.string.connected);
+                publishProgress(nStep, Constants.STEP_STATE_WORK);
             }
 
-            //return true;
+            if(isCancelled())
+                return false;
+
+            // step 1: find keys
+
+            mMessage = getString(R.string.check_tables_exist);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            Map<String, Integer> keys = new HashMap<>();
+            keys.put(Constants.KEY_INSPECTORS, -1);
+            keys.put(Constants.KEY_DOCUMENTS, -1);
+            keys.put(Constants.KEY_SHEET, -1);
+            keys.put(Constants.KET_PRODUCTION, -1);
+            keys.put(Constants.KEY_NOTES, -1);
+            keys.put(Constants.KEY_TERRITORY, -1);
+            keys.put(Constants.KEY_VEHICLES, -1);
+            keys.put(Constants.KEY_CADASTRE, -1);
+
+            if(!checkServerLayers(connection, keys)){
+                mMessage = getString(R.string.error_wrong_server);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            if(isCancelled())
+                return false;
+
+            // step 2: get inspector detail
+            // name, description, bbox
+            nStep = 1;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if(!getInspectorDetail(connection, keys.get(Constants.KEY_INSPECTORS), sLogin)){
+                mMessage = getString(R.string.error_get_inspector_detail);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            if(isCancelled())
+                return false;
+
+            // step 3: create base layers
+
+            nStep = 2;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            createBasicLayers(app.getMap());
+
+            mMessage = getString(R.string.done);
+            publishProgress(nStep, Constants.STEP_STATE_DONE);
+
+            if(isCancelled())
+                return false;
+
+            // step 4: forest cadastre
+
+            nStep = 3;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name,
+                    app.getMap())){
+                mMessage = getString(R.string.error_unexpected);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            if(isCancelled())
+                return false;
+
+            // step 5: load documents
+
+            nStep = 4;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if (!loadDocuments(keys.get(Constants.KEY_DOCUMENTS), mAccount.name, app.getMap())){
+                mMessage = getString(R.string.error_unexpected);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            if(isCancelled())
+                return false;
+
+            // step 6: load sheets
+
+            nStep = 5;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if (!loadLinkedTables(connection, Constants.KEY_LAYER_SHEET,
+                    keys.get(Constants.KEY_SHEET), app.getMap())){
+                mMessage = getString(R.string.error_unexpected);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            if(isCancelled())
+                return false;
+
+            // step 7: load productions
+
+            nStep = 6;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if (!loadLinkedTables(connection, Constants.KEY_LAYER_PRODUCTION,
+                                           keys.get(Constants.KET_PRODUCTION), app.getMap())){
+                mMessage = getString(R.string.error_unexpected);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            if(isCancelled())
+                return false;
+
+
+            // step 8: load territory
+
+            nStep = 7;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if (!loadLinkedTables(connection, Constants.KEY_LAYER_TERRITORY,
+                                           keys.get(Constants.KEY_TERRITORY), app.getMap())){
+                mMessage = getString(R.string.error_unexpected);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            if(isCancelled())
+                return false;
+
+            // step 9: load vehicles
+
+            nStep = 8;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if (!loadLinkedTables(connection, Constants.KEY_LAYER_VEHICLES,
+                                           keys.get(Constants.KEY_VEHICLES), app.getMap())){
+                mMessage = getString(R.string.error_unexpected);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            if(isCancelled())
+                return false;
+
+            // step 10: load notes
+
+            nStep = 9;
+
+            mMessage = getString(R.string.working);
+            publishProgress(nStep, Constants.STEP_STATE_WORK);
+
+            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, app.getMap())){
+                mMessage = getString(R.string.error_unexpected);
+                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+            else {
+                mMessage = getString(R.string.done);
+                publishProgress(nStep, Constants.STEP_STATE_DONE);
+            }
+
+            return true;
         }
 
         @Override

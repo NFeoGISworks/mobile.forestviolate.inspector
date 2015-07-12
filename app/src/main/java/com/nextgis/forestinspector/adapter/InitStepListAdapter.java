@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,53 +49,55 @@ public class InitStepListAdapter extends BaseAdapter {
 
         // 1. check server
         InitStep step1 = new InitStep(context.getString(R.string.check_server),
-                                      context.getString(R.string.waiting), 0);
+                                      context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step1);
 
         // 2. get inspector detail
         InitStep step2 = new InitStep(context.getString(R.string.get_inspector_detailes),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step2);
 
         // 3. create base layers
         InitStep step3 = new InitStep(context.getString(R.string.create_base_layers),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step3);
 
         // 4. forest cadastre
         InitStep step4 = new InitStep(context.getString(R.string.get_forest_cadastre),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step4);
 
         // 5. load documents
         InitStep step5 = new InitStep(context.getString(R.string.load_documents),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step5);
 
         // 6. load sheets
         InitStep step6 = new InitStep(context.getString(R.string.load_sheets),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step6);
 
         // 7. load productions
         InitStep step7 = new InitStep(context.getString(R.string.load_production),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step7);
 
         // 8. load territory
         InitStep step8 = new InitStep(context.getString(R.string.load_territory),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step8);
 
         // 9. load vehicles
         InitStep step9 = new InitStep(context.getString(R.string.load_vehicles),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step9);
 
         // 10. load notes
         InitStep step10 = new InitStep(context.getString(R.string.load_notes),
-                context.getString(R.string.waiting), 0);
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step10);
+
+        // 11. load other offline vector data (scanex points, etc.)
     }
 
     @Override
@@ -124,16 +127,16 @@ public class InitStepListAdapter extends BaseAdapter {
 
         ImageView ivIcon = (ImageView) v.findViewById(R.id.ivIcon);
         switch (item.mState){
-            case 0:
+            case Constants.STEP_STATE_WAIT:
                 ivIcon.setImageDrawable( mContext.getResources().getDrawable(R.drawable.ic_action_file_cloud_queue));
                 break;
-            case 1:
+            case Constants.STEP_STATE_WORK:
                 ivIcon.setImageDrawable( mContext.getResources().getDrawable(R.drawable.ic_action_file_cloud_download));
                 break;
-            case 2:
+            case Constants.STEP_STATE_DONE:
                 ivIcon.setImageDrawable( mContext.getResources().getDrawable(R.drawable.ic_action_file_cloud_done));
                 break;
-            case 3:
+            case Constants.STEP_STATE_ERROR:
                 ivIcon.setImageDrawable( mContext.getResources().getDrawable(R.drawable.ic_action_file_cloud_off));
                 break;
         }

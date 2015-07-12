@@ -29,15 +29,15 @@ public interface SettingsConstants
     String VIOLATIONS_URL = "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=15CBBFB4151E48ECAE0F699FD4F9223A&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png&Map=1D116AC56D694C0B8CDCA87C06D1961A";
 
     /**
-     * preference pages
+     * user account settings
      */
-    String ACTION_PREFS_GENERAL  = "com.nextgis.mobile.PREFS_GENERAL";
-    String ACTION_PREFS_MAP      = "com.nextgis.mobile.PREFS_MAP";
-    String ACTION_PREFS_NGW      = "com.nextgis.mobile.PREFS_NGW";
-    String ACTION_PREFS_COMPASS  = "com.nextgis.mobile.PREFS_COMPASS";
-    String ACTION_PREFS_TRACKING = "com.nextgis.mobile.PREFS_TRACKING";
-    String ACTION_PREFS_LOCATION = "com.nextgis.mobile.PREFS_LOCATION";
-    String ACTION_PREFS_EDIT     = "com.nextgis.mobile.PREFS_EDIT";
+    String KEY_PREF_USER = "user";
+    String KEY_PREF_USERDESC = "user_desc";
+    String KEY_PREF_USERID = "user_id";
+    String KEY_PREF_USERMINX = "user_minx";
+    String KEY_PREF_USERMINY = "user_miny";
+    String KEY_PREF_USERMAXX = "user_maxx";
+    String KEY_PREF_USERMAXY = "user_maxy";
 
     /**
      * map preference
@@ -58,7 +58,6 @@ public interface SettingsConstants
      * Preference keys - in UI
      */
     String KEY_PREF_STORAGE_SITE        = "storage_site";
-    String KEY_PREF_USER_ID             = "user_id";
     String KEY_PREF_MIN_DIST_CHNG_UPD   = "min_dist_change_for_update";
     String KEY_PREF_MIN_TIME_UPD        = "min_time_beetwen_updates";
     String KEY_PREF_SW_TRACK_SRV        = "sw_track_service";

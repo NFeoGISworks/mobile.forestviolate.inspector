@@ -48,4 +48,26 @@
     <string name="load_territory">Загрузка территорий лесонарушений</string>
     <string name="load_vehicles">Загрузка актов обнаружения орудий лесонарушения</string>
     <string name="load_notes">Загрузка заметок</string>
+    <string name="connecting">подключение к серверу…</string>
+    <string name="connected">Подключено</string>
+    <string name="check_tables_exist">Проверка таблиц</string>
+    <string name="error_wrong_server">Неподдерживаемый сервер</string>
+    <string name="working">Выполняется…</string>
+    <string name="error_get_inspector_detail">Ошибка получения данных аккаунта</string>
+    <string name="error_unexpected">Возникла неожиданная ошибка</string>
+    <string name="cadastre">Лесоделение</string>
+    <string name="notes">Notes</string>
+    <string name="show_status_panel">Панель статуса</string>
+    <string name="show_status_panel_summary">Показать панель статуса внизу экрана</string>
+    <string name="show_current_location">Показать текущее местоположение</string>
+    <string name="coordinates_format">Формат координат</string>
+    <string name="select_coordinates_format">Выберите формат координат</string>
+    <string name="coordinates_format_summary">Выберите текст для координат</string>
+    <string name="keep_screen_on">Не отключать экран</string>
+    <string name="keep_screen_on_summary">Держать экран включенным</string>
+    <string name="show_zoom_controls">Включить управление масштабами</string>
+    <string name="show_zoom_controls_summary">Показывать кнопки +/- на карте для увеличения/уменьшения</string>
+    <string name="general">Общие</string>
+    <string name="click_to_change_account">Change account settings</string>
+    <string name="theme">Application theme</string>
 </resources>

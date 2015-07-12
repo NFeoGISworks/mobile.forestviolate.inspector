@@ -48,4 +48,27 @@
     <string name="load_territory">Load territory</string>
     <string name="load_vehicles">Load vehicles</string>
     <string name="load_notes">Load notes</string>
+    <string name="connecting">Connecting to server...</string>
+    <string name="connected">Connected</string>
+    <string name="check_tables_exist">Check tables exist</string>
+    <string name="error_wrong_server">The incompatible server</string>
+    <string name="done">Done</string>
+    <string name="working">Working...</string>
+    <string name="error_get_inspector_detail">Failed to get inspector detail</string>
+    <string name="error_unexpected">Unexpected error occured</string>
+    <string name="cadastre">Forest cadastre</string>
+    <string name="notes">Notes</string>
+    <string name="show_status_panel">Status info panel</string>
+    <string name="show_status_panel_summary">Show current status info at bottom panel</string>
+    <string name="show_current_location">Show current location</string>
+    <string name="coordinates_format">Coordinates format</string>
+    <string name="select_coordinates_format">Select coordinates format</string>
+    <string name="coordinates_format_summary">Coordinate text format</string>
+    <string name="keep_screen_on">Keep screen on</string>
+    <string name="keep_screen_on_summary">Do not turn off screen</string>
+    <string name="show_zoom_controls">Show zoom controls</string>
+    <string name="show_zoom_controls_summary">Show zoom in/zoom out control on the map</string>
+    <string name="general">General</string>
+    <string name="click_to_change_account">Change account settings</string>
+    <string name="theme">Application theme</string>
 </resources>
