@@ -35,11 +35,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -47,6 +45,7 @@ import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.InitStepListAdapter;
+import com.nextgis.forestinspector.fragment.DocumentsFragment;
 import com.nextgis.forestinspector.fragment.LoginFragment;
 import com.nextgis.forestinspector.fragment.MapFragment;
 import com.nextgis.forestinspector.util.Constants;
@@ -173,9 +172,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             }
         });
 
-        task.execute(
-
-        );
+        task.execute();
     }
 
     protected void createNormalView(){
@@ -500,9 +497,12 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position);
+            if(position == 0) {
+                return new DocumentsFragment();
+            }
+            else{
+                return new MapFragment();
+            }
         }
 
         @Override
@@ -520,48 +520,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                     return getString(R.string.title_map).toUpperCase(l);
             }
             return null;
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static Fragment newInstance(int sectionNumber) {
-            if(sectionNumber == 0) {
-                PlaceholderFragment fragment = new PlaceholderFragment();
-                Bundle args = new Bundle();
-                args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-                fragment.setArguments(args);
-                return fragment;
-            }
-            else{
-                MapFragment fragment = new MapFragment();
-                Bundle args = new Bundle();
-                args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-                fragment.setArguments(args);
-                return fragment;
-            }
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
         }
     }
 

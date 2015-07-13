@@ -54,6 +54,12 @@ public interface Constants {
      */
     String KEY_NOTES_USERID = "user_id";
 
+    /**
+     * document types
+     */
+    int TYPE_DOCUMENT = 2;
+    int TYPE_NOTE = 0;
+
     int STEP_STATE_WAIT = 0;
     int STEP_STATE_WORK = 1;
     int STEP_STATE_DONE = 2;
