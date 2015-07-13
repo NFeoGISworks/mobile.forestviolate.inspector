@@ -22,6 +22,7 @@
 package com.nextgis.forestinspector.activity;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -55,6 +56,8 @@ import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoGeometryFactory;
 import com.nextgis.maplib.datasource.ngw.Connection;
 import com.nextgis.maplib.datasource.ngw.INGWResource;
+import com.nextgis.maplib.datasource.ngw.Resource;
+import com.nextgis.maplib.datasource.ngw.ResourceGroup;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.NGWUtil;
@@ -74,7 +77,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -116,7 +118,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         }
         else {
             MapBase map = app.getMap();
-            if(map.getLayerCount() == 0)
+            if(map.getLayerCount() <= 0)
             {
                 mFirsRun = true;
                 createSecondStartView(account);
@@ -262,36 +264,15 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             // delete all layers from map if any
             map.delete();
 
+            //set sync with server
+            ContentResolver.setSyncAutomatically(account, app.getAuthority(), true);
+
             // goto step 2
             refreshActivityView();
-
-            /*
-            //delete account on any problem
-
-
-            // 2. create base map layers
-            createBasicLayers(map);
-
-            // 3. start downloading data
-            FirstRunDialog newFragment = new FirstRunDialog();
-            newFragment.setFirstRunOperations(this)
-                       .setAccount(account)
-                       .show(getSupportFragmentManager(), "first_run");
-            newFragment.startInitializeProcess();
-            */
         }
         else
             Toast.makeText(this, R.string.error_init, Toast.LENGTH_SHORT).show();
     }
-
-    /*public void onFirstRunOperationsFinished(boolean bSucceed, Account account){
-        if(bSucceed)
-            refreshActivityView();
-        else{
-            final MainApplication app = (MainApplication) getApplication();
-            app.removeAccount(account);
-        }
-    }*/
 
     protected void createBasicLayers(MapBase map){
 
@@ -341,12 +322,23 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         map.save();
     }
 
-    protected boolean checkServerLayers(INGWResource resource, Map<String, Integer> keys){
+    protected boolean checkServerLayers(INGWResource resource, Map<String, Long> keys){
+        if (resource instanceof Connection) {
+            Connection connection = (Connection) resource;
+            connection.loadChildren();
+        }
+        else if (resource instanceof ResourceGroup) {
+            ResourceGroup resourceGroup = (ResourceGroup) resource;
+            resourceGroup.loadChildren();
+        }
+
         for(int i = 0; i < resource.getChildrenCount(); ++i){
             INGWResource childResource = resource.getChild(i);
 
-            if(keys.containsKey(childResource.getKey()))
-                keys.put(childResource.getKey(), childResource.getId());
+            if(keys.containsKey(childResource.getKey()) && childResource instanceof Resource) {
+                Resource ngwResource = (Resource) childResource;
+                keys.put(ngwResource.getKey(), ngwResource.getRemoteId());
+            }
 
             if(keys.get(Constants.KEY_INSPECTORS) > 0 &&
                keys.get(Constants.KEY_DOCUMENTS) > 0 &&
@@ -359,9 +351,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 return true;
             }
 
-            if(childResource.getChildrenCount() > 0){
-                if(checkServerLayers(childResource, keys))
-                    return true;
+            if(checkServerLayers(childResource, keys)){
+                return true;
             }
         }
 
@@ -376,7 +367,11 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
     }
 
-    protected boolean getInspectorDetail(Connection connection, int resourceId, String login){
+    protected boolean checkAdditionalServerLayers(INGWResource resource, Map<String, Integer> keys){
+        return false;
+    }
+
+    protected boolean getInspectorDetail(Connection connection, long resourceId, String login){
 
         String sURL = NGWUtil.getFeaturesUrl(connection.getURL(), resourceId, "login=" + login);
 
@@ -417,7 +412,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         }
     }
 
-    protected boolean loadForestCadastre(int resourceId, String accountName, MapBase map){
+    protected boolean loadForestCadastre(long resourceId, String accountName, MapBase map){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
         float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
@@ -428,7 +423,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_CADASTRE));
         ngwVectorLayer.setName(getString(R.string.cadastre));
         ngwVectorLayer.setRemoteId(resourceId);
-        //TODO: ngwVectorLayer.setWhereClause(); //add bbox=
+        ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
+                minX, minY, maxX, maxY));
         ngwVectorLayer.setVisible(true);
         //TODO: add layer draw default style and quarter labels
         ngwVectorLayer.setAccountName(accountName);
@@ -441,7 +437,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         return ngwVectorLayer.download() == null;
     }
 
-    protected boolean loadDocuments(int resourceId, String accountName, MapBase map){
+    protected boolean loadDocuments(long resourceId, String accountName, MapBase map){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
         float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
@@ -452,7 +448,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_DOCUMENTS));
         ngwVectorLayer.setName(getString(R.string.title_notes));
         ngwVectorLayer.setRemoteId(resourceId);
-        //TODO: ngwVectorLayer.setWhereClause(); //add bbox=
+        ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
+                minX, minY, maxX, maxY));
         ngwVectorLayer.setVisible(true);
         //TODO: add layer draw default style and quarter labels
         ngwVectorLayer.setAccountName(accountName);
@@ -465,23 +462,20 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         return ngwVectorLayer.download() == null;
     }
 
-    protected boolean loadLinkedTables(Connection connection, String layerName, int resourceId, MapBase map){
+    protected boolean loadLinkedTables(Connection connection, String layerName, long resourceId, MapBase map){
         //TODO:
         return true;
     }
 
-    protected boolean loadNotes(int resourceId, String accountName, MapBase map){
+    protected boolean loadNotes(long resourceId, String accountName, MapBase map){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
-        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
-        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
-        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+        long inspectorId = prefs.getLong(SettingsConstants.KEY_PREF_USERID, -1);
 
         NGWVectorLayerUI ngwVectorLayer =
                 new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_NOTES));
         ngwVectorLayer.setName(getString(R.string.notes));
         ngwVectorLayer.setRemoteId(resourceId);
-        //TODO: ngwVectorLayer.setWhereClause(); //add bbox=
+        ngwVectorLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);
         ngwVectorLayer.setVisible(true);
         //TODO: add layer draw default style and quarter labels
         ngwVectorLayer.setAccountName(accountName);
@@ -589,11 +583,16 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
             // step 1: connect to server
             int nStep = 0;
-            int nTimeout = 2000;
+            int nTimeout = 4000;
             final MainApplication app = (MainApplication) getApplication();
             final String sLogin = app.getAccountLogin(mAccount);
             final String sPassword = app.getAccountPassword(mAccount);
             final String sURL = app.getAccountUrl(mAccount);
+
+            if (null == sURL || null == sPassword || null == sLogin) {
+                return false;
+            }
+
             Connection connection = new Connection("tmp", sLogin, sPassword, sURL);
             mMessage = getString(R.string.connecting);
             publishProgress(nStep, Constants.STEP_STATE_WORK);
@@ -623,15 +622,15 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             mMessage = getString(R.string.check_tables_exist);
             publishProgress(nStep, Constants.STEP_STATE_WORK);
 
-            Map<String, Integer> keys = new HashMap<>();
-            keys.put(Constants.KEY_INSPECTORS, -1);
-            keys.put(Constants.KEY_DOCUMENTS, -1);
-            keys.put(Constants.KEY_SHEET, -1);
-            keys.put(Constants.KET_PRODUCTION, -1);
-            keys.put(Constants.KEY_NOTES, -1);
-            keys.put(Constants.KEY_TERRITORY, -1);
-            keys.put(Constants.KEY_VEHICLES, -1);
-            keys.put(Constants.KEY_CADASTRE, -1);
+            Map<String, Long> keys = new HashMap<>();
+            keys.put(Constants.KEY_INSPECTORS, -1L);
+            keys.put(Constants.KEY_DOCUMENTS, -1L);
+            keys.put(Constants.KEY_SHEET, -1L);
+            keys.put(Constants.KET_PRODUCTION, -1L);
+            keys.put(Constants.KEY_NOTES, -1L);
+            keys.put(Constants.KEY_TERRITORY, -1L);
+            keys.put(Constants.KEY_VEHICLES, -1L);
+            keys.put(Constants.KEY_CADASTRE, -1L);
 
             if(!checkServerLayers(connection, keys)){
                 mMessage = getString(R.string.error_wrong_server);
@@ -652,6 +651,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
             if(isCancelled())
                 return false;
+
+            //TODO: check additional tables
 
             // step 2: get inspector detail
             // name, description, bbox
@@ -771,18 +772,15 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
+                mMessage = "1 " + getString(R.string.of) + " 4";
                 publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
                 return false;
 
-            // step 7: load productions
+            // step 6: load productions
 
-            nStep = 6;
-
-            mMessage = getString(R.string.working);
             publishProgress(nStep, Constants.STEP_STATE_WORK);
 
             if (!loadLinkedTables(connection, Constants.KEY_LAYER_PRODUCTION,
@@ -799,19 +797,15 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
+                mMessage = "2 " + getString(R.string.of) + " 4";
                 publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
                 return false;
 
+            // step 6: load territory
 
-            // step 8: load territory
-
-            nStep = 7;
-
-            mMessage = getString(R.string.working);
             publishProgress(nStep, Constants.STEP_STATE_WORK);
 
             if (!loadLinkedTables(connection, Constants.KEY_LAYER_TERRITORY,
@@ -828,18 +822,15 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
+                mMessage = "3 " + getString(R.string.of) + " 4";
                 publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
                 return false;
 
-            // step 9: load vehicles
+            // step 6: load vehicles
 
-            nStep = 8;
-
-            mMessage = getString(R.string.working);
             publishProgress(nStep, Constants.STEP_STATE_WORK);
 
             if (!loadLinkedTables(connection, Constants.KEY_LAYER_VEHICLES,
@@ -863,9 +854,9 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             if(isCancelled())
                 return false;
 
-            // step 10: load notes
+            // step 7: load notes
 
-            nStep = 9;
+            nStep = 6;
 
             mMessage = getString(R.string.working);
             publishProgress(nStep, Constants.STEP_STATE_WORK);
@@ -887,6 +878,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
 
+            //TODO: load additional tables
+
             return true;
         }
 
@@ -906,7 +899,13 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             if(!result){
                 //delete map
                 final MainApplication app = (MainApplication) getApplication();
+                String accName = mAccount.name;
                 app.removeAccount(mAccount);
+
+                for(int i = 0; i < 10; i++){
+                    if(app.getAccount(accName) == null)
+                        break;
+                }
             }
             refreshActivityView();
         }

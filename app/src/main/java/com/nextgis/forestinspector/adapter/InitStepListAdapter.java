@@ -72,32 +72,17 @@ public class InitStepListAdapter extends BaseAdapter {
                 context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step5);
 
-        // 6. load sheets
-        InitStep step6 = new InitStep(context.getString(R.string.load_sheets),
+        // 6. load linked tables
+        InitStep step6 = new InitStep(context.getString(R.string.load_linked_layers),
                 context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step6);
 
-        // 7. load productions
-        InitStep step7 = new InitStep(context.getString(R.string.load_production),
+        // 7. load notes
+        InitStep step7 = new InitStep(context.getString(R.string.load_notes),
                 context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step7);
 
-        // 8. load territory
-        InitStep step8 = new InitStep(context.getString(R.string.load_territory),
-                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
-        mSteps.add(step8);
-
-        // 9. load vehicles
-        InitStep step9 = new InitStep(context.getString(R.string.load_vehicles),
-                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
-        mSteps.add(step9);
-
-        // 10. load notes
-        InitStep step10 = new InitStep(context.getString(R.string.load_notes),
-                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
-        mSteps.add(step10);
-
-        // 11. load other offline vector data (scanex points, etc.)
+        // 8. load other offline vector data (scanex points, etc.)
     }
 
     @Override

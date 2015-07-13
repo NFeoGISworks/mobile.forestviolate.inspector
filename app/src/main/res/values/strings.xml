@@ -43,10 +43,7 @@
     <string name="get_inspector_detailes">Get inspector detailes</string>
     <string name="get_forest_cadastre">Get forest cadastre</string>
     <string name="load_documents">Load documents</string>
-    <string name="load_sheets">Load sheets</string>
-    <string name="load_production">Load production</string>
-    <string name="load_territory">Load territory</string>
-    <string name="load_vehicles">Load vehicles</string>
+    <string name="load_linked_layers">Load linked layers</string>
     <string name="load_notes">Load notes</string>
     <string name="connecting">Connecting to server...</string>
     <string name="connected">Connected</string>
@@ -71,4 +68,5 @@
     <string name="general">General</string>
     <string name="click_to_change_account">Change account settings</string>
     <string name="theme">Application theme</string>
+    <string name="of">of</string>
 </resources>

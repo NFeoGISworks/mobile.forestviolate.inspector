@@ -27,7 +27,7 @@ package com.nextgis.forestinspector.util;
 public interface Constants {
 
     String KEY_INSPECTORS = "inspectors";
-    String KEY_DOCUMENTS = "documents";
+    String KEY_DOCUMENTS = "docs";
     String KEY_SHEET = "sheet";
     String KET_PRODUCTION = "production";
     String KEY_NOTES = "notes";
@@ -43,8 +43,16 @@ public interface Constants {
     String KEY_LAYER_VEHICLES = "vehicles";
     String KEY_LAYER_CADASTRE = "cadastre";
 
+    /**
+     * inspectors keys
+     */
     String KEY_INSPECTOR_USER = "user";
     String KEY_INSPECTOR_USER_DESC = "user_desc";
+
+    /**
+     * notes keys
+     */
+    String KEY_NOTES_USERID = "user_id";
 
     int STEP_STATE_WAIT = 0;
     int STEP_STATE_WORK = 1;

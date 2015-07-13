@@ -43,20 +43,18 @@
     <string name="get_inspector_detailes">Получение подробностей аккаунта</string>
     <string name="get_forest_cadastre">Получение лесоделения</string>
     <string name="load_documents">Загрузка документов</string>
-    <string name="load_sheets">Загрузка ведомостей перечета</string>
-    <string name="load_production">Загрузка актов изъятия лесопродукции</string>
-    <string name="load_territory">Загрузка территорий лесонарушений</string>
-    <string name="load_vehicles">Загрузка актов обнаружения орудий лесонарушения</string>
+    <string name="load_linked_layers">Загрузка связанных слоев</string>
     <string name="load_notes">Загрузка заметок</string>
     <string name="connecting">подключение к серверу…</string>
     <string name="connected">Подключено</string>
     <string name="check_tables_exist">Проверка таблиц</string>
     <string name="error_wrong_server">Неподдерживаемый сервер</string>
+    <string name="done">Выполнено</string>
     <string name="working">Выполняется…</string>
     <string name="error_get_inspector_detail">Ошибка получения данных аккаунта</string>
     <string name="error_unexpected">Возникла неожиданная ошибка</string>
     <string name="cadastre">Лесоделение</string>
-    <string name="notes">Notes</string>
+    <string name="notes">Отметки</string>
     <string name="show_status_panel">Панель статуса</string>
     <string name="show_status_panel_summary">Показать панель статуса внизу экрана</string>
     <string name="show_current_location">Показать текущее местоположение</string>
@@ -68,6 +66,7 @@
     <string name="show_zoom_controls">Включить управление масштабами</string>
     <string name="show_zoom_controls_summary">Показывать кнопки +/- на карте для увеличения/уменьшения</string>
     <string name="general">Общие</string>
-    <string name="click_to_change_account">Change account settings</string>
-    <string name="theme">Application theme</string>
+    <string name="click_to_change_account">Изменить настройки аккаунта</string>
+    <string name="theme">Тема приложения</string>
+    <string name="of">из</string>
 </resources>
