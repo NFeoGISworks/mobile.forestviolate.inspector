@@ -25,6 +25,7 @@ import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -57,6 +58,8 @@ import com.nextgis.maplib.datasource.ngw.Connection;
 import com.nextgis.maplib.datasource.ngw.INGWResource;
 import com.nextgis.maplib.datasource.ngw.Resource;
 import com.nextgis.maplib.datasource.ngw.ResourceGroup;
+import com.nextgis.maplib.display.SimpleFeatureRenderer;
+import com.nextgis.maplib.display.SimplePolygonStyle;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.NGWUtil;
@@ -425,9 +428,13 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setVisible(true);
         //TODO: add layer draw default style and quarter labels
         ngwVectorLayer.setAccountName(accountName);
-        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
         ngwVectorLayer.setMinZoom(0);
         ngwVectorLayer.setMaxZoom(100);
+        SimplePolygonStyle style = new SimplePolygonStyle(Color.GREEN);
+        style.setFill(false);
+        SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
+        ngwVectorLayer.setRenderer(renderer);
 
         map.addLayer(ngwVectorLayer);
 

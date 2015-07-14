@@ -69,7 +69,7 @@
     <string name="click_to_change_account">Изменить настройки аккаунта</string>
     <string name="theme">Тема приложения</string>
     <string name="of">из</string>
-    <string name="indictment">Indictment</string>
-    <string name="sheet">Sheet</string>
-    <string name="note">Note</string>
+    <string name="indictment">Акт о лесонарушении</string>
+    <string name="sheet">Ведомость перечета</string>
+    <string name="note">Отметки</string>
 </resources>
