@@ -58,6 +58,7 @@ public interface Constants {
      * document types
      */
     int TYPE_DOCUMENT = 2;
+    int TYPE_SHEET = 3;
     int TYPE_NOTE = 0;
 
     int STEP_STATE_WAIT = 0;
@@ -65,4 +66,13 @@ public interface Constants {
     int STEP_STATE_DONE = 2;
     int STEP_STATE_ERROR = 3;
 
+    String FIELD_DOCUMENTS_TYPE = "type";
+    String FIELD_DOCUMENTS_DATE = "date";
+    String FIELD_DOCUMENTS_NUMBER = "number";
+    String FIELD_DOCUMENTS_STATUS = "status";
+    String FIELD_DOCUMENTS_VIOLATE = "violate";
+
+    String FIELD_NOTES_DATE_BEG = "date_beg";
+    String FIELD_NOTES_DATE_END = "date_end";
+    String FIELD_NOTES_DESCRIPTION = "descript";
 }

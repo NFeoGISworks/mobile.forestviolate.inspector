@@ -40,7 +40,7 @@ public class DocumentsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        DocumentsListAdapter adapter = new DocumentsListAdapter();
+        DocumentsListAdapter adapter = new DocumentsListAdapter(getActivity());
 
         ListView list = (ListView) rootView.findViewById(R.id.documentsList);
         list.setAdapter(adapter);

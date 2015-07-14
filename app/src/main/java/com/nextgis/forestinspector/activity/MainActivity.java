@@ -461,12 +461,19 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
     protected boolean loadLinkedTables(Connection connection, String layerName, long resourceId, MapBase map){
         //TODO:
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 
     protected boolean loadNotes(long resourceId, String accountName, MapBase map){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        long inspectorId = prefs.getLong(SettingsConstants.KEY_PREF_USERID, -1);
+        long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
 
         NGWVectorLayerUI ngwVectorLayer =
                 new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_NOTES));
@@ -660,7 +667,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
             mMessage = getString(R.string.working);
             publishProgress(nStep, Constants.STEP_STATE_WORK);
-
+/*
             if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name,
                     app.getMap())){
                 mMessage = getString(R.string.error_unexpected);
@@ -678,7 +685,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 mMessage = getString(R.string.done);
                 publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
-
+*/
             if(isCancelled())
                 return false;
 
@@ -731,7 +738,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             }
             else {
                 mMessage = "1 " + getString(R.string.of) + " 4";
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -756,7 +762,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             }
             else {
                 mMessage = "2 " + getString(R.string.of) + " 4";
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -781,7 +786,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             }
             else {
                 mMessage = "3 " + getString(R.string.of) + " 4";
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -837,6 +841,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             }
 
             //TODO: load additional tables
+
+            app.getMap().save();
 
             return true;
         }

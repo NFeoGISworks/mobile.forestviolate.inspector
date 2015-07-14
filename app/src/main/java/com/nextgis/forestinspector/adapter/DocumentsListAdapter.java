@@ -39,7 +39,10 @@ import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -60,12 +63,13 @@ public class DocumentsListAdapter extends BaseAdapter
         mContext = context;
         mDocuments = new ArrayList<>();
         mMap = MapBase.getInstance();
+        mDocsId = mNotesId = -10;
         for(int i = 0; i < mMap.getLayerCount(); i++){
             ILayer layer = mMap.getLayer(i);
-            if(layer.getName().equals(Constants.KEY_LAYER_DOCUMENTS)){
+            if(layer.getName().equals(mContext.getString(R.string.title_notes))){
                 mDocsId = layer.getId();
             }
-            else if(layer.getName().equals(Constants.KEY_LAYER_NOTES)){
+            else if(layer.getName().equals(mContext.getString(R.string.notes))){
                 mNotesId = layer.getId();
             }
         }
@@ -79,13 +83,66 @@ public class DocumentsListAdapter extends BaseAdapter
         ILayer docs = mMap.getLayerById(mDocsId);
         if(docs != null){
             VectorLayer vlayer = (VectorLayer)docs;
-            Cursor cur = vlayer.query(...);
+            //order by datetime(datetimeColumn) ASC LIMIT 100
+            Cursor cursor = vlayer.query(new String[] { Constants.FIELD_DOCUMENTS_TYPE,
+                    Constants.FIELD_DOCUMENTS_DATE, Constants.FIELD_DOCUMENTS_NUMBER,
+                    Constants.FIELD_DOCUMENTS_STATUS, Constants.FIELD_DOCUMENTS_VIOLATE},
+                    null, null, "date ASC", " 100");
+            if (null != cursor) {
+                cursor.moveToFirst();
+                do {
+                    Document doc = new Document();
+                    doc.mType = cursor.getInt(0);
+                    switch (doc.mType){
+                        case Constants.TYPE_DOCUMENT:
+                            doc.mName = mContext.getString(R.string.indictment);
+                            break;
+                        case Constants.TYPE_SHEET:
+                            doc.mName = mContext.getString(R.string.sheet);
+                            break;
+                    }
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(cursor.getLong(1));
+                    doc.mDate = calendar.getTime();
+
+                    doc.mName += " " + cursor.getString(2);
+                    doc.mStatus = cursor.getInt(3);
+                    doc.mDesc = cursor.getString(4);
+
+                    mDocuments.add(doc);
+
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
         }
 
         ILayer notes = mMap.getLayerById(mNotesId);
         if(notes != null){
             VectorLayer vlayer = (VectorLayer)notes;
-            Cursor cur = vlayer.query(...);
+            Cursor cursor = vlayer.query(new String[] { Constants.FIELD_NOTES_DATE_BEG,
+                            Constants.FIELD_NOTES_DATE_END,
+                            Constants.FIELD_NOTES_DESCRIPTION},
+                    null, null, "date ASC", " 100");
+            if (null != cursor) {
+                cursor.moveToFirst();
+                do {
+                    Document doc = new Document();
+                    doc.mType = Constants.TYPE_NOTE;
+
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(cursor.getLong(0));
+                    doc.mDate = calendar.getTime();
+
+                    doc.mName =  mContext.getString(R.string.note);
+
+                    doc.mStatus = -1; //note status
+                    doc.mDesc = cursor.getString(2);
+
+                    mDocuments.add(doc);
+
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
         }
 
         Collections.sort(mDocuments, new Comparator() {
@@ -130,7 +187,7 @@ public class DocumentsListAdapter extends BaseAdapter
                 break;
         }
 
-        ImageView ivStateIcon = (ImageView) v.findViewById(R.id.ivStateIcon);
+        //ImageView ivStateIcon = (ImageView) v.findViewById(R.id.ivStateIcon);
 
         TextView tvStep = (TextView) v.findViewById(R.id.tvName);
         tvStep.setText(item.mName);
@@ -139,7 +196,8 @@ public class DocumentsListAdapter extends BaseAdapter
         tvDesc.setText(item.mDesc);
 
         TextView tvDate = (TextView) v.findViewById(R.id.tvDate);
-        tvDesc.setText(item.mStepDescription); //TODO: format date
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yy"); //(SimpleDateFormat) DateFormat.getDateInstance();//
+        tvDate.setText(sdf.format(item.mDate));
 
         return v;
     }
@@ -193,7 +251,7 @@ public class DocumentsListAdapter extends BaseAdapter
 
         @Override
         public int compareTo(@NonNull Object another) {
-            return mDate > ((Document)(another)).mDate;
+            return mDate.compareTo(((Document)(another)).mDate);
         }
     }
 }

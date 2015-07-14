@@ -69,4 +69,7 @@
     <string name="click_to_change_account">Change account settings</string>
     <string name="theme">Application theme</string>
     <string name="of">of</string>
+    <string name="indictment">Indictment</string>
+    <string name="sheet">Sheet</string>
+    <string name="note">Note</string>
 </resources>
