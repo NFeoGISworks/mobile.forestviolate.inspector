@@ -87,31 +87,32 @@ public class DocumentsListAdapter extends BaseAdapter
             Cursor cursor = vlayer.query(new String[] { Constants.FIELD_DOCUMENTS_TYPE,
                     Constants.FIELD_DOCUMENTS_DATE, Constants.FIELD_DOCUMENTS_NUMBER,
                     Constants.FIELD_DOCUMENTS_STATUS, Constants.FIELD_DOCUMENTS_VIOLATE},
-                    null, null, "date ASC", " 100");
+                    null, null, Constants.FIELD_DOCUMENTS_DATE + " ASC", " 100");
             if (null != cursor) {
-                cursor.moveToFirst();
-                do {
-                    Document doc = new Document();
-                    doc.mType = cursor.getInt(0);
-                    switch (doc.mType){
-                        case Constants.TYPE_DOCUMENT:
-                            doc.mName = mContext.getString(R.string.indictment);
-                            break;
-                        case Constants.TYPE_SHEET:
-                            doc.mName = mContext.getString(R.string.sheet);
-                            break;
-                    }
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(cursor.getLong(1));
-                    doc.mDate = calendar.getTime();
+                if(cursor.moveToFirst()) {
+                    do {
+                        Document doc = new Document();
+                        doc.mType = cursor.getInt(0);
+                        switch (doc.mType) {
+                            case Constants.TYPE_DOCUMENT:
+                                doc.mName = mContext.getString(R.string.indictment);
+                                break;
+                            case Constants.TYPE_SHEET:
+                                doc.mName = mContext.getString(R.string.sheet);
+                                break;
+                        }
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(cursor.getLong(1));
+                        doc.mDate = calendar.getTime();
 
-                    doc.mName += " " + cursor.getString(2);
-                    doc.mStatus = cursor.getInt(3);
-                    doc.mDesc = cursor.getString(4);
+                        doc.mName += " " + cursor.getString(2);
+                        doc.mStatus = cursor.getInt(3);
+                        doc.mDesc = cursor.getString(4);
 
-                    mDocuments.add(doc);
+                        mDocuments.add(doc);
 
-                } while (cursor.moveToNext());
+                    } while (cursor.moveToNext());
+                }
                 cursor.close();
             }
         }
@@ -122,25 +123,26 @@ public class DocumentsListAdapter extends BaseAdapter
             Cursor cursor = vlayer.query(new String[] { Constants.FIELD_NOTES_DATE_BEG,
                             Constants.FIELD_NOTES_DATE_END,
                             Constants.FIELD_NOTES_DESCRIPTION},
-                    null, null, "date ASC", " 100");
+                    null, null, Constants.FIELD_NOTES_DATE_BEG + " ASC", " 100");
             if (null != cursor) {
-                cursor.moveToFirst();
-                do {
-                    Document doc = new Document();
-                    doc.mType = Constants.TYPE_NOTE;
+                if(cursor.moveToFirst()) {
+                    do {
+                        Document doc = new Document();
+                        doc.mType = Constants.TYPE_NOTE;
 
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(cursor.getLong(0));
-                    doc.mDate = calendar.getTime();
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(cursor.getLong(0));
+                        doc.mDate = calendar.getTime();
 
-                    doc.mName =  mContext.getString(R.string.note);
+                        doc.mName = mContext.getString(R.string.note);
 
-                    doc.mStatus = -1; //note status
-                    doc.mDesc = cursor.getString(2);
+                        doc.mStatus = -1; //note status
+                        doc.mDesc = cursor.getString(2);
 
-                    mDocuments.add(doc);
+                        mDocuments.add(doc);
 
-                } while (cursor.moveToNext());
+                    } while (cursor.moveToNext());
+                }
                 cursor.close();
             }
         }

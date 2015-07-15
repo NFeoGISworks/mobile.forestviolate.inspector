@@ -21,11 +21,13 @@
 
 package com.nextgis.forestinspector;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
+import com.nextgis.forestinspector.activity.PreferencesActivity;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.SettingsConstants;
@@ -78,7 +80,9 @@ public class MainApplication extends GISApplication {
      */
     @Override
     public void showSettings() {
-
+        Intent intentSet = new Intent(this, PreferencesActivity.class);
+        intentSet.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intentSet);
     }
 
 

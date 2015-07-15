@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Project: Forest violations
+  ~ Purpose: Mobile application for registering facts of the forest violations.
+  ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ ******************************************************************************
+  ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <include
+        layout="@layout/actionbar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
+
+            <!-- номер акта -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/indictment"
+                    android:textStyle="bold"
+                    android:id="@+id/textView"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/indictment_num"/>
+            </LinearLayout>
+
+            <!-- составитель акта -->
+            <TextView style="@style/description_text"
+                android:text="@string/author"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/author"/>
+
+            <!-- date & time -->
+            <TextView style="@style/description_text"
+                android:text="@string/date_time_create"
+                />
+
+            <com.nextgis.maplibui.controlui.DateTimeControl
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/create_datetime"
+                style="@style/DatePickSpinner"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+
+            <!-- place -->
+            <TextView  style="@style/description_text"
+                android:text="@string/place_create"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/place"
+                android:hint="@string/place_create_hint"/>
+
+            <!-- 1. violation type -->
+            <TextView style="@style/paragraph_text"
+                android:text="@string/violation_type"
+            />
+
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/violation_type"
+                android:entries="@array/violation_type"
+                android:layout_margin="10dp"
+                />
+
+            <!-- code article -->
+            <TextView  style="@style/description_text"
+                android:text="@string/code_num"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/code_num"
+                android:text="@string/code_num_def"/>
+
+            <!-- 2. place -->
+            <TextView style="@style/paragraph_text"
+                android:text="@string/place_violation"
+            />
+
+            <!-- territory -->
+            <TextView  style="@style/description_text"
+                android:text="@string/territory"
+                />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/territory"/>
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mapListButton"
+                    android:background="@drawable/ic_action_pickplace_light"/>
+
+
+            </LinearLayout>
+
+            <!-- TODO string with territory non editable-->
+            <!-- add full geometry here -->
+
+            <!-- forest category -->
+            <TextView  style="@style/description_text"
+                android:text="@string/forest_cat"
+                />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/forest_cat"
+                android:entries="@array/forest_cat_type"
+                android:layout_margin="10dp"
+                />
+
+            <!-- 3. who -->
+            <TextView style="@style/paragraph_text"
+                android:text="@string/violation_found_by"
+                />
+
+            <TextView  style="@style/description_text"
+                android:text="@string/violation_found_by_desc"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/who"
+                android:hint="@string/who_hint"/>
+
+            <!-- 4. when -->
+            <TextView style="@style/paragraph_text"
+                android:text="@string/violation_when"
+                />
+
+            <TextView  style="@style/description_text"
+                android:text="@string/violation_when_desc"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/when"
+                android:hint="@string/when_hint"/>
+
+            <!-- 5. crime -->
+            <TextView style="@style/paragraph_text"
+                      android:text="@string/crime"
+                />
+
+            <TextView  style="@style/description_text"
+                       android:text="@string/crime_desc"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/crime"
+                android:hint="@string/crime_hint"/>
+
+            <!-- 6. sheet -->
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/create_sheet"
+                android:id="@+id/create_sheet"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0"
+                android:layout_margin="10dp"
+                />
+
+            <!-- 7. production -->
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/create_production"
+                android:id="@+id/create_production"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0"
+                android:layout_margin="10dp"
+                />
+
+            <!-- 8. notes -->
+            <TextView style="@style/paragraph_text"
+                      android:text="@string/people_info"
+                />
+
+            <TextView  style="@style/description_text"
+                       android:text="@string/people_info_desc"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/people_info"/>
+
+            <!-- 9. crime say -->
+            <TextView style="@style/paragraph_text"
+                      android:text="@string/crime_say"
+                />
+
+            <TextView  style="@style/description_text"
+                       android:text="@string/crime_say_desc"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/crime_say"/>
+
+            <!-- 10. people say-->
+            <TextView style="@style/paragraph_text"
+                      android:text="@string/people_say"
+                />
+
+            <TextView  style="@style/description_text"
+                       android:text="@string/people_say_desc"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/people_say"/>
+
+            <!-- description -->
+            <TextView style="@style/paragraph_text"
+                      android:text="@string/description"
+                />
+
+            <TextView  style="@style/description_text"
+                       android:text="@string/description_desc"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/description"
+                android:hint="@string/description_hint"/>
+
+            <!-- vehicles -->
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/create_vehicles"
+                android:id="@+id/create_vehicles"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0"
+                android:layout_margin="10dp"
+                />
+
+            <!-- Photo -->
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/create_photo_table"
+                android:id="@+id/create_phototable"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0"
+                android:layout_margin="10dp"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/textColorSecondary"
+                />
+
+            <!-- sign -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sign_and_save"
+                android:id="@+id/sign_and_save"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0"
+                android:layout_margin="10dp"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

@@ -32,6 +32,7 @@
     <string name="copyright"><![CDATA[Copyright © <a href=\"http://nextgis.com\">NextGIS</a>, 2015]]></string>
     <string name="action_about">О программе</string>
     <string name="topo">Topo</string>
+    <string name="geomixer_fv_tiles">Лесонарушения растр (GeoMixer)</string>
     <string name="fi_login_title">Аккаунт лесного инспектора</string>
     <string name="fi_login_description"><![CDATA[Введите ваш логин и пароль к серверу учета лесонарушений. После нажатия на кнопку \"Подключить\" приложение выполнит вход на сервер. В случае удачного подключения, будет запущен процесс получения рабочих данных. Данный процесс требует большого количества трафика, поэтому на данном этапе рекомендуется использовать подключение по Wi-Fi.]]></string>
     <string name="first_run">Первый запуск</string>
@@ -72,4 +73,38 @@
     <string name="indictment">Акт о лесонарушении</string>
     <string name="sheet">Ведомость перечета</string>
     <string name="note">Отметки</string>
+    <string name="action_indictment">Акт о лесонарушении</string>
+    <string name="date_time_create">Дата и время составления</string>
+    <string name="place_create">Место составления</string>
+    <string name="violation_type">1. Вид лесонарушения</string>
+    <string name="author">ФИО, должность и № удостоверения составителя акта</string>
+    <string name="code_num">Номер пункта, полное наименование нормативного акта, кем утвержден, дата утверждения и № акта</string>
+    <string name="code_num_def">Ответственность за данное лесонарушение предусмотрена ст. 269 УКРФ</string>
+    <string name="place_violation">2. Место совершения лесонарушения</string>
+    <string name="place_create_hint">Введите место составление в это поле</string>
+    <string name="forest_cat">Категория защитности лесов</string>
+    <string name="violation_found_by">3. Когда и кем обнаружено лесонарушение</string>
+    <string name="violation_found_by_desc">наименование и реквизиты организации, органа власти, муниципального органа, должности, ФИО, при наличии - номер удостоверения, адрес гражданина</string>
+    <string name="who_hint">Введите когда и кем обнаружено лесонарушение</string>
+    <string name="violation_when">4. Когда совершено лесонарушение</string>
+    <string name="violation_when_desc">Дата, период, при невозможности установления - предположительно</string>
+    <string name="when_hint">Введите предположительную дату лесонарушения</string>
+    <string name="territory">Наименование лесничества, участкового лесничества, лесного участка, номера кварталов, выделов, делян</string>
+    <string name="sign_and_save">Подписать и сохранить</string>
+    <string name="create_sheet">Заполнить ведомость перечета</string>
+    <string name="create_production">Заполнить вид и количество продукции, подлежащей изъятию</string>
+    <string name="crime">5. Лицо, совершившее лесонарушение</string>
+    <string name="crime_desc">Наименование юридического лица, ФИО индивидуального предпринимателя, юридический и почтовый адрес, банковские реквизиты, ФИО год рождения граждан, данные документа, удостоверяющего личность, фактический адрес проживания, иные сведения позволяющие идентифицировать лицо - нарушителя</string>
+    <string name="crime_hint">Введите данные нарушителя</string>
+    <string name="description">Примечание</string>
+    <string name="description_hint">Введите примечание в это поле</string>
+    <string name="description_desc">№ и дата направления акта в уполномоченные органы, № уголовного дела или протокола об административном правонарушении, иные служебные отметки</string>
+    <string name="people_info">6. Сообщение лиц, обнаруживших лесонарушение, составляющих акт о лесонарушении</string>
+    <string name="people_info_desc">Обстоятельства выявления, описание места совершения, доказательства совершения, в т.ч. вещественные, иные сведения, позволяющие квалифицировать лесонарушение и доказать виновность лиц; было ли оказано лицом - нарушителем сопротивление составителю акта, лицу выявившему лесонарушение, кем именно оказано и в чем выражалось</string>
+    <string name="crime_say">7. Объяснения лиц(а) - нарушителя (ей)</string>
+    <string name="crime_say_desc">В случае предоставления объяснений на отдельном листе, об этом делается соотвествующая запись</string>
+    <string name="create_vehicles">Заполнить акт об обнаружении на месте лесонарущения орудий незаконной заготовки (техники, механизмов и т.д.)</string>
+    <string name="create_photo_table">Заполнить фототаблицу</string>
+    <string name="people_say">8. Объяснение лиц, участвующих в обнаружении лесонарушения и составлении акта</string>
+    <string name="people_say_desc">В случае предоставления объяснений на отдельном листе об этом делается запись</string>
 </resources>

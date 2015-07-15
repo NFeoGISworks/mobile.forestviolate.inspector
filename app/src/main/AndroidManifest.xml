@@ -94,6 +94,11 @@
             android:label="@string/action_settings"
             />
 
+        <activity
+            android:name=".activity.IndictmentActivity"
+            android:label="@string/action_indictment"
+            />
+
         <service
             android:name="com.nextgis.maplib.service.NGWSyncService"
             android:exported="true"

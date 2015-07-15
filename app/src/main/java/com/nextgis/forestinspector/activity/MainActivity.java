@@ -51,6 +51,7 @@ import com.nextgis.forestinspector.fragment.LoginFragment;
 import com.nextgis.forestinspector.fragment.MapFragment;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
+import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoGeometryFactory;
@@ -227,6 +228,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            final IGISApplication app = (IGISApplication) getApplication();
+            app.showSettings();
             return true;
         }
         else if (id == R.id.action_about) {
@@ -243,14 +246,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         Toolbar toolbar = (Toolbar) findViewById(toolbarId);
         toolbar.getBackground().setAlpha(getToolbarAlpha());
         setSupportActionBar(toolbar);
-    }
-
-
-    protected void refreshActivityView()
-    {
-        Intent intent = getIntent();
-        finish();
-        startActivity(intent);
     }
 
     @Override
@@ -431,7 +426,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
         ngwVectorLayer.setMinZoom(0);
         ngwVectorLayer.setMaxZoom(100);
-        SimplePolygonStyle style = new SimplePolygonStyle(Color.GREEN);
+        SimplePolygonStyle style = new SimplePolygonStyle(getResources().getColor(R.color.primary_dark_Dark));
         style.setFill(false);
         SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
         ngwVectorLayer.setRenderer(renderer);
@@ -460,6 +455,9 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
         ngwVectorLayer.setMinZoom(0);
         ngwVectorLayer.setMaxZoom(100);
+        SimplePolygonStyle style = new SimplePolygonStyle(Color.RED);
+        SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
+        ngwVectorLayer.setRenderer(renderer);
 
         map.addLayer(ngwVectorLayer);
 
@@ -497,6 +495,19 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         map.addLayer(ngwVectorLayer);
 
         return ngwVectorLayer.download() == null;
+    }
+
+    public void addIndictment() {
+        Intent intentAbout = new Intent(this, IndictmentActivity.class);
+        startActivity(intentAbout);
+    }
+
+    public void addSheet() {
+
+    }
+
+    public void addBookmark() {
+
     }
 
     /**
@@ -674,7 +685,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
             mMessage = getString(R.string.working);
             publishProgress(nStep, Constants.STEP_STATE_WORK);
-/*
+
             if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name,
                     app.getMap())){
                 mMessage = getString(R.string.error_unexpected);
@@ -692,7 +703,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 mMessage = getString(R.string.done);
                 publishProgress(nStep, Constants.STEP_STATE_DONE);
             }
-*/
+
             if(isCancelled())
                 return false;
 

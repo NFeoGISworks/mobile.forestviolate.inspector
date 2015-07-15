@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.MainActivity;
 import com.nextgis.forestinspector.adapter.DocumentsListAdapter;
 
 /**
@@ -44,6 +45,44 @@ public class DocumentsFragment extends Fragment {
 
         ListView list = (ListView) rootView.findViewById(R.id.documentsList);
         list.setAdapter(adapter);
+
+        final View addIndictment = rootView.findViewById(R.id.add_indictment);
+        if (null != addIndictment) {
+            addIndictment.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            MainActivity activity = (MainActivity)getActivity();
+                            activity.addIndictment();
+                        }
+                    });
+        }
+
+        final View addSheet = rootView.findViewById(R.id.add_sheet);
+        if (null != addSheet) {
+            addSheet.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            MainActivity activity = (MainActivity) getActivity();
+                            activity.addSheet();
+                        }
+                    });
+        }
+
+        final View addBookmark = rootView.findViewById(R.id.add_bookmark);
+        if (null != addBookmark) {
+            addBookmark.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            MainActivity activity = (MainActivity) getActivity();
+                            activity.addBookmark();
+                        }
+                    });
+        }
 
         return rootView;
     }

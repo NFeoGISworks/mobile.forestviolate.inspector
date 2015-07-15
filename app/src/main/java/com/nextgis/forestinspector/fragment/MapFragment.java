@@ -135,41 +135,40 @@ public class MapFragment
                     });
         }
 
-        final View addCurrentLocation = view.findViewById(R.id.add_indictment);
-        if (null != addCurrentLocation) {
-            addCurrentLocation.setOnClickListener(
+        final View addIndictment = view.findViewById(R.id.add_indictment);
+        if (null != addIndictment) {
+            addIndictment.setOnClickListener(
                     new View.OnClickListener()
                     {
                         @Override
                         public void onClick(View v)
                         {
-
+                            MainActivity activity = (MainActivity)getActivity();
+                            activity.addIndictment();
                         }
                     });
         }
 
-        final View addNewGeometry = view.findViewById(R.id.add_sheet);
-        if (null != addNewGeometry) {
-            addNewGeometry.setOnClickListener(
-                    new View.OnClickListener()
-                    {
+        final View addSheet = view.findViewById(R.id.add_sheet);
+        if (null != addSheet) {
+            addSheet.setOnClickListener(
+                    new View.OnClickListener() {
                         @Override
-                        public void onClick(View v)
-                        {
-
+                        public void onClick(View v) {
+                            MainActivity activity = (MainActivity) getActivity();
+                            activity.addSheet();
                         }
                     });
         }
 
-        final View addGeometryByWalk = view.findViewById(R.id.add_bookmark);
-        if (null != addGeometryByWalk) {
-            addGeometryByWalk.setOnClickListener(
-                    new View.OnClickListener()
-                    {
+        final View addBookmark = view.findViewById(R.id.add_bookmark);
+        if (null != addBookmark) {
+            addBookmark.setOnClickListener(
+                    new View.OnClickListener() {
                         @Override
-                        public void onClick(View v)
-                        {
-
+                        public void onClick(View v) {
+                            MainActivity activity = (MainActivity) getActivity();
+                            activity.addBookmark();
                         }
                     });
         }
