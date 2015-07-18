@@ -30,7 +30,7 @@ import android.widget.TextView;
 import com.nextgis.forestinspector.R;
 import com.nextgis.maplibui.activity.NGActivity;
 
-public class AboutActivity extends NGActivity
+public class AboutActivity extends FIActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)

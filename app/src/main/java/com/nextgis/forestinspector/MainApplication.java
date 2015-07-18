@@ -85,6 +85,12 @@ public class MainApplication extends GISApplication {
         startActivity(intentSet);
     }
 
-
+    @Override
+    protected int getThemeId(boolean isDark) {
+        if(isDark)
+            return R.style.AppTheme_Dark;
+        else
+            return R.style.AppTheme_Light;
+    }
 }
 

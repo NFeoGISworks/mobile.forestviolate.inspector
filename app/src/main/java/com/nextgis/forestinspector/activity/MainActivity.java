@@ -83,7 +83,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener {
+public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAccountListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -426,7 +426,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
         ngwVectorLayer.setMinZoom(0);
         ngwVectorLayer.setMaxZoom(100);
-        SimplePolygonStyle style = new SimplePolygonStyle(getResources().getColor(R.color.primary_dark_Dark));
+        SimplePolygonStyle style = new SimplePolygonStyle(getResources().getColor(R.color.primary_dark));
         style.setFill(false);
         SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
         ngwVectorLayer.setRenderer(renderer);

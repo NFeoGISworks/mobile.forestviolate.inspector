@@ -36,7 +36,7 @@ import java.util.Calendar;
 /**
  * Form of indictment
  */
-public class IndictmentActivity extends NGActivity{
+public class IndictmentActivity extends FIActivity{
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

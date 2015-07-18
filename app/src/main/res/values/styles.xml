@@ -24,14 +24,14 @@
     <attr name="tabSecondaryTextColor" format="reference"/>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.NextGIS.AppCompat.Light">
-        <item name="tabTextColor">@color/tabTextColor.Light</item>
-        <item name="tabSecondaryTextColor">@color/tabSecondaryTextColor.Light</item>
+    <style name="AppTheme.Light" parent="Theme.NextGIS.AppCompat.Light">
+        <item name="tabTextColor">@color/tabTextColor</item>
+        <item name="tabSecondaryTextColor">@color/tabSecondaryTextColor</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.NextGIS.AppCompat.Dark">
-        <item name="tabTextColor">@color/tabTextColor.Light</item>
-        <item name="tabSecondaryTextColor">@color/tabSecondaryTextColor.Dark</item>
+        <item name="tabTextColor">@color/tabTextColor</item>
+        <item name="tabSecondaryTextColor">@color/tabSecondaryTextColor</item>
     </style>
 
     <style name="status_panel">
