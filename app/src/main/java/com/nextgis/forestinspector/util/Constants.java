@@ -26,6 +26,8 @@ package com.nextgis.forestinspector.util;
  */
 public interface Constants {
 
+    String FITAG = "forest inspector";
+
     String KEY_INSPECTORS = "inspectors";
     String KEY_DOCUMENTS = "docs";
     String KEY_SHEET = "sheet";

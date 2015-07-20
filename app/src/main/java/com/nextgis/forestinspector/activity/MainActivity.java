@@ -36,6 +36,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -109,6 +110,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         // check if first run
         final MainApplication app = (MainApplication) getApplication();
         if(app == null){
+            Log.d(Constants.FITAG, "failed to get main application");
             // should never happen
             mFirsRun = true;
             createFirstStartView();
@@ -116,6 +118,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
         final Account account = app.getAccount(getString(R.string.account_name));
         if(account == null){
+            Log.d(Constants.FITAG, "No account" + getString(R.string.account_name) + " created. Run first step.");
             mFirsRun = true;
             createFirstStartView();
         }
@@ -123,10 +126,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             MapBase map = app.getMap();
             if(map.getLayerCount() <= 0)
             {
+                Log.d(Constants.FITAG, "Account" + getString(R.string.account_name) + " created. Run second step.");
                 mFirsRun = true;
                 createSecondStartView(account);
             }
             else {
+                Log.d(Constants.FITAG, "Account" + getString(R.string.account_name) + " created. Layers created. Run normal view.");
                 mFirsRun = false;
                 createNormalView();
             }
@@ -145,14 +150,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
         if (ngwLoginFragment == null) {
             ngwLoginFragment = new LoginFragment();
-            ngwLoginFragment.setForNewAccount(true);
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(com.nextgis.maplibui.R.id.login_frame, ngwLoginFragment, "NGWLogin");
+            ft.commit();
         }
-
+        ngwLoginFragment.setForNewAccount(true);
         ngwLoginFragment.setOnAddAccountListener(this);
-
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(com.nextgis.maplibui.R.id.login_frame, ngwLoginFragment, "NGWLogin");
-        ft.commit();
     }
 
     protected void createSecondStartView(Account account){
