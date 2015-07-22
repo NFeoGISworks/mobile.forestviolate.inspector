@@ -56,6 +56,7 @@ import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoGeometryFactory;
+import com.nextgis.maplib.datasource.TileItem;
 import com.nextgis.maplib.datasource.ngw.Connection;
 import com.nextgis.maplib.datasource.ngw.INGWResource;
 import com.nextgis.maplib.datasource.ngw.Resource;
@@ -65,7 +66,6 @@ import com.nextgis.maplib.display.SimplePolygonStyle;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.NGWUtil;
-import com.nextgis.maplibui.activity.NGActivity;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
 import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
@@ -80,9 +80,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAccountListener {
 
@@ -272,12 +277,20 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             Toast.makeText(this, R.string.error_init, Toast.LENGTH_SHORT).show();
     }
 
-    protected void createBasicLayers(MapBase map){
+    protected void createBasicLayers(MapBase map, final InitAsyncTask initAsyncTask, final int nStep){
+
+        initAsyncTask.publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
 
         //add OpenStreetMap layer on application first run
         String layerName = getString(R.string.osm);
         String layerURL = SettingsConstantsUI.OSM_URL;
-        RemoteTMSLayerUI osmLayer =
+        final RemoteTMSLayerUI osmLayer =
                 new RemoteTMSLayerUI(getApplicationContext(), map.createLayerStorage());
         osmLayer.setName(layerName);
         osmLayer.setURL(layerURL);
@@ -288,6 +301,13 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
         map.addLayer(osmLayer);
         //mMap.moveLayer(0, osmLayer);
+
+        try {
+            downloadTiles(osmLayer, initAsyncTask, nStep, map.getFullBounds(),
+                    new GeoEnvelope(minX, maxX, minY, maxY), 12, 15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         String kosmosnimkiLayerName = getString(R.string.topo);
         String kosmosnimkiLayerURL = SettingsConstants.KOSOSNIMKI_URL;
@@ -303,6 +323,14 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         map.addLayer(ksLayer);
         //mMap.moveLayer(1, ksLayer);
 
+        //download
+        try {
+            downloadTiles(ksLayer, initAsyncTask, nStep, map.getFullBounds(),
+                    new GeoEnvelope(minX, maxX, minY, maxY), 0, 12);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         String mixerLayerName = getString(R.string.geomixer_fv_tiles);
         String mixerLayerURL = SettingsConstants.VIOLATIONS_URL;
         RemoteTMSLayerUI mixerLayer =
@@ -317,7 +345,69 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         map.addLayer(mixerLayer);
         //mMap.moveLayer(2, mixerLayer);
 
-        map.save();
+        initAsyncTask.publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
+    }
+
+    private void downloadTiles(final RemoteTMSLayerUI osmLayer, final InitAsyncTask initAsyncTask, final int nStep, final GeoEnvelope fullBound, GeoEnvelope loadBounds, int zoomFrom, int zoomTo) throws InterruptedException {
+        //download
+        initAsyncTask.publishProgress(getString(R.string.form_tiles_list), nStep, Constants.STEP_STATE_WORK);
+        final List<TileItem> tilesList = new ArrayList<>();
+        for(int zoom = zoomFrom; zoom < zoomTo + 1; zoom++) {
+            tilesList.addAll(osmLayer.getTielsForBounds(fullBound, loadBounds, zoom));
+        }
+        int threadCount = Constants.DOWNLOAD_SEPARATE_THREADS;
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
+                threadCount, threadCount, com.nextgis.maplib.util.Constants.KEEP_ALIVE_TIME,
+                com.nextgis.maplib.util.Constants.KEEP_ALIVE_TIME_UNIT,
+                new LinkedBlockingQueue<Runnable>(), new RejectedExecutionHandler()
+        {
+            @Override
+            public void rejectedExecution(
+                    Runnable r,
+                    ThreadPoolExecutor executor)
+            {
+                try {
+                    executor.getQueue().put(r);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    //throw new RuntimeException("Interrupted while submitting task", e);
+                }
+            }
+        });
+
+        final int[] tileCompleteCount = {0, tilesList.size() / 100};
+        if(tileCompleteCount[1] == 0)
+            tileCompleteCount[1] = 1;
+
+        for (int i = 0; i < tilesList.size(); ++i) {
+            final TileItem tile = tilesList.get(i);
+            threadPool.execute(
+                new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        android.os.Process.setThreadPriority(
+                                com.nextgis.maplib.util.Constants.DEFAULT_DOWNLOAD_THREAD_PRIORITY);
+
+                        osmLayer.downloadTile(tile);
+
+                        synchronized (osmLayer) {
+                            tileCompleteCount[0]++;
+                            if(tileCompleteCount[0] % tileCompleteCount[1] == 0) {
+                                //progress
+                                float complete = tileCompleteCount[0];
+                                int percent = (int) (complete * 100 / tilesList.size());
+                                initAsyncTask.publishProgress(percent + "% " + getString(R.string.downloaded), nStep, Constants.STEP_STATE_WORK);
+                            }
+                        }
+                    }
+                }
+            );
+        }
+        threadPool.shutdown();
+        //wait until downloaded end or 10 minutes
+        threadPool.awaitTermination(600, com.nextgis.maplib.util.Constants.KEEP_ALIVE_TIME_UNIT);
     }
 
     protected boolean checkServerLayers(INGWResource resource, Map<String, Long> keys){
@@ -580,12 +670,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             }
 
             Connection connection = new Connection("tmp", sLogin, sPassword, sURL);
-            mMessage = getString(R.string.connecting);
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.connecting), nStep, Constants.STEP_STATE_WORK);
 
             if(!connection.connect()){
-                mMessage = getString(R.string.error_connect_failed);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_connect_failed), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -596,8 +684,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else{
-                mMessage = getString(R.string.connected);
-                publishProgress(nStep, Constants.STEP_STATE_WORK);
+                publishProgress(getString(R.string.connected), nStep, Constants.STEP_STATE_WORK);
             }
 
             if(isCancelled())
@@ -605,8 +692,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 1: find keys
 
-            mMessage = getString(R.string.check_tables_exist);
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.check_tables_exist), nStep, Constants.STEP_STATE_WORK);
 
             Map<String, Long> keys = new HashMap<>();
             keys.put(Constants.KEY_INSPECTORS, -1L);
@@ -619,8 +705,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             keys.put(Constants.KEY_CADASTRE, -1L);
 
             if(!checkServerLayers(connection, keys)){
-                mMessage = getString(R.string.error_wrong_server);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_wrong_server), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -631,8 +716,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -644,12 +728,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             // name, description, bbox
             nStep = 1;
 
-            mMessage = getString(R.string.working);
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
             if(!getInspectorDetail(connection, keys.get(Constants.KEY_INSPECTORS), sLogin)){
-                mMessage = getString(R.string.error_get_inspector_detail);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_get_inspector_detail), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -660,8 +742,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -671,13 +752,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             nStep = 2;
 
-            mMessage = getString(R.string.working);
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
-
-            createBasicLayers(app.getMap());
-
-            mMessage = getString(R.string.done);
-            publishProgress(nStep, Constants.STEP_STATE_DONE);
+            createBasicLayers(app.getMap(), this, nStep);
 
             if(isCancelled())
                 return false;
@@ -686,13 +761,11 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             nStep = 3;
 
-            mMessage = getString(R.string.working);
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
             if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name,
                     app.getMap())){
-                mMessage = getString(R.string.error_unexpected);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -703,8 +776,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -714,12 +786,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             nStep = 4;
 
-            mMessage = getString(R.string.working);
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
             if (!loadDocuments(keys.get(Constants.KEY_DOCUMENTS), mAccount.name, app.getMap())){
-                mMessage = getString(R.string.error_unexpected);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -730,8 +800,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -741,13 +810,11 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             nStep = 5;
 
-            mMessage = getString(R.string.working);
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
             if (!loadLinkedTables(connection, Constants.KEY_LAYER_SHEET,
                     keys.get(Constants.KEY_SHEET), app.getMap())){
-                mMessage = getString(R.string.error_unexpected);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -756,9 +823,6 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 }
 
                 return false;
-            }
-            else {
-                mMessage = "1 " + getString(R.string.of) + " 4";
             }
 
             if(isCancelled())
@@ -766,12 +830,11 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load productions
 
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress("1 " + getString(R.string.of) + " 4", nStep, Constants.STEP_STATE_WORK);
 
             if (!loadLinkedTables(connection, Constants.KEY_LAYER_PRODUCTION,
                                            keys.get(Constants.KET_PRODUCTION), app.getMap())){
-                mMessage = getString(R.string.error_unexpected);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -780,9 +843,6 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 }
 
                 return false;
-            }
-            else {
-                mMessage = "2 " + getString(R.string.of) + " 4";
             }
 
             if(isCancelled())
@@ -790,12 +850,11 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load territory
 
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress("2 " + getString(R.string.of) + " 4", nStep, Constants.STEP_STATE_WORK);
 
             if (!loadLinkedTables(connection, Constants.KEY_LAYER_TERRITORY,
                                            keys.get(Constants.KEY_TERRITORY), app.getMap())){
-                mMessage = getString(R.string.error_unexpected);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -804,9 +863,6 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 }
 
                 return false;
-            }
-            else {
-                mMessage = "3 " + getString(R.string.of) + " 4";
             }
 
             if(isCancelled())
@@ -814,12 +870,11 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load vehicles
 
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress("3 " + getString(R.string.of) + " 4", nStep, Constants.STEP_STATE_WORK);
 
             if (!loadLinkedTables(connection, Constants.KEY_LAYER_VEHICLES,
                                            keys.get(Constants.KEY_VEHICLES), app.getMap())){
-                mMessage = getString(R.string.error_unexpected);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -830,8 +885,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -841,12 +895,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             nStep = 6;
 
-            mMessage = getString(R.string.working);
-            publishProgress(nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
             if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, app.getMap())){
-                mMessage = getString(R.string.error_unexpected);
-                publishProgress(nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -857,8 +909,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                mMessage = getString(R.string.done);
-                publishProgress(nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
             }
 
             //TODO: load additional tables
@@ -894,6 +945,16 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             }
             refreshActivityView();
         }
-    }
 
+        public final void publishProgress(String message, int step, int state) {
+            mMessage = message;
+            publishProgress(step, state);
+
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

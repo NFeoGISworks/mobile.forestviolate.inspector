@@ -77,4 +77,6 @@ public interface Constants {
     String FIELD_NOTES_DATE_BEG = "date_beg";
     String FIELD_NOTES_DATE_END = "date_end";
     String FIELD_NOTES_DESCRIPTION = "descript";
+
+    int DOWNLOAD_SEPARATE_THREADS = 10;
 }

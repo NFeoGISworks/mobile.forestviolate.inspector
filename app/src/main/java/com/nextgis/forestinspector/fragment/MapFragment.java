@@ -335,6 +335,11 @@ public class MapFragment
     }
 
     @Override
+    public void onBestLocationChanged(Location location) {
+
+    }
+
+    @Override
     public void onGpsStatusChanged(int event) {
 
     }
