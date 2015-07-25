@@ -38,6 +38,7 @@ public interface SettingsConstants
     String KEY_PREF_USERMINY = "user_miny";
     String KEY_PREF_USERMAXX = "user_maxx";
     String KEY_PREF_USERMAXY = "user_maxy";
+    String KEY_PREF_USERPASSID = "user_passid";
 
     /**
      * map preference

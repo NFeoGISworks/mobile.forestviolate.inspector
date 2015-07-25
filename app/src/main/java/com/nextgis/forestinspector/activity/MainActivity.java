@@ -482,6 +482,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             JSONObject fields = jsonDetail.getJSONObject(NGWUtil.NGWKEY_FIELDS);
             String sUserName = fields.getString(Constants.KEY_INSPECTOR_USER);
             String sUserDescription = fields.getString(Constants.KEY_INSPECTOR_USER_DESC);
+            String sUserPassId = fields.getString(Constants.KEY_INSPECTOR_USER_PASS_ID);
 
             // if no exception store data in config
             final SharedPreferences.Editor edit =
@@ -489,6 +490,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             edit.putInt(SettingsConstants.KEY_PREF_USERID, id);
             edit.putString(SettingsConstants.KEY_PREF_USER, sUserName);
             edit.putString(SettingsConstants.KEY_PREF_USERDESC, sUserDescription);
+            edit.putString(SettingsConstants.KEY_PREF_USERPASSID, sUserPassId);
             edit.putFloat(SettingsConstants.KEY_PREF_USERMINX, (float) env.getMinX());
             edit.putFloat(SettingsConstants.KEY_PREF_USERMINY, (float) env.getMinY());
             edit.putFloat(SettingsConstants.KEY_PREF_USERMAXX, (float) env.getMaxX());

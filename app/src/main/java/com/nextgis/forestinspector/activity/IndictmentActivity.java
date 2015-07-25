@@ -44,28 +44,30 @@ public class IndictmentActivity extends FIActivity{
 
         setContentView(R.layout.activity_indictment);
 
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String sUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
+        String sUserPassId = prefs.getString(SettingsConstants.KEY_PREF_USERPASSID, "");
+
         setToolbar(R.id.main_toolbar);
         setTitle(getText(R.string.indictment));
 
         EditText indictmentNumber = (EditText) findViewById(R.id.indictment_num);
-        indictmentNumber.setText(getNewNumber());
+        indictmentNumber.setText(getNewNumber(sUserPassId));
 
         EditText author = (EditText) findViewById(R.id.author);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        author.setText(prefs.getString(SettingsConstants.KEY_PREF_USERDESC, ""));
+        author.setText(sUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
 
         DateTimeControl datetime = (DateTimeControl)findViewById(R.id.create_datetime);
         datetime.setCurrentDate();
 
     }
 
-    protected String getNewNumber(){
+    protected String getNewNumber(String passId){
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH) + 1;
-        int day = c.get(Calendar.DAY_OF_MONTH);
 
-        return day + "/" + month + "-" + year;
+        return passId + "/" + month + "-" + year;
     }
 }

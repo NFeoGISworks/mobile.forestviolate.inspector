@@ -108,4 +108,5 @@
     <string name="people_say">8. Объяснение лиц, участвующих в обнаружении лесонарушения и составлении акта</string>
     <string name="people_say_desc">В случае предоставления объяснений на отдельном листе об этом делается запись</string>
     <string name="downloaded">загружено</string>
+    <string name="passid_is">, удостоверение №</string>
 </resources>

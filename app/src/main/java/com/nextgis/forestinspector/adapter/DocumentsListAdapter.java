@@ -85,14 +85,25 @@ public class DocumentsListAdapter extends BaseAdapter
             VectorLayer vlayer = (VectorLayer)docs;
             //order by datetime(datetimeColumn) ASC LIMIT 100
             Cursor cursor = vlayer.query(new String[] { Constants.FIELD_DOCUMENTS_TYPE,
-                    Constants.FIELD_DOCUMENTS_DATE, Constants.FIELD_DOCUMENTS_NUMBER,
-                    Constants.FIELD_DOCUMENTS_STATUS, Constants.FIELD_DOCUMENTS_VIOLATE},
+                            Constants.FIELD_DOCUMENTS_PARENT_ID, Constants.FIELD_DOCUMENTS_DATE,
+                            Constants.FIELD_DOCUMENTS_NUMBER, Constants.FIELD_DOCUMENTS_STATUS,
+                            Constants.FIELD_DOCUMENTS_VIOLATE},
                     null, null, Constants.FIELD_DOCUMENTS_DATE + " ASC", " 100");
             if (null != cursor) {
+                int nTypePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_TYPE);
+                int nDocIdPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_PARENT_ID);
+                int nDatePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DATE);
+                int nNumberPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_NUMBER);
+                int nStatusPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_STATUS);
+                int nViolatePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_VIOLATE);
                 if(cursor.moveToFirst()) {
                     do {
+                        int nParentDocId = cursor.getInt(nDocIdPos);
+                        if(nParentDocId > 0) //don't show connected documents
+                            continue;
+
                         Document doc = new Document();
-                        doc.mType = cursor.getInt(0);
+                        doc.mType = cursor.getInt(nTypePos);
                         switch (doc.mType) {
                             case Constants.TYPE_DOCUMENT:
                                 doc.mName = mContext.getString(R.string.indictment);
@@ -100,14 +111,17 @@ public class DocumentsListAdapter extends BaseAdapter
                             case Constants.TYPE_SHEET:
                                 doc.mName = mContext.getString(R.string.sheet);
                                 break;
+                            default:
+                                continue;
                         }
+
                         Calendar calendar = Calendar.getInstance();
-                        calendar.setTimeInMillis(cursor.getLong(1));
+                        calendar.setTimeInMillis(cursor.getLong(nDatePos));
                         doc.mDate = calendar.getTime();
 
-                        doc.mName += " " + cursor.getString(2);
-                        doc.mStatus = cursor.getInt(3);
-                        doc.mDesc = cursor.getString(4);
+                        doc.mName += " " + cursor.getString(nNumberPos);
+                        doc.mStatus = cursor.getInt(nStatusPos);
+                        doc.mDesc = cursor.getString(nViolatePos);
 
                         mDocuments.add(doc);
 
