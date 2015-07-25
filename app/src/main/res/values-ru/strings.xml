@@ -110,4 +110,5 @@
     <string name="downloaded">загружено</string>
     <string name="passid_is">, удостоверение №</string>
     <string name="action_notification">Notification</string>
+    <string name="documents_layer">Documents</string>
 </resources>

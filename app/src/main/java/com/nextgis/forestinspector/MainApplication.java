@@ -28,6 +28,7 @@ import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
 import com.nextgis.forestinspector.activity.PreferencesActivity;
+import com.nextgis.forestinspector.map.FILayerFactory;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.SettingsConstants;
@@ -60,7 +61,7 @@ public class MainApplication extends GISApplication {
         File mapFullPath = new File(mapPath, mapName + MAP_EXT);
 
         final Bitmap bkBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
-        mMap = new MapDrawable(bkBitmap, this, mapFullPath, new LayerFactoryUI());
+        mMap = new MapDrawable(bkBitmap, this, mapFullPath, new FILayerFactory());
         mMap.setName(mapName);
         mMap.load();
 

@@ -45,6 +45,7 @@ public class DocumentsFragment extends Fragment {
 
         ListView list = (ListView) rootView.findViewById(R.id.documentsList);
         list.setAdapter(adapter);
+        list.setOnItemClickListener(adapter);
 
         final View addIndictment = rootView.findViewById(R.id.add_indictment);
         if (null != addIndictment) {

@@ -196,8 +196,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         setToolbar(R.id.main_toolbar);
         setTitle(getText(R.string.app_name));
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+        // Create the adapter that will return a fragment for each of the primary sections of the
+        // activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
