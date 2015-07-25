@@ -88,4 +88,9 @@ public interface Constants {
     int DOCUMENT_STATUS_OK = 3;         //the document accepted
     int DOCUMENT_STATUS_WARNING = 4;    //the document denied
     int DOCUMENT_STATUS_DELETED = 5;    //the document deleted
+
+    /**
+     * layer types
+     */
+    int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
 }
