@@ -22,16 +22,21 @@
 package com.nextgis.forestinspector.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.DocumentViewActivity;
+import com.nextgis.forestinspector.activity.NotificationActivity;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.MapEventListener;
@@ -52,24 +57,24 @@ import java.util.List;
  * The main document list
  */
 public class DocumentsListAdapter extends BaseAdapter
-        implements MapEventListener {
+        implements MapEventListener, AdapterView.OnItemClickListener {
 
     protected int mDocsId, mNotesId;
     protected List<Document> mDocuments;
     protected MapBase mMap;
-    protected Context mContext;
+    protected Context mActivity;
 
-    public DocumentsListAdapter(Context context) {
-        mContext = context;
+    public DocumentsListAdapter(FragmentActivity activity) {
+        mActivity = activity;
         mDocuments = new ArrayList<>();
         mMap = MapBase.getInstance();
         mDocsId = mNotesId = -10;
         for(int i = 0; i < mMap.getLayerCount(); i++){
             ILayer layer = mMap.getLayer(i);
-            if(layer.getName().equals(mContext.getString(R.string.title_notes))){
+            if(layer.getName().equals(mActivity.getString(R.string.title_notes))){
                 mDocsId = layer.getId();
             }
-            else if(layer.getName().equals(mContext.getString(R.string.notes))){
+            else if(layer.getName().equals(mActivity.getString(R.string.notes))){
                 mNotesId = layer.getId();
             }
         }
@@ -84,12 +89,13 @@ public class DocumentsListAdapter extends BaseAdapter
         if(docs != null){
             VectorLayer vlayer = (VectorLayer)docs;
             //order by datetime(datetimeColumn) ASC LIMIT 100
-            Cursor cursor = vlayer.query(new String[] { Constants.FIELD_DOCUMENTS_TYPE,
-                            Constants.FIELD_DOCUMENTS_PARENT_ID, Constants.FIELD_DOCUMENTS_DATE,
-                            Constants.FIELD_DOCUMENTS_NUMBER, Constants.FIELD_DOCUMENTS_STATUS,
-                            Constants.FIELD_DOCUMENTS_VIOLATE},
+            Cursor cursor = vlayer.query(new String[] { com.nextgis.maplib.util.Constants.FIELD_ID,
+                            Constants.FIELD_DOCUMENTS_TYPE, Constants.FIELD_DOCUMENTS_PARENT_ID,
+                            Constants.FIELD_DOCUMENTS_DATE, Constants.FIELD_DOCUMENTS_NUMBER,
+                            Constants.FIELD_DOCUMENTS_STATUS, Constants.FIELD_DOCUMENTS_VIOLATE },
                     null, null, Constants.FIELD_DOCUMENTS_DATE + " ASC", " 100");
             if (null != cursor) {
+                int nIdPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
                 int nTypePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_TYPE);
                 int nDocIdPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_PARENT_ID);
                 int nDatePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DATE);
@@ -106,10 +112,10 @@ public class DocumentsListAdapter extends BaseAdapter
                         doc.mType = cursor.getInt(nTypePos);
                         switch (doc.mType) {
                             case Constants.TYPE_DOCUMENT:
-                                doc.mName = mContext.getString(R.string.indictment);
+                                doc.mName = mActivity.getString(R.string.indictment);
                                 break;
                             case Constants.TYPE_SHEET:
-                                doc.mName = mContext.getString(R.string.sheet);
+                                doc.mName = mActivity.getString(R.string.sheet);
                                 break;
                             default:
                                 continue;
@@ -122,6 +128,8 @@ public class DocumentsListAdapter extends BaseAdapter
                         doc.mName += " " + cursor.getString(nNumberPos);
                         doc.mStatus = cursor.getInt(nStatusPos);
                         doc.mDesc = cursor.getString(nViolatePos);
+
+                        doc.mId = cursor.getLong(nIdPos);
 
                         mDocuments.add(doc);
 
@@ -148,7 +156,7 @@ public class DocumentsListAdapter extends BaseAdapter
                         calendar.setTimeInMillis(cursor.getLong(0));
                         doc.mDate = calendar.getTime();
 
-                        doc.mName = mContext.getString(R.string.note);
+                        doc.mName = mActivity.getString(R.string.note);
 
                         doc.mStatus = -1; //note status
                         doc.mDesc = cursor.getString(2);
@@ -187,7 +195,7 @@ public class DocumentsListAdapter extends BaseAdapter
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
         if (null == v) {
-            LayoutInflater inflater = LayoutInflater.from(mContext);
+            LayoutInflater inflater = LayoutInflater.from(mActivity);
             v = inflater.inflate(R.layout.row_document, null);
         }
 
@@ -196,13 +204,17 @@ public class DocumentsListAdapter extends BaseAdapter
         ImageView ivIcon = (ImageView) v.findViewById(R.id.ivIcon);
         switch (item.mType){
             case Constants.TYPE_DOCUMENT:
-                ivIcon.setImageDrawable( mContext.getResources().getDrawable(R.mipmap.ic_indicment));
+                ivIcon.setImageDrawable( mActivity.getResources().getDrawable(R.mipmap.ic_indicment));
                 break;
             case Constants.TYPE_NOTE:
-                ivIcon.setImageDrawable( mContext.getResources().getDrawable(R.mipmap.ic_bookmark));
+                ivIcon.setImageDrawable( mActivity.getResources().getDrawable(R.mipmap.ic_bookmark));
+                break;
+            case Constants.TYPE_SHEET:
+                ivIcon.setImageDrawable( mActivity.getResources().getDrawable(R.mipmap.ic_sheet));
                 break;
         }
 
+        //TODO: state icon
         //ImageView ivStateIcon = (ImageView) v.findViewById(R.id.ivStateIcon);
 
         TextView tvStep = (TextView) v.findViewById(R.id.tvName);
@@ -258,12 +270,31 @@ public class DocumentsListAdapter extends BaseAdapter
 
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Document item = (Document) getItem(position);
+        Intent intent;
+        if(item.mType == Constants.TYPE_NOTE){
+            //show notify activity
+            intent = new Intent(mActivity, NotificationActivity.class);
+            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);
+            mActivity.startActivity(intent);
+        }
+        else{
+            //show documents activity
+            intent = new Intent(mActivity, DocumentViewActivity.class);
+            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);
+            mActivity.startActivity(intent);
+        }
+    }
+
     protected class Document implements Comparable{
-        String mName;
-        String mDesc;
-        Date mDate;
-        int mType;
-        int mStatus;
+        public String mName;
+        public String mDesc;
+        public Date mDate;
+        public int mType;
+        public int mStatus;
+        public long mId;
 
         @Override
         public int compareTo(@NonNull Object another) {

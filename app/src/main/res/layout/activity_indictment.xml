@@ -74,7 +74,7 @@
                 android:text="@string/date_time_create"
                 />
 
-            <com.nextgis.maplibui.controlui.DateTimeControl
+            <com.nextgis.maplibui.control.DateTime
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/create_datetime"

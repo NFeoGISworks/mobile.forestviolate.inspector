@@ -28,8 +28,7 @@ import android.widget.EditText;
 
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.SettingsConstants;
-import com.nextgis.maplibui.activity.NGActivity;
-import com.nextgis.maplibui.controlui.DateTimeControl;
+import com.nextgis.maplibui.control.DateTime;
 
 import java.util.Calendar;
 
@@ -58,7 +57,8 @@ public class IndictmentActivity extends FIActivity{
 
         author.setText(sUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
 
-        DateTimeControl datetime = (DateTimeControl)findViewById(R.id.create_datetime);
+        DateTime datetime = (DateTime)findViewById(R.id.create_datetime);
+        datetime.init(null, null);
         datetime.setCurrentDate();
 
     }

@@ -108,4 +108,5 @@
     <string name="people_say_desc">In the case of an explanation on a separate sheet of this entry is</string>
     <string name="downloaded">downloaded</string>
     <string name="passid_is">, pass id is</string>
+    <string name="action_notification">Notification</string>
 </resources>

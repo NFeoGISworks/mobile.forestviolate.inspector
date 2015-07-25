@@ -99,6 +99,15 @@
             android:label="@string/action_indictment"
             />
 
+        <activity
+            android:name=".activity.DocumentViewActivity"
+            />
+
+        <activity
+            android:name=".activity.NotificationActivity"
+            android:label="@string/action_notification"
+            />
+
         <service
             android:name="com.nextgis.maplib.service.NGWSyncService"
             android:exported="true"
