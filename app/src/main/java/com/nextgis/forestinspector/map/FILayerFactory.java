@@ -57,7 +57,7 @@ public class FILayerFactory extends LayerFactoryUI{
 
             switch (nType) {
                 case Constants.LAYERTYPE_DOCS:
-                    layer = new DocumentsLayer(context, path);
+                    layer = new DocumentsLayer(context, path, this);
                     break;
             }
         } catch (IOException | JSONException e) {

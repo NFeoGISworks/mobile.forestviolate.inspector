@@ -50,9 +50,11 @@ import com.nextgis.forestinspector.adapter.InitStepListAdapter;
 import com.nextgis.forestinspector.fragment.DocumentsFragment;
 import com.nextgis.forestinspector.fragment.LoginFragment;
 import com.nextgis.forestinspector.fragment.MapFragment;
+import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.IGISApplication;
+import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoGeometryFactory;
@@ -64,6 +66,7 @@ import com.nextgis.maplib.datasource.ngw.ResourceGroup;
 import com.nextgis.maplib.display.SimpleFeatureRenderer;
 import com.nextgis.maplib.display.SimplePolygonStyle;
 import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.NGWUtil;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
@@ -428,14 +431,15 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 keys.put(ngwResource.getKey(), ngwResource.getRemoteId());
             }
 
-            if(keys.get(Constants.KEY_INSPECTORS) > 0 &&
-               keys.get(Constants.KEY_DOCUMENTS) > 0 &&
-               keys.get(Constants.KEY_SHEET) > 0 &&
-               keys.get(Constants.KET_PRODUCTION) > 0 &&
-               keys.get(Constants.KEY_NOTES) > 0 &&
-               keys.get(Constants.KEY_TERRITORY) > 0 &&
-               keys.get(Constants.KEY_VEHICLES) > 0 &&
-               keys.get(Constants.KEY_CADASTRE) > 0){
+            boolean bIsFill = true;
+            for (Map.Entry<String, Long> entry : keys.entrySet()) {
+                if(entry.getValue() <= 0){
+                    bIsFill = false;
+                    break;
+                }
+            }
+
+            if(bIsFill){
                 return true;
             }
 
@@ -444,19 +448,16 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             }
         }
 
-        return keys.get(Constants.KEY_INSPECTORS) > 0 &&
-                keys.get(Constants.KEY_DOCUMENTS) > 0 &&
-                keys.get(Constants.KEY_SHEET) > 0 &&
-                keys.get(Constants.KET_PRODUCTION) > 0 &&
-                keys.get(Constants.KEY_NOTES) > 0 &&
-                keys.get(Constants.KEY_TERRITORY) > 0 &&
-                keys.get(Constants.KEY_VEHICLES) > 0 &&
-                keys.get(Constants.KEY_CADASTRE) > 0;
+        boolean bIsFill = true;
 
-    }
+        for (Map.Entry<String, Long> entry : keys.entrySet()) {
+            if(entry.getValue() <= 0){
+                bIsFill = false;
+                break;
+            }
+        }
 
-    protected boolean checkAdditionalServerLayers(INGWResource resource, Map<String, Integer> keys){
-        return false;
+        return bIsFill;
     }
 
     protected boolean getInspectorDetail(Connection connection, long resourceId, String login){
@@ -538,8 +539,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
         float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
 
-        NGWVectorLayerUI ngwVectorLayer =
-                new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_DOCUMENTS));
+        DocumentsLayer ngwVectorLayer =
+                new DocumentsLayer(getApplicationContext(),
+                        map.createLayerStorage(Constants.KEY_LAYER_DOCUMENTS),
+                        map.getLayerFactory());
         ngwVectorLayer.setName(getString(R.string.title_notes));
         ngwVectorLayer.setRemoteId(resourceId);
         ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
@@ -547,7 +550,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setVisible(true);
         //TODO: add layer draw default style and quarter labels
         ngwVectorLayer.setAccountName(accountName);
-        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_ALL);
         ngwVectorLayer.setMinZoom(0);
         ngwVectorLayer.setMaxZoom(100);
         SimplePolygonStyle style = new SimplePolygonStyle(Color.RED);
@@ -559,16 +562,49 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         return ngwVectorLayer.download() == null;
     }
 
-    protected boolean loadLinkedTables(Connection connection, String layerName, long resourceId, MapBase map){
-        //TODO:
+    protected boolean loadLinkedTables(long resourceId, String accountName, String layerName,
+                                       DocumentsLayer docs){
+        if(null == docs)
+            return false;
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
 
-        return true;
+        NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(getApplicationContext(),
+                docs.createLayerStorage(layerName));
+
+        ngwVectorLayer.setName(layerName);
+        ngwVectorLayer.setRemoteId(resourceId);
+        ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
+                minX, minY, maxX, maxY));
+        ngwVectorLayer.setVisible(false);
+        ngwVectorLayer.setAccountName(accountName);
+        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+        ngwVectorLayer.setMinZoom(0);
+        ngwVectorLayer.setMaxZoom(100);
+
+        docs.addLayer(ngwVectorLayer);
+
+        return ngwVectorLayer.download() == null;
+    }
+
+    protected boolean loadLookupTables(long resourceId, String accountName, String layerName,
+                                       DocumentsLayer docs){
+
+        NGWLookupTable ngwTable = new NGWLookupTable(getApplicationContext(),
+                docs.createLayerStorage(layerName));
+
+        ngwTable.setName(layerName);
+        ngwTable.setRemoteId(resourceId);
+        ngwTable.setAccountName(accountName);
+        ngwTable.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+
+        docs.addLayer(ngwTable);
+
+        return ngwTable.download() == null;
     }
 
     protected boolean loadNotes(long resourceId, String accountName, MapBase map){
@@ -700,11 +736,13 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             keys.put(Constants.KEY_INSPECTORS, -1L);
             keys.put(Constants.KEY_DOCUMENTS, -1L);
             keys.put(Constants.KEY_SHEET, -1L);
-            keys.put(Constants.KET_PRODUCTION, -1L);
+            keys.put(Constants.KEY_PRODUCTION, -1L);
             keys.put(Constants.KEY_NOTES, -1L);
             keys.put(Constants.KEY_TERRITORY, -1L);
             keys.put(Constants.KEY_VEHICLES, -1L);
             keys.put(Constants.KEY_CADASTRE, -1L);
+            keys.put(Constants.KEY_VIOLATE_TYPES, -1L);
+            keys.put(Constants.KEY_FOREST_CAT_TYPES, -1L);
 
             if(!checkServerLayers(connection, keys)){
                 publishProgress(getString(R.string.error_wrong_server), nStep, Constants.STEP_STATE_ERROR);
@@ -723,8 +761,6 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             if(isCancelled())
                 return false;
-
-            //TODO: check additional tables
 
             // step 2: get inspector detail
             // name, description, bbox
@@ -753,8 +789,9 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             // step 3: create base layers
 
             nStep = 2;
+            MapBase map = app.getMap();
 
-            createBasicLayers(app.getMap(), this, nStep);
+            createBasicLayers(map, this, nStep);
 
             if(isCancelled())
                 return false;
@@ -790,7 +827,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
-            if (!loadDocuments(keys.get(Constants.KEY_DOCUMENTS), mAccount.name, app.getMap())){
+            if (!loadDocuments(keys.get(Constants.KEY_DOCUMENTS), mAccount.name, map)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
@@ -811,11 +848,21 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             // step 6: load sheets
 
             nStep = 5;
+            int nSubStep = 1;
+            int nTotalSubSteps = 6;
+            DocumentsLayer documentsLayer = null;
+
+            for(int i = 0; i < map.getLayerCount(); i++){
+                ILayer layer = map.getLayer(i);
+                if(layer instanceof DocumentsLayer){
+                    documentsLayer = (DocumentsLayer) layer;
+                }
+            }
 
             publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
-            if (!loadLinkedTables(connection, Constants.KEY_LAYER_SHEET,
-                    keys.get(Constants.KEY_SHEET), app.getMap())){
+            if (!loadLinkedTables(keys.get(Constants.KEY_SHEET), mAccount.name,
+                    Constants.KEY_LAYER_SHEET, documentsLayer)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
@@ -832,10 +879,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load productions
 
-            publishProgress("1 " + getString(R.string.of) + " 4", nStep, Constants.STEP_STATE_WORK);
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+                    Constants.STEP_STATE_WORK);
+            nSubStep++;
 
-            if (!loadLinkedTables(connection, Constants.KEY_LAYER_PRODUCTION,
-                                           keys.get(Constants.KET_PRODUCTION), app.getMap())){
+            if (!loadLinkedTables(keys.get(Constants.KEY_PRODUCTION), mAccount.name,
+                    Constants.KEY_LAYER_PRODUCTION, documentsLayer)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
@@ -852,10 +901,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load territory
 
-            publishProgress("2 " + getString(R.string.of) + " 4", nStep, Constants.STEP_STATE_WORK);
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+                    Constants.STEP_STATE_WORK);
+            nSubStep++;
 
-            if (!loadLinkedTables(connection, Constants.KEY_LAYER_TERRITORY,
-                                           keys.get(Constants.KEY_TERRITORY), app.getMap())){
+            if (!loadLinkedTables(keys.get(Constants.KEY_TERRITORY), mAccount.name,
+                    Constants.KEY_LAYER_TERRITORY, documentsLayer)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
@@ -872,10 +923,51 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load vehicles
 
-            publishProgress("3 " + getString(R.string.of) + " 4", nStep, Constants.STEP_STATE_WORK);
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+                    Constants.STEP_STATE_WORK);
+            nSubStep++;
 
-            if (!loadLinkedTables(connection, Constants.KEY_LAYER_VEHICLES,
-                                           keys.get(Constants.KEY_VEHICLES), app.getMap())){
+            if (!loadLinkedTables(keys.get(Constants.KEY_VEHICLES), mAccount.name,
+                    Constants.KEY_LAYER_VEHICLES, documentsLayer)){
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+
+            if(isCancelled())
+                return false;
+
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+                    Constants.STEP_STATE_WORK);
+            nSubStep++;
+
+            if (!loadLookupTables(keys.get(Constants.KEY_VIOLATE_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_VIOLATE_TYPES, documentsLayer)){
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+
+            if(isCancelled())
+                return false;
+
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+                    Constants.STEP_STATE_WORK);
+
+            if (!loadLookupTables(keys.get(Constants.KEY_FOREST_CAT_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_FOREST_CAT_TYPES, documentsLayer)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {

@@ -31,11 +31,13 @@ public interface Constants {
     String KEY_INSPECTORS = "inspectors";
     String KEY_DOCUMENTS = "docs";
     String KEY_SHEET = "sheet";
-    String KET_PRODUCTION = "production";
+    String KEY_PRODUCTION = "production";
     String KEY_NOTES = "notes";
     String KEY_TERRITORY = "territory";
     String KEY_VEHICLES = "vehicles";
     String KEY_CADASTRE = "cadastre";
+    String KEY_VIOLATE_TYPES = "violation_types";
+    String KEY_FOREST_CAT_TYPES = "forest_cat_types";
 
     String KEY_LAYER_DOCUMENTS = "documents";
     String KEY_LAYER_SHEET = "sheet";
@@ -44,6 +46,8 @@ public interface Constants {
     String KEY_LAYER_TERRITORY = "territory";
     String KEY_LAYER_VEHICLES = "vehicles";
     String KEY_LAYER_CADASTRE = "cadastre";
+    String KEY_LAYER_VIOLATE_TYPES = "violation_types";
+    String KEY_LAYER_FOREST_CAT_TYPES = "forest_cat_types";
 
     /**
      * inspectors keys

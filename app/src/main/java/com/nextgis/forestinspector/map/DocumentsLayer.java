@@ -24,20 +24,77 @@ package com.nextgis.forestinspector.map;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.sqlite.SQLiteException;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.api.INGWLayer;
+import com.nextgis.maplib.map.LayerFactory;
+import com.nextgis.maplib.map.LayerGroup;
+import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.NGWVectorLayer;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+import static com.nextgis.maplib.util.Constants.JSON_LAYERS_KEY;
+import static com.nextgis.maplib.util.Constants.JSON_PATH_KEY;
+import static com.nextgis.maplib.util.Constants.LAYER_PREFIX;
 
 /**
  * documents layer class for specific needs (sync, relationship tables, etc.)
  */
 public class DocumentsLayer extends NGWVectorLayer {
-    public DocumentsLayer(Context context, File path) {
+    protected List<ILayer> mLayers;
+    protected LayerFactory mLayerFactory;
+
+    public DocumentsLayer(Context context, File path,
+                          LayerFactory layerFactory) {
         super(context, path);
 
+        mLayerFactory = layerFactory;
+        mLayers = new ArrayList<>();
+
         mLayerType = Constants.LAYERTYPE_DOCS;
+    }
+
+    @Override
+    public void sync(
+            String authority,
+            SyncResult syncResult)
+    {
+        if (0 != (mSyncType & com.nextgis.maplib.util.Constants.SYNC_NONE) || !mIsInitialized) {
+            return;
+        }
+
+        // sync lookup tables
+        for (ILayer layer : mLayers) {
+            if (layer instanceof NGWLookupTable) {
+                NGWLookupTable ngwLayer = (NGWLookupTable) layer;
+                ngwLayer.sync(authority, syncResult);
+            }
+        }
+
+        // 1. get remote changes
+        if (!getChangesFromServer(authority, syncResult)) {
+            Log.d(Constants.FITAG, "Get remote changes failed");
+            return;
+        }
+
+        // 2. send current changes
+        if (!sendLocalChanges(syncResult)) {
+            Log.d(Constants.FITAG, "Set local changes failed");
+            //return;
+        }
     }
 
     @Override
@@ -58,9 +115,121 @@ public class DocumentsLayer extends NGWVectorLayer {
         // TODO: 25.07.15
         // 1. get docs
         // 2. get other layers
-        // 3. get lookup tables
 
         return false;
         //return super.getChangesFromServer(authority, syncResult);
+    }
+
+    public ILayer getLayerByName(String name)
+    {
+        if (mName.equals(name)) {
+            return this;
+        }
+        for (ILayer layer : mLayers) {
+            if (layer.getName().equals(name)) {
+                return layer;
+            }
+        }
+        return null;
+    }
+
+    public void addLayer(ILayer layer)
+    {
+        if (layer != null) {
+            mLayers.add(layer);
+            layer.setParent(this);
+        }
+    }
+
+    @Override
+    public boolean delete()
+    {
+        for (ILayer layer : mLayers) {
+            layer.setParent(null);
+            layer.delete();
+        }
+
+        return super.delete();
+    }
+
+    @Override
+    public JSONObject toJSON()
+            throws JSONException
+    {
+        JSONObject rootConfig = super.toJSON();
+
+        JSONArray jsonArray = new JSONArray();
+        rootConfig.put(JSON_LAYERS_KEY, jsonArray);
+        for (ILayer layer : mLayers) {
+            JSONObject layerObject = new JSONObject();
+            layerObject.put(JSON_PATH_KEY, layer.getPath().getName());
+            jsonArray.put(layerObject);
+        }
+
+        return rootConfig;
+    }
+
+    public void clearLayers()
+    {
+        for (ILayer layer : mLayers) {
+            if (layer instanceof LayerGroup) {
+                ((LayerGroup) layer).clearLayers();
+            }
+        }
+
+        mLayers.clear();
+    }
+
+
+    @Override
+    public void fromJSON(JSONObject jsonObject)
+            throws JSONException
+    {
+        super.fromJSON(jsonObject);
+
+        clearLayers();
+
+        final JSONArray jsonArray = jsonObject.getJSONArray(JSON_LAYERS_KEY);
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonLayer = jsonArray.getJSONObject(i);
+            String sPath = jsonLayer.getString(JSON_PATH_KEY);
+            File inFile = new File(getPath(), sPath);
+            if (inFile.exists()) {
+                ILayer layer = mLayerFactory.createLayer(mContext, inFile);
+                if (null != layer && layer.load()) {
+                    addLayer(layer);
+                }
+            }
+        }
+    }
+
+    public File createLayerStorage(String layerName)
+    {
+        if(TextUtils.isEmpty(layerName))
+            return createLayerStorage();
+        return new File(mPath, layerName);
+    }
+
+    public File createLayerStorage()
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String layerDir = LAYER_PREFIX + sdf.format(new Date()) + getLayerCount();
+        final Random r = new Random();
+        layerDir += r.nextInt(99);
+        return new File(mPath, layerDir);
+    }
+
+    public int getLayerCount()
+    {
+        return mLayers.size();
+    }
+
+    @Override
+    public boolean save()
+    {
+        for (ILayer layer : mLayers) {
+            layer.save();
+        }
+        return super.save();
     }
 }
