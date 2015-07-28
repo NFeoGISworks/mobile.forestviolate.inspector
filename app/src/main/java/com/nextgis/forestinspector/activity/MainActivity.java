@@ -742,6 +742,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             keys.put(Constants.KEY_VEHICLES, -1L);
             keys.put(Constants.KEY_CADASTRE, -1L);
             keys.put(Constants.KEY_VIOLATE_TYPES, -1L);
+            keys.put(Constants.KEY_SPECIES_TYPES, -1L);
             keys.put(Constants.KEY_FOREST_CAT_TYPES, -1L);
 
             if(!checkServerLayers(connection, keys)){
@@ -849,7 +850,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             nStep = 5;
             int nSubStep = 1;
-            int nTotalSubSteps = 6;
+            int nTotalSubSteps = 7;
             DocumentsLayer documentsLayer = null;
 
             for(int i = 0; i < map.getLayerCount(); i++){
@@ -949,6 +950,26 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             if (!loadLookupTables(keys.get(Constants.KEY_VIOLATE_TYPES), mAccount.name,
                     Constants.KEY_LAYER_VIOLATE_TYPES, documentsLayer)){
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+
+            if(isCancelled())
+                return false;
+
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+                    Constants.STEP_STATE_WORK);
+            nSubStep++;
+
+            if (!loadLookupTables(keys.get(Constants.KEY_SPECIES_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_SPECIES_TYPES, documentsLayer)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {

@@ -38,7 +38,7 @@ public interface Constants {
     String KEY_CADASTRE = "cadastre";
     String KEY_VIOLATE_TYPES = "violation_types";
     String KEY_FOREST_CAT_TYPES = "forest_cat_types";
-    String KEY_SPECIES_TYPES = "species";
+    String KEY_SPECIES_TYPES = "species_types";
 
     String KEY_LAYER_DOCUMENTS = "documents";
     String KEY_LAYER_SHEET = "sheet";
@@ -82,6 +82,17 @@ public interface Constants {
     String FIELD_DOCUMENTS_STATUS = "status";
     String FIELD_DOCUMENTS_VIOLATE = "violate";
     String FIELD_DOCUMENTS_PARENT_ID = "doc_id";
+    String FIELD_DOCUMENTS_AUTHOR = "user";
+    String FIELD_DOCUMENTS_PLACE = "place";
+    String FIELD_DOCUMENTS_VIOLATION_TYPE = "violate";
+    String FIELD_DOCUMENTS_LAW = "law";
+    String FIELD_DOCUMENTS_USER_PICK = "user_pick";
+    String FIELD_DOCUMENTS_DATE_VIOLATE = "date_violate";
+    String FIELD_DOCUMENTS_CRIME = "crime";
+    String FIELD_DOCUMENTS_DESC_DETECTOR = "desc_detector";
+    String FIELD_DOCUMENTS_DESC_CRIME = "desc_crime";
+    String FIELD_DOCUMENTS_DESC_AUTHOR = "desc_author";
+    String FIELD_DOCUMENTS_DESCRIPTION = "descript";
 
     String FIELD_NOTES_DATE_BEG = "date_beg";
     String FIELD_NOTES_DATE_END = "date_end";
@@ -99,4 +110,5 @@ public interface Constants {
      * layer types
      */
     int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
+
 }
