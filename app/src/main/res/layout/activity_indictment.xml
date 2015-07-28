@@ -103,7 +103,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/violation_type"
-                android:entries="@array/violation_type"
                 android:layout_margin="10dp"
                 />
 
@@ -159,8 +158,7 @@
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/forest_cat"
-                android:entries="@array/forest_cat_type"
+                android:id="@+id/forest_cat_type"
                 android:layout_margin="10dp"
                 />
 

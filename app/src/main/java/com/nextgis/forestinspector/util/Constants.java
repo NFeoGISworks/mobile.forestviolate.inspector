@@ -38,6 +38,7 @@ public interface Constants {
     String KEY_CADASTRE = "cadastre";
     String KEY_VIOLATE_TYPES = "violation_types";
     String KEY_FOREST_CAT_TYPES = "forest_cat_types";
+    String KEY_SPECIES_TYPES = "species";
 
     String KEY_LAYER_DOCUMENTS = "documents";
     String KEY_LAYER_SHEET = "sheet";
@@ -48,6 +49,7 @@ public interface Constants {
     String KEY_LAYER_CADASTRE = "cadastre";
     String KEY_LAYER_VIOLATE_TYPES = "violation_types";
     String KEY_LAYER_FOREST_CAT_TYPES = "forest_cat_types";
+    String KEY_LAYER_SPECIES_TYPES = "species_types";
 
     /**
      * inspectors keys

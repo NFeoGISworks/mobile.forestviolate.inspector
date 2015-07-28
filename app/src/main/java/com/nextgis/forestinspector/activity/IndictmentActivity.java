@@ -24,13 +24,23 @@ package com.nextgis.forestinspector.activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplibui.control.DateTime;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Form of indictment
@@ -60,6 +70,52 @@ public class IndictmentActivity extends FIActivity{
         DateTime datetime = (DateTime)findViewById(R.id.create_datetime);
         datetime.init(null, null);
         datetime.setCurrentDate();
+
+        MapBase map = MapBase.getInstance();
+        DocumentsLayer docs = null;
+        for(int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                docs = (DocumentsLayer) layer;
+                break;
+            }
+        }
+
+        if(docs != null) {
+            NGWLookupTable violationTypeTable = (NGWLookupTable) docs.getLayerByName(Constants.KEY_LAYER_VIOLATE_TYPES);
+            if (null != violationTypeTable) {
+                Map<String, String> data = violationTypeTable.getData();
+                List<String> violationTypeArray = new ArrayList<>();
+
+                for (Map.Entry<String, String> entry : data.entrySet()) {
+                    violationTypeArray.add(entry.getKey());
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
+                        violationTypeArray);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                Spinner violationTypeSpinner = (Spinner) findViewById(R.id.violation_type);
+                violationTypeSpinner.setAdapter(adapter);
+            }
+
+            NGWLookupTable forestCatTypeTable = (NGWLookupTable) docs.getLayerByName(Constants.KEY_LAYER_FOREST_CAT_TYPES);
+            if (null != forestCatTypeTable) {
+                Map<String, String> data = forestCatTypeTable.getData();
+                List<String> violationTypeArray = new ArrayList<>();
+
+                for (Map.Entry<String, String> entry : data.entrySet()) {
+                    violationTypeArray.add(entry.getKey());
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
+                        violationTypeArray);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                Spinner forestCatTypeSpinner = (Spinner) findViewById(R.id.forest_cat_type);
+                forestCatTypeSpinner.setAdapter(adapter);
+            }
+        }
 
     }
 

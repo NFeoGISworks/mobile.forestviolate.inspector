@@ -109,6 +109,11 @@
     <string name="people_say_desc">В случае предоставления объяснений на отдельном листе об этом делается запись</string>
     <string name="downloaded">загружено</string>
     <string name="passid_is">, удостоверение №</string>
-    <string name="action_notification">Notification</string>
-    <string name="documents_layer">Documents</string>
+    <string name="action_notification">Заметки</string>
+    <string name="documents_layer">Документы</string>
+    <string name="no_selected_documents">Документ не выбран</string>
+    <string name="indictment_tab_name">Акт о лесонарушении</string>
+    <string name="sheet_tab_name">Ведомость перечета</string>
+    <string name="vehicle_tab_name">Акт об обнаружении орудий заготовки</string>
+    <string name="on">от</string>
 </resources>

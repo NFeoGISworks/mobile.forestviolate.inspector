@@ -37,6 +37,7 @@ import android.widget.TextView;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.DocumentViewActivity;
 import com.nextgis.forestinspector.activity.NotificationActivity;
+import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.MapEventListener;
@@ -71,7 +72,7 @@ public class DocumentsListAdapter extends BaseAdapter
         mDocsId = mNotesId = -10;
         for(int i = 0; i < mMap.getLayerCount(); i++){
             ILayer layer = mMap.getLayer(i);
-            if(layer.getName().equals(mActivity.getString(R.string.title_notes))){
+            if(layer instanceof DocumentsLayer){
                 mDocsId = layer.getId();
             }
             else if(layer.getName().equals(mActivity.getString(R.string.notes))){

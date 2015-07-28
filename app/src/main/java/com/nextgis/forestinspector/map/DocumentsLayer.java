@@ -23,13 +23,16 @@ package com.nextgis.forestinspector.map;
 
 import android.content.Context;
 import android.content.SyncResult;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.INGWLayer;
+import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.map.LayerFactory;
 import com.nextgis.maplib.map.LayerGroup;
 import com.nextgis.maplib.map.NGWLookupTable;
@@ -46,6 +49,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import static com.nextgis.maplib.util.Constants.FIELD_ID;
 import static com.nextgis.maplib.util.Constants.JSON_LAYERS_KEY;
 import static com.nextgis.maplib.util.Constants.JSON_PATH_KEY;
 import static com.nextgis.maplib.util.Constants.LAYER_PREFIX;
@@ -65,6 +69,51 @@ public class DocumentsLayer extends NGWVectorLayer {
         mLayers = new ArrayList<>();
 
         mLayerType = Constants.LAYERTYPE_DOCS;
+    }
+
+    public DocumentFeature getFeature(long featureId){
+        Cursor cur = query(null, FIELD_ID + " = " + featureId, null, null, null);
+        if(null == cur){
+            return null;
+        }
+        cur.moveToFirst();
+
+        DocumentFeature feature = new DocumentFeature(featureId, getFields());
+        feature.fromCursor(cur);
+
+        cur.close();
+
+        //get documents connected with this one
+        cur = query(null, Constants.FIELD_DOCUMENTS_PARENT_ID + " = " + featureId, null, null, null);
+        if(null != cur && cur.moveToFirst()){
+            do {
+                Feature subFeature = new Feature(-1, getFields());
+                subFeature.fromCursor(cur);
+                feature.addSubFeature(getName(), subFeature);
+            }while (cur.moveToNext());
+            cur.close();
+        }
+
+        //get connected layers
+
+        for(int i = 0; i < mLayers.size(); ++i){
+            ILayer layer = mLayers.get(i);
+            if(layer instanceof NGWVectorLayer){
+                NGWVectorLayer subLayer = (NGWVectorLayer) layer;
+                cur = subLayer.query(null, Constants.FIELD_DOCUMENTS_PARENT_ID + " = " + featureId,
+                        null, null, null);
+                if(null != cur && cur.moveToFirst()){
+                    do {
+                        Feature subFeature = new Feature(-1, subLayer.getFields());
+                        subFeature.fromCursor(cur);
+                        feature.addSubFeature(layer.getName(), subFeature);
+                    } while (cur.moveToNext());
+                    cur.close();
+                }
+            }
+        }
+
+        return feature;
     }
 
     @Override

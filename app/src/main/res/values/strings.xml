@@ -110,4 +110,9 @@
     <string name="passid_is">, pass id is</string>
     <string name="action_notification">Notification</string>
     <string name="documents_layer">Documents</string>
+    <string name="no_selected_documents">The document is not selected</string>
+    <string name="indictment_tab_name">Indictment</string>
+    <string name="sheet_tab_name">Sheet</string>
+    <string name="vehicle_tab_name">Vehicle</string>
+    <string name="on">on</string>
 </resources>

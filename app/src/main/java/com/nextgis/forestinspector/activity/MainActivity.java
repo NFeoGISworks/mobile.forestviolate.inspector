@@ -543,7 +543,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 new DocumentsLayer(getApplicationContext(),
                         map.createLayerStorage(Constants.KEY_LAYER_DOCUMENTS),
                         map.getLayerFactory());
-        ngwVectorLayer.setName(getString(R.string.title_notes));
+        ngwVectorLayer.setName(getString(R.string.documents_layer));
         ngwVectorLayer.setRemoteId(resourceId);
         ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
                 minX, minY, maxX, maxY));

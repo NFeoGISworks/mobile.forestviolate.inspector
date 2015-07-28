@@ -27,12 +27,23 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.fragment.DocumentsFragment;
-import com.nextgis.forestinspector.fragment.MapFragment;
+import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
+import com.nextgis.forestinspector.fragment.SheetViewFragment;
+import com.nextgis.forestinspector.fragment.TabFragment;
+import com.nextgis.forestinspector.fragment.VehicleViewFragment;
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.map.MapBase;
 
-import java.util.Locale;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The tabbed view with document contents. The tab list consist of document type.
@@ -45,14 +56,65 @@ public class DocumentViewActivity extends FIActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_document_view);
-        setToolbar(R.id.main_toolbar);
-
         // get document from id
+        MapBase map = MapBase.getInstance();
+        DocumentsLayer docs = null;
+        for(int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                docs = (DocumentsLayer) layer;
+                break;
+            }
+        }
+
+        if(null == docs){
+            setContentView(R.layout.activity_document_noview);
+            setToolbar(R.id.main_toolbar);
+            return;
+        }
+
         Bundle b = getIntent().getExtras();
         long id = b.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+        DocumentFeature feature = docs.getFeature(id);
+        if(null == feature){
+            setContentView(R.layout.activity_document_noview);
+            setToolbar(R.id.main_toolbar);
+            return;
+        }
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        int nType;
+        switch (feature.getFieldValueAsInteger(Constants.FIELD_DOCUMENTS_TYPE)){
+            case Constants.TYPE_DOCUMENT:
+                nType = Constants.TYPE_DOCUMENT;
+                setTitle(getString(R.string.indictment));
+                break;
+            case Constants.TYPE_SHEET:
+                nType = Constants.TYPE_SHEET;
+                setTitle(getString(R.string.sheet));
+                break;
+            case Constants.TYPE_VEHICLE: // no separate document type
+            default:
+                setContentView(R.layout.activity_document_noview);
+                setToolbar(R.id.main_toolbar);
+                return;
+        }
+
+        setContentView(R.layout.activity_document_view);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        String sNum = feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);
+        Date date = (Date) feature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
+        String sDate = DateFormat.getDateInstance().format(date);
+        toolbar.setSubtitle(sNum + " " + getString(R.string.on) + " " + sDate);
+        toolbar.getBackground().setAlpha(getToolbarAlpha());
+        setSupportActionBar(toolbar);
+
+        if (null != getSupportActionBar()) {
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), nType, docs.getName(),
+                feature);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -74,35 +136,50 @@ public class DocumentViewActivity extends FIActivity{
 
     protected class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        protected List<TabFragment> mTabFragmentList;
+
+        public SectionsPagerAdapter(FragmentManager fm, int nType, String docsLayerName, DocumentFeature feature) {
             super(fm);
+
+            mTabFragmentList = new ArrayList<>();
+
+            if(nType == Constants.TYPE_DOCUMENT) {
+                // indictment
+                mTabFragmentList.add(new IndictmentViewFragment(getString(R.string.indictment_tab_name),
+                        feature));
+                // sheet
+                if (feature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0)
+                    mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name),
+                            feature));
+                // vehicle
+                if (feature.getSubFeaturesCount(docsLayerName) > 0)
+                    mTabFragmentList.add(new VehicleViewFragment(getString(R.string.vehicle_tab_name),
+                            feature));
+                // photo table
+                if (feature.getAttachments() != null && feature.getAttachments().size() > 0) {
+                    // TODO: 28.07.15 create photo table
+                }
+            }
+            else if(nType == Constants.TYPE_SHEET){
+                mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name),
+                        feature));
+            }
         }
 
         @Override
         public Fragment getItem(int position) {
-            if(position == 0) {
-                return new DocumentsFragment();
-            }
-            else{
-                return new MapFragment();
-            }
+            return mTabFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return mTabFragmentList.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_notes).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_map).toUpperCase(l);
-            }
-            return null;
+            TabFragment fragment = mTabFragmentList.get(position);
+            return fragment.getName();
         }
     }
 }
