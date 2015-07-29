@@ -21,6 +21,7 @@
 
 package com.nextgis.forestinspector.datasource;
 
+import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.Field;
 
@@ -60,5 +61,50 @@ public class DocumentFeature extends Feature{
             return mSubFeatures.get(layerName).size();
         }
         return 0;
+    }
+
+    public String getTerritoryText(String area, String district, String parcel, String unit){
+        if(mSubFeatures.containsKey(Constants.KEY_LAYER_TERRITORY)){
+            List<Feature> terrFeatures = mSubFeatures.get(Constants.KEY_LAYER_TERRITORY);
+            Map<String, Map<String, String>> data = new HashMap<>();
+            for(Feature feature : terrFeatures){
+                String key = feature.getFieldValueAsString(Constants.FIELD_TERRITORY_DISTRICT) + " " +
+                        area + " " + feature.getFieldValueAsString(Constants.FIELD_TERRITORY_AREA) +
+                        " " + district;
+                String value_u = feature.getFieldValueAsString(Constants.FIELD_TERRITORY_UNIT);
+                String key_u = parcel + " " +
+                        feature.getFieldValueAsString(Constants.FIELD_TERRITORY_PARCEL);
+                if(data.containsKey(key)) {
+                    Map<String, String> data_u = data.get(key);
+                    if(data_u.containsKey(key_u)){
+                        data_u.put(key_u, data_u.get(key_u) + ", " + value_u);
+                    }
+                    else{
+                        data_u.put(key_u, value_u);
+                    }
+                }
+                else {
+                    Map<String, String> data_u = new HashMap<>();
+                    data_u.put(key_u, value_u);
+                    data.put(key, data_u);
+                }
+            }
+
+            String result = "";
+            for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
+                result += entry.getKey() + " ";
+                Map<String, String> data_u = entry.getValue();
+                for(Map.Entry<String, String> entry_u : data_u.entrySet()) {
+                    result += entry_u.getKey() + " " + unit + " " + entry_u.getValue() + ", ";
+                }
+            }
+            if(result.length() > 2)
+                return result.substring(0, result.length() - 2);
+            else
+                return result;
+        }
+        else {
+            return "";
+        }
     }
 }

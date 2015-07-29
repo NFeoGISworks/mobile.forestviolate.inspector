@@ -78,6 +78,9 @@ public class DocumentsListAdapter extends BaseAdapter
             else if(layer.getName().equals(mActivity.getString(R.string.notes))){
                 mNotesId = layer.getId();
             }
+
+            if(mDocsId > -10 && mNotesId > -10)
+                break;
         }
         loadData();
     }
@@ -94,7 +97,7 @@ public class DocumentsListAdapter extends BaseAdapter
                             Constants.FIELD_DOCUMENTS_TYPE, Constants.FIELD_DOCUMENTS_PARENT_ID,
                             Constants.FIELD_DOCUMENTS_DATE, Constants.FIELD_DOCUMENTS_NUMBER,
                             Constants.FIELD_DOCUMENTS_STATUS, Constants.FIELD_DOCUMENTS_VIOLATE },
-                    null, null, Constants.FIELD_DOCUMENTS_DATE + " ASC", " 100");
+                    null, null, Constants.FIELD_DOCUMENTS_DATE + " ASC", " " + Constants.MAX_DOCUMENTS);
             if (null != cursor) {
                 int nIdPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
                 int nTypePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_TYPE);

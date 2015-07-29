@@ -71,9 +71,10 @@ public class IndictmentViewFragment extends TabFragment {
         TextView codNum = (TextView)view.findViewById(R.id.code_num);
         codNum.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_LAW));
 
-        /* TODO: TextView territory = (TextView)view.findViewById(R.id.territory);
-        territory.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_LAW));
-        */
+        TextView territory = (TextView)view.findViewById(R.id.territory);
+        territory.setText(mFeature.getTerritoryText(getString(R.string.forestry),
+                getString(R.string.district_forestry), getString(R.string.parcel),
+                getString(R.string.unit)));
 
         TextView forestCatType = (TextView)view.findViewById(R.id.forest_cat_type);
         forestCatType.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_VIOLATE));

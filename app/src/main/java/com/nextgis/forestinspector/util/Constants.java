@@ -27,6 +27,7 @@ package com.nextgis.forestinspector.util;
 public interface Constants {
 
     String FITAG = "forest inspector";
+    int MAX_DOCUMENTS = 100;
 
     String KEY_INSPECTORS = "inspectors";
     String KEY_DOCUMENTS = "docs";
@@ -76,6 +77,9 @@ public interface Constants {
     int STEP_STATE_DONE = 2;
     int STEP_STATE_ERROR = 3;
 
+    /**
+     * documents fields
+     */
     String FIELD_DOCUMENTS_TYPE = "type";
     String FIELD_DOCUMENTS_DATE = "date";
     String FIELD_DOCUMENTS_NUMBER = "number";
@@ -94,9 +98,20 @@ public interface Constants {
     String FIELD_DOCUMENTS_DESC_AUTHOR = "desc_author";
     String FIELD_DOCUMENTS_DESCRIPTION = "descript";
 
+    /**
+     * notes fields
+     */
     String FIELD_NOTES_DATE_BEG = "date_beg";
     String FIELD_NOTES_DATE_END = "date_end";
     String FIELD_NOTES_DESCRIPTION = "descript";
+
+    /**
+     * territory fields
+     */
+    String FIELD_TERRITORY_AREA = "forestarea";
+    String FIELD_TERRITORY_DISTRICT = "forestdist";
+    String FIELD_TERRITORY_PARCEL = "parcel";
+    String FIELD_TERRITORY_UNIT = "unit";
 
     int DOWNLOAD_SEPARATE_THREADS = 10;
 

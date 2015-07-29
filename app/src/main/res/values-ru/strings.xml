@@ -116,4 +116,8 @@
     <string name="sheet_tab_name">Ведомость перечета</string>
     <string name="vehicle_tab_name">Акт об обнаружении орудий заготовки</string>
     <string name="on">от</string>
+    <string name="forestry">лесничество</string>
+    <string name="district_forestry">участковое лесничество</string>
+    <string name="parcel">квартал</string>
+    <string name="unit">выдел(а)</string>
 </resources>
