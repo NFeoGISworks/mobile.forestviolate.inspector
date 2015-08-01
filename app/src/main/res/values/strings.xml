@@ -119,4 +119,12 @@
     <string name="district_forestry">district forestry</string>
     <string name="parcel">parcel</string>
     <string name="unit">unit(s)</string>
+    <string name="possible_crime_desc">At the site of illegal logging are found individuals allegedly engaged in illegal logging</string>
+    <string name="officer_desc">Guns illegal logging handed enforcement officers</string>
+    <string name="inspector_desc">Inspector</string>
+    <string name="civil_desc">Those present</string>
+    <string name="number">#</string>
+    <string name="found_logging">Found illegal logging</string>
+    <string name="vehicles_found">At the site (near the site) found committing illegal logging following tools, mechanisms and objects timber</string>
+    <string name="owner_details">owner details</string>
 </resources>

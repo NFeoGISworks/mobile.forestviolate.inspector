@@ -22,6 +22,11 @@
 package com.nextgis.forestinspector.fragment;
 
 import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
@@ -30,11 +35,23 @@ import com.nextgis.forestinspector.datasource.DocumentFeature;
  * Created by bishop on 28.07.15.
  */
 public class SheetViewFragment extends TabFragment {
+
+    protected DocumentFeature mFeature;
+
     public SheetViewFragment() {
     }
 
     @SuppressLint("ValidFragment")
     public SheetViewFragment(String name, DocumentFeature feature) {
         super(name);
+
+        mFeature = feature;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_sheet, container, false);
+        return view;
     }
 }

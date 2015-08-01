@@ -55,52 +55,53 @@ public class IndictmentViewFragment extends TabFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_indictment, container, false);
 
+        if(null != mFeature) {
+            TextView author = (TextView) view.findViewById(R.id.author);
+            author.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER));
 
-        TextView author = (TextView)view.findViewById(R.id.author);
-        author.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_AUTHOR));
+            TextView createDateTime = (TextView) view.findViewById(R.id.create_datetime);
+            createDateTime.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE));
 
-        TextView createDateTime = (TextView)view.findViewById(R.id.create_datetime);
-        createDateTime.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE));
+            TextView place = (TextView) view.findViewById(R.id.place);
+            place.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_PLACE));
 
-        TextView place = (TextView)view.findViewById(R.id.place);
-        place.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_PLACE));
+            TextView violationType = (TextView) view.findViewById(R.id.violation_type);
+            violationType.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE));
 
-        TextView violationType = (TextView)view.findViewById(R.id.violation_type);
-        violationType.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE));
+            TextView codNum = (TextView) view.findViewById(R.id.code_num);
+            codNum.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_LAW));
 
-        TextView codNum = (TextView)view.findViewById(R.id.code_num);
-        codNum.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_LAW));
+            TextView territory = (TextView) view.findViewById(R.id.territory);
+            territory.setText(mFeature.getTerritoryText(getString(R.string.forestry),
+                    getString(R.string.district_forestry), getString(R.string.parcel),
+                    getString(R.string.unit)));
 
-        TextView territory = (TextView)view.findViewById(R.id.territory);
-        territory.setText(mFeature.getTerritoryText(getString(R.string.forestry),
-                getString(R.string.district_forestry), getString(R.string.parcel),
-                getString(R.string.unit)));
+            TextView forestCatType = (TextView) view.findViewById(R.id.forest_cat_type);
+            forestCatType.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_VIOLATE));
 
-        TextView forestCatType = (TextView)view.findViewById(R.id.forest_cat_type);
-        forestCatType.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_VIOLATE));
+            TextView who = (TextView) view.findViewById(R.id.who);
+            who.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_PICK));
 
-        TextView who = (TextView)view.findViewById(R.id.who);
-        who.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_PICK));
+            TextView when = (TextView) view.findViewById(R.id.when);
+            when.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
 
-        TextView when = (TextView)view.findViewById(R.id.when);
-        when.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
+            TextView crime = (TextView) view.findViewById(R.id.crime);
+            crime.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_CRIME));
 
-        TextView crime = (TextView)view.findViewById(R.id.crime);
-        crime.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_CRIME));
+            TextView peopleInfo = (TextView) view.findViewById(R.id.people_info);
+            peopleInfo.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
 
-        TextView peopleInfo = (TextView)view.findViewById(R.id.people_info);
-        peopleInfo.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
+            TextView crimeSay = (TextView) view.findViewById(R.id.crime_say);
+            crimeSay.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_CRIME));
 
-        TextView crimeSay = (TextView)view.findViewById(R.id.crime_say);
-        crimeSay.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_CRIME));
+            TextView peopleSay = (TextView) view.findViewById(R.id.people_say);
+            peopleSay.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
 
-        TextView peopleSay = (TextView)view.findViewById(R.id.people_say);
-        peopleSay.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
+            TextView description = (TextView) view.findViewById(R.id.description);
+            description.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESCRIPTION));
 
-        TextView description = (TextView)view.findViewById(R.id.description);
-        description.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESCRIPTION));
-
-        // TODO: 28.07.15 Signature
+            // TODO: 28.07.15 Signature
+        }
 
         return view;
     }

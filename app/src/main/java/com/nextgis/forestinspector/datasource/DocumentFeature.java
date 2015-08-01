@@ -63,6 +63,10 @@ public class DocumentFeature extends Feature{
         return 0;
     }
 
+    public List<Feature> getSubFeatures(String layerName){
+        return mSubFeatures.get(layerName);
+    }
+
     public String getTerritoryText(String area, String district, String parcel, String unit){
         if(mSubFeatures.containsKey(Constants.KEY_LAYER_TERRITORY)){
             List<Feature> terrFeatures = mSubFeatures.get(Constants.KEY_LAYER_TERRITORY);

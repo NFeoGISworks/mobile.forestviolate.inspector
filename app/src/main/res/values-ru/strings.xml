@@ -120,4 +120,12 @@
     <string name="district_forestry">участковое лесничество</string>
     <string name="parcel">квартал</string>
     <string name="unit">выдел(а)</string>
+    <string name="possible_crime_desc">На месте незаконной рубки обнаружены лица, предположительно осуществляющие незаконную заготовку древесины</string>
+    <string name="officer_desc">Орудия незаконной рубки переданы сотруднику ОВД</string>
+    <string name="inspector_desc">Лесной инспектор</string>
+    <string name="civil_desc">Присутствующие</string>
+    <string name="number">№</string>
+    <string name="found_logging">Обнаружена незаконная рубка леса</string>
+    <string name="vehicles_found">На месте (рядом с местом) совершения незаконной рубки обнаружены следующие орудия, механизмы и предметы заготовки древесины</string>
+    <string name="owner_details">сведения о собственнике</string>
 </resources>

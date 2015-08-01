@@ -86,11 +86,13 @@ public interface Constants {
     String FIELD_DOCUMENTS_STATUS = "status";
     String FIELD_DOCUMENTS_VIOLATE = "violate";
     String FIELD_DOCUMENTS_PARENT_ID = "doc_id";
-    String FIELD_DOCUMENTS_AUTHOR = "user";
+    String FIELD_DOCUMENTS_AUTHOR = "author";
+    String FIELD_DOCUMENTS_USER = "user";
     String FIELD_DOCUMENTS_PLACE = "place";
     String FIELD_DOCUMENTS_VIOLATION_TYPE = "violate";
     String FIELD_DOCUMENTS_LAW = "law";
     String FIELD_DOCUMENTS_USER_PICK = "user_pick";
+    String FIELD_DOCUMENTS_USER_TRANS = "user_trans";
     String FIELD_DOCUMENTS_DATE_VIOLATE = "date_violate";
     String FIELD_DOCUMENTS_CRIME = "crime";
     String FIELD_DOCUMENTS_DESC_DETECTOR = "desc_detector";
@@ -112,6 +114,14 @@ public interface Constants {
     String FIELD_TERRITORY_DISTRICT = "forestdist";
     String FIELD_TERRITORY_PARCEL = "parcel";
     String FIELD_TERRITORY_UNIT = "unit";
+
+    /**
+     * vehicle fields
+     */
+    String FIELD_VEHICLE_NAME = "name";
+    String FIELD_VEHICLE_DESCRIPTION = "descript";
+    String FIELD_VEHICLE_ENGINE_NUM = "engine_num";
+    String FIELD_VEHICLE_USER = "user";
 
     int DOWNLOAD_SEPARATE_THREADS = 10;
 
