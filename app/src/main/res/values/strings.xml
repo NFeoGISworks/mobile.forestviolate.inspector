@@ -127,4 +127,8 @@
     <string name="found_logging">Found illegal logging</string>
     <string name="vehicles_found">At the site (near the site) found committing illegal logging following tools, mechanisms and objects timber</string>
     <string name="owner_details">owner details</string>
+    <string name="species">Species</string>
+    <string name="thickness">Thickness</string>
+    <string name="count">Count</string>
+    <string name="category">Category</string>
 </resources>

@@ -128,4 +128,8 @@
     <string name="found_logging">Обнаружена незаконная рубка леса</string>
     <string name="vehicles_found">На месте (рядом с местом) совершения незаконной рубки обнаружены следующие орудия, механизмы и предметы заготовки древесины</string>
     <string name="owner_details">сведения о собственнике</string>
+    <string name="species">Порода</string>
+    <string name="thickness">Толщина</string>
+    <string name="count">Кол-во</string>
+    <string name="category">Категория хлыстов</string>
 </resources>

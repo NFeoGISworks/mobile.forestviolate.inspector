@@ -123,6 +123,14 @@ public interface Constants {
     String FIELD_VEHICLE_ENGINE_NUM = "engine_num";
     String FIELD_VEHICLE_USER = "user";
 
+    /**
+     * sheet fields
+     */
+    String FIELD_SHEET_SPECIES = "poroda";
+    String FIELD_SHEET_THICKNESS = "diameter";
+    String FIELD_SHEET_COUNT = "count";
+    String FIELD_SHEET_CATEGORY = "additions";
+
     int DOWNLOAD_SEPARATE_THREADS = 10;
 
     int DOCUMENT_STATUS_SEND = 1;       //the document send but some connected tables - no

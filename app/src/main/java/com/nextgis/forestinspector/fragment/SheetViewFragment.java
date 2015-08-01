@@ -27,9 +27,16 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.adapter.InitStepListAdapter;
+import com.nextgis.forestinspector.adapter.SheetViewListAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.datasource.Feature;
+
+import java.util.List;
 
 /**
  * Created by bishop on 28.07.15.
@@ -52,6 +59,12 @@ public class SheetViewFragment extends TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_sheet, container, false);
+
+        List<Feature> features = mFeature.getSubFeatures(Constants.KEY_LAYER_SHEET);
+        SheetViewListAdapter adapter = new SheetViewListAdapter(getActivity(), features);
+        ListView list = (ListView) view.findViewById(R.id.treeList);
+        list.setAdapter(adapter);
+
         return view;
     }
 }
