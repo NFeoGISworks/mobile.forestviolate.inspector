@@ -262,24 +262,31 @@ public class MapFragment
         Log.d(Constants.TAG, "KEY_PREF_SHOW_ZOOM_CONTROLS: " + (showControls ? "ON" : "OFF"));
 
         if (null != mMap) {
-            float mMapZoom;
-            try {
-                mMapZoom = prefs.getFloat(SettingsConstants.KEY_PREF_ZOOM_LEVEL, mMap.getMinZoom());
-            } catch (ClassCastException e) {
-                mMapZoom = mMap.getMinZoom();
+            if(prefs.getBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, true)){
+                //zoom to inspector extent
+                final SharedPreferences.Editor edit = prefs.edit();
+                edit.putBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, false);
+                edit.commit();
             }
+            else {
+                float mMapZoom;
+                try {
+                    mMapZoom = prefs.getFloat(SettingsConstants.KEY_PREF_ZOOM_LEVEL, mMap.getMinZoom());
+                } catch (ClassCastException e) {
+                    mMapZoom = mMap.getMinZoom();
+                }
 
-            double mMapScrollX;
-            double mMapScrollY;
-            try {
-                mMapScrollX = Double.longBitsToDouble(prefs.getLong(SettingsConstants.KEY_PREF_SCROLL_X, 0));
-                mMapScrollY = Double.longBitsToDouble(prefs.getLong(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
-            } catch (ClassCastException e) {
-                mMapScrollX = 0;
-                mMapScrollY = 0;
+                double mMapScrollX;
+                double mMapScrollY;
+                try {
+                    mMapScrollX = Double.longBitsToDouble(prefs.getLong(SettingsConstants.KEY_PREF_SCROLL_X, 0));
+                    mMapScrollY = Double.longBitsToDouble(prefs.getLong(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
+                } catch (ClassCastException e) {
+                    mMapScrollX = 0;
+                    mMapScrollY = 0;
+                }
+                mMap.setZoomAndCenter(mMapZoom, new GeoPoint(mMapScrollX, mMapScrollY));
             }
-            mMap.setZoomAndCenter(mMapZoom, new GeoPoint(mMapScrollX, mMapScrollY));
-
             mMap.addListener(this);
         }
 

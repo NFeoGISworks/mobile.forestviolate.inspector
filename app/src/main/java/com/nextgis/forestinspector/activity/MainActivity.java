@@ -66,10 +66,12 @@ import com.nextgis.maplib.datasource.ngw.ResourceGroup;
 import com.nextgis.maplib.display.SimpleFeatureRenderer;
 import com.nextgis.maplib.display.SimplePolygonStyle;
 import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.NGWUtil;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
+import com.nextgis.maplibui.mapui.MapView;
 import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
 import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
@@ -304,12 +306,14 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
         map.addLayer(osmLayer);
         //mMap.moveLayer(0, osmLayer);
+        GeoEnvelope extent = new GeoEnvelope(minX, maxX, minY, maxY);
 
-        try {
-            downloadTiles(osmLayer, initAsyncTask, nStep, map.getFullBounds(),
-                    new GeoEnvelope(minX, maxX, minY, maxY), 12, 15);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(extent.isInit()) {
+            try {
+                downloadTiles(osmLayer, initAsyncTask, nStep, map.getFullBounds(), extent, 12, 15);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         String kosmosnimkiLayerName = getString(R.string.topo);
@@ -326,12 +330,13 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         map.addLayer(ksLayer);
         //mMap.moveLayer(1, ksLayer);
 
-        //download
-        try {
-            downloadTiles(ksLayer, initAsyncTask, nStep, map.getFullBounds(),
-                    new GeoEnvelope(minX, maxX, minY, maxY), 0, 12);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(extent.isInit()) {
+            //download
+            try {
+                downloadTiles(ksLayer, initAsyncTask, nStep, map.getFullBounds(), extent, 0, 12);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         String mixerLayerName = getString(R.string.geomixer_fv_tiles);
@@ -347,6 +352,15 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
         map.addLayer(mixerLayer);
         //mMap.moveLayer(2, mixerLayer);
+
+        //set extent
+        if(map instanceof MapDrawable && extent.isInit()) {
+            MapDrawable mapDrawable = (MapDrawable) map;
+            double size = GeoConstants.MERCATOR_MAX * 2;
+            double scale = Math.min(extent.width() / size, extent.height() / size);
+            double zoom = MapView.lg(1 / scale);
+            mapDrawable.setZoomAndCenter((float) zoom, extent.getCenter());
+        }
 
         initAsyncTask.publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
     }
@@ -803,8 +817,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
-            if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name,
-                    app.getMap())){
+            if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name, map)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
@@ -1012,7 +1025,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
-            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, app.getMap())){
+            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, map)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
@@ -1029,7 +1042,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             //TODO: load additional tables
 
-            app.getMap().save();
+            map.save();
 
             return true;
         }

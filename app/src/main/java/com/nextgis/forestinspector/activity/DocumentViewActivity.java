@@ -32,6 +32,8 @@ import android.support.v7.widget.Toolbar;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
+import com.nextgis.forestinspector.fragment.MapFragment;
+import com.nextgis.forestinspector.fragment.MapViewFragment;
 import com.nextgis.forestinspector.fragment.SheetViewFragment;
 import com.nextgis.forestinspector.fragment.TabFragment;
 import com.nextgis.forestinspector.fragment.VehicleViewFragment;
@@ -152,7 +154,7 @@ public class DocumentViewActivity extends FIActivity{
                     mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name),
                             feature));
                 // vehicle
-                if (feature.getSubFeaturesCount(docsLayerName) > 0)
+                if (feature.getSubFeaturesCount(Constants.KEY_LAYER_DOCUMENTS) > 0)
                     mTabFragmentList.add(new VehicleViewFragment(getString(R.string.vehicle_tab_name),
                             feature));
                 // photo table
@@ -164,6 +166,8 @@ public class DocumentViewActivity extends FIActivity{
                 mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name),
                         feature));
             }
+
+            mTabFragmentList.add(new MapViewFragment(getString(R.string.title_map), feature));
         }
 
         @Override

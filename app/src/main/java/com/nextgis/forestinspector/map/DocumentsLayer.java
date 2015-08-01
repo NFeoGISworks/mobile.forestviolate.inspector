@@ -86,12 +86,18 @@ public class DocumentsLayer extends NGWVectorLayer {
         //get documents connected with this one
         cur = query(null, Constants.FIELD_DOCUMENTS_PARENT_ID + " = " + featureId, null, null, null);
         if(null != cur && cur.moveToFirst()){
+            int idPos = cur.getColumnIndex(FIELD_ID);
+            List<Long> ids = new ArrayList<>();
             do {
-                Feature subFeature = new Feature(-1, getFields());
-                subFeature.fromCursor(cur);
-                feature.addSubFeature(getName(), subFeature);
+                ids.add(cur.getLong(idPos));
             }while (cur.moveToNext());
             cur.close();
+
+            for(Long id : ids) {
+                DocumentFeature subDocFeature = getFeature(id);
+                if (null != subDocFeature)
+                    feature.addSubFeature(Constants.KEY_LAYER_DOCUMENTS, subDocFeature);
+            }
         }
 
         //get connected layers
