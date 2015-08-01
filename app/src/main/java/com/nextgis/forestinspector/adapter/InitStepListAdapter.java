@@ -53,7 +53,7 @@ public class InitStepListAdapter extends BaseAdapter {
         mSteps.add(step1);
 
         // 2. get inspector detail
-        InitStep step2 = new InitStep(context.getString(R.string.get_inspector_detailes),
+        InitStep step2 = new InitStep(context.getString(R.string.get_inspector_details),
                 context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step2);
 

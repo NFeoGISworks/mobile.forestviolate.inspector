@@ -228,7 +228,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         if(!mFirsRun)
-            getMenuInflater().inflate(R.menu.menu_main, menu);
+            getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 

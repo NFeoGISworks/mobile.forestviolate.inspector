@@ -98,7 +98,6 @@
                 android:text="@string/violation_type"
             />
 
-
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -127,28 +126,11 @@
                 android:text="@string/territory"
                 />
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <TextView style="@style/CoordinatesPicker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                >
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/territory"/>
-
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/mapListButton"
-                    android:background="@drawable/ic_action_pickplace_light"/>
-
-
-            </LinearLayout>
-
-            <!-- TODO string with territory non editable-->
-            <!-- add full geometry here -->
+                android:hint="@string/click_to_set_value"
+                android:id="@+id/territory"/>
 
             <!-- forest category -->
             <TextView  style="@style/description_text"
@@ -241,7 +223,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/people_info"/>
+                android:id="@+id/detector_say"/>
 
             <!-- 9. crime say -->
             <TextView style="@style/paragraph_text"
@@ -269,7 +251,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/people_say"/>
+                android:id="@+id/author_say"/>
 
             <!-- description -->
             <TextView style="@style/paragraph_text"

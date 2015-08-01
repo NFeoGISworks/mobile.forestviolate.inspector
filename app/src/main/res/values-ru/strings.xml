@@ -41,7 +41,7 @@
     <string name="initialization">Первоначальная установка</string>
     <string name="create_base_layers">Создание базовых слоев карты</string>
     <string name="check_server">Проверка сервера</string>
-    <string name="get_inspector_detailes">Получение подробностей аккаунта</string>
+    <string name="get_inspector_details">Получение подробностей аккаунта</string>
     <string name="get_forest_cadastre">Получение лесоделения</string>
     <string name="load_documents">Загрузка документов</string>
     <string name="load_linked_layers">Загрузка связанных слоев</string>
@@ -114,7 +114,7 @@
     <string name="no_selected_documents">Документ не выбран</string>
     <string name="indictment_tab_name">Акт о лесонарушении</string>
     <string name="sheet_tab_name">Ведомость перечета</string>
-    <string name="vehicle_tab_name">Акт об обнаружении орудий заготовки</string>
+    <string name="vehicle_tab_name">Акт об обнаруж. орудий заготовки</string>
     <string name="on">от</string>
     <string name="forestry">лесничество</string>
     <string name="district_forestry">участковое лесничество</string>
@@ -132,4 +132,10 @@
     <string name="thickness">Толщина</string>
     <string name="count">Кол-во</string>
     <string name="category">Категория хлыстов</string>
+    <string name="click_to_set_value">Щелкните что бы установить значение</string>
+    <string name="error_number_mast_be_set">Не введен номер акта</string>
+    <string name="error_author_mast_be_set">Не введен автор</string>
+    <string name="set_territory">Ввод территории лесонарушения</string>
+    <string name="error_territory_mast_be_set">Должна быть указана территория лесонарушения</string>
+    <string name="fix">Fix</string>
 </resources>

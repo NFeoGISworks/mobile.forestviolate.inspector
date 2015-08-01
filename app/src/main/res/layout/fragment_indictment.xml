@@ -158,7 +158,7 @@
             />
 
         <TextView style="@style/normal_text"
-            android:id="@+id/people_info"
+            android:id="@+id/detector_say"
             />
 
         <!-- 9. crime say -->
@@ -184,7 +184,7 @@
             />
 
         <TextView style="@style/normal_text"
-            android:id="@+id/people_say"/>
+            android:id="@+id/author_say"/>
 
         <!-- description -->
         <TextView style="@style/paragraph_text"

@@ -84,7 +84,6 @@ public interface Constants {
     String FIELD_DOCUMENTS_DATE = "date";
     String FIELD_DOCUMENTS_NUMBER = "number";
     String FIELD_DOCUMENTS_STATUS = "status";
-    String FIELD_DOCUMENTS_VIOLATE = "violate";
     String FIELD_DOCUMENTS_PARENT_ID = "doc_id";
     String FIELD_DOCUMENTS_AUTHOR = "author";
     String FIELD_DOCUMENTS_USER = "user";
@@ -99,6 +98,7 @@ public interface Constants {
     String FIELD_DOCUMENTS_DESC_CRIME = "desc_crime";
     String FIELD_DOCUMENTS_DESC_AUTHOR = "desc_author";
     String FIELD_DOCUMENTS_DESCRIPTION = "descript";
+    String FIELD_DOCUMENTS_FOREST_CAT_TYPE = "forest_cat";
 
     /**
      * notes fields

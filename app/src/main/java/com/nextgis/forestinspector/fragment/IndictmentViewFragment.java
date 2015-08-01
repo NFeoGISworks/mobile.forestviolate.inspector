@@ -77,7 +77,7 @@ public class IndictmentViewFragment extends TabFragment {
                     getString(R.string.unit)));
 
             TextView forestCatType = (TextView) view.findViewById(R.id.forest_cat_type);
-            forestCatType.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_VIOLATE));
+            forestCatType.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE));
 
             TextView who = (TextView) view.findViewById(R.id.who);
             who.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_PICK));
@@ -88,13 +88,13 @@ public class IndictmentViewFragment extends TabFragment {
             TextView crime = (TextView) view.findViewById(R.id.crime);
             crime.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_CRIME));
 
-            TextView peopleInfo = (TextView) view.findViewById(R.id.people_info);
+            TextView peopleInfo = (TextView) view.findViewById(R.id.detector_say);
             peopleInfo.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
 
             TextView crimeSay = (TextView) view.findViewById(R.id.crime_say);
             crimeSay.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_CRIME));
 
-            TextView peopleSay = (TextView) view.findViewById(R.id.people_say);
+            TextView peopleSay = (TextView) view.findViewById(R.id.author_say);
             peopleSay.setText(mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
 
             TextView description = (TextView) view.findViewById(R.id.description);
