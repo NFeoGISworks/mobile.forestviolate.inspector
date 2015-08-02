@@ -221,6 +221,41 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 tabLayout.addTab(tabLayout.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)));
             }
         }
+
+        final View addIndictment = findViewById(R.id.add_indictment);
+        if (null != addIndictment) {
+            addIndictment.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            addIndictment();
+                        }
+                    });
+        }
+
+        final View addSheet = findViewById(R.id.add_sheet);
+        if (null != addSheet) {
+            addSheet.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            addSheet();
+                        }
+                    });
+        }
+
+        final View addBookmark = findViewById(R.id.add_bookmark);
+        if (null != addBookmark) {
+            addBookmark.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            addBookmark();
+                        }
+                    });
+        }
     }
 
 

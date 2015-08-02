@@ -20,65 +20,47 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:fab="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-    >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:fab="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              tools:context=".MainActivity">
+
+    <include
+        layout="@layout/actionbar"/>
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:background="?attr/colorPrimary"
+        android:gravity="bottom"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="?attr/tabTextColor"
+        app:tabTextColor="?attr/tabSecondaryTextColor"
+        app:tabIndicatorHeight="4dp"
+        app:tabIndicatorColor="?attr/colorAccent"
+        android:elevation="2dp"/>
 
     <RelativeLayout
-        android:id="@+id/maprl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/fl_status_panel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:minHeight="16dp"
-            />
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_zoom_in"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_centerVertical="true"
-            fab:fab_size="mini"
-            fab:fab_addButtonColorNormal="?attr/colorPrimary"
-            fab:fab_addButtonColorPressed="?attr/colorAccent"
-            fab:fab_addButtonPlusIconColor="@android:color/white"
-            fab:fab_icon="@mipmap/ic_plus"
-            />
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_zoom_out"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_below="@+id/action_zoom_in"
-            fab:fab_size="mini"
-            fab:fab_addButtonColorNormal="?attr/colorPrimary"
-            fab:fab_addButtonColorPressed="?attr/colorAccent"
-            fab:fab_addButtonPlusIconColor="@android:color/white"
-            fab:fab_icon="@mipmap/ic_minus"
-            />
+        <android.support.v4.view.ViewPager
+                                       android:id="@+id/pager"
+                                       android:layout_width="match_parent"
+                                       android:layout_height="match_parent"
+                                       tools:context=".MainActivity"/>
 
         <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:id="@+id/multiple_actions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/fl_status_panel"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             fab:fab_addButtonColorNormal="?attr/colorPrimary"
             fab:fab_addButtonColorPressed="?attr/colorAccent"
             fab:fab_addButtonPlusIconColor="@android:color/white"
@@ -118,4 +100,5 @@
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </RelativeLayout>
-</FrameLayout>
+
+</LinearLayout>

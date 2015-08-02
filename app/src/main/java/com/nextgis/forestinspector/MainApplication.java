@@ -28,9 +28,12 @@ import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
 import com.nextgis.forestinspector.activity.PreferencesActivity;
+import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.FILayerFactory;
+import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
+import com.nextgis.maplib.util.FileUtil;
 import com.nextgis.maplib.util.SettingsConstants;
 import com.nextgis.maplibui.GISApplication;
 import com.nextgis.maplibui.mapui.LayerFactoryUI;
@@ -42,6 +45,8 @@ import static com.nextgis.maplib.util.Constants.MAP_EXT;
 import static com.nextgis.maplib.util.SettingsConstants.KEY_PREF_MAP;
 
 public class MainApplication extends GISApplication {
+    protected DocumentFeature mTempFeature;
+    protected File mDocFeatureFolder;
 
     @Override
     public MapBase getMap() {
@@ -59,6 +64,7 @@ public class MainApplication extends GISApplication {
         String mapName = sharedPreferences.getString(SettingsConstantsUI.KEY_PREF_MAP_NAME, "default");
 
         File mapFullPath = new File(mapPath, mapName + MAP_EXT);
+        mDocFeatureFolder = new File(mapFullPath, Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
 
         final Bitmap bkBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
         mMap = new MapDrawable(bkBitmap, this, mapFullPath, new FILayerFactory());
@@ -92,6 +98,17 @@ public class MainApplication extends GISApplication {
             return R.style.AppTheme_Dark;
         else
             return R.style.AppTheme_Light;
+    }
+
+    public DocumentFeature getTempFeature() {
+        return mTempFeature;
+    }
+
+    public void setTempFeature(DocumentFeature tempFeature) {
+        mTempFeature = tempFeature;
+        //delete photos of previous feature
+        if(FileUtil.deleteRecursive(mDocFeatureFolder))
+            FileUtil.createDir(mDocFeatureFolder);
     }
 }
 

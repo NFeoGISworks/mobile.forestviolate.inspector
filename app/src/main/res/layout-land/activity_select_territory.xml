@@ -20,20 +20,32 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                xmlns:fab="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context=".MainActivity$PlaceholderFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:fab="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical">
 
-    <ListView
-        android:layout_width="match_parent"
+    <include
+        layout="@layout/actionbar"/>
+
+    <TextView
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="false"
-        android:id="@+id/documentsList"
-        />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/territory"
+        android:hint="@string/territory"
+        android:layout_margin="5dp"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    <fragment android:name="com.nextgis.forestinspector.fragment.MapEditFragment"
+              android:id="@+id/map_fragment"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent" />
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/multiple_actions"
@@ -48,8 +60,9 @@
         android:layout_marginEnd="16dp"
         fab:fab_expandDirection="left"
         >
+
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_indictment"
+            android:id="@+id/add_by_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_colorNormal="?attr/colorPrimary"
@@ -59,7 +72,17 @@
             />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_sheet"
+            android:id="@+id/add_by_parcel_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorPrimary"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_action_attributes"
+            fab:fab_colorPressed="?attr/colorAccent"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_by_sheet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_colorNormal="?attr/colorPrimary"
@@ -69,15 +92,27 @@
             />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_bookmark"
+            android:id="@+id/add_by_walk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_colorNormal="?attr/colorPrimary"
             fab:fab_size="mini"
-            fab:fab_icon="@drawable/ic_action_action_bookmark_outline"
+            fab:fab_icon="@drawable/ic_action_maps_directions_walk"
+            fab:fab_colorPressed="?attr/colorAccent"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_by_hand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorPrimary"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_action_add_polygon"
             fab:fab_colorPressed="?attr/colorAccent"
             />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

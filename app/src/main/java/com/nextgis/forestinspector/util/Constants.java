@@ -28,6 +28,7 @@ public interface Constants {
 
     String FITAG = "forest inspector";
     int MAX_DOCUMENTS = 100;
+    String TEMP_DOCUMENT_FEATURE_FOLDER = "temp_document";
 
     String KEY_INSPECTORS = "inspectors";
     String KEY_DOCUMENTS = "docs";

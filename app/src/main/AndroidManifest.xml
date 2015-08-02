@@ -108,6 +108,11 @@
             android:label="@string/action_notification"
             />
 
+        <activity
+            android:name=".activity.SelectTerritoryActivity"
+            android:label="@string/action_territory"
+            />
+
         <service
             android:name="com.nextgis.maplib.service.NGWSyncService"
             android:exported="true"

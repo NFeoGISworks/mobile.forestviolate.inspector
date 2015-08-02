@@ -96,7 +96,7 @@ public class DocumentsListAdapter extends BaseAdapter
             Cursor cursor = vlayer.query(new String[] { com.nextgis.maplib.util.Constants.FIELD_ID,
                             Constants.FIELD_DOCUMENTS_TYPE, Constants.FIELD_DOCUMENTS_PARENT_ID,
                             Constants.FIELD_DOCUMENTS_DATE, Constants.FIELD_DOCUMENTS_NUMBER,
-                            Constants.FIELD_DOCUMENTS_STATUS, Constants.FIELD_DOCUMENTS_VIOLATE },
+                            Constants.FIELD_DOCUMENTS_STATUS, Constants.FIELD_DOCUMENTS_VIOLATION_TYPE },
                     null, null, Constants.FIELD_DOCUMENTS_DATE + " ASC", " " + Constants.MAX_DOCUMENTS);
             if (null != cursor) {
                 int nIdPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
@@ -105,7 +105,7 @@ public class DocumentsListAdapter extends BaseAdapter
                 int nDatePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DATE);
                 int nNumberPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_NUMBER);
                 int nStatusPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_STATUS);
-                int nViolatePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_VIOLATE);
+                int nViolatePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
                 if(cursor.moveToFirst()) {
                     do {
                         int nParentDocId = cursor.getInt(nDocIdPos);

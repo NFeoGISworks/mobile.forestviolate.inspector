@@ -21,32 +21,11 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-
-import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.MainActivity;
-import com.nextgis.forestinspector.adapter.DocumentsListAdapter;
-
 /**
- * Documents and notes list fragment
+ * Created by bishop on 02.08.15.
  */
-public class DocumentsFragment extends Fragment {
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+public class MapEditFragment
+        extends MapFragment {
 
-        DocumentsListAdapter adapter = new DocumentsListAdapter(getActivity());
 
-        ListView list = (ListView) rootView.findViewById(R.id.documentsList);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(adapter);
-
-        return rootView;
-    }
 }

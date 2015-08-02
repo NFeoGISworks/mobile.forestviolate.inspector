@@ -135,44 +135,6 @@ public class MapFragment
                     });
         }
 
-        final View addIndictment = view.findViewById(R.id.add_indictment);
-        if (null != addIndictment) {
-            addIndictment.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            MainActivity activity = (MainActivity)getActivity();
-                            activity.addIndictment();
-                        }
-                    });
-        }
-
-        final View addSheet = view.findViewById(R.id.add_sheet);
-        if (null != addSheet) {
-            addSheet.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            MainActivity activity = (MainActivity) getActivity();
-                            activity.addSheet();
-                        }
-                    });
-        }
-
-        final View addBookmark = view.findViewById(R.id.add_bookmark);
-        if (null != addBookmark) {
-            addBookmark.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            MainActivity activity = (MainActivity) getActivity();
-                            activity.addBookmark();
-                        }
-                    });
-        }
-
         mStatusPanel = (FrameLayout) view.findViewById(R.id.fl_status_panel);
 
         return view;

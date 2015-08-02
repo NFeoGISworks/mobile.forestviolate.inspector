@@ -21,6 +21,7 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,6 +36,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.dialog.SignDialog;
@@ -67,7 +69,8 @@ public class IndictmentActivity extends FIActivity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MapBase map = MapBase.getInstance();
+        MainApplication app = (MainApplication)getApplication();
+        MapBase map = app.getMap();
         mDocsLayer = null;
         for(int i = 0; i < map.getLayerCount(); i++) {
             ILayer layer = map.getLayer(i);
@@ -78,9 +81,12 @@ public class IndictmentActivity extends FIActivity{
         }
 
         if(null != mDocsLayer)
-            mNewFeature = new DocumentFeature(-1, mDocsLayer.getFields());
+            mNewFeature = new DocumentFeature(com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
 
         if(null != mNewFeature){
+
+            app.setTempFeature(mNewFeature);
+
             setContentView(R.layout.activity_indictment);
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -240,7 +246,8 @@ public class IndictmentActivity extends FIActivity{
     }
 
     private void onAddTerritory() {
-
+        Intent intent = new Intent(this, SelectTerritoryActivity.class);
+        startActivity(intent);
     }
 
     private void onFillProduction() {
@@ -315,8 +322,6 @@ public class IndictmentActivity extends FIActivity{
         EditText description = (EditText) findViewById(R.id.description);
         String sDescription = description.getText().toString();
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION, sDescription);
-
-        //create convex hull on violate area
 
         //show dialog with sign and save / edit buttons
         SignDialog signDialog = new SignDialog();

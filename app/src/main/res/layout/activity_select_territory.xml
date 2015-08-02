@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Project: Forest violations
+  ~ Purpose: Mobile application for registering facts of the forest violations.
+  ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ ******************************************************************************
+  ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:fab="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical">
+
+    <include
+        layout="@layout/actionbar"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/territory"
+        android:hint="@string/territory"
+        android:layout_margin="5dp"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    <fragment android:name="com.nextgis.forestinspector.fragment.MapEditFragment"
+              android:id="@+id/map_fragment"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent" />
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        fab:fab_addButtonColorNormal="?attr/colorPrimary"
+        fab:fab_addButtonColorPressed="?attr/colorAccent"
+        fab:fab_addButtonPlusIconColor="@android:color/white"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        >
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_by_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorPrimary"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_action_image_edit"
+            fab:fab_colorPressed="?attr/colorAccent"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_by_parcel_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorPrimary"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_action_attributes"
+            fab:fab_colorPressed="?attr/colorAccent"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_by_sheet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorPrimary"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_action_image_nature_people"
+            fab:fab_colorPressed="?attr/colorAccent"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_by_walk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorPrimary"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_action_maps_directions_walk"
+            fab:fab_colorPressed="?attr/colorAccent"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_by_hand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorPrimary"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_action_add_polygon"
+            fab:fab_colorPressed="?attr/colorAccent"
+            />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+    </RelativeLayout>
+
+</LinearLayout>

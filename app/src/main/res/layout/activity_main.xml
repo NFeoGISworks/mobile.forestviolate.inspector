@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
@@ -24,6 +25,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:fab="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               tools:context=".MainActivity">
 
@@ -43,10 +45,60 @@
         app:tabIndicatorColor="?attr/colorAccent"
         android:elevation="2dp"/>
 
-    <android.support.v4.view.ViewPager
-                                   android:id="@+id/pager"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="match_parent"
-                                   tools:context=".MainActivity"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager
+                                       android:id="@+id/pager"
+                                       android:layout_width="match_parent"
+                                       android:layout_height="match_parent"
+                                       tools:context=".MainActivity"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/multiple_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            fab:fab_addButtonColorNormal="?attr/colorPrimary"
+            fab:fab_addButtonColorPressed="?attr/colorAccent"
+            fab:fab_addButtonPlusIconColor="@android:color/white"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            >
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_indictment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="?attr/colorPrimary"
+                fab:fab_size="mini"
+                fab:fab_icon="@drawable/ic_action_image_edit"
+                fab:fab_colorPressed="?attr/colorAccent"
+                />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_sheet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="?attr/colorPrimary"
+                fab:fab_size="mini"
+                fab:fab_icon="@drawable/ic_action_image_nature_people"
+                fab:fab_colorPressed="?attr/colorAccent"
+                />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_bookmark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="?attr/colorPrimary"
+                fab:fab_size="mini"
+                fab:fab_icon="@drawable/ic_action_action_bookmark_outline"
+                fab:fab_colorPressed="?attr/colorAccent"
+                />
+
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+    </RelativeLayout>
 
 </LinearLayout>
