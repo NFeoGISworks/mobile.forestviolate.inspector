@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
@@ -20,21 +19,18 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-
-    <include
-        layout="@layout/actionbar"
-        />
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="false"
-        android:id="@+id/parcelsList"
-        />
-
-</LinearLayout>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".MainActivity">
+    <item android:id="@+id/action_search"
+          android:title="@string/action_search"
+          android:icon="@drawable/ic_action_search"
+          app:showAsAction="collapseActionView|ifRoom"
+          android:actionViewClass="android.support.v7.widget.SearchView" />
+    <item android:id="@+id/action_filter"
+          android:title="@string/action_filter"
+          android:orderInCategory="100"
+          android:icon="@drawable/ic_action_content_filter_list"
+          app:showAsAction="ifRoom"/>
+</menu>

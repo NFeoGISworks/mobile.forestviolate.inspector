@@ -141,4 +141,8 @@
     <string name="action_territory">Violation territory</string>
     <string name="action_apply">Apply</string>
     <string name="error_sheet_is_empty">The sheet is empty</string>
+    <string name="action_cadastre">Forest cadastre</string>
+    <string name="action_filter">Show all/selected</string>
+    <string name="action_search">Search parcels</string>
+    <string name="search_hint">Type search string here</string>
 </resources>

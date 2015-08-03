@@ -21,6 +21,7 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -128,7 +129,9 @@ public class SelectTerritoryActivity extends FIActivity {
     }
 
     private void addByParcelList() {
-        // TODO: 03.08.15 Show dialog with parcels list with add and remove buttons
+        // TODO: 03.08.15 Show dialog with parcels list with checkboxes
+        Intent intent = new Intent(this, SelectTerritoryFromCadastreActivity.class);
+        startActivity(intent);
     }
 
     private void addByHand() {

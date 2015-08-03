@@ -20,21 +20,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-
-    <include
-        layout="@layout/actionbar"
-        />
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="false"
-        android:id="@+id/parcelsList"
-        />
-
-</LinearLayout>
+<searchable xmlns:android="http://schemas.android.com/apk/res/android"
+            android:label="@string/app_name"
+            android:hint="@string/search_hint" />

@@ -37,4 +37,8 @@ public class DocumentEditFeature extends DocumentFeature {
 
         mCadastreIds = new ArrayList<>();
     }
+
+    public List<Long> getCadastreIds() {
+        return mCadastreIds;
+    }
 }

@@ -142,4 +142,8 @@
     <string name="action_territory">Территория лесонарушения</string>
     <string name="action_apply">Apply</string>
     <string name="error_sheet_is_empty">The sheet is empty</string>
+    <string name="action_cadastre">Лесоделение</string>
+    <string name="action_filter">Показать все/выбранное</string>
+    <string name="action_search">Найти кварталы</string>
+    <string name="search_hint">Введите строку для поиска</string>
 </resources>

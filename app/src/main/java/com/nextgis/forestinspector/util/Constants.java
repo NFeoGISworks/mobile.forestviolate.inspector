@@ -132,6 +132,13 @@ public interface Constants {
     String FIELD_SHEET_COUNT = "count";
     String FIELD_SHEET_CATEGORY = "additions";
 
+    /**
+     * cadastre fields
+     */
+    String FIELD_CADASTRE_LV = "NAME_LV";
+    String FIELD_CADASTRE_ULV = "NAME_ULV";
+    String FIELD_CADASTRE_PARCEL = "KV";
+
     int DOWNLOAD_SEPARATE_THREADS = 10;
 
     int DOCUMENT_STATUS_SEND = 1;       //the document send but some connected tables - no
