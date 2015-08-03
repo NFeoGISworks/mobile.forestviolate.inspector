@@ -38,7 +38,7 @@ import android.widget.Toast;
 
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.dialog.SignDialog;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
@@ -57,7 +57,7 @@ import java.util.Map;
  * Form of indictment
  */
 public class IndictmentActivity extends FIActivity{
-    protected DocumentFeature mNewFeature;
+    protected DocumentEditFeature mNewFeature;
     protected DocumentsLayer mDocsLayer;
     protected EditText mIndictmentNumber;
     protected EditText mAuthor;
@@ -81,7 +81,7 @@ public class IndictmentActivity extends FIActivity{
         }
 
         if(null != mDocsLayer)
-            mNewFeature = new DocumentFeature(com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
+            mNewFeature = new DocumentEditFeature(com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
 
         if(null != mNewFeature){
 

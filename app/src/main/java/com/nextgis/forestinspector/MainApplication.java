@@ -28,7 +28,7 @@ import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
 import com.nextgis.forestinspector.activity.PreferencesActivity;
-import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.map.FILayerFactory;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.map.MapBase;
@@ -36,7 +36,6 @@ import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.FileUtil;
 import com.nextgis.maplib.util.SettingsConstants;
 import com.nextgis.maplibui.GISApplication;
-import com.nextgis.maplibui.mapui.LayerFactoryUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import java.io.File;
@@ -45,7 +44,7 @@ import static com.nextgis.maplib.util.Constants.MAP_EXT;
 import static com.nextgis.maplib.util.SettingsConstants.KEY_PREF_MAP;
 
 public class MainApplication extends GISApplication {
-    protected DocumentFeature mTempFeature;
+    protected DocumentEditFeature mTempFeature;
     protected File mDocFeatureFolder;
 
     @Override
@@ -100,11 +99,11 @@ public class MainApplication extends GISApplication {
             return R.style.AppTheme_Light;
     }
 
-    public DocumentFeature getTempFeature() {
+    public DocumentEditFeature getTempFeature() {
         return mTempFeature;
     }
 
-    public void setTempFeature(DocumentFeature tempFeature) {
+    public void setTempFeature(DocumentEditFeature tempFeature) {
         mTempFeature = tempFeature;
         //delete photos of previous feature
         if(FileUtil.deleteRecursive(mDocFeatureFolder))
