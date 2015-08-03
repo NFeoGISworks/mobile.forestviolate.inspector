@@ -114,7 +114,7 @@
             />
 
         <activity
-            android:name=".activity.SelectTerritoryFromCadastreActivity"
+            android:name=".activity.SelectParcelsActivity"
             android:label="@string/action_cadastre"
             android:launchMode="singleTop">
             <meta-data android:name="android.app.searchable"

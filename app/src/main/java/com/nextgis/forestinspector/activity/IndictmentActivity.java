@@ -64,6 +64,9 @@ public class IndictmentActivity extends FIActivity{
     protected DateTime mDateTime;
     protected Spinner mViolationTypeSpinner;
     protected Spinner mForestCatTypeSpinner;
+    protected TextView mTerritory;
+
+    protected final int INDICTMENT_ACTIVITY = 555;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,8 @@ public class IndictmentActivity extends FIActivity{
                 break;
             }
         }
+
+        // TODO: 04.08.15 save restore bundle new feature id to fill values, previous added
 
         if(null != mDocsLayer)
             mNewFeature = new DocumentEditFeature(com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
@@ -140,8 +145,8 @@ public class IndictmentActivity extends FIActivity{
                 mForestCatTypeSpinner.setAdapter(adapter);
             }
 
-            TextView territory = (TextView) findViewById(R.id.territory);
-            territory.setOnClickListener(new View.OnClickListener() {
+            mTerritory = (TextView) findViewById(R.id.territory);
+            mTerritory.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onAddTerritory();
@@ -245,9 +250,18 @@ public class IndictmentActivity extends FIActivity{
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == INDICTMENT_ACTIVITY){
+            mTerritory.setText(mNewFeature.getTerritoryText(getString(R.string.forestry),
+                    getString(R.string.district_forestry), getString(R.string.parcel),
+                    getString(R.string.unit)));
+        }
+    }
+
     private void onAddTerritory() {
         Intent intent = new Intent(this, SelectTerritoryActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, INDICTMENT_ACTIVITY);
     }
 
     private void onFillProduction() {

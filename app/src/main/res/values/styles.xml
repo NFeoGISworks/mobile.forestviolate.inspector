@@ -80,5 +80,6 @@
 
     <style name="CoordinatesPicker" parent="Base.Widget.AppCompat.Spinner">
         <item name="android:background">?attr/CoordinatesPickerBackground</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 </resources>

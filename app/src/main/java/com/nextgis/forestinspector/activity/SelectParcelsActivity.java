@@ -34,6 +34,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -54,14 +56,14 @@ import com.nextgis.forestinspector.util.SettingsConstants;
 /**
  * Created by bishop on 03.08.15.
  */
-public class SelectTerritoryFromCadastreActivity extends FIActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class SelectParcelsActivity extends FIActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     protected ListView mListView;
     protected ParcelCursorAdapter mAdapter;
     protected DocumentEditFeature mDocumentFeature;
     protected boolean mFiltered = false;
     protected boolean mLoaderIsInit = false;
 
-    protected String KEY_QUERY = "query";
+    protected static String KEY_QUERY = "query";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,24 +147,17 @@ public class SelectTerritoryFromCadastreActivity extends FIActivity implements L
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.cadastre_select, menu);
+        inflater.inflate(R.menu.parcels_select, menu);
         MenuItem item = menu.findItem(R.id.action_search);
 
         if(null != item) {
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+            ParcelSearchView searchView = (ParcelSearchView) MenuItemCompat.getActionView(item);
             if(null == searchView) {
-                searchView = new SearchView(getSupportActionBar().getThemedContext());
-                item = MenuItemCompat.setActionView(item, searchView);
+                searchView = new ParcelSearchView(getSupportActionBar().getThemedContext());
+                MenuItemCompat.setActionView(item, searchView);
             }
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-            searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-                @Override
-                public boolean onClose() {
-                    getSupportLoaderManager().restartLoader(0, null, SelectTerritoryFromCadastreActivity.this);
-                    return true;
-                }
-            });
         }
         return true;
     }
@@ -176,12 +171,7 @@ public class SelectTerritoryFromCadastreActivity extends FIActivity implements L
 
         if(id == R.id.action_filter){
             if(!mFiltered){
-                String fullQuery = "";
-                for(Long fid : mDocumentFeature.getCadastreIds()){
-                    if(!TextUtils.isEmpty(fullQuery))
-                        fullQuery += " OR ";
-                    fullQuery += com.nextgis.maplib.util.Constants.FIELD_ID + " = " + fid;
-                }
+                String fullQuery = mDocumentFeature.getWhereClauseForParcelIds();
                 Bundle bundle = new Bundle();
                 bundle.putString(KEY_QUERY, fullQuery);
                 getSupportLoaderManager().restartLoader(0, bundle, this);
@@ -197,7 +187,7 @@ public class SelectTerritoryFromCadastreActivity extends FIActivity implements L
         return super.onOptionsItemSelected(item);
     }
 
-        protected class ParcelCursorAdapter extends CursorAdapter {
+    protected class ParcelCursorAdapter extends CursorAdapter {
         public ParcelCursorAdapter(Context context, Cursor cursor, int flags) {
             super(context, cursor, 0);
         }
@@ -227,7 +217,7 @@ public class SelectTerritoryFromCadastreActivity extends FIActivity implements L
 
             CheckBox box = (CheckBox) view.findViewById(R.id.check);
             box.setTag(id);
-            if(mDocumentFeature.getCadastreIds().contains(id))
+            if(mDocumentFeature.getParcelIds().contains(id))
                 box.setChecked(true);
             else
                 box.setChecked(false);
@@ -236,13 +226,47 @@ public class SelectTerritoryFromCadastreActivity extends FIActivity implements L
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     Long id = (Long) buttonView.getTag();
                     if(isChecked) {
-                        if(!mDocumentFeature.getCadastreIds().contains(id))
-                            mDocumentFeature.getCadastreIds().add(id);
+                        if(!mDocumentFeature.getParcelIds().contains(id))
+                            mDocumentFeature.getParcelIds().add(id);
                     }
                     else
-                        mDocumentFeature.getCadastreIds().remove(id);
+                        mDocumentFeature.getParcelIds().remove(id);
                 }
             });
+        }
+    }
+
+    public class ParcelSearchView extends SearchView {
+
+        public ParcelSearchView(Context context) {
+            super(context);
+            init();
+        }
+
+        public ParcelSearchView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            init();
+        }
+
+        public ParcelSearchView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+            init();
+        }
+
+        private void init(){
+            ImageView closeButton = (ImageView) findViewById(android.support.v7.appcompat.R.id.search_close_btn);
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getSupportLoaderManager().restartLoader(0, null, SelectParcelsActivity.this);
+                }
+            });
+        }
+
+        @Override
+        public void onActionViewCollapsed() {
+            super.onActionViewCollapsed();
+            getSupportLoaderManager().restartLoader(0, null, SelectParcelsActivity.this);
         }
     }
 }

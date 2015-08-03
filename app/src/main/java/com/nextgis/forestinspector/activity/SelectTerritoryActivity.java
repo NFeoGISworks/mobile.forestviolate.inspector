@@ -26,11 +26,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
 
@@ -38,7 +39,10 @@ import com.nextgis.maplib.api.IGISApplication;
  * Created by bishop on 03.08.15.
  */
 public class SelectTerritoryActivity extends FIActivity {
-    protected DocumentFeature mDocumentFeature;
+    protected DocumentEditFeature mDocumentFeature;
+    protected TextView mTerritoryText;
+
+    protected final int TERRITORY_ACTIVITY = 55;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +118,8 @@ public class SelectTerritoryActivity extends FIActivity {
 
         MainApplication app = (MainApplication) getApplication();
         mDocumentFeature = app.getTempFeature();
+
+        mTerritoryText = (TextView) findViewById(R.id.territory);
     }
 
     private void addBySheet() {
@@ -121,7 +127,7 @@ public class SelectTerritoryActivity extends FIActivity {
                 mDocumentFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) == 0){
             Toast.makeText(this, getString(R.string.error_sheet_is_empty), Toast.LENGTH_LONG).show();
         }
-        // TODO: 03.08.15 Create convex hull on trees from sheet
+        mDocumentFeature.setUnionGeometryFromLayer(Constants.KEY_LAYER_SHEET);
     }
 
     private void addByWalk() {
@@ -129,9 +135,8 @@ public class SelectTerritoryActivity extends FIActivity {
     }
 
     private void addByParcelList() {
-        // TODO: 03.08.15 Show dialog with parcels list with checkboxes
-        Intent intent = new Intent(this, SelectTerritoryFromCadastreActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(this, SelectParcelsActivity.class);
+        startActivityForResult(intent, TERRITORY_ACTIVITY);
     }
 
     private void addByHand() {
@@ -140,6 +145,17 @@ public class SelectTerritoryActivity extends FIActivity {
 
     private void addByType() {
         // TODO: 03.08.15 Type text. The connected territory list must set empty.
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == TERRITORY_ACTIVITY){
+            // TODO: 04.08.15 Update map
+            mTerritoryText.setText(mDocumentFeature.getTerritoryText(getString(R.string.forestry),
+                    getString(R.string.district_forestry), getString(R.string.parcel),
+                    getString(R.string.unit)));
+            mDocumentFeature.setUnionGeometryFromLayer(Constants.KEY_LAYER_TERRITORY);
+        }
     }
 
     @Override

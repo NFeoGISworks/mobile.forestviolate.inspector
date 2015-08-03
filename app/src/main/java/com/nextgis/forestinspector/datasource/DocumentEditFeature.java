@@ -21,24 +21,134 @@
 
 package com.nextgis.forestinspector.datasource;
 
-import com.nextgis.maplib.datasource.Field;
+import android.database.Cursor;
+import android.text.TextUtils;
 
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.datasource.Field;
+import com.nextgis.maplib.datasource.GeoEnvelope;
+import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplib.datasource.GeoGeometryFactory;
+import com.nextgis.maplib.datasource.GeoMultiPolygon;
+import com.nextgis.maplib.datasource.GeoPoint;
+import com.nextgis.maplib.datasource.GeoPolygon;
+import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.VectorLayer;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
 
 /**
  * Created by bishop on 03.08.15.
  */
 public class DocumentEditFeature extends DocumentFeature {
-    protected List<Long> mCadastreIds;
+    protected List<Long> mParcelIds;
 
     public DocumentEditFeature(long id, List<Field> fields) {
         super(id, fields);
 
-        mCadastreIds = new ArrayList<>();
+        mParcelIds = new ArrayList<>();
     }
 
-    public List<Long> getCadastreIds() {
-        return mCadastreIds;
+    public List<Long> getParcelIds() {
+        return mParcelIds;
+    }
+
+    @Override
+    public String getTerritoryText(String area, String district, String parcel, String unit) {
+        fillTerritoryLayer();
+        return super.getTerritoryText(area, district, parcel, unit);
+    }
+
+    protected void fillTerritoryLayer(){
+        if(mParcelIds.size() > 0){
+            List<Feature> territoryArray = mSubFeatures.get(Constants.KEY_LAYER_TERRITORY);
+            if(null != territoryArray)
+                territoryArray.clear();
+            else
+                territoryArray = new ArrayList<>();
+
+            MapBase map = MapBase.getInstance();
+            DocumentsLayer docsLayer = null;
+            for(int i = 0; i < map.getLayerCount(); i++) {
+                ILayer layer = map.getLayer(i);
+                if (layer instanceof DocumentsLayer) {
+                    docsLayer = (DocumentsLayer) layer;
+                    break;
+                }
+            }
+
+            if(docsLayer == null)
+                return;
+
+            VectorLayer territoryLayer = (VectorLayer) docsLayer.getLayerByName(Constants.KEY_LAYER_TERRITORY);
+            VectorLayer parcelsLayer = (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
+
+            Cursor cursor = parcelsLayer.query(null, " " + getWhereClauseForParcelIds(), null, null, null);
+            if(cursor.moveToFirst()){
+                do{
+                    try {
+                        Feature feature = new Feature(com.nextgis.maplib.util.Constants.NOT_FOUND, territoryLayer.getFields());
+                        GeoGeometry geom = GeoGeometryFactory.fromBlob(cursor.getBlob(cursor.getColumnIndex(FIELD_GEOM)));
+                        feature.setGeometry(geom);
+
+                        String lv = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV));
+                        String ulv = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV));
+                        String parcel = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
+
+                        feature.setFieldValue(Constants.FIELD_TERRITORY_AREA, ulv);
+                        feature.setFieldValue(Constants.FIELD_TERRITORY_DISTRICT, lv);
+                        feature.setFieldValue(Constants.FIELD_TERRITORY_PARCEL, parcel);
+
+                        territoryArray.add(feature);
+                    }
+                    catch (IOException | ClassNotFoundException | IllegalArgumentException e){
+                        e.printStackTrace();
+                    }
+                }while (cursor.moveToNext());
+            }
+
+            cursor.close();
+            mSubFeatures.put(Constants.KEY_LAYER_TERRITORY, territoryArray);
+        }
+    }
+
+    public void setUnionGeometryFromLayer(String layerName){
+        List<Feature> featureList = mSubFeatures.get(layerName);
+        if(null == featureList)
+            return;
+
+        // TODO: 04.08.15 Convex hull
+
+        GeoEnvelope env = new GeoEnvelope();
+        for(Feature feature : featureList){
+            env.merge(feature.getGeometry().getEnvelope());
+        }
+
+        GeoPolygon polygon = new GeoPolygon();
+        polygon.add(new GeoPoint(env.getMinX(), env.getMinY()));
+        polygon.add(new GeoPoint(env.getMinX(), env.getMaxY()));
+        polygon.add(new GeoPoint(env.getMaxX(), env.getMaxY()));
+        polygon.add(new GeoPoint(env.getMaxX(), env.getMinY()));
+        polygon.add(new GeoPoint(env.getMinX(), env.getMinY()));
+        GeoMultiPolygon multiPolygon = new GeoMultiPolygon();
+        multiPolygon.add(polygon);
+        mGeometry = multiPolygon;
+    }
+
+    public String getWhereClauseForParcelIds(){
+        String fullQuery = "";
+        for(Long fid : getParcelIds()){
+            if(!TextUtils.isEmpty(fullQuery))
+                fullQuery += " OR ";
+            fullQuery += com.nextgis.maplib.util.Constants.FIELD_ID + " = " + fid;
+        }
+        return fullQuery;
     }
 }
