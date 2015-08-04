@@ -33,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,11 +61,14 @@ public class IndictmentActivity extends FIActivity{
     protected DocumentEditFeature mNewFeature;
     protected DocumentsLayer mDocsLayer;
     protected EditText mIndictmentNumber;
-    protected EditText mAuthor;
+    protected EditText mAuthor, mWhen, mLaw;
+    protected EditText mWho, mPlace, mCrime, mCrimeSay;
+    protected EditText mDetectorSay, mAuthorSay, mDescription;
     protected DateTime mDateTime;
     protected Spinner mViolationTypeSpinner;
     protected Spinner mForestCatTypeSpinner;
     protected TextView mTerritory;
+    protected String mUserDesc;
 
     protected final int INDICTMENT_ACTIVITY = 555;
 
@@ -85,8 +89,12 @@ public class IndictmentActivity extends FIActivity{
 
         // TODO: 04.08.15 save restore bundle new feature id to fill values, previous added
 
-        if(null != mDocsLayer)
-            mNewFeature = new DocumentEditFeature(com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
+        if(null != mDocsLayer) {
+            mNewFeature = app.getTempFeature();
+            if(mNewFeature == null)
+                mNewFeature = new DocumentEditFeature(com.nextgis.maplib.util.Constants.NOT_FOUND,
+                        mDocsLayer.getFields());
+        }
 
         if(null != mNewFeature){
 
@@ -95,7 +103,7 @@ public class IndictmentActivity extends FIActivity{
             setContentView(R.layout.activity_indictment);
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            String sUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
+            mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
             String sUserPassId = prefs.getString(SettingsConstants.KEY_PREF_USERPASSID, "");
 
             setToolbar(R.id.main_toolbar);
@@ -105,11 +113,21 @@ public class IndictmentActivity extends FIActivity{
             mIndictmentNumber.setText(getNewNumber(sUserPassId));
 
             mAuthor = (EditText) findViewById(R.id.author);
-            mAuthor.setText(sUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
+            mAuthor.setText(mUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
 
             mDateTime = (DateTime)findViewById(R.id.create_datetime);
             mDateTime.init(null, null);
             mDateTime.setCurrentDate();
+
+            mPlace = (EditText) findViewById(R.id.place);
+            mLaw = (EditText) findViewById(R.id.code_num);
+            mWho = (EditText) findViewById(R.id.who);
+            mWhen = (EditText) findViewById(R.id.when);
+            mCrime = (EditText) findViewById(R.id.crime);
+            mCrimeSay = (EditText) findViewById(R.id.crime_say);
+            mDetectorSay = (EditText) findViewById(R.id.detector_say);
+            mAuthorSay = (EditText) findViewById(R.id.author_say);
+            mDescription = (EditText) findViewById(R.id.description);
 
             NGWLookupTable violationTypeTable = (NGWLookupTable) mDocsLayer.getLayerByName(Constants.KEY_LAYER_VIOLATE_TYPES);
             if (null != violationTypeTable) {
@@ -193,7 +211,87 @@ public class IndictmentActivity extends FIActivity{
                     onSign();
                 }
             });
+
+            saveControlsToFeature();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        saveControlsToFeature();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        restoreControlsFromFeature();
+    }
+
+    protected void saveControlsToFeature(){
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TYPE, Constants.TYPE_DOCUMENT);
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PARENT_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolationTypeSpinner.getSelectedItem().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE, mForestCatTypeSpinner.getSelectedItem().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE, mWhen.getText().toString());
+        //mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_TRANS, );
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER, mUserDesc);
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
+    }
+
+    protected void restoreControlsFromFeature(){
+        if(null == mNewFeature)
+            return;
+
+        mIndictmentNumber.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_NUMBER));
+        mDateTime.setValue(mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
+        mAuthor.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
+        mPlace.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
+        String violationType = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) mViolationTypeSpinner.getAdapter();
+        for(int i= 0; i < adapter.getCount(); i++){
+            String adapterVal = adapter.getItem(i);
+            if(adapterVal.equals(violationType)){
+                mViolationTypeSpinner.setSelection(i);
+                break;
+            }
+        }
+
+        mLaw.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
+        String forestCat = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
+        adapter = (ArrayAdapter<String>) mForestCatTypeSpinner.getAdapter();
+        for(int i= 0; i < adapter.getCount(); i++){
+            String adapterVal = adapter.getItem(i);
+            if(adapterVal.equals(forestCat)){
+                mForestCatTypeSpinner.setSelection(i);
+                break;
+            }
+        }
+
+        mAuthorSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
+        mDescription.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION));
+        mCrime.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
+        mWhen.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
+        mWho.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
+        mDetectorSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
+        mCrimeSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
+
+        mTerritory.setText(mNewFeature.getTerritoryText(getString(R.string.forestry),
+                getString(R.string.district_forestry), getString(R.string.parcel),
+                getString(R.string.unit)));
     }
 
     protected String getNewNumber(String passId){
@@ -276,66 +374,18 @@ public class IndictmentActivity extends FIActivity{
         }
 
         //number
-        String sNumber = mIndictmentNumber.getText().toString();
-        if(TextUtils.isEmpty(sNumber)){
+        if(TextUtils.isEmpty(mIndictmentNumber.getText().toString())){
             Toast.makeText(this, getString(R.string.error_number_mast_be_set), Toast.LENGTH_LONG).show();
             return;
         }
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_NUMBER, sNumber);
 
         //user
-        String sAuthor =  mAuthor.getText().toString();
-        if(TextUtils.isEmpty(sNumber)){
+        if(TextUtils.isEmpty(mAuthor.getText().toString())){
             Toast.makeText(this, getString(R.string.error_author_mast_be_set), Toast.LENGTH_LONG).show();
             return;
         }
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR, sAuthor);
 
-        //date
-        long nDate = (long) mDateTime.getValue();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, nDate);
-
-        EditText place = (EditText) findViewById(R.id.place);
-        String sPlace = place.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PLACE, sPlace);
-
-        String sViolationType = mViolationTypeSpinner.getSelectedItem().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, sViolationType);
-
-        EditText law = (EditText) findViewById(R.id.code_num);
-        String sLaw = law.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_LAW, sLaw);
-
-        String sForestCatType = mForestCatTypeSpinner.getSelectedItem().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE, sForestCatType);
-
-        EditText who = (EditText) findViewById(R.id.who);
-        String sWho = who.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK, sWho);
-
-        EditText when = (EditText) findViewById(R.id.when);
-        String sWhen = when.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE, sWhen);
-
-        EditText crime = (EditText) findViewById(R.id.crime);
-        String sCrime = crime.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_CRIME, sCrime);
-
-        EditText people_info = (EditText) findViewById(R.id.detector_say);
-        String sPeopleInfo = people_info.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR, sPeopleInfo);
-
-        EditText crime_say = (EditText) findViewById(R.id.crime_say);
-        String sCrimeSay = crime_say.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME, sCrimeSay);
-
-        EditText people_say = (EditText) findViewById(R.id.author_say);
-        String sPeopleSay = people_say.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR, sPeopleSay);
-
-        EditText description = (EditText) findViewById(R.id.description);
-        String sDescription = description.getText().toString();
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION, sDescription);
+        saveControlsToFeature();
 
         //show dialog with sign and save / edit buttons
         SignDialog signDialog = new SignDialog();
