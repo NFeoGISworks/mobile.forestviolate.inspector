@@ -22,6 +22,7 @@
 package com.nextgis.forestinspector.datasource;
 
 import android.database.Cursor;
+import android.os.DropBoxManager;
 import android.text.TextUtils;
 
 import com.nextgis.forestinspector.map.DocumentsLayer;
@@ -41,6 +42,7 @@ import com.nextgis.maplib.map.VectorLayer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
 
@@ -150,5 +152,15 @@ public class DocumentEditFeature extends DocumentFeature {
             fullQuery += com.nextgis.maplib.util.Constants.FIELD_ID + " = " + fid;
         }
         return fullQuery;
+    }
+
+    @Override
+    public void setId(long id) {
+        super.setId(id);
+        for(Map.Entry<String, List<Feature>> entry : mSubFeatures.entrySet()){
+            for(Feature feature : entry.getValue()){
+                feature.setFieldValue(Constants.FIELD_DOC_ID, id);
+            }
+        }
     }
 }

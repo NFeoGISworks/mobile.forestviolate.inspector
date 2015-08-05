@@ -33,7 +33,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -235,7 +234,7 @@ public class IndictmentActivity extends FIActivity{
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PARENT_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+        mNewFeature.setFieldValue(Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolationTypeSpinner.getSelectedItem().toString());

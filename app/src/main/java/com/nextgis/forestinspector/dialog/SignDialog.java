@@ -29,8 +29,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.widget.Toast;
 
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.map.MapBase;
 
 /**
  * Created by bishop on 02.08.15.
@@ -66,8 +71,32 @@ public class SignDialog
 
     private void onCreateDocument(){
         //save picture to file and add it as attachment
-        //create document
-        //create connected features
-        //add attachments
+
+        MainApplication app = (MainApplication) getActivity().getApplication();
+        MapBase mapBase = app.getMap();
+        DocumentsLayer documentsLayer = null;
+        //get documents layer
+        for(int i = 0; i < mapBase.getLayerCount(); i++){
+            ILayer layer = mapBase.getLayer(i);
+            if(layer instanceof DocumentsLayer){
+                documentsLayer = (DocumentsLayer) layer;
+                break;
+            }
+        }
+
+        if(null == documentsLayer) {
+            Toast.makeText(getActivity(),
+                    getString(R.string.error_documents_layer_not_found), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(documentsLayer.insert(app.getTempFeature())) {
+            //remove temp feature
+            app.setTempFeature(null);
+        }
+        else {
+            Toast.makeText(getActivity(),
+                    getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
+        }
     }
 }

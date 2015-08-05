@@ -78,6 +78,7 @@ public interface Constants {
     int STEP_STATE_DONE = 2;
     int STEP_STATE_ERROR = 3;
 
+    String FIELD_DOC_ID = "doc_id";
     /**
      * documents fields
      */
@@ -85,7 +86,6 @@ public interface Constants {
     String FIELD_DOCUMENTS_DATE = "date";
     String FIELD_DOCUMENTS_NUMBER = "number";
     String FIELD_DOCUMENTS_STATUS = "status";
-    String FIELD_DOCUMENTS_PARENT_ID = "doc_id";
     String FIELD_DOCUMENTS_AUTHOR = "author";
     String FIELD_DOCUMENTS_USER = "user";
     String FIELD_DOCUMENTS_PLACE = "place";

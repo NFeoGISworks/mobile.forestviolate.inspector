@@ -21,32 +21,41 @@
 
 package com.nextgis.forestinspector.map;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
-import com.nextgis.maplib.api.INGWLayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.map.LayerFactory;
 import com.nextgis.maplib.map.LayerGroup;
+import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.NGWVectorLayer;
+import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplib.util.AttachItem;
+import com.nextgis.maplib.util.FileUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static com.nextgis.maplib.util.Constants.FIELD_ID;
@@ -84,7 +93,7 @@ public class DocumentsLayer extends NGWVectorLayer {
         cur.close();
 
         //get documents connected with this one
-        cur = query(null, Constants.FIELD_DOCUMENTS_PARENT_ID + " = " + featureId, null, null, null);
+        cur = query(null, Constants.FIELD_DOC_ID + " = " + featureId, null, null, null);
         if(null != cur && cur.moveToFirst()){
             int idPos = cur.getColumnIndex(FIELD_ID);
             List<Long> ids = new ArrayList<>();
@@ -106,7 +115,7 @@ public class DocumentsLayer extends NGWVectorLayer {
             ILayer layer = mLayers.get(i);
             if(layer instanceof NGWVectorLayer){
                 NGWVectorLayer subLayer = (NGWVectorLayer) layer;
-                cur = subLayer.query(null, Constants.FIELD_DOCUMENTS_PARENT_ID + " = " + featureId,
+                cur = subLayer.query(null, Constants.FIELD_DOC_ID + " = " + featureId,
                         null, null, null);
                 if(null != cur && cur.moveToFirst()){
                     do {
@@ -286,5 +295,61 @@ public class DocumentsLayer extends NGWVectorLayer {
             layer.save();
         }
         return super.save();
+    }
+
+    public boolean insert(DocumentEditFeature feature) {
+        //create document
+        ContentValues values = feature.getContentValues(false);
+        long docId = insert(values);
+        if(docId == com.nextgis.maplib.util.Constants.NOT_FOUND){
+            return false;
+        }
+
+        //update connected features doc_id
+        feature.setId(docId);
+
+        //create connected features
+        for (ILayer layer : mLayers){
+            VectorLayer vectorLayer = (VectorLayer) layer;
+            String pathName = layer.getPath().getName();
+            List<Feature> featureList = feature.getSubFeatures(pathName);
+            if(null != featureList && featureList.size() > 0){
+                Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + pathName);
+                for(Feature subFeature : featureList){
+                    if(vectorLayer.insert(uri, subFeature.getContentValues(false)) == null){
+                        Log.d(Constants.FITAG, "insert feature into " + pathName + " failed");
+                    }
+                }
+            }
+        }
+
+        //add attachments
+        Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + getPath().getName() +
+                "/" + docId + "attach");
+        for(Map.Entry<String, AttachItem> entry : feature.getAttachments().entrySet()){
+            AttachItem item = entry.getValue();
+
+            values = new ContentValues();
+            values.put(VectorLayer.ATTACH_DISPLAY_NAME, item.getDisplayName());
+            values.put(VectorLayer.ATTACH_MIME_TYPE, item.getMimetype());
+            values.put(VectorLayer.ATTACH_DESCRIPTION, item.getDescription());
+
+            Uri result = insert(uri, values);
+            if (result == null) {
+                Log.d(Constants.FITAG, "insert attach failed");
+            } else {
+                List<String> pathSegments = uri.getPathSegments();
+                String featureId = pathSegments.get(pathSegments.size() - 3);
+                String attachId = uri.getLastPathSegment();
+                File to = new File(mPath, featureId + "/" + attachId);
+                File from = new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER +
+                "/" + item.getDisplayName());
+                if(!FileUtil.copyRecursive(from, to)){
+                    Log.d(Constants.FITAG, "create attach file failed");
+                }
+            }
+        }
+
+        return true;
     }
 }

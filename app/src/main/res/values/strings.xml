@@ -145,4 +145,5 @@
     <string name="action_filter">Show all/selected</string>
     <string name="action_search">Search parcels</string>
     <string name="search_hint">Type search string here</string>
+    <string name="error_documents_layer_not_found">The documents layer not found</string>
 </resources>
