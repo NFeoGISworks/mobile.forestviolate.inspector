@@ -43,6 +43,7 @@ import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.NGWVectorLayer;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.AttachItem;
+import com.nextgis.maplib.util.FeatureChanges;
 import com.nextgis.maplib.util.FileUtil;
 
 import org.json.JSONArray;
@@ -58,10 +59,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static com.nextgis.maplib.util.Constants.CHANGE_OPERATION_CHANGED;
+import static com.nextgis.maplib.util.Constants.CHANGE_OPERATION_NEW;
 import static com.nextgis.maplib.util.Constants.FIELD_ID;
 import static com.nextgis.maplib.util.Constants.JSON_LAYERS_KEY;
 import static com.nextgis.maplib.util.Constants.JSON_PATH_KEY;
 import static com.nextgis.maplib.util.Constants.LAYER_PREFIX;
+import static com.nextgis.maplib.util.Constants.NOT_FOUND;
 
 /**
  * documents layer class for specific needs (sync, relationship tables, etc.)
@@ -162,26 +166,96 @@ public class DocumentsLayer extends NGWVectorLayer {
     }
 
     @Override
-    protected boolean sendLocalChanges(SyncResult syncResult) throws SQLiteException {
-        // TODO: 25.07.15
-        // 1. send first doc
-        // 2. update doc id
-        // 3. send relation records from other layers
-        // 4. update doc status (add change for next sync)
-        // 5. repeat 1 - 4 for other docs
+    protected void changeFeatureId(long oldFeatureId, long newFeatureId) {
+        super.changeFeatureId(oldFeatureId, newFeatureId);
+        //update doc id in other layers
+        for(ILayer layer : mLayers) {
+            if (layer instanceof NGWVectorLayer) {
+                NGWVectorLayer ngwVectorLayer = (NGWVectorLayer) layer;
+                Cursor cur = ngwVectorLayer.query(new String[] { com.nextgis.maplib.util.Constants.FIELD_ID },
+                        Constants.FIELD_DOC_ID + " = " + oldFeatureId, null, null, null);
+                List<Long> ids = new ArrayList<>();
+                if(null != cur && cur.moveToFirst()) {
+                    do {
+                        ids.add(cur.getLong(0));
+                    } while (cur.moveToNext());
+                    cur.close();
+                }
 
-        return false;
-        //return super.sendLocalChanges(syncResult);
+                for(Long id : ids){
+                    ContentValues values = new ContentValues();
+                    values.put(Constants.FIELD_DOC_ID, newFeatureId);
+                    Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" +
+                            ngwVectorLayer.getPath().getName() + "/" + id);
+                    ngwVectorLayer.update(uri, values, null, null);
+                }
+            }
+        }
     }
 
     @Override
-    protected boolean getChangesFromServer(String authority, SyncResult syncResult) throws SQLiteException {
-        // TODO: 25.07.15
-        // 1. get docs
-        // 2. get other layers
+    public boolean sendLocalChanges(SyncResult syncResult) throws SQLiteException {
+        // send docs
+        if(!super.sendLocalChanges(syncResult))
+            return false;
 
-        return false;
-        //return super.getChangesFromServer(authority, syncResult);
+        // send relation records from other layers
+        boolean hasChanges = false;
+        for(ILayer layer : mLayers){
+            if(layer instanceof NGWVectorLayer){
+                NGWVectorLayer ngwVectorLayer = (NGWVectorLayer) layer;
+                if(!ngwVectorLayer.sendLocalChanges(syncResult)){
+                    Log.d(Constants.FITAG, "send changes to server for " + layer.getName() +
+                            " failed");
+                }
+                else{
+                    if(FeatureChanges.getChangeCount(layer.getPath().getName() +
+                            com.nextgis.maplib.util.Constants.CHANGES_NAME_POSTFIX) > 0){
+                        hasChanges = true;
+                    }
+                }
+            }
+        }
+        // update doc status (add change for next sync)
+        if(!hasChanges){
+            Cursor cur = query(new String[] { com.nextgis.maplib.util.Constants.FIELD_ID },
+                    Constants.FIELD_DOCUMENTS_STATUS + " = " + Constants.DOCUMENT_STATUS_SEND,
+                    null, null, null);
+            List<Long> ids = new ArrayList<>();
+            if(null != cur && cur.moveToFirst()) {
+                do {
+                    ids.add(cur.getLong(0));
+                } while (cur.moveToNext());
+                cur.close();
+            }
+
+            for(Long id : ids){
+                ContentValues values = new ContentValues();
+                values.put(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_OK);
+                if(update(id, values, FIELD_ID + " = " + id, null) == 1)
+                    addChange(id, CHANGE_OPERATION_CHANGED);
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean getChangesFromServer(String authority, SyncResult syncResult) throws SQLiteException {
+        // 1. get docs
+        if(super.getChangesFromServer(authority, syncResult)) {
+            // 2. get other layers
+            for(ILayer layer : mLayers){
+                if(layer instanceof NGWVectorLayer){
+                    NGWVectorLayer ngwVectorLayer = (NGWVectorLayer) layer;
+                    if(!ngwVectorLayer.getChangesFromServer(authority, syncResult)){
+                        Log.d(Constants.FITAG, "get changes from server for " + layer.getName() +
+                                " failed");
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public ILayer getLayerByName(String name)
@@ -305,19 +379,22 @@ public class DocumentsLayer extends NGWVectorLayer {
             return false;
         }
 
+        addChange(docId, CHANGE_OPERATION_NEW);
         //update connected features doc_id
         feature.setId(docId);
 
         //create connected features
         for (ILayer layer : mLayers){
-            VectorLayer vectorLayer = (VectorLayer) layer;
-            String pathName = layer.getPath().getName();
-            List<Feature> featureList = feature.getSubFeatures(pathName);
-            if(null != featureList && featureList.size() > 0){
-                Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + pathName);
-                for(Feature subFeature : featureList){
-                    if(vectorLayer.insert(uri, subFeature.getContentValues(false)) == null){
-                        Log.d(Constants.FITAG, "insert feature into " + pathName + " failed");
+            if(layer instanceof VectorLayer) {
+                VectorLayer vectorLayer = (VectorLayer) layer;
+                String pathName = layer.getPath().getName();
+                List<Feature> featureList = feature.getSubFeatures(pathName);
+                if (null != featureList && featureList.size() > 0) {
+                    Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + pathName);
+                    for (Feature subFeature : featureList) {
+                        if (vectorLayer.insert(uri, subFeature.getContentValues(false)) == null) {
+                            Log.d(Constants.FITAG, "insert feature into " + pathName + " failed");
+                        }
                     }
                 }
             }
@@ -325,7 +402,7 @@ public class DocumentsLayer extends NGWVectorLayer {
 
         //add attachments
         Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + getPath().getName() +
-                "/" + docId + "attach");
+                "/" + docId + "/" +  "attach");
         for(Map.Entry<String, AttachItem> entry : feature.getAttachments().entrySet()){
             AttachItem item = entry.getValue();
 

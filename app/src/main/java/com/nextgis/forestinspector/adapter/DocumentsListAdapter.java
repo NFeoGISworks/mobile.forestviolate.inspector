@@ -43,6 +43,7 @@ import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.MapEventListener;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.MapEventSource;
 import com.nextgis.maplib.map.VectorLayer;
 
 import java.text.SimpleDateFormat;
@@ -61,13 +62,13 @@ public class DocumentsListAdapter extends BaseAdapter
 
     protected int mDocsId, mNotesId;
     protected List<Document> mDocuments;
-    protected MapBase mMap;
+    protected MapEventSource mMap;
     protected Context mActivity;
 
     public DocumentsListAdapter(FragmentActivity activity) {
         mActivity = activity;
         mDocuments = new ArrayList<>();
-        mMap = MapBase.getInstance();
+        mMap = (MapEventSource) MapBase.getInstance();
         mDocsId = mNotesId = -10;
         for(int i = 0; i < mMap.getLayerCount(); i++){
             ILayer layer = mMap.getLayer(i);
@@ -82,6 +83,20 @@ public class DocumentsListAdapter extends BaseAdapter
                 break;
         }
         loadData();
+
+        if (null != mMap) {
+            mMap.addListener(this);
+        }
+    }
+
+    @Override
+    protected void finalize()
+            throws Throwable
+    {
+        if (null != mMap) {
+            mMap.removeListener(this);
+        }
+        super.finalize();
     }
 
     protected void loadData(){

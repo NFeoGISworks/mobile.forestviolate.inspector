@@ -93,6 +93,7 @@ public class SignDialog
         if(documentsLayer.insert(app.getTempFeature())) {
             //remove temp feature
             app.setTempFeature(null);
+            getActivity().finish();
         }
         else {
             Toast.makeText(getActivity(),
