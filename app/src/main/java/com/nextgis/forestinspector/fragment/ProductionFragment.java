@@ -21,10 +21,10 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +32,7 @@ import android.widget.ListView;
 
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
-import com.nextgis.forestinspector.adapter.InitStepListAdapter;
-import com.nextgis.forestinspector.adapter.SheetViewListAdapter;
+import com.nextgis.forestinspector.adapter.ProductionListAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
@@ -41,37 +40,27 @@ import com.nextgis.maplib.datasource.Feature;
 import java.util.List;
 
 /**
- * Created by bishop on 28.07.15.
+ * Created by bishop on 06.08.15.
  */
-public class SheetViewFragment extends TabFragment {
-
-    public SheetViewFragment() {
-    }
-
-    @SuppressLint("ValidFragment")
-    public SheetViewFragment(String name) {
-        super(name);
-    }
+public class ProductionFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_sheet, container, false);
+        final View view = inflater.inflate(R.layout.fragment_production, container, false);
 
         Activity activity = getActivity();
         if(activity instanceof IDocumentFeatureSource) {
             IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
             DocumentFeature feature = documentFeatureSource.getFeature();
 
-            if (null != feature) {
-
-                List<Feature> features = feature.getSubFeatures(Constants.KEY_LAYER_SHEET);
-                SheetViewListAdapter adapter = new SheetViewListAdapter(getActivity(), features);
-                ListView list = (ListView) view.findViewById(R.id.treeList);
+            if(null != feature) {
+                List<Feature> features = feature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
+                ProductionListAdapter adapter = new ProductionListAdapter(getActivity(), features);
+                ListView list = (ListView) view.findViewById(R.id.productionList);
                 list.setAdapter(adapter);
             }
         }
-
         return view;
     }
 }

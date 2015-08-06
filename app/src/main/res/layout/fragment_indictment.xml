@@ -137,16 +137,22 @@
             android:id="@+id/crime"
             />
 
-        <!-- 7. production >
-        <Button
+        <!-- 7. production -->
+        <TextView style="@style/paragraph_text"
+                  android:text="@string/production"
+            />
+
+        <ListView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/create_production"
-            android:id="@+id/create_production"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0"
-            android:layout_margin="10dp"
-            /-->
+            android:layout_height="match_parent"
+            android:id="@+id/productionList">
+
+        </ListView>
+
+        <TextView style="@style/normal_text"
+                  android:id="@+id/user_trans"
+                  android:text="@string/user_trans"
+            />
 
         <!-- 8. notes -->
         <TextView style="@style/paragraph_text"

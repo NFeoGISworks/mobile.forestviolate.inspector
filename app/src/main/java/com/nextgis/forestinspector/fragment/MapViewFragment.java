@@ -22,6 +22,7 @@
 package com.nextgis.forestinspector.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,6 +36,7 @@ import android.widget.RelativeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.datasource.GeoEnvelope;
@@ -62,16 +64,21 @@ public class MapViewFragment  extends TabFragment
     }
 
     @SuppressLint("ValidFragment")
-    public MapViewFragment(String name, DocumentFeature feature) {
+    public MapViewFragment(String name) {
         super(name);
-
-        mFeature = feature;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_mapview, container, false);
+
+        Activity activity = getActivity();
+        if(activity instanceof IDocumentFeatureSource) {
+            IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
+            mFeature = documentFeatureSource.getFeature();
+        }
+
         MainApplication app = (MainApplication) getActivity().getApplication();
 
         mMap = new MapViewOverlays(getActivity(), (MapDrawable) app.getMap());

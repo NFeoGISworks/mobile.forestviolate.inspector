@@ -98,13 +98,13 @@
     <string name="description">Description</string>
     <string name="description_hint">Enter description here</string>
     <string name="description_desc">Number and date of the act in the direction of the competent authorities, # criminal case or an administrative offense protocol, other service marks</string>
-    <string name="people_info">6. Post persons who found violations of forest, constitutes an act of forest violations</string>
+    <string name="people_info">7. Post persons who found violations of forest, constitutes an act of forest violations</string>
     <string name="people_info_desc">The circumstances of the detection, the description of the place of commission, evidence of the commission, including material, and other information that allow qualified forest violations and prove the guilt of individuals; Was found himself face - intruder resistance compiler Act, the person to identify violations of forest, who is affected, and what is expressed</string>
-    <string name="crime_say">7. Explanations of the person (s) - the offender (s)</string>
+    <string name="crime_say">8. Explanations of the person (s) - the offender (s)</string>
     <string name="crime_say_desc">In the case of an explanation on a separate sheet, this is done is appropriate record</string>
     <string name="create_vehicles">Fill vehicles form</string>
     <string name="create_photo_table">Fill photo table</string>
-    <string name="people_say">8. Explanation of persons involved in the detection of forest violations and drafting the act</string>
+    <string name="people_say">9. Explanation of persons involved in the detection of forest violations and drafting the act</string>
     <string name="people_say_desc">In the case of an explanation on a separate sheet of this entry is</string>
     <string name="downloaded">downloaded</string>
     <string name="passid_is">, pass id is</string>
@@ -147,4 +147,7 @@
     <string name="search_hint">Type search string here</string>
     <string name="error_documents_layer_not_found">The documents layer not found</string>
     <string name="sync_switch">Switch sync on/off</string>
+    <string name="length">Length</string>
+    <string name="production">6. Type and number of products subject to withdrawal, as well as products that are seized at the site forest violations.</string>
+    <string name="user_trans">The official products for the removal of the transmitter</string>
 </resources>

@@ -29,6 +29,7 @@ public interface Constants {
     String FITAG = "forest inspector";
     int MAX_DOCUMENTS = 100;
     String TEMP_DOCUMENT_FEATURE_FOLDER = "temp_document";
+    String SIGN_FILENAME = "sign.png";
 
     String KEY_INSPECTORS = "inspectors";
     String KEY_DOCUMENTS = "docs";
@@ -41,6 +42,7 @@ public interface Constants {
     String KEY_VIOLATE_TYPES = "violation_types";
     String KEY_FOREST_CAT_TYPES = "forest_cat_types";
     String KEY_SPECIES_TYPES = "species_types";
+    String KEY_THICKNESS_TYPES = "thickness_types";
 
     String KEY_LAYER_DOCUMENTS = "documents";
     String KEY_LAYER_SHEET = "sheet";
@@ -52,6 +54,7 @@ public interface Constants {
     String KEY_LAYER_VIOLATE_TYPES = "violation_types";
     String KEY_LAYER_FOREST_CAT_TYPES = "forest_cat_types";
     String KEY_LAYER_SPECIES_TYPES = "species_types";
+    String KEY_LAYER_THICKNESS_TYPES = "thickness_types";
 
     /**
      * inspectors keys
@@ -138,6 +141,15 @@ public interface Constants {
     String FIELD_CADASTRE_LV = "NAME_LV";
     String FIELD_CADASTRE_ULV = "NAME_ULV";
     String FIELD_CADASTRE_PARCEL = "KV";
+
+    /**
+     * production fields
+     */
+    String FIELD_PRODUCTION_SPECIES = "poroda";
+    String FIELD_PRODUCTION_TYPE = "type";
+    String FIELD_PRODUCTION_LENGTH = "length";
+    String FIELD_PRODUCTION_DIAMETER = "diameter";
+    String FIELD_PRODUCTION_COUNT = "count";
 
     int DOWNLOAD_SEPARATE_THREADS = 10;
 

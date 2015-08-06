@@ -21,6 +21,8 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.util.Constants;
@@ -78,6 +81,12 @@ public class PreferencesActivity extends NGPreferenceActivity {
                             .edit()
                             .putLong(SettingsConstantsUI.KEY_PREF_SYNC_PERIOD_SEC_LONG, value)
                             .commit();
+
+                    MainApplication app = (MainApplication) getApplication();
+
+                    final Account account = app.getAccount(getString(R.string.account_name));
+                    ContentResolver.addPeriodicSync(
+                            account, app.getAuthority(), Bundle.EMPTY, value);
 
                     return true;
                 }

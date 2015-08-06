@@ -196,6 +196,8 @@ public class DocumentsListAdapter extends BaseAdapter
 
     @Override
     public int getCount() {
+        if(null == mDocuments)
+            return 0;
         return mDocuments.size();
     }
 

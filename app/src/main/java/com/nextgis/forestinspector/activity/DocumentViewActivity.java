@@ -50,9 +50,10 @@ import java.util.List;
 /**
  * The tabbed view with document contents. The tab list consist of document type.
  */
-public class DocumentViewActivity extends FIActivity{
+public class DocumentViewActivity extends FIActivity implements  IDocumentFeatureSource{
     protected ViewPager mViewPager;
     protected SectionsPagerAdapter mSectionsPagerAdapter;
+    protected DocumentFeature mFeature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +78,15 @@ public class DocumentViewActivity extends FIActivity{
 
         Bundle b = getIntent().getExtras();
         long id = b.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
-        DocumentFeature feature = docs.getFeature(id);
-        if(null == feature){
+        mFeature = docs.getFeature(id);
+        if(null == mFeature){
             setContentView(R.layout.activity_document_noview);
             setToolbar(R.id.main_toolbar);
             return;
         }
 
         int nType;
-        switch (feature.getFieldValueAsInteger(Constants.FIELD_DOCUMENTS_TYPE)){
+        switch (mFeature.getFieldValueAsInteger(Constants.FIELD_DOCUMENTS_TYPE)){
             case Constants.TYPE_DOCUMENT:
                 nType = Constants.TYPE_DOCUMENT;
                 setTitle(getString(R.string.indictment));
@@ -103,8 +104,8 @@ public class DocumentViewActivity extends FIActivity{
 
         setContentView(R.layout.activity_document_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        String sNum = feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);
-        Date date = (Date) feature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
+        String sNum = mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);
+        Date date = (Date) mFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
         String sDate = DateFormat.getDateInstance().format(date);
         toolbar.setSubtitle(sNum + " " + getString(R.string.on) + " " + sDate);
         toolbar.getBackground().setAlpha(getToolbarAlpha());
@@ -115,8 +116,7 @@ public class DocumentViewActivity extends FIActivity{
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), nType, docs.getName(),
-                feature);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), nType, docs.getName());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -136,38 +136,39 @@ public class DocumentViewActivity extends FIActivity{
         }
     }
 
+    @Override
+    public DocumentFeature getFeature() {
+        return mFeature;
+    }
+
     protected class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         protected List<TabFragment> mTabFragmentList;
 
-        public SectionsPagerAdapter(FragmentManager fm, int nType, String docsLayerName, DocumentFeature feature) {
+        public SectionsPagerAdapter(FragmentManager fm, int nType, String docsLayerName) {
             super(fm);
 
             mTabFragmentList = new ArrayList<>();
 
             if(nType == Constants.TYPE_DOCUMENT) {
                 // indictment
-                mTabFragmentList.add(new IndictmentViewFragment(getString(R.string.indictment_tab_name),
-                        feature));
+                mTabFragmentList.add(new IndictmentViewFragment(getString(R.string.indictment_tab_name)));
                 // sheet
-                if (feature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0)
-                    mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name),
-                            feature));
+                if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0)
+                    mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name)));
                 // vehicle
-                if (feature.getSubFeaturesCount(Constants.KEY_LAYER_DOCUMENTS) > 0)
-                    mTabFragmentList.add(new VehicleViewFragment(getString(R.string.vehicle_tab_name),
-                            feature));
+                if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_DOCUMENTS) > 0)
+                    mTabFragmentList.add(new VehicleViewFragment(getString(R.string.vehicle_tab_name)));
                 // photo table
-                if (feature.getAttachments() != null && feature.getAttachments().size() > 0) {
+                if (mFeature.getAttachments() != null && mFeature.getAttachments().size() > 0) {
                     // TODO: 28.07.15 create photo table
                 }
             }
             else if(nType == Constants.TYPE_SHEET){
-                mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name),
-                        feature));
+                mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name)));
             }
 
-            mTabFragmentList.add(new MapViewFragment(getString(R.string.title_map), feature));
+            mTabFragmentList.add(new MapViewFragment(getString(R.string.title_map)));
         }
 
         @Override

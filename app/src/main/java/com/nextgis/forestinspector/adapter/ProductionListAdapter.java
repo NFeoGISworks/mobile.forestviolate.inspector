@@ -35,14 +35,13 @@ import com.nextgis.maplib.datasource.Feature;
 import java.util.List;
 
 /**
- * The list of sheet items
+ * Created by bishop on 07.08.15.
  */
-public class SheetViewListAdapter extends BaseAdapter {
-
+public class ProductionListAdapter extends BaseAdapter {
     protected List<Feature> mFeatures;
     protected Context mContext;
 
-    public SheetViewListAdapter(Context context, List<Feature> features) {
+    public ProductionListAdapter(Context context, List<Feature> features) {
         mContext = context;
         mFeatures = features;
     }
@@ -69,22 +68,25 @@ public class SheetViewListAdapter extends BaseAdapter {
         View v = convertView;
         if (null == v) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            v = inflater.inflate(R.layout.row_sheet_item, null);
+            v = inflater.inflate(R.layout.row_production_item, null);
         }
 
         Feature item = (Feature) getItem(position);
 
         TextView species = (TextView) v.findViewById(R.id.species);
-        species.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES));
+        species.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_SPECIES));
 
         TextView thickness = (TextView) v.findViewById(R.id.thickness);
-        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS));
+        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_DIAMETER));
 
         TextView count = (TextView) v.findViewById(R.id.count);
-        count.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_COUNT));
+        count.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_COUNT));
 
         TextView category = (TextView) v.findViewById(R.id.category);
-        category.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY));
+        category.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_TYPE));
+
+        TextView length = (TextView) v.findViewById(R.id.length);
+        length.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_LENGTH));
 
         return v;
     }

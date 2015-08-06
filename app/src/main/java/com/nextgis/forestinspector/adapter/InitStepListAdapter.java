@@ -87,6 +87,8 @@ public class InitStepListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        if(null == mSteps)
+            return 0;
         return mSteps.size();
     }
 

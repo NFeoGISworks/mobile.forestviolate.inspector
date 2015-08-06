@@ -309,6 +309,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             //set sync with server
             ContentResolver.setSyncAutomatically(account, app.getAuthority(), true);
+            ContentResolver.addPeriodicSync( account, app.getAuthority(), Bundle.EMPTY,
+                    com.nextgis.maplib.util.Constants.DEFAULT_SYNC_PERIOD);
 
             // goto step 2
             refreshActivityView();
@@ -793,6 +795,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             keys.put(Constants.KEY_VIOLATE_TYPES, -1L);
             keys.put(Constants.KEY_SPECIES_TYPES, -1L);
             keys.put(Constants.KEY_FOREST_CAT_TYPES, -1L);
+            keys.put(Constants.KEY_THICKNESS_TYPES, -1L);
 
             if(!checkServerLayers(connection, keys)){
                 publishProgress(getString(R.string.error_wrong_server), nStep, Constants.STEP_STATE_ERROR);
@@ -1018,6 +1021,26 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             if (!loadLookupTables(keys.get(Constants.KEY_SPECIES_TYPES), mAccount.name,
                     Constants.KEY_LAYER_SPECIES_TYPES, documentsLayer)){
+                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+
+            if(isCancelled())
+                return false;
+
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+                    Constants.STEP_STATE_WORK);
+            nSubStep++;
+
+            if (!loadLookupTables(keys.get(Constants.KEY_THICKNESS_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_THICKNESS_TYPES, documentsLayer)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {
