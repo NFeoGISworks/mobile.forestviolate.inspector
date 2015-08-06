@@ -146,4 +146,5 @@
     <string name="action_search">Search parcels</string>
     <string name="search_hint">Type search string here</string>
     <string name="error_documents_layer_not_found">The documents layer not found</string>
+    <string name="sync_switch">Switch sync on/off</string>
 </resources>

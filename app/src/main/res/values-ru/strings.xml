@@ -147,4 +147,5 @@
     <string name="action_search">Найти кварталы</string>
     <string name="search_hint">Введите строку для поиска</string>
     <string name="error_documents_layer_not_found">The documents layer not found</string>
+    <string name="sync_switch">Switch sync on/off</string>
 </resources>

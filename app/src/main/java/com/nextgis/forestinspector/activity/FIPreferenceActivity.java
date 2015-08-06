@@ -25,6 +25,7 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.maplibui.activity.NGPreferenceActivity;
 
 public class FIPreferenceActivity extends NGPreferenceActivity {
+
     @Override
     protected int getThemeId(boolean isDark) {
         if(isDark)

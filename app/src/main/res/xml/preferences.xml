@@ -30,6 +30,16 @@
             android:defaultValue="light"
             android:entries="@array/theme"
             android:entryValues="@array/theme_val"/>
+        <CheckBoxPreference
+            android:title="@string/sync_switch"
+            android:key="sync_periodically"
+            android:defaultValue="true"/>
+        <ListPreference
+            android:title="@string/sync_interval"
+            android:key="sync_period"
+            android:defaultValue="3600"
+            android:entries="@array/sync_periods"
+            android:entryValues="@array/sync_periods_val"/>
         <Preference
             android:title="@string/click_to_change_account"
             android:key="change_account"/>

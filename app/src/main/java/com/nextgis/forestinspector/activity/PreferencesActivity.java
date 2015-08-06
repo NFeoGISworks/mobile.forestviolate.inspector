@@ -21,10 +21,21 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
 
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.util.SettingsConstants;
+import com.nextgis.maplib.util.Constants;
 import com.nextgis.maplibui.activity.NGPreferenceActivity;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Application preference
@@ -35,5 +46,75 @@ public class PreferencesActivity extends NGPreferenceActivity {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
+
+        final CheckBoxPreference syncSwitch = (CheckBoxPreference) findPreference(SettingsConstantsUI.KEY_PREF_SYNC_PERIODICALLY);
+        if(null != syncSwitch){
+            SharedPreferences settings = getSharedPreferences(Constants.PREFERENCES,
+                    Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
+            long timeStamp = settings.getLong(com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LAST_SYNC_TIMESTAMP, 0);
+            if (timeStamp > 0) {
+                syncSwitch.setSummary(getString(R.string.last_sync_time) + ": " +
+                        new SimpleDateFormat().format(new Date(timeStamp)));
+            }
+        }
+
+        final ListPreference syncPeriod = (ListPreference) findPreference( SettingsConstantsUI.KEY_PREF_SYNC_PERIOD);
+        if(null != syncPeriod){
+
+            int id = syncPeriod.findIndexOfValue(syncPeriod.getValue());
+            CharSequence summary = syncPeriod.getEntries()[id];
+            syncPeriod.setSummary(summary);
+
+            syncPeriod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    long value = Long.parseLong(newValue.toString());
+                    int id = ((ListPreference) preference).findIndexOfValue((String) newValue);
+                    CharSequence summary =
+                            ((ListPreference) preference).getEntries()[id];
+                    preference.setSummary(summary);
+
+                    preference.getSharedPreferences()
+                            .edit()
+                            .putLong(SettingsConstantsUI.KEY_PREF_SYNC_PERIOD_SEC_LONG, value)
+                            .commit();
+
+                    return true;
+                }
+            });
+        }
+
+        final ListPreference appTheme = (ListPreference) findPreference( SettingsConstantsUI.KEY_PREF_THEME);
+        if(null != appTheme){
+            int id = appTheme.findIndexOfValue(appTheme.getValue());
+            CharSequence summary = appTheme.getEntries()[id];
+            appTheme.setSummary(summary);
+        }
+
+        final ListPreference lpCoordinateFormat = (ListPreference) findPreference( SettingsConstantsUI.KEY_PREF_COORD_FORMAT);
+        if (null != lpCoordinateFormat) {
+            lpCoordinateFormat.setSummary(lpCoordinateFormat.getEntry());
+
+            lpCoordinateFormat.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(
+                                Preference preference,
+                                Object newValue) {
+                            int value = Integer.parseInt(newValue.toString());
+                            CharSequence summary =
+                                    ((ListPreference) preference).getEntries()[value];
+                            preference.setSummary(summary);
+
+                            String preferenceKey = preference.getKey() + "_int";
+                            preference.getSharedPreferences()
+                                    .edit()
+                                    .putInt(preferenceKey, value)
+                                    .commit();
+
+                            return true;
+                        }
+                    });
+        }
     }
 }
