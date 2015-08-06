@@ -119,8 +119,7 @@ public class IndictmentViewFragment extends TabFragment {
                 TextView description = (TextView) view.findViewById(R.id.description);
                 description.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESCRIPTION));
 
-                List<Feature> features = feature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
-                ProductionListAdapter adapter = new ProductionListAdapter(getActivity(), features);
+                ProductionListAdapter adapter = new ProductionListAdapter(getActivity(), feature);
                 ListView list = (ListView) view.findViewById(R.id.productionList);
                 list.setAdapter(adapter);
 
@@ -140,13 +139,15 @@ public class IndictmentViewFragment extends TabFragment {
                                 + "attach" + "/" + aid);
 
                         Cursor cursor = getActivity().getContentResolver().query(attachUri,
-                                new String[] {VectorLayer.ATTACH_DATA}, null, null, null, null);
+                                new String[] {VectorLayer.ATTACH_DATA}, null, null, null);
                         if(null != cursor && cursor.moveToFirst()) {
                             String signPath = cursor.getString(0);
 
                             ImageView imageView = (ImageView) view.findViewById(R.id.sign);
                             Bitmap bm = BitmapFactory.decodeFile(signPath);
                             imageView.setImageBitmap(bm);
+
+                            cursor.close();
                         }
                         break;
                     }

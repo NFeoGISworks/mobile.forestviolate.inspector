@@ -114,6 +114,11 @@
             />
 
         <activity
+            android:name=".activity.ProductionActivity"
+            android:label="@string/action_production"
+            />
+
+        <activity
             android:name=".activity.SelectParcelsActivity"
             android:label="@string/action_cadastre"
             android:launchMode="singleTop">

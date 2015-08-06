@@ -151,4 +151,5 @@
     <string name="length">Длина</string>
     <string name="production">6. Вид и количество продукции, подлежащей изъятию, а также продукции на которую наложен арест на месте лесонарушения.</string>
     <string name="user_trans">Должностное лицо, передающее продукцию для изъятия</string>
+    <string name="action_production">Продукция к изъятию</string>
 </resources>

@@ -29,6 +29,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 
@@ -40,10 +41,18 @@ import java.util.List;
 public class ProductionListAdapter extends BaseAdapter {
     protected List<Feature> mFeatures;
     protected Context mContext;
+    protected DocumentFeature mFeature;
 
-    public ProductionListAdapter(Context context, List<Feature> features) {
+    public ProductionListAdapter(Context context, DocumentFeature feature) {
         mContext = context;
-        mFeatures = features;
+        mFeature = feature;
+        mFeatures = mFeature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        mFeatures = mFeature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
+        super.notifyDataSetChanged();
     }
 
     @Override

@@ -362,7 +362,8 @@ public class IndictmentActivity extends FIActivity{
     }
 
     private void onFillProduction() {
-
+        Intent intent = new Intent(this, ProductionActivity.class);
+        startActivity(intent);
     }
 
     private void onSign() {
