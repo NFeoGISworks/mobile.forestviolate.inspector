@@ -119,6 +119,22 @@
             />
 
         <activity
+            android:name=".activity.SheetActivity"
+            android:label="@string/action_sheet"
+            />
+
+        <activity
+            android:name=".activity.VehicleActivity"
+            android:label="@string/action_vehicle"
+            />
+
+
+        <activity
+            android:name=".activity.PhotoActivity"
+            android:label="@string/action_phototable"
+            />
+
+        <activity
             android:name=".activity.SelectParcelsActivity"
             android:label="@string/action_cadastre"
             android:launchMode="singleTop">

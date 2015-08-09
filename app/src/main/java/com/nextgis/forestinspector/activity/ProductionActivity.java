@@ -21,55 +21,64 @@
 
 package com.nextgis.forestinspector.activity;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ListView;
+import android.widget.BaseAdapter;
 
-import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.adapter.CheckListAdapter;
 import com.nextgis.forestinspector.adapter.ProductionListAdapter;
-import com.nextgis.forestinspector.datasource.DocumentEditFeature;
-import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.dialog.ProductionInputDialog;
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.VectorLayer;
 
 /**
  * Created by bishop on 07.08.15.
  */
-public class ProductionActivity extends FIActivity implements IDocumentFeatureSource{
-    protected DocumentEditFeature mDocumentFeature;
-    protected ProductionListAdapter mAdapter;
+public class ProductionActivity extends CheckListActivity{
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_production);
-        setToolbar(R.id.main_toolbar);
-
-        final View add = findViewById(R.id.add);
-        if (null != add) {
-            add.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            add();
-                        }
-                    });
-        }
-
-        MainApplication app = (MainApplication) getApplication();
-        mDocumentFeature = app.getTempFeature();
-
-        mAdapter = new ProductionListAdapter(this, mDocumentFeature);
-        ListView list = (ListView) findViewById(R.id.productionList);
-        list.setAdapter(mAdapter);
+    protected int getContentViewId() {
+        return R.layout.activity_production;
     }
 
     protected void add(){
-
+        //create input dialog
+        ProductionInputDialog inputDialog = new ProductionInputDialog();
+        inputDialog.show(getSupportFragmentManager(), "production_input_dialog");
     }
 
     @Override
-    public DocumentFeature getFeature() {
-        return mDocumentFeature;
+    protected CheckListAdapter getAdapter() {
+        return new ProductionListAdapter(this, mDocumentFeature);
+    }
+
+    protected void contentsChanged(){
+        if(null != mAdapter)
+            mAdapter.notifyDataSetChanged();
+    }
+
+    public void addProduction(String species, String cat, double length, double thickness, int count){
+
+        //get production layer
+        MapBase map = MapBase.getInstance();
+        DocumentsLayer documentsLayer = (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
+        if(null == documentsLayer)
+            return;
+
+        VectorLayer productionLayer = (VectorLayer) documentsLayer.getLayerByName(Constants.KEY_LAYER_PRODUCTION);
+        if(null == productionLayer)
+            return;
+
+        Feature feature = new Feature(com.nextgis.maplib.util.Constants.NOT_FOUND, productionLayer.getFields());
+        feature.setFieldValue(Constants.FIELD_PRODUCTION_SPECIES, species);
+        feature.setFieldValue(Constants.FIELD_PRODUCTION_TYPE, cat);
+        feature.setFieldValue(Constants.FIELD_PRODUCTION_LENGTH, length);
+        feature.setFieldValue(Constants.FIELD_PRODUCTION_DIAMETER, thickness);
+        feature.setFieldValue(Constants.FIELD_PRODUCTION_COUNT, count);
+        mDocumentFeature.addSubFeature(Constants.KEY_LAYER_PRODUCTION, feature);
+        contentsChanged();
     }
 }

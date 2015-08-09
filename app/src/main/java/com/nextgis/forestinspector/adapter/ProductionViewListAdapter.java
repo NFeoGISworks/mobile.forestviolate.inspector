@@ -29,7 +29,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.CheckListActivity;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
@@ -39,22 +38,41 @@ import java.util.List;
 /**
  * Created by bishop on 07.08.15.
  */
-public class ProductionListAdapter extends CheckListAdapter {
+public class ProductionViewListAdapter extends BaseAdapter {
+    protected List<Feature> mFeatures;
+    protected Context mContext;
+    protected DocumentFeature mFeature;
 
-    public ProductionListAdapter(CheckListActivity activity, DocumentFeature feature) {
-        super(activity, feature);
-        mFeatures = mFeature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
+    public ProductionViewListAdapter(Context context, DocumentFeature feature) {
+        mContext = context;
+        mFeature = feature;
     }
 
     @Override
-    public void notifyDataSetChanged() {
-        mFeatures = mFeature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
-        super.notifyDataSetChanged();
+    public int getCount() {
+        if(null == mFeatures)
+            return 0;
+        return mFeatures.size();
     }
+
+    @Override
+    public Object getItem(int position) {
+        return mFeatures.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View v = super.getView(position, convertView, parent);
+        View v = convertView;
+        if (null == v) {
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            v = inflater.inflate(R.layout.row_productionview_item, null);
+        }
 
         Feature item = (Feature) getItem(position);
 
@@ -74,10 +92,5 @@ public class ProductionListAdapter extends CheckListAdapter {
         length.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_LENGTH));
 
         return v;
-    }
-
-    @Override
-    protected int getRowItemResource() {
-        return R.layout.row_production_item;
     }
 }

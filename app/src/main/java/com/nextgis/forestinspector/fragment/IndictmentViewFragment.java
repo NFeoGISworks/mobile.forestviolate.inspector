@@ -39,6 +39,7 @@ import android.widget.TextView;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
 import com.nextgis.forestinspector.adapter.ProductionListAdapter;
+import com.nextgis.forestinspector.adapter.ProductionViewListAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
@@ -119,7 +120,7 @@ public class IndictmentViewFragment extends TabFragment {
                 TextView description = (TextView) view.findViewById(R.id.description);
                 description.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESCRIPTION));
 
-                ProductionListAdapter adapter = new ProductionListAdapter(getActivity(), feature);
+                ProductionViewListAdapter adapter = new ProductionViewListAdapter(getActivity(), feature);
                 ListView list = (ListView) view.findViewById(R.id.productionList);
                 list.setAdapter(adapter);
 

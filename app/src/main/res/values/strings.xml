@@ -151,4 +151,14 @@
     <string name="production">6. Type and number of products subject to withdrawal, as well as products that are seized at the site forest violations.</string>
     <string name="user_trans">The official products for the removal of the transmitter</string>
     <string name="action_production">Confiscate production</string>
+    <string name="add">Add</string>
+    <string name="add_pruduction">Add production</string>
+    <string name="species_detail">Product Type (whips, assortments, otherwise), tree species</string>
+    <string name="cat_detail">Business or wood</string>
+    <string name="length_detail">Length (meter)</string>
+    <string name="thickness_detail">Thickness</string>
+    <string name="count_detail">Count</string>
+    <string name="action_sheet">Trees sheet</string>
+    <string name="action_vehicle">Vehicles form</string>
+    <string name="action_phototable">Photo table</string>
 </resources>
