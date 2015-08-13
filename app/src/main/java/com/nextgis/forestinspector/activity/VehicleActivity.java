@@ -21,8 +21,6 @@
 
 package com.nextgis.forestinspector.activity;
 
-import android.widget.BaseAdapter;
-
 import com.nextgis.forestinspector.adapter.CheckListAdapter;
 
 /**

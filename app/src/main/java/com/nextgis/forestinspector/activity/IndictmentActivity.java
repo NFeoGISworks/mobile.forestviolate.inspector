@@ -393,14 +393,17 @@ public class IndictmentActivity extends FIActivity{
     }
 
     private void onFillPhoto() {
-
+        Intent intent = new Intent(this, PhotoActivity.class);
+        startActivity(intent);
     }
 
     private void onFillVehicle() {
-
+        Intent intent = new Intent(this, VehicleActivity.class);
+        startActivity(intent);
     }
 
     private void onFillSheet() {
-
+        Intent intent = new Intent(this, SheetActivity.class);
+        startActivity(intent);
     }
 }

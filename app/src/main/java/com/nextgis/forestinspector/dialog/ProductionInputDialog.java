@@ -24,7 +24,6 @@ package com.nextgis.forestinspector.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -55,15 +54,15 @@ public class ProductionInputDialog
         final EditText count = (EditText)view.findViewById(R.id.count);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(getString(R.string.add_pruduction))
+        builder.setTitle(getString(R.string.add_production))
                 .setView(view)
-                .setNegativeButton(R.string.add, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 })
-                .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         onAdd(species.getText().toString(), cat.getText().toString(),

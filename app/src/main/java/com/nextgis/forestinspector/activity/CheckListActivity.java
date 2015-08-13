@@ -32,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -58,7 +57,7 @@ public abstract class CheckListActivity extends FIActivity implements IDocumentF
     protected ListView mList;
 
     protected static final String BUNDLE_SELECTED_ITEMS = "selected_items";
-    protected static final String BUNDLE_ISCHECKED_KEY = "is_cjecked";
+    protected static final String BUNDLE_IS_CHECKED_KEY = "is_checked";
     protected static final String BUNDLE_TAG_KEY = "tag";
 
     @Override
@@ -113,7 +112,7 @@ public abstract class CheckListActivity extends FIActivity implements IDocumentF
                 super.handleMessage(msg);
 
                 Bundle resultData = msg.getData();
-                updateSelectedItems(resultData.getBoolean(BUNDLE_ISCHECKED_KEY), resultData.getInt(BUNDLE_TAG_KEY));
+                updateSelectedItems(resultData.getBoolean(BUNDLE_IS_CHECKED_KEY), resultData.getInt(BUNDLE_TAG_KEY));
             }
         };
     }
@@ -122,9 +121,9 @@ public abstract class CheckListActivity extends FIActivity implements IDocumentF
     protected abstract void add();
     protected abstract CheckListAdapter getAdapter();
 
-    protected void onUpdateSelectedItems(boolean isChecked, int tag){
+    public void onUpdateSelectedItems(boolean isChecked, int tag){
         Bundle bundle = new Bundle();
-        bundle.putBoolean(BUNDLE_ISCHECKED_KEY, isChecked);
+        bundle.putBoolean(BUNDLE_IS_CHECKED_KEY, isChecked);
         bundle.putInt(BUNDLE_TAG_KEY, tag);
 
         Message msg = new Message();
@@ -168,6 +167,9 @@ public abstract class CheckListActivity extends FIActivity implements IDocumentF
                 mActionMode.setTitle("" + mIds.size());
             }
         }
+
+
+        mAdapter.notifyDataSetInvalidated();
     }
 
     @Override

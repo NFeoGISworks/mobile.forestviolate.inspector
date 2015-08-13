@@ -151,14 +151,15 @@
     <string name="length">Длина</string>
     <string name="production">6. Вид и количество продукции, подлежащей изъятию, а также продукции на которую наложен арест на месте лесонарушения.</string>
     <string name="user_trans">Должностное лицо, передающее продукцию для изъятия</string>
-    <string name="action_production">Продукция к изъятию</string>
+    <string name="action_production">Продукция для изъятия</string>
     <string name="add">Добавить</string>
+    <string name="add_production">Добавить продукцию для изъятия</string>
     <string name="species_detail">Вид продукции (хлысты, сортименты, иное), порода деревьев</string>
     <string name="cat_detail">Деловая или дровяная</string>
     <string name="length_detail">Длина (метр)</string>
     <string name="thickness_detail">Толщина</string>
     <string name="count_detail">Количество</string>
-    <string name="action_sheet">Trees sheet</string>
-    <string name="action_vehicle">Vehicles</string>
-    <string name="action_phototable">Photo table</string>
+    <string name="action_sheet">Ведомость перечета</string>
+    <string name="action_vehicle">Акт об обнаружении орудий заготовки</string>
+    <string name="action_phototable">Фототаблица</string>
 </resources>

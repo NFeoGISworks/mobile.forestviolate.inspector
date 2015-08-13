@@ -72,9 +72,18 @@ public abstract class CheckListAdapter extends BaseAdapter {
             v = inflater.inflate(getRowItemResource(), null);
         }
 
-        CheckBox cb = (CheckBox) v.findViewById(R.id.check);
+        final CheckBox cb = (CheckBox) v.findViewById(R.id.check);
         if(null != cb) {
-            cb.setChecked(mActivity.isChecked(position));
+            final int cbPos = position;
+            cb.setChecked(mActivity.isChecked(cbPos));
+            cb.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            boolean isChecked = cb.isChecked();
+                            mActivity.onUpdateSelectedItems(isChecked, cbPos);
+                        }
+                    });
         }
 
         return v;

@@ -21,14 +21,13 @@
 
 package com.nextgis.forestinspector.activity;
 
-import android.widget.BaseAdapter;
-
 import com.nextgis.forestinspector.adapter.CheckListAdapter;
 
 /**
  * Created by bishop on 08.08.15.
  */
 public class SheetActivity extends CheckListActivity {
+
     @Override
     protected int getContentViewId() {
         return 0;

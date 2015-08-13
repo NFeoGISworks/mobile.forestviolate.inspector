@@ -152,7 +152,7 @@
     <string name="user_trans">The official products for the removal of the transmitter</string>
     <string name="action_production">Confiscate production</string>
     <string name="add">Add</string>
-    <string name="add_pruduction">Add production</string>
+    <string name="add_production">Add production</string>
     <string name="species_detail">Product Type (whips, assortments, otherwise), tree species</string>
     <string name="cat_detail">Business or wood</string>
     <string name="length_detail">Length (meter)</string>
