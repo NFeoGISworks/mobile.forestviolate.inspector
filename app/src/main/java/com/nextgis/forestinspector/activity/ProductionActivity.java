@@ -30,6 +30,8 @@ import com.nextgis.forestinspector.dialog.ProductionInputDialog;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
 
@@ -60,7 +62,7 @@ public class ProductionActivity extends CheckListActivity{
             mAdapter.notifyDataSetChanged();
     }
 
-    public void addProduction(String species, String cat, double length, double thickness, int count){
+    public void addProduction(GeoGeometry mpt, String species, String cat, double length, double thickness, int count){
 
         //get production layer
         MapBase map = MapBase.getInstance();
@@ -78,6 +80,7 @@ public class ProductionActivity extends CheckListActivity{
         feature.setFieldValue(Constants.FIELD_PRODUCTION_LENGTH, length);
         feature.setFieldValue(Constants.FIELD_PRODUCTION_DIAMETER, thickness);
         feature.setFieldValue(Constants.FIELD_PRODUCTION_COUNT, count);
+        feature.setGeometry(mpt);
         mDocumentFeature.addSubFeature(Constants.KEY_LAYER_PRODUCTION, feature);
         contentsChanged();
     }

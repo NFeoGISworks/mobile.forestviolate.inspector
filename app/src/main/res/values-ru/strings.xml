@@ -162,4 +162,6 @@
     <string name="action_sheet">Ведомость перечета</string>
     <string name="action_vehicle">Акт об обнаружении орудий заготовки</string>
     <string name="action_phototable">Фототаблица</string>
+    <string name="coordinates">Координаты</string>
+    <string name="error_invalid_input">Invalid input parameters</string>
 </resources>

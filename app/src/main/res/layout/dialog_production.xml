@@ -27,6 +27,12 @@
               android:layout_margin="5dp">
 
     <TextView style="@style/normal_text"
+              android:text="@string/coordinates"/>
+
+    <include
+        layout="@layout/fragment_location_panel"/>
+
+    <TextView style="@style/normal_text"
               android:text="@string/species_detail"
               android:id="@+id/species_desc"/>
 
@@ -55,7 +61,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/length"
-        android:inputType="number"/>
+        android:inputType="numberDecimal"/>
 
     <!-- thickness -->
     <TextView style="@style/normal_text"
@@ -66,7 +72,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/thickness"
-        android:inputType="number"/>
+        android:inputType="numberDecimal"/>
 
     <!-- count -->
     <TextView style="@style/normal_text"
@@ -77,6 +83,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/count"
-        android:inputType="numberDecimal"/>
+        android:inputType="number"/>
 
 </LinearLayout>

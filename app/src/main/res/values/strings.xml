@@ -161,4 +161,6 @@
     <string name="action_sheet">Trees sheet</string>
     <string name="action_vehicle">Vehicles form</string>
     <string name="action_phototable">Photo table</string>
+    <string name="coordinates">Coordinates</string>
+    <string name="error_invalid_input">Invalid input parameters</string>
 </resources>

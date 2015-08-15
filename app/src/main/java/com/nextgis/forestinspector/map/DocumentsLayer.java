@@ -415,9 +415,9 @@ public class DocumentsLayer extends NGWVectorLayer {
             if (result == null) {
                 Log.d(Constants.FITAG, "insert attach failed");
             } else {
-                List<String> pathSegments = uri.getPathSegments();
+                List<String> pathSegments = result.getPathSegments();
                 String featureId = pathSegments.get(pathSegments.size() - 3);
-                String attachId = uri.getLastPathSegment();
+                String attachId = pathSegments.get(pathSegments.size() - 1);
                 File to = new File(mPath, featureId + "/" + attachId);
                 File from = new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER +
                 "/" + item.getDisplayName());
