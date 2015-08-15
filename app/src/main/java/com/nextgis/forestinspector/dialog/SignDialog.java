@@ -24,6 +24,8 @@ package com.nextgis.forestinspector.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -33,9 +35,17 @@ import android.widget.Toast;
 
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.util.AttachItem;
+import com.nextgis.maplib.util.FileUtil;
+import com.nextgis.maplibui.formcontrol.Sign;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by bishop on 02.08.15.
@@ -43,12 +53,15 @@ import com.nextgis.maplib.map.MapBase;
 public class SignDialog
         extends DialogFragment {
 
+    protected static final String mSignFileName = "sign.png";
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
 
         View view = View.inflate(context, R.layout.dialog_sign, null);
+        final Sign sig = (Sign) view.findViewById(R.id.sign);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(getString(R.string.sign_and_save))
@@ -62,7 +75,15 @@ public class SignDialog
         .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                onCreateDocument();
+                File temPath = new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
+                FileUtil.createDir(temPath);
+                File sigFile = new File(temPath, mSignFileName);
+                try {
+                    sig.save(194, 102, false, sigFile);
+                    onCreateDocument();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         // Create the AlertDialog object and return it
@@ -90,7 +111,11 @@ public class SignDialog
             return;
         }
 
-        if(documentsLayer.insert(app.getTempFeature())) {
+        DocumentEditFeature feature = app.getTempFeature();
+        AttachItem signAttach = new AttachItem("-1", mSignFileName, "image/png", "sign");
+        feature.addAttachment(signAttach);
+
+        if(documentsLayer.insert(feature)) {
             //remove temp feature
             app.setTempFeature(null);
             getActivity().finish();
