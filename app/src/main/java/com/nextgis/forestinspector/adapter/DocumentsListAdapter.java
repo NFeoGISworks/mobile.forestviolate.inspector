@@ -129,10 +129,10 @@ public class DocumentsListAdapter extends BaseAdapter
                         Document doc = new Document();
                         doc.mType = cursor.getInt(nTypePos);
                         switch (doc.mType) {
-                            case Constants.TYPE_DOCUMENT:
+                            case Constants.DOC_TYPE_INDICTMENT:
                                 doc.mName = mActivity.getString(R.string.indictment);
                                 break;
-                            case Constants.TYPE_SHEET:
+                            case Constants.DOC_TYPE_SHEET:
                                 doc.mName = mActivity.getString(R.string.sheet);
                                 break;
                             default:
@@ -168,7 +168,7 @@ public class DocumentsListAdapter extends BaseAdapter
                 if(cursor.moveToFirst()) {
                     do {
                         Document doc = new Document();
-                        doc.mType = Constants.TYPE_NOTE;
+                        doc.mType = Constants.DOC_TYPE_NOTE;
 
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(cursor.getLong(0));
@@ -223,13 +223,13 @@ public class DocumentsListAdapter extends BaseAdapter
 
         ImageView ivIcon = (ImageView) v.findViewById(R.id.ivIcon);
         switch (item.mType){
-            case Constants.TYPE_DOCUMENT:
+            case Constants.DOC_TYPE_INDICTMENT:
                 ivIcon.setImageDrawable( mActivity.getResources().getDrawable(R.mipmap.ic_indicment));
                 break;
-            case Constants.TYPE_NOTE:
+            case Constants.DOC_TYPE_NOTE:
                 ivIcon.setImageDrawable( mActivity.getResources().getDrawable(R.mipmap.ic_bookmark));
                 break;
-            case Constants.TYPE_SHEET:
+            case Constants.DOC_TYPE_SHEET:
                 ivIcon.setImageDrawable( mActivity.getResources().getDrawable(R.mipmap.ic_sheet));
                 break;
         }
@@ -294,7 +294,7 @@ public class DocumentsListAdapter extends BaseAdapter
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Document item = (Document) getItem(position);
         Intent intent;
-        if(item.mType == Constants.TYPE_NOTE){
+        if(item.mType == Constants.DOC_TYPE_NOTE){
             //show notify activity
             intent = new Intent(mActivity, NotificationActivity.class);
             intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);

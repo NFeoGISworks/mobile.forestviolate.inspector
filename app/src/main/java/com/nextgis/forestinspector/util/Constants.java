@@ -36,7 +36,6 @@ public interface Constants {
     String KEY_SHEET = "sheet";
     String KEY_PRODUCTION = "production";
     String KEY_NOTES = "notes";
-    String KEY_TERRITORY = "territory";
     String KEY_VEHICLES = "vehicles";
     String KEY_CADASTRE = "cadastre";
     String KEY_VIOLATE_TYPES = "violation_types";
@@ -48,7 +47,6 @@ public interface Constants {
     String KEY_LAYER_SHEET = "sheet";
     String KEY_LAYER_PRODUCTION = "production";
     String KEY_LAYER_NOTES = "notes";
-    String KEY_LAYER_TERRITORY = "territory";
     String KEY_LAYER_VEHICLES = "vehicles";
     String KEY_LAYER_CADASTRE = "cadastre";
     String KEY_LAYER_VIOLATE_TYPES = "violation_types";
@@ -71,10 +69,11 @@ public interface Constants {
     /**
      * document types
      */
-    int TYPE_DOCUMENT = 2;
-    int TYPE_SHEET = 3;
-    int TYPE_VEHICLE = 4;
-    int TYPE_NOTE = 0;
+    int DOC_TYPE_NOTE = 0;
+    int DOC_TYPE_CHECK = 1;
+    int DOC_TYPE_INDICTMENT = 2;
+    int DOC_TYPE_SHEET = 3;
+    int DOC_TYPE_VEHICLE = 4;
 
     int STEP_STATE_WAIT = 0;
     int STEP_STATE_WORK = 1;
@@ -103,6 +102,8 @@ public interface Constants {
     String FIELD_DOCUMENTS_DESC_AUTHOR = "desc_author";
     String FIELD_DOCUMENTS_DESCRIPTION = "descript";
     String FIELD_DOCUMENTS_FOREST_CAT_TYPE = "forest_cat";
+    String FIELD_DOCUMENTS_TERRITORY = "territory";
+    String FIELD_DOCUMENTS_REGION = "region";
 
     /**
      * notes fields
@@ -110,14 +111,6 @@ public interface Constants {
     String FIELD_NOTES_DATE_BEG = "date_beg";
     String FIELD_NOTES_DATE_END = "date_end";
     String FIELD_NOTES_DESCRIPTION = "descript";
-
-    /**
-     * territory fields
-     */
-    String FIELD_TERRITORY_AREA = "forestarea";
-    String FIELD_TERRITORY_DISTRICT = "forestdist";
-    String FIELD_TERRITORY_PARCEL = "parcel";
-    String FIELD_TERRITORY_UNIT = "unit";
 
     /**
      * vehicle fields

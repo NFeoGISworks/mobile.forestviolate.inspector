@@ -133,9 +133,9 @@
     <string name="category">Category</string>
     <string name="click_to_set_value">Click here to set value</string>
     <string name="error_number_mast_be_set">The number must be set</string>
-    <string name="error_author_mast_be_set">The author mast be set</string>
+    <string name="error_author_must_be_set">The author must be set</string>
     <string name="set_territory">Select territory</string>
-    <string name="error_territory_mast_be_set">The violate territory mast be set</string>
+    <string name="error_territory_must_be_set">The violate territory must be set</string>
     <string name="fix">Fix</string>
     <string name="select_violation_territory">Then click check to apply or cross to cancel</string>
     <string name="action_territory">Violation territory</string>

@@ -26,7 +26,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.nextgis.forestinspector.MainApplication;
@@ -40,7 +40,7 @@ import com.nextgis.maplib.api.IGISApplication;
  */
 public class SelectTerritoryActivity extends FIActivity {
     protected DocumentEditFeature mDocumentFeature;
-    protected TextView mTerritoryText;
+    protected EditText mTerritoryText;
 
     protected final int TERRITORY_ACTIVITY = 55;
 
@@ -50,19 +50,6 @@ public class SelectTerritoryActivity extends FIActivity {
 
         setContentView(R.layout.activity_select_territory);
         setToolbar(R.id.main_toolbar);
-
-        final View addByType = findViewById(R.id.add_by_type);
-        if (null != addByType) {
-            addByType.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            addByType();
-                        }
-                    });
-        }
 
         final View addByHand = findViewById(R.id.add_by_hand);
         if (null != addByHand) {
@@ -119,7 +106,7 @@ public class SelectTerritoryActivity extends FIActivity {
         MainApplication app = (MainApplication) getApplication();
         mDocumentFeature = app.getTempFeature();
 
-        mTerritoryText = (TextView) findViewById(R.id.territory);
+        mTerritoryText = (EditText) findViewById(R.id.territory);
     }
 
     private void addBySheet() {
@@ -143,18 +130,16 @@ public class SelectTerritoryActivity extends FIActivity {
         // TODO: 03.08.15 Draw on map by hand
     }
 
-    private void addByType() {
-        // TODO: 03.08.15 Type text. The connected territory list must set empty.
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == TERRITORY_ACTIVITY){
             // TODO: 04.08.15 Update map
-            mTerritoryText.setText(mDocumentFeature.getTerritoryText(getString(R.string.forestry),
+            String text = mDocumentFeature.getTerritoryText(getString(R.string.forestry),
                     getString(R.string.district_forestry), getString(R.string.parcel),
-                    getString(R.string.unit)));
-            mDocumentFeature.setUnionGeometryFromLayer(Constants.KEY_LAYER_TERRITORY);
+                    getString(R.string.unit));
+
+            mTerritoryText.setText(text);
+            mDocumentFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, text);
         }
     }
 
@@ -189,8 +174,19 @@ public class SelectTerritoryActivity extends FIActivity {
     }
 
     private void apply() {
-        // TODO: 03.08.15 Add new geometry to feature, add parcels to territory
         finish();
+    }
+
+    @Override
+    protected void onPause() {
+        mDocumentFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, mTerritoryText.getText().toString());
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mTerritoryText.setText(mDocumentFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
     }
 
     private void showSettings() {

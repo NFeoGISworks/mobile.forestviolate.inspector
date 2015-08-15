@@ -22,7 +22,6 @@
 package com.nextgis.forestinspector.datasource;
 
 import android.database.Cursor;
-import android.os.DropBoxManager;
 import android.text.TextUtils;
 
 import com.nextgis.forestinspector.map.DocumentsLayer;
@@ -41,6 +40,7 @@ import com.nextgis.maplib.map.VectorLayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,63 +62,86 @@ public class DocumentEditFeature extends DocumentFeature {
         return mParcelIds;
     }
 
-    @Override
     public String getTerritoryText(String area, String district, String parcel, String unit) {
-        fillTerritoryLayer();
-        return super.getTerritoryText(area, district, parcel, unit);
-    }
 
-    protected void fillTerritoryLayer(){
-        if(mParcelIds.size() > 0){
-            List<Feature> territoryArray = mSubFeatures.get(Constants.KEY_LAYER_TERRITORY);
-            if(null != territoryArray)
-                territoryArray.clear();
-            else
-                territoryArray = new ArrayList<>();
+        String where = getWhereClauseForParcelIds();
+        if(null == where || TextUtils.isEmpty(where))
+            return "";
 
-            MapBase map = MapBase.getInstance();
-            DocumentsLayer docsLayer = null;
-            for(int i = 0; i < map.getLayerCount(); i++) {
-                ILayer layer = map.getLayer(i);
-                if (layer instanceof DocumentsLayer) {
-                    docsLayer = (DocumentsLayer) layer;
-                    break;
-                }
+        MapBase map = MapBase.getInstance();
+        DocumentsLayer docsLayer = null;
+        for(int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                docsLayer = (DocumentsLayer) layer;
+                break;
             }
-
-            if(docsLayer == null)
-                return;
-
-            VectorLayer territoryLayer = (VectorLayer) docsLayer.getLayerByName(Constants.KEY_LAYER_TERRITORY);
-            VectorLayer parcelsLayer = (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
-
-            Cursor cursor = parcelsLayer.query(null, " " + getWhereClauseForParcelIds(), null, null, null);
-            if(cursor.moveToFirst()){
-                do{
-                    try {
-                        Feature feature = new Feature(com.nextgis.maplib.util.Constants.NOT_FOUND, territoryLayer.getFields());
-                        GeoGeometry geom = GeoGeometryFactory.fromBlob(cursor.getBlob(cursor.getColumnIndex(FIELD_GEOM)));
-                        feature.setGeometry(geom);
-
-                        String lv = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV));
-                        String ulv = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV));
-                        String parcel = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
-
-                        feature.setFieldValue(Constants.FIELD_TERRITORY_AREA, ulv);
-                        feature.setFieldValue(Constants.FIELD_TERRITORY_DISTRICT, lv);
-                        feature.setFieldValue(Constants.FIELD_TERRITORY_PARCEL, parcel);
-
-                        territoryArray.add(feature);
-                    }
-                    catch (IOException | ClassNotFoundException | IllegalArgumentException e){
-                        e.printStackTrace();
-                    }
-                }while (cursor.moveToNext());
-            }
-
-            cursor.close();
-            mSubFeatures.put(Constants.KEY_LAYER_TERRITORY, territoryArray);
         }
+
+        if(docsLayer == null)
+            return "";
+
+        VectorLayer parcelsLayer = (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
+
+        Cursor cursor = parcelsLayer.query(null, " " + where, null, null, null);
+        GeoEnvelope env = new GeoEnvelope();
+        Map<String, Map<String, String>> data = new HashMap<>();
+
+        if(cursor.moveToFirst()){
+            do{
+                try {
+                    GeoGeometry geom = GeoGeometryFactory.fromBlob(cursor.getBlob(cursor.getColumnIndex(FIELD_GEOM)));
+                    env.merge(geom.getEnvelope());
+
+                    String sLv = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV));
+                    String sUlv = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV));
+                    String sParcel = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
+
+
+                    String key = sLv + " " + area + " " + sUlv + " " + district;
+                    String value_u = "";
+                    String key_u = parcel + " " + sParcel;
+                    if(data.containsKey(key)) {
+                        Map<String, String> data_u = data.get(key);
+                        if(data_u.containsKey(key_u)){
+                            data_u.put(key_u, data_u.get(key_u) + ", " + value_u);
+                        }
+                        else{
+                            data_u.put(key_u, value_u);
+                        }
+                    }
+                    else {
+                        Map<String, String> data_u = new HashMap<>();
+                        data_u.put(key_u, value_u);
+                        data.put(key, data_u);
+                    }
+                }
+                catch (IOException | ClassNotFoundException | IllegalArgumentException e){
+                    e.printStackTrace();
+                }
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        if(env.isInit())
+            setGeometryFromEnvelope(env);
+
+        String result = "";
+        for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
+            result += entry.getKey() + " ";
+            Map<String, String> data_u = entry.getValue();
+            boolean firstIteration = true;
+            for(Map.Entry<String, String> entry_u : data_u.entrySet()) {
+                if(!firstIteration)
+                    result += ", ";
+                else
+                    firstIteration = false;
+                result += entry_u.getKey();  //TODO when videl be set + " " + unit + " " + entry_u.getValue() + ", ";
+            }
+        }
+
+        return result;
     }
 
     public void setUnionGeometryFromLayer(String layerName){
@@ -133,6 +156,10 @@ public class DocumentEditFeature extends DocumentFeature {
             env.merge(feature.getGeometry().getEnvelope());
         }
 
+        setGeometryFromEnvelope(env);
+    }
+
+    protected void setGeometryFromEnvelope(GeoEnvelope env){
         GeoPolygon polygon = new GeoPolygon();
         polygon.add(new GeoPoint(env.getMinX(), env.getMinY()));
         polygon.add(new GeoPoint(env.getMinX(), env.getMaxY()));

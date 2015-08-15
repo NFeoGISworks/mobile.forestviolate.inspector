@@ -32,7 +32,6 @@ import android.support.v7.widget.Toolbar;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
-import com.nextgis.forestinspector.fragment.MapFragment;
 import com.nextgis.forestinspector.fragment.MapViewFragment;
 import com.nextgis.forestinspector.fragment.SheetViewFragment;
 import com.nextgis.forestinspector.fragment.TabFragment;
@@ -87,15 +86,15 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
 
         int nType;
         switch (mFeature.getFieldValueAsInteger(Constants.FIELD_DOCUMENTS_TYPE)){
-            case Constants.TYPE_DOCUMENT:
-                nType = Constants.TYPE_DOCUMENT;
+            case Constants.DOC_TYPE_INDICTMENT:
+                nType = Constants.DOC_TYPE_INDICTMENT;
                 setTitle(getString(R.string.indictment));
                 break;
-            case Constants.TYPE_SHEET:
-                nType = Constants.TYPE_SHEET;
+            case Constants.DOC_TYPE_SHEET:
+                nType = Constants.DOC_TYPE_SHEET;
                 setTitle(getString(R.string.sheet));
                 break;
-            case Constants.TYPE_VEHICLE: // no separate document type
+            case Constants.DOC_TYPE_VEHICLE: // no separate document type
             default:
                 setContentView(R.layout.activity_document_noview);
                 setToolbar(R.id.main_toolbar);
@@ -150,7 +149,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
 
             mTabFragmentList = new ArrayList<>();
 
-            if(nType == Constants.TYPE_DOCUMENT) {
+            if(nType == Constants.DOC_TYPE_INDICTMENT) {
                 // indictment
                 mTabFragmentList.add(new IndictmentViewFragment(getString(R.string.indictment_tab_name)));
                 // sheet
@@ -164,7 +163,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     // TODO: 28.07.15 create photo table
                 }
             }
-            else if(nType == Constants.TYPE_SHEET){
+            else if(nType == Constants.DOC_TYPE_SHEET){
                 mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_tab_name)));
             }
 

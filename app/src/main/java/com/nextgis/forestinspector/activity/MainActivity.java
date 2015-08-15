@@ -789,7 +789,6 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             keys.put(Constants.KEY_SHEET, -1L);
             keys.put(Constants.KEY_PRODUCTION, -1L);
             keys.put(Constants.KEY_NOTES, -1L);
-            keys.put(Constants.KEY_TERRITORY, -1L);
             keys.put(Constants.KEY_VEHICLES, -1L);
             keys.put(Constants.KEY_CADASTRE, -1L);
             keys.put(Constants.KEY_VIOLATE_TYPES, -1L);
@@ -937,28 +936,6 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             if (!loadLinkedTables(keys.get(Constants.KEY_PRODUCTION), mAccount.name,
                     Constants.KEY_LAYER_PRODUCTION, documentsLayer)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
-
-                try {
-                    Thread.sleep(nTimeout);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
-
-            if(isCancelled())
-                return false;
-
-            // step 6: load territory
-
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
-                    Constants.STEP_STATE_WORK);
-            nSubStep++;
-
-            if (!loadLinkedTables(keys.get(Constants.KEY_TERRITORY), mAccount.name,
-                    Constants.KEY_LAYER_TERRITORY, documentsLayer)){
                 publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
 
                 try {

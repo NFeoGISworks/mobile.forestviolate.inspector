@@ -29,7 +29,7 @@
     <include
         layout="@layout/actionbar"/>
 
-    <TextView
+    <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -60,16 +60,6 @@
         android:layout_marginEnd="16dp"
         fab:fab_expandDirection="left"
         >
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_by_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="?attr/colorPrimary"
-            fab:fab_size="mini"
-            fab:fab_icon="@drawable/ic_action_image_edit"
-            fab:fab_colorPressed="?attr/colorAccent"
-            />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_by_parcel_list"

@@ -230,7 +230,7 @@ public class IndictmentActivity extends FIActivity{
     }
 
     protected void saveControlsToFeature(){
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TYPE, Constants.TYPE_DOCUMENT);
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TYPE, Constants.DOC_TYPE_INDICTMENT);
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
@@ -249,6 +249,7 @@ public class IndictmentActivity extends FIActivity{
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
+        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
     }
 
     protected void restoreControlsFromFeature(){
@@ -287,10 +288,7 @@ public class IndictmentActivity extends FIActivity{
         mWho.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
         mDetectorSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
         mCrimeSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
-
-        mTerritory.setText(mNewFeature.getTerritoryText(getString(R.string.forestry),
-                getString(R.string.district_forestry), getString(R.string.parcel),
-                getString(R.string.unit)));
+        mTerritory.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
     }
 
     protected String getNewNumber(String passId){
@@ -350,9 +348,7 @@ public class IndictmentActivity extends FIActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == INDICTMENT_ACTIVITY){
-            mTerritory.setText(mNewFeature.getTerritoryText(getString(R.string.forestry),
-                    getString(R.string.district_forestry), getString(R.string.parcel),
-                    getString(R.string.unit)));
+            mTerritory.setText(mNewFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
         }
     }
 
@@ -368,8 +364,8 @@ public class IndictmentActivity extends FIActivity{
 
     private void onSign() {
         //check required field
-        if(mNewFeature.getSubFeaturesCount(Constants.KEY_LAYER_TERRITORY) == 0){
-            Toast.makeText(this, getString(R.string.error_territory_mast_be_set), Toast.LENGTH_LONG).show();
+        if(mNewFeature.getGeometry() == null || TextUtils.isEmpty(mTerritory.getText().toString())){
+            Toast.makeText(this, getString(R.string.error_territory_must_be_set), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -381,7 +377,7 @@ public class IndictmentActivity extends FIActivity{
 
         //user
         if(TextUtils.isEmpty(mAuthor.getText().toString())){
-            Toast.makeText(this, getString(R.string.error_author_mast_be_set), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.error_author_must_be_set), Toast.LENGTH_LONG).show();
             return;
         }
 
