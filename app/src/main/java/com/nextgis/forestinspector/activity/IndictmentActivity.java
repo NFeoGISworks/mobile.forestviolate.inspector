@@ -90,9 +90,16 @@ public class IndictmentActivity extends FIActivity{
 
         if(null != mDocsLayer) {
             mNewFeature = app.getTempFeature();
-            if(mNewFeature == null)
+            if(mNewFeature == null) {
                 mNewFeature = new DocumentEditFeature(com.nextgis.maplib.util.Constants.NOT_FOUND,
                         mDocsLayer.getFields());
+
+                // TODO: 17.08.15 Ask inspector about vector
+                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VECTOR, "-1");
+                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TYPE, Constants.DOC_TYPE_INDICTMENT);
+                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
+                mNewFeature.setFieldValue(Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+            }
         }
 
         if(null != mNewFeature){
@@ -230,11 +237,8 @@ public class IndictmentActivity extends FIActivity{
     }
 
     protected void saveControlsToFeature(){
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TYPE, Constants.DOC_TYPE_INDICTMENT);
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
-        mNewFeature.setFieldValue(Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolationTypeSpinner.getSelectedItem().toString());
