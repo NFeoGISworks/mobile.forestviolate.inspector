@@ -74,6 +74,7 @@ import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.mapui.MapView;
 import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
 import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
+import com.nextgis.maplibui.util.ConstantsUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import org.apache.http.HttpEntity;
@@ -396,6 +397,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             double size = GeoConstants.MERCATOR_MAX * 2;
             double scale = Math.min(extent.width() / size, extent.height() / size);
             double zoom = MapView.lg(1 / scale);
+            if(zoom < ConstantsUI.MIN_ZOOM_LEVEL)
+                zoom = ConstantsUI.MIN_ZOOM_LEVEL;
             mapDrawable.setZoomAndCenter((float) zoom, extent.getCenter());
         }
 

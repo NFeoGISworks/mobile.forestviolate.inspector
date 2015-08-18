@@ -46,6 +46,7 @@ import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplibui.api.MapViewEventListener;
 import com.nextgis.maplibui.mapui.MapView;
 import com.nextgis.maplibui.mapui.MapViewOverlays;
+import com.nextgis.maplibui.util.ConstantsUI;
 
 /**
  * Created by bishop on 01.08.15.
@@ -199,6 +200,8 @@ public class MapViewFragment  extends TabFragment
                 double scale = Math.min(geoEnvelope.width() / size,
                         geoEnvelope.height() / size);
                 double zoom = MapView.lg(1 / scale);
+                if(zoom < ConstantsUI.MIN_ZOOM_LEVEL)
+                    zoom = ConstantsUI.MIN_ZOOM_LEVEL;
                 mMap.setZoomAndCenter((float) zoom, geoEnvelope.getCenter());
             }
             mMap.addListener(this);
