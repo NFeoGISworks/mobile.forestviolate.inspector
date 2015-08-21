@@ -155,14 +155,14 @@ public class IndictmentActivity extends FIActivity{
             NGWLookupTable forestCatTypeTable = (NGWLookupTable) mDocsLayer.getLayerByName(Constants.KEY_LAYER_FOREST_CAT_TYPES);
             if (null != forestCatTypeTable) {
                 Map<String, String> data = forestCatTypeTable.getData();
-                List<String> violationTypeArray = new ArrayList<>();
+                List<String> forestCatTypeArray = new ArrayList<>();
 
                 for (Map.Entry<String, String> entry : data.entrySet()) {
-                    violationTypeArray.add(entry.getKey());
+                    forestCatTypeArray.add(entry.getKey());
                 }
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                        violationTypeArray);
+                        forestCatTypeArray);
 
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mForestCatTypeSpinner = (Spinner) findViewById(R.id.forest_cat_type);
@@ -241,9 +241,11 @@ public class IndictmentActivity extends FIActivity{
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolationTypeSpinner.getSelectedItem().toString());
+        if(null != mViolationTypeSpinner)
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolationTypeSpinner.getSelectedItem().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE, mForestCatTypeSpinner.getSelectedItem().toString());
+        if(null != mForestCatTypeSpinner)
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE, mForestCatTypeSpinner.getSelectedItem().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
         mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
@@ -264,24 +266,30 @@ public class IndictmentActivity extends FIActivity{
         mDateTime.setValue(mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
         mAuthor.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
         mPlace.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
-        String violationType = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) mViolationTypeSpinner.getAdapter();
-        for(int i= 0; i < adapter.getCount(); i++){
-            String adapterVal = adapter.getItem(i);
-            if(adapterVal.equals(violationType)){
-                mViolationTypeSpinner.setSelection(i);
-                break;
+
+        ArrayAdapter<String> adapter;
+        if(null != mViolationTypeSpinner) {
+            String violationType = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
+            adapter = (ArrayAdapter<String>) mViolationTypeSpinner.getAdapter();
+            for (int i = 0; i < adapter.getCount(); i++) {
+                String adapterVal = adapter.getItem(i);
+                if (adapterVal.equals(violationType)) {
+                    mViolationTypeSpinner.setSelection(i);
+                    break;
+                }
             }
         }
 
         mLaw.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
-        String forestCat = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
-        adapter = (ArrayAdapter<String>) mForestCatTypeSpinner.getAdapter();
-        for(int i= 0; i < adapter.getCount(); i++){
-            String adapterVal = adapter.getItem(i);
-            if(adapterVal.equals(forestCat)){
-                mForestCatTypeSpinner.setSelection(i);
-                break;
+        if(null != mViolationTypeSpinner) {
+            String forestCat = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
+            adapter = (ArrayAdapter<String>) mForestCatTypeSpinner.getAdapter();
+            for (int i = 0; i < adapter.getCount(); i++) {
+                String adapterVal = adapter.getItem(i);
+                if (adapterVal.equals(forestCat)) {
+                    mForestCatTypeSpinner.setSelection(i);
+                    break;
+                }
             }
         }
 

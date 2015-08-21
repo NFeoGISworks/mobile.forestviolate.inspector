@@ -45,6 +45,7 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.MainActivity;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.GpsEventListener;
+import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.MapDrawable;
@@ -226,6 +227,12 @@ public class MapFragment
         if (null != mMap) {
             if(prefs.getBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, true)){
                 //zoom to inspector extent
+                float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
+                float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
+                float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
+                float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+                mMap.zoomToExtent(new GeoEnvelope(minX, maxX, minY, maxY));
+
                 final SharedPreferences.Editor edit = prefs.edit();
                 edit.putBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, false);
                 edit.commit();

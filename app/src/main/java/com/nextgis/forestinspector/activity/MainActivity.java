@@ -346,13 +346,14 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         //mMap.moveLayer(0, osmLayer);
         GeoEnvelope extent = new GeoEnvelope(minX, maxX, minY, maxY);
 
+        /*
         if(extent.isInit()) {
             try {
-                downloadTiles(osmLayer, initAsyncTask, nStep, map.getFullBounds(), extent, 12, 15);
+                downloadTiles(osmLayer, initAsyncTask, nStep, map.getFullBounds(), extent, 12, 13);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
 
         String kosmosnimkiLayerName = getString(R.string.topo);
         String kosmosnimkiLayerURL = SettingsConstants.KOSOSNIMKI_URL;
@@ -371,7 +372,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         if(extent.isInit()) {
             //download
             try {
-                downloadTiles(ksLayer, initAsyncTask, nStep, map.getFullBounds(), extent, 0, 12);
+                downloadTiles(ksLayer, initAsyncTask, nStep, map.getFullBounds(), extent, 5, 12);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -393,13 +394,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
         //set extent
         if(map instanceof MapDrawable && extent.isInit()) {
-            MapDrawable mapDrawable = (MapDrawable) map;
-            double size = GeoConstants.MERCATOR_MAX * 2;
-            double scale = Math.min(extent.width() / size, extent.height() / size);
-            double zoom = MapView.lg(1 / scale);
-            if(zoom < ConstantsUI.MIN_ZOOM_LEVEL)
-                zoom = ConstantsUI.MIN_ZOOM_LEVEL;
-            mapDrawable.setZoomAndCenter((float) zoom, extent.getCenter());
+            ((MapDrawable) map).zoomToExtent(extent);
         }
 
         initAsyncTask.publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
@@ -463,8 +458,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             );
         }
         threadPool.shutdown();
-        //wait until downloaded end or 10 minutes
-        threadPool.awaitTermination(600, com.nextgis.maplib.util.Constants.KEEP_ALIVE_TIME_UNIT);
+        //wait until downloaded end or 20 minutes
+        threadPool.awaitTermination(1200000, com.nextgis.maplib.util.Constants.KEEP_ALIVE_TIME_UNIT);
     }
 
     protected boolean checkServerLayers(INGWResource resource, Map<String, Long> keys){

@@ -47,11 +47,11 @@ import com.nextgis.maplib.map.MapEventSource;
 import com.nextgis.maplib.map.VectorLayer;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -67,7 +67,7 @@ public class DocumentsListAdapter extends BaseAdapter
 
     public DocumentsListAdapter(FragmentActivity activity) {
         mActivity = activity;
-        mDocuments = new ArrayList<>();
+        mDocuments = new LinkedList<>();
         mMap = (MapEventSource) MapBase.getInstance();
         mDocsId = mNotesId = -10;
         for(int i = 0; i < mMap.getLayerCount(); i++){

@@ -195,15 +195,7 @@ public class MapViewFragment  extends TabFragment
 
         if (null != mMap) {
             GeoEnvelope geoEnvelope = mFeature.getGeometry().getEnvelope();
-            if(geoEnvelope.isInit()) {
-                double size = GeoConstants.MERCATOR_MAX * 2;
-                double scale = Math.min(geoEnvelope.width() / size,
-                        geoEnvelope.height() / size);
-                double zoom = MapView.lg(1 / scale);
-                if(zoom < ConstantsUI.MIN_ZOOM_LEVEL)
-                    zoom = ConstantsUI.MIN_ZOOM_LEVEL;
-                mMap.setZoomAndCenter((float) zoom, geoEnvelope.getCenter());
-            }
+            mMap.zoomToExtent(geoEnvelope);
             mMap.addListener(this);
         }
     }
