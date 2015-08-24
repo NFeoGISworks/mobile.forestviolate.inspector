@@ -418,9 +418,9 @@ public class DocumentsLayer extends NGWVectorLayer {
                 List<String> pathSegments = result.getPathSegments();
                 String featureId = pathSegments.get(pathSegments.size() - 3);
                 String attachId = pathSegments.get(pathSegments.size() - 1);
-                File to = new File(mPath, featureId + "/" + attachId);
+                File to = new File(mPath, featureId + File.separator + attachId);
                 File from = new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER +
-                "/" + item.getDisplayName());
+                File.separator + item.getDisplayName());
                 if(!FileUtil.copyRecursive(from, to)){
                     Log.d(Constants.FITAG, "create attach file failed");
                 }
