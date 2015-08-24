@@ -30,6 +30,8 @@ public interface Constants {
     int MAX_DOCUMENTS = 100;
     String TEMP_DOCUMENT_FEATURE_FOLDER = "temp_document";
     String SIGN_FILENAME = "sign.png";
+    String FRAGMENT_PHOTO_TABLE = "photo_table";
+    String TEMP_PHOTO_FILE_PREFIX = "temp-photo-";
 
     String KEY_INSPECTORS = "inspectors";
     String KEY_DOCUMENTS = "docs";
@@ -157,5 +159,4 @@ public interface Constants {
      * layer types
      */
     int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
-
 }

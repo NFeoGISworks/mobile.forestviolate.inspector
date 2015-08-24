@@ -130,7 +130,7 @@
 
 
         <activity
-            android:name=".activity.PhotoActivity"
+            android:name=".activity.PhotoTableActivity"
             android:label="@string/action_phototable"
             />
 

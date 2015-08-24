@@ -401,7 +401,7 @@ public class IndictmentActivity extends FIActivity{
     }
 
     private void onFillPhoto() {
-        Intent intent = new Intent(this, PhotoActivity.class);
+        Intent intent = new Intent(this, PhotoTableActivity.class);
         startActivity(intent);
     }
 
