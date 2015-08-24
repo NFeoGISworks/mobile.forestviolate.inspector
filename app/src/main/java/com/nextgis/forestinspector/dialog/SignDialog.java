@@ -53,8 +53,6 @@ import java.io.IOException;
 public class SignDialog
         extends DialogFragment {
 
-    protected static final String mSignFileName = "sign.png";
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -77,7 +75,7 @@ public class SignDialog
             public void onClick(DialogInterface dialog, int which) {
                 File temPath = new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
                 FileUtil.createDir(temPath);
-                File sigFile = new File(temPath, mSignFileName);
+                File sigFile = new File(temPath, Constants.SIGN_FILENAME);
                 try {
                     sig.save(194, 102, false, sigFile);
                     onCreateDocument();
@@ -112,7 +110,7 @@ public class SignDialog
         }
 
         DocumentEditFeature feature = app.getTempFeature();
-        AttachItem signAttach = new AttachItem("-1", mSignFileName, "image/png", "sign");
+        AttachItem signAttach = new AttachItem("-1", Constants.SIGN_FILENAME, "image/png", "sign");
         feature.addAttachment(signAttach);
 
         if(documentsLayer.insert(feature)) {
