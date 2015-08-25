@@ -142,7 +142,7 @@ public interface Constants {
      * production fields
      */
     String FIELD_PRODUCTION_SPECIES = "poroda";
-    String FIELD_PRODUCTION_TYPE = "type";
+    String FIELD_PRODUCTION_TYPE = "type_desc";
     String FIELD_PRODUCTION_LENGTH = "length";
     String FIELD_PRODUCTION_DIAMETER = "diameter";
     String FIELD_PRODUCTION_COUNT = "count";
