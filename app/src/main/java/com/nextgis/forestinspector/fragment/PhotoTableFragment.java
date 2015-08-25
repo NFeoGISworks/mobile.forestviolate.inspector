@@ -24,10 +24,15 @@ package com.nextgis.forestinspector.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import com.nextgis.forestinspector.R;
@@ -47,7 +52,8 @@ import static com.nextgis.maplib.util.Constants.TAG;
 
 public class PhotoTableFragment
         extends Fragment
-        implements PhotoTableActivity.OnPhotoTakedListener
+        implements PhotoTableActivity.OnPhotoTakedListener,
+                   PhotoTableAdapter.ViewHolder.OnCheckedChangeListener, ActionMode.Callback
 {
     protected static final int MIN_IMAGE_SIZE_DP   = 130;
     protected static final int CARD_VIEW_MARGIN_DP = 8;
@@ -63,6 +69,8 @@ public class PhotoTableFragment
 
     protected File[]          mPhotoFiles;
     protected List<PhotoItem> mPhotoItems;
+
+    private ActionMode mActionMode;
 
 
     @Override
@@ -105,7 +113,8 @@ public class PhotoTableFragment
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(
                 getActivity(), mRealPhotoCount, GridLayoutManager.VERTICAL, false);
 
-        mPhotoTableAdapter = new PhotoTableAdapter(getActivity(), mPhotoItems, mPhotoRealWidthPX);
+        mPhotoTableAdapter =
+                new PhotoTableAdapter(getActivity(), mPhotoItems, mPhotoRealWidthPX, this);
 
         mPhotoTable.setLayoutManager(layoutManager);
         mPhotoTable.setAdapter(mPhotoTableAdapter);
@@ -162,6 +171,80 @@ public class PhotoTableFragment
 
         for (File photoFile : mPhotoFiles) {
             mPhotoItems.add(new PhotoItem(photoFile));
+        }
+    }
+
+
+    @Override
+    public void onCheckedChange(int position)
+    {
+        if (mActionMode == null) {
+            mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
+        }
+    }
+
+
+    @Override
+    public boolean onCreateActionMode(
+            ActionMode mode,
+            Menu menu)
+    {
+        mode.getMenuInflater().inflate(R.menu.actionmode_photo_table, menu);
+        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (null != bar) {
+            bar.hide();
+        }
+        return true;
+    }
+
+
+    @Override
+    public boolean onPrepareActionMode(
+            ActionMode mode,
+            Menu menu)
+    {
+        return false;
+    }
+
+
+    @Override
+    public boolean onActionItemClicked(
+            ActionMode mode,
+            MenuItem item)
+    {
+        switch (item.getItemId()) {
+
+            case R.id.menu_delete:
+                // TODO: actually remove items
+                mode.finish();
+                return true;
+
+            case R.id.menu_select_all:
+                for (PhotoItem photoItem : mPhotoItems) {
+                    photoItem.mIsChecked = true;
+                }
+                mPhotoTableAdapter.notifyDataSetChanged();
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode)
+    {
+        for (PhotoItem photoItem : mPhotoItems) {
+            photoItem.mIsChecked = false;
+        }
+        mPhotoTableAdapter.notifyDataSetChanged();
+
+        mActionMode = null;
+
+        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (null != bar) {
+            bar.show();
         }
     }
 }

@@ -65,14 +65,19 @@ public class PhotoTableAdapter
     protected List<PhotoItem> mPhotoItems;
 
 
+    private ViewHolder.OnCheckedChangeListener mOnCheckedChangeListener;
+
+
     public PhotoTableAdapter(
             Context context,
             List<PhotoItem> photoItems,
-            int imageSizePx)
+            int imageSizePx,
+            ViewHolder.OnCheckedChangeListener onCheckedChangeListener)
     {
         mContext = context;
         mPhotoItems = photoItems;
         IMAGE_SIZE_PX = imageSizePx;
+        mOnCheckedChangeListener = onCheckedChangeListener;
     }
 
 
@@ -84,7 +89,7 @@ public class PhotoTableAdapter
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_photo_table, parent, false);
 
-        return new ViewHolder(view);
+        return new ViewHolder(view, mOnCheckedChangeListener);
     }
 
 
@@ -110,6 +115,10 @@ public class PhotoTableAdapter
                         CheckBox checkBox = (CheckBox) view;
                         int clickedPos = (Integer) checkBox.getTag();
                         mPhotoItems.get(clickedPos).mIsChecked = checkBox.isChecked();
+
+                        if (viewHolder.mListener != null) {
+                            viewHolder.mListener.onCheckedChange(position);
+                        }
                     }
                 });
 
@@ -330,12 +339,23 @@ public class PhotoTableAdapter
         public ImageView mImageView;
         public CheckBox  mCheckBox;
 
+        public OnCheckedChangeListener mListener;
 
-        public ViewHolder(View itemView)
+
+        public ViewHolder(
+                View itemView,
+                OnCheckedChangeListener listener)
         {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.photo_table_item);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.photo_checkbox);
+            mListener = listener;
+        }
+
+
+        public interface OnCheckedChangeListener
+        {
+            void onCheckedChange(int position);
         }
     }
 }
