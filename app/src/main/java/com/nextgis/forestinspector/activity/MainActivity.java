@@ -70,17 +70,12 @@ import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.NGWUtil;
+import com.nextgis.maplib.util.NetworkUtil;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
-import com.nextgis.maplibui.mapui.MapView;
 import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
 import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
-import com.nextgis.maplibui.util.ConstantsUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -514,13 +509,11 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         String sURL = NGWUtil.getFeaturesUrl(connection.getURL(), resourceId, "login=" + login);
 
         try {
-            HttpGet get = new HttpGet(sURL);
-            get.setHeader("Cookie", connection.getCookie());
-            get.setHeader("Accept", "*/*");
-            HttpResponse response = connection.getHttpClient().execute(get);
-            HttpEntity entity = response.getEntity();
+            String sResponse = NetworkUtil.get(sURL, connection.getLogin(), connection.getPassword());
+            if(null == sResponse)
+                return false;
 
-            JSONArray features = new JSONArray(EntityUtils.toString(entity));
+            JSONArray features = new JSONArray(sResponse);
             if(features.length() == 0)
                 return false;
 
