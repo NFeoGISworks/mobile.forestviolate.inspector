@@ -32,19 +32,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.util.Constants;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
@@ -61,52 +61,18 @@ public class PhotoTableAdapter
 
     protected final int IMAGE_SIZE_PX;
 
-    protected Context mContext;
-    protected File[]  mPhotoFiles;
+    protected Context         mContext;
+    protected List<PhotoItem> mPhotoItems;
 
 
     public PhotoTableAdapter(
             Context context,
-            File photoDirectory,
+            List<PhotoItem> photoItems,
             int imageSizePx)
     {
         mContext = context;
+        mPhotoItems = photoItems;
         IMAGE_SIZE_PX = imageSizePx;
-
-        if (null != photoDirectory) {
-
-            if (!photoDirectory.isDirectory()) {
-                throw new IllegalArgumentException("photoDirectory is not directory");
-            }
-
-            mPhotoFiles = photoDirectory.listFiles(
-                    new FilenameFilter()
-                    {
-                        @Override
-                        public boolean accept(
-                                final File dir,
-                                final String name)
-                        {
-                            Log.d(
-                                    TAG, "ObjectPhotoFileAdapter, FilenameFilter, dir: " +
-                                         dir.getAbsolutePath() + ", name: " + name);
-
-                            if (name.matches(Constants.TEMP_PHOTO_FILE_PREFIX + ".*\\.jpg")) {
-                                Log.d(
-                                        TAG,
-                                        "ObjectPhotoFileAdapter, FilenameFilter, name.matches: " +
-                                        true);
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                    });
-
-        } else {
-            Log.d(TAG, "ObjectPhotoFileAdapter(), null == photoDirectory");
-            mPhotoFiles = null;
-        }
     }
 
 
@@ -132,6 +98,21 @@ public class PhotoTableAdapter
         layoutParams.width = IMAGE_SIZE_PX;
 
         viewHolder.mPosition = position;
+
+        viewHolder.mCheckBox.setChecked(mPhotoItems.get(position).mIsChecked);
+        viewHolder.mCheckBox.setTag(position);
+        viewHolder.mCheckBox.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        CheckBox checkBox = (CheckBox) view;
+                        int clickedPos = (Integer) checkBox.getTag();
+                        mPhotoItems.get(clickedPos).mIsChecked = checkBox.isChecked();
+                    }
+                });
+
         viewHolder.mImageView.setLayoutParams(layoutParams);
         viewHolder.mImageView.setImageBitmap(null);
 
@@ -221,7 +202,7 @@ public class PhotoTableAdapter
     @Override
     public long getItemId(int position)
     {
-        if (null == mPhotoFiles) {
+        if (null == mPhotoItems) {
             Log.d(TAG, "getItemId(), null == mPhotoFiles");
             return super.getItemId(position);
         }
@@ -233,12 +214,12 @@ public class PhotoTableAdapter
     @Override
     public int getItemCount()
     {
-        if (null == mPhotoFiles) {
+        if (null == mPhotoItems) {
             Log.d(TAG, "getItemCount(), null == mPhotoFiles");
             return 0;
         }
 
-        return mPhotoFiles.length;
+        return mPhotoItems.size();
     }
 
 
@@ -307,7 +288,7 @@ public class PhotoTableAdapter
     protected InputStream getPhotoInputStream(int position)
             throws IOException
     {
-        if (null == mPhotoFiles) {
+        if (null == mPhotoItems) {
             String error = "ObjectPhotoFileAdapter, getPhotoInputStream(), mPhotoFiles == null";
             Log.d(TAG, error);
             throw new IOException(error);
@@ -322,7 +303,7 @@ public class PhotoTableAdapter
             throw new IOException(error);
         }
 
-        File photoFile = mPhotoFiles[(int) itemId];
+        File photoFile = mPhotoItems.get((int) itemId).mFile;
         InputStream inputStream;
 
         try {
@@ -347,12 +328,14 @@ public class PhotoTableAdapter
     {
         public int       mPosition;
         public ImageView mImageView;
+        public CheckBox  mCheckBox;
 
 
         public ViewHolder(View itemView)
         {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.photo_table_item);
+            mCheckBox = (CheckBox) itemView.findViewById(R.id.photo_checkbox);
         }
     }
 }

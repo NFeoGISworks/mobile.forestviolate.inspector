@@ -26,16 +26,23 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.PhotoTableActivity;
+import com.nextgis.forestinspector.adapter.PhotoItem;
 import com.nextgis.forestinspector.adapter.PhotoTableAdapter;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.map.MapBase;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.nextgis.maplib.util.Constants.TAG;
 
 
 public class PhotoTableFragment
@@ -53,6 +60,9 @@ public class PhotoTableFragment
 
     protected RecyclerView      mPhotoTable;
     protected PhotoTableAdapter mPhotoTableAdapter;
+
+    protected File[]          mPhotoFiles;
+    protected List<PhotoItem> mPhotoItems;
 
 
     @Override
@@ -75,6 +85,9 @@ public class PhotoTableFragment
         int cardViewRealWidthDP = (widthRestDP + CARD_VIEW_MARGIN_DP) / mRealPhotoCount;
         int photoRealWidthDp = cardViewRealWidthDP - photoSpaces;
         mPhotoRealWidthPX = (int) (photoRealWidthDp * density);
+
+        mPhotoItems = new ArrayList<>();
+        setPhotoItems();
     }
 
 
@@ -92,27 +105,63 @@ public class PhotoTableFragment
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(
                 getActivity(), mRealPhotoCount, GridLayoutManager.VERTICAL, false);
 
+        mPhotoTableAdapter = new PhotoTableAdapter(getActivity(), mPhotoItems, mPhotoRealWidthPX);
+
         mPhotoTable.setLayoutManager(layoutManager);
+        mPhotoTable.setAdapter(mPhotoTableAdapter);
         mPhotoTable.setHasFixedSize(true);
 
-        setPhotoTableAdapter();
-
         return view;
-    }
-
-
-    protected void setPhotoTableAdapter()
-    {
-        File photoDir =
-                new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
-        mPhotoTableAdapter = new PhotoTableAdapter(getActivity(), photoDir, mPhotoRealWidthPX);
-        mPhotoTable.setAdapter(mPhotoTableAdapter);
     }
 
 
     @Override
     public void OnPhotoTaked()
     {
-        setPhotoTableAdapter();
+        setPhotoItems();
+
+        if (null != mPhotoTableAdapter) {
+            mPhotoTableAdapter.notifyDataSetChanged();
+        }
+    }
+
+
+    protected void setPhotoItems()
+    {
+        File photoDir =
+                new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
+
+        if (!photoDir.isDirectory()) {
+            throw new IllegalArgumentException("photoDir is not directory");
+        }
+
+        mPhotoFiles = photoDir.listFiles(
+                new FilenameFilter()
+                {
+                    @Override
+                    public boolean accept(
+                            final File dir,
+                            final String name)
+                    {
+                        Log.d(
+                                TAG, "ObjectPhotoFileAdapter, FilenameFilter, dir: " +
+                                     dir.getAbsolutePath() + ", name: " + name);
+
+                        if (name.matches(Constants.TEMP_PHOTO_FILE_PREFIX + ".*\\.jpg")) {
+                            Log.d(
+                                    TAG, "ObjectPhotoFileAdapter, FilenameFilter, name.matches: " +
+                                         true);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                });
+
+        mPhotoItems.clear();
+
+        for (File photoFile : mPhotoFiles) {
+            mPhotoItems.add(new PhotoItem(photoFile));
+        }
     }
 }

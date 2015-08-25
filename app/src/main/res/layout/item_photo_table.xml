@@ -68,6 +68,15 @@
                 android:visibility="gone"
                 />
 
+            <CheckBox
+                android:id="@+id/photo_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:checked="true"
+                />
+
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>
