@@ -210,15 +210,12 @@ public class PhotoTableFragment
         switch (item.getItemId()) {
 
             case R.id.menu_delete:
-                // TODO: actually remove items
+                mPhotoTableAdapter.deleteSelected();
                 mode.finish();
                 return true;
 
             case R.id.menu_select_all:
-                for (PhotoItem photoItem : mPhotoItems) {
-                    photoItem.mIsChecked = true;
-                }
-                mPhotoTableAdapter.notifyDataSetChanged();
+                mPhotoTableAdapter.toggleSelection();
                 return true;
 
             default:

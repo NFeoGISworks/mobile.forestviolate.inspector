@@ -64,8 +64,9 @@ public class PhotoTableAdapter
     protected Context         mContext;
     protected List<PhotoItem> mPhotoItems;
 
+    protected boolean mSelectState = false;
 
-    private ViewHolder.OnCheckedChangeListener mOnCheckedChangeListener;
+    protected ViewHolder.OnCheckedChangeListener mOnCheckedChangeListener;
 
 
     public PhotoTableAdapter(
@@ -232,13 +233,47 @@ public class PhotoTableAdapter
     }
 
 
-    public void clearSelection() {
+    public void clearSelection()
+    {
+        setSelection(false);
+    }
+
+
+    public void toggleSelection()
+    {
+        mSelectState = !mSelectState;
+        setSelection(mSelectState);
+    }
+
+
+    public void setSelection(boolean selected)
+    {
         for (int i = 0, size = mPhotoItems.size(); i < size; ++i) {
-            if (mPhotoItems.get(i).mIsChecked) {
-                mPhotoItems.get(i).mIsChecked = false;
+            if (selected != mPhotoItems.get(i).mIsChecked) {
+                mPhotoItems.get(i).mIsChecked = selected;
                 notifyItemChanged(i);
             }
         }
+    }
+
+
+    public void deleteSelected()
+    {
+        int size = mPhotoItems.size();
+        for (int i = size - 1; i >= 0; --i) {
+            if (mPhotoItems.get(i).mIsChecked) {
+                if (mPhotoItems.get(i).mFile.delete()) {
+                    mPhotoItems.remove(i);
+                    notifyItemRemoved(i);
+                } else {
+                    Toast.makeText(
+                            mContext, "Can not delete the file: " +
+                                      mPhotoItems.get(i).mFile.getAbsolutePath(), Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
+        }
+        notifyItemRangeChanged(0, mPhotoItems.size());
     }
 
 
