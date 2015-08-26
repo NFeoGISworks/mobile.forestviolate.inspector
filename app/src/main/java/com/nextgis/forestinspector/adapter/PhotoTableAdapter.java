@@ -29,6 +29,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 
@@ -61,24 +65,25 @@ public class PhotoTableAdapter
 
     protected final int IMAGE_SIZE_PX;
 
-    protected Context         mContext;
-    protected List<PhotoItem> mPhotoItems;
+    protected Context    mContext;
+    protected List<File> mPhotoItems;
 
+    protected SparseBooleanArray mSelectedItems;
     protected boolean mSelectState = false;
 
-    protected ViewHolder.OnCheckedChangeListener mOnCheckedChangeListener;
+    protected Queue<OnSelectionChangedListener> mListeners;
 
 
     public PhotoTableAdapter(
             Context context,
-            List<PhotoItem> photoItems,
-            int imageSizePx,
-            ViewHolder.OnCheckedChangeListener onCheckedChangeListener)
+            List<File> photoItems,
+            int imageSizePx)
     {
         mContext = context;
         mPhotoItems = photoItems;
         IMAGE_SIZE_PX = imageSizePx;
-        mOnCheckedChangeListener = onCheckedChangeListener;
+        mListeners = new ConcurrentLinkedQueue<>();
+        mSelectedItems = new SparseBooleanArray();
     }
 
 
@@ -89,8 +94,7 @@ public class PhotoTableAdapter
     {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_photo_table, parent, false);
-
-        return new ViewHolder(view, mOnCheckedChangeListener);
+        return new ViewHolder(view);
     }
 
 
@@ -105,8 +109,8 @@ public class PhotoTableAdapter
 
         viewHolder.mPosition = position;
 
-        viewHolder.mCheckBox.setChecked(mPhotoItems.get(position).mIsChecked);
         viewHolder.mCheckBox.setTag(position);
+        viewHolder.mCheckBox.setChecked(isSelected(position));
         viewHolder.mCheckBox.setOnClickListener(
                 new View.OnClickListener()
                 {
@@ -115,16 +119,14 @@ public class PhotoTableAdapter
                     {
                         CheckBox checkBox = (CheckBox) view;
                         int clickedPos = (Integer) checkBox.getTag();
-                        mPhotoItems.get(clickedPos).mIsChecked = checkBox.isChecked();
-
-                        if (viewHolder.mListener != null) {
-                            viewHolder.mListener.onCheckedChange(position);
-                        }
+                        setSelection(clickedPos, checkBox.isChecked());
                     }
                 });
 
         viewHolder.mImageView.setLayoutParams(layoutParams);
         viewHolder.mImageView.setImageBitmap(null);
+
+        addListener(viewHolder);
 
         final Handler handler = new Handler()
         {
@@ -210,6 +212,14 @@ public class PhotoTableAdapter
 
 
     @Override
+    public void onViewRecycled(ViewHolder holder)
+    {
+        removeListener(holder);
+        super.onViewRecycled(holder);
+    }
+
+
+    @Override
     public long getItemId(int position)
     {
         if (null == mPhotoItems) {
@@ -233,9 +243,56 @@ public class PhotoTableAdapter
     }
 
 
+    /**
+     * Count the selected items
+     *
+     * @return Selected items count
+     */
+    public int getSelectedItemCount()
+    {
+        return mSelectedItems.size();
+    }
+
+
+    /**
+     * Indicates if the item at position position is selected
+     *
+     * @param position
+     *         Position of the item to check
+     *
+     * @return true if the item is selected, false otherwise
+     */
+    public boolean isSelected(int position)
+    {
+        return mSelectedItems.get(position, false);
+    }
+
+
+    public boolean isSelectedItems()
+    {
+        return mSelectedItems.size() > 0;
+    }
+
+
+    /**
+     * Clear the selection status for all items
+     */
     public void clearSelection()
     {
+        mSelectState = false;
         setSelection(false);
+    }
+
+
+    /**
+     * Toggle the selection status of the item at a given position
+     *
+     * @param position
+     *         Position of the item to toggle the selection status for
+     */
+    public void toggleSelection(int position)
+    {
+        setSelection(position, mSelectedItems.get(position, false));
     }
 
 
@@ -246,13 +303,36 @@ public class PhotoTableAdapter
     }
 
 
-    public void setSelection(boolean selected)
+    public void setSelection(boolean selection)
     {
         for (int i = 0, size = mPhotoItems.size(); i < size; ++i) {
-            if (selected != mPhotoItems.get(i).mIsChecked) {
-                mPhotoItems.get(i).mIsChecked = selected;
-                notifyItemChanged(i);
+            if (selection != isSelected(i)) {
+                setSelection(i, selection);
             }
+        }
+    }
+
+
+    /**
+     * Set the selection status of the item at a given position to the given state
+     *
+     * @param position
+     *         Position of the item to toggle the selection status for
+     * @param selection
+     *         State for the item at position
+     */
+    public void setSelection(
+            int position,
+            boolean selection)
+    {
+        if (selection) {
+            mSelectedItems.put(position, true);
+        } else {
+            mSelectedItems.delete(position);
+        }
+
+        for (OnSelectionChangedListener listener : mListeners) {
+            listener.onSelectionChanged(position, selection);
         }
     }
 
@@ -261,19 +341,34 @@ public class PhotoTableAdapter
     {
         int size = mPhotoItems.size();
         for (int i = size - 1; i >= 0; --i) {
-            if (mPhotoItems.get(i).mIsChecked) {
-                if (mPhotoItems.get(i).mFile.delete()) {
+            if (isSelected(i)) {
+                if (mPhotoItems.get(i).delete()) {
                     mPhotoItems.remove(i);
                     notifyItemRemoved(i);
                 } else {
                     Toast.makeText(
-                            mContext, "Can not delete the file: " +
-                                      mPhotoItems.get(i).mFile.getAbsolutePath(), Toast.LENGTH_LONG)
-                            .show();
+                            mContext,
+                            "Can not delete the file: " + mPhotoItems.get(i).getAbsolutePath(),
+                            Toast.LENGTH_LONG).show();
                 }
             }
         }
         notifyItemRangeChanged(0, mPhotoItems.size());
+    }
+
+
+    /**
+     * Indicates the list of selected items
+     *
+     * @return List of selected items ids
+     */
+    public List<Integer> getSelectedItems()
+    {
+        List<Integer> items = new ArrayList<>(mSelectedItems.size());
+        for (int i = 0, size = mSelectedItems.size(); i < size; ++i) {
+            items.add(mSelectedItems.keyAt(i));
+        }
+        return items;
     }
 
 
@@ -357,7 +452,7 @@ public class PhotoTableAdapter
             throw new IOException(error);
         }
 
-        File photoFile = mPhotoItems.get((int) itemId).mFile;
+        File photoFile = mPhotoItems.get((int) itemId);
         InputStream inputStream;
 
         try {
@@ -379,28 +474,53 @@ public class PhotoTableAdapter
 
     public static class ViewHolder
             extends RecyclerView.ViewHolder
+            implements PhotoTableAdapter.OnSelectionChangedListener
     {
         public int       mPosition;
         public ImageView mImageView;
         public CheckBox  mCheckBox;
 
-        public OnCheckedChangeListener mListener;
 
-
-        public ViewHolder(
-                View itemView,
-                OnCheckedChangeListener listener)
+        public ViewHolder(View itemView)
         {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.photo_table_item);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.photo_checkbox);
-            mListener = listener;
         }
 
 
-        public interface OnCheckedChangeListener
+        @Override
+        public void onSelectionChanged(
+                int position,
+                boolean selection)
         {
-            void onCheckedChange(int position);
+            if (position == getAdapterPosition()) {
+                mCheckBox.setChecked(selection);
+            }
         }
+    }
+
+
+    public void addListener(OnSelectionChangedListener listener)
+    {
+        if (mListeners != null && !mListeners.contains(listener)) {
+            mListeners.add(listener);
+        }
+    }
+
+
+    public void removeListener(OnSelectionChangedListener listener)
+    {
+        if (mListeners != null) {
+            mListeners.remove(listener);
+        }
+    }
+
+
+    public interface OnSelectionChangedListener
+    {
+        void onSelectionChanged(
+                int position,
+                boolean selection);
     }
 }

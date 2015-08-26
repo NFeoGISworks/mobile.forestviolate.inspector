@@ -36,7 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.PhotoTableActivity;
-import com.nextgis.forestinspector.adapter.PhotoItem;
 import com.nextgis.forestinspector.adapter.PhotoTableAdapter;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.map.MapBase;
@@ -44,6 +43,7 @@ import com.nextgis.maplib.map.MapBase;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.nextgis.maplib.util.Constants.TAG;
@@ -52,7 +52,7 @@ import static com.nextgis.maplib.util.Constants.TAG;
 public class PhotoTableFragment
         extends Fragment
         implements PhotoTableActivity.OnPhotoTakedListener,
-                   PhotoTableAdapter.ViewHolder.OnCheckedChangeListener, ActionMode.Callback
+                   PhotoTableAdapter.OnSelectionChangedListener, ActionMode.Callback
 {
     protected static final int MIN_IMAGE_SIZE_DP   = 130;
     protected static final int CARD_VIEW_MARGIN_DP = 8;
@@ -66,8 +66,8 @@ public class PhotoTableFragment
     protected RecyclerView      mPhotoTable;
     protected PhotoTableAdapter mPhotoTableAdapter;
 
-    protected File[]          mPhotoFiles;
-    protected List<PhotoItem> mPhotoItems;
+    protected File[]     mPhotoFiles;
+    protected List<File> mPhotoItems;
 
     private ActionMode mActionMode;
 
@@ -113,13 +113,22 @@ public class PhotoTableFragment
                 getActivity(), mRealPhotoCount, GridLayoutManager.VERTICAL, false);
 
         mPhotoTableAdapter =
-                new PhotoTableAdapter(getActivity(), mPhotoItems, mPhotoRealWidthPX, this);
+                new PhotoTableAdapter(getActivity(), mPhotoItems, mPhotoRealWidthPX);
+        mPhotoTableAdapter.addListener(this);
 
         mPhotoTable.setLayoutManager(layoutManager);
         mPhotoTable.setAdapter(mPhotoTableAdapter);
         mPhotoTable.setHasFixedSize(true);
 
         return view;
+    }
+
+
+    @Override
+    public void onDestroyView()
+    {
+        mPhotoTableAdapter.removeListener(this);
+        super.onDestroyView();
     }
 
 
@@ -167,18 +176,20 @@ public class PhotoTableFragment
                 });
 
         mPhotoItems.clear();
-
-        for (File photoFile : mPhotoFiles) {
-            mPhotoItems.add(new PhotoItem(photoFile));
-        }
+        Collections.addAll(mPhotoItems, mPhotoFiles);
     }
 
 
     @Override
-    public void onCheckedChange(int position)
+    public void onSelectionChanged(
+            int position,
+            boolean selection)
     {
         if (mActionMode == null) {
             mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
+
+        } else if (!mPhotoTableAdapter.isSelectedItems()) {
+            mActionMode.finish();
         }
     }
 
