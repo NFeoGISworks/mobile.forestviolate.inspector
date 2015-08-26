@@ -232,6 +232,14 @@ public class PhotoTableAdapter
     }
 
 
+    public void clearSelection() {
+        for (int i = 0, size = mPhotoItems.size(); i < size; ++i) {
+            mPhotoItems.get(i).mIsChecked = false;
+            notifyItemChanged(i);
+        }
+    }
+
+
     protected Bitmap createImagePreview(InputStream inputStream)
             throws IOException
     {

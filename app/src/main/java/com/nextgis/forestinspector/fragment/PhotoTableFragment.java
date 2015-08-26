@@ -230,11 +230,7 @@ public class PhotoTableFragment
     @Override
     public void onDestroyActionMode(ActionMode mode)
     {
-        for (PhotoItem photoItem : mPhotoItems) {
-            photoItem.mIsChecked = false;
-        }
-        mPhotoTableAdapter.notifyDataSetChanged();
-
+        mPhotoTableAdapter.clearSelection();
         mActionMode = null;
     }
 }
