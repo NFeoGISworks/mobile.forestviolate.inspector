@@ -24,7 +24,6 @@ package com.nextgis.forestinspector.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.GridLayoutManager;
@@ -190,10 +189,6 @@ public class PhotoTableFragment
             Menu menu)
     {
         mode.getMenuInflater().inflate(R.menu.actionmode_photo_table, menu);
-        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (null != bar) {
-            bar.hide();
-        }
         return true;
     }
 
@@ -241,10 +236,5 @@ public class PhotoTableFragment
         mPhotoTableAdapter.notifyDataSetChanged();
 
         mActionMode = null;
-
-        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (null != bar) {
-            bar.show();
-        }
     }
 }
