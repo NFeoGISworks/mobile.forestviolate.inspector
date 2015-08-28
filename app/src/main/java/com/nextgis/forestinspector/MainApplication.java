@@ -63,7 +63,7 @@ public class MainApplication extends GISApplication {
         String mapName = sharedPreferences.getString(SettingsConstantsUI.KEY_PREF_MAP_NAME, "default");
 
         File mapFullPath = new File(mapPath, mapName + MAP_EXT);
-        mDocFeatureFolder = new File(mapFullPath, Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
+        mDocFeatureFolder = new File(mapPath, Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
 
         final Bitmap bkBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
         mMap = new MapDrawable(bkBitmap, this, mapFullPath, new FILayerFactory());
@@ -99,6 +99,14 @@ public class MainApplication extends GISApplication {
             return R.style.AppTheme_Light;
     }
 
+    public File getDocFeatureFolder()
+    {
+        if (!mDocFeatureFolder.exists()) {
+            FileUtil.createDir(mDocFeatureFolder);
+        }
+        return mDocFeatureFolder;
+    }
+
     public DocumentEditFeature getTempFeature() {
         return mTempFeature;
     }
@@ -106,8 +114,7 @@ public class MainApplication extends GISApplication {
     public void setTempFeature(DocumentEditFeature tempFeature) {
         mTempFeature = tempFeature;
         //delete photos of previous feature
-        if(FileUtil.deleteRecursive(mDocFeatureFolder))
+        if (null == tempFeature && FileUtil.deleteRecursive(mDocFeatureFolder))
             FileUtil.createDir(mDocFeatureFolder);
     }
 }
-

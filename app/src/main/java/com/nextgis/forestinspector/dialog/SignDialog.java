@@ -24,15 +24,12 @@ package com.nextgis.forestinspector.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Toast;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
@@ -73,7 +70,8 @@ public class SignDialog
         .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                File temPath = new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
+                MainApplication app = (MainApplication) getActivity().getApplication();
+                File temPath = app.getDocFeatureFolder();
                 FileUtil.createDir(temPath);
                 File sigFile = new File(temPath, Constants.SIGN_FILENAME);
                 try {
