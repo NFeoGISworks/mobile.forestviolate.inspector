@@ -36,7 +36,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.maplib.util.AttachItem;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,7 +48,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -65,8 +70,12 @@ public class PhotoTableAdapter
 
     protected final int IMAGE_SIZE_PX;
 
-    protected Context    mContext;
-    protected List<File> mPhotoItems;
+    protected Context mContext;
+
+    protected Map<String, AttachItem>             mAttachItemMap;
+    protected List<Map.Entry<String, AttachItem>> mAttachItemList;
+
+    protected File mAttachDir;
 
     protected SparseBooleanArray mSelectedItems;
     protected boolean mSelectState = false;
@@ -76,14 +85,85 @@ public class PhotoTableAdapter
 
     public PhotoTableAdapter(
             Context context,
-            List<File> photoItems,
+            Map<String, AttachItem> attachItemMap,
             int imageSizePx)
     {
         mContext = context;
-        mPhotoItems = photoItems;
         IMAGE_SIZE_PX = imageSizePx;
+        setAttachItems(attachItemMap);
+
         mListeners = new ConcurrentLinkedQueue<>();
         mSelectedItems = new SparseBooleanArray();
+
+        MainApplication app = (MainApplication) mContext.getApplicationContext();
+        mAttachDir = app.getDocFeatureFolder();
+    }
+
+
+    public void setAttachItems(Map<String, AttachItem> attachItemMap)
+    {
+        mAttachItemMap = attachItemMap;
+        if (null != mAttachItemList) {
+            mAttachItemList.clear();
+        }
+
+        mAttachItemList = new ArrayList<>(mAttachItemMap.size());
+
+        if (mAttachItemList.addAll(mAttachItemMap.entrySet())) {
+            Collections.sort(
+                    mAttachItemList, new Comparator<Map.Entry<String, AttachItem>>()
+                    {
+                        @Override
+                        public int compare(
+                                Map.Entry<String, AttachItem> lhs,
+                                Map.Entry<String, AttachItem> rhs)
+                        {
+                            if (null == lhs && null == rhs) {
+                                return 0;
+                            }
+
+                            if (null == lhs) {
+                                return -1;
+                            }
+
+                            if (null == rhs) {
+                                return 1;
+                            }
+
+                            AttachItem valueL = lhs.getValue();
+                            AttachItem valueR = rhs.getValue();
+
+                            if (null == valueL && null == valueR) {
+                                return 0;
+                            }
+
+                            if (null == valueL) {
+                                return -1;
+                            }
+
+                            if (null == valueR) {
+                                return 1;
+                            }
+
+                            String displayNameL = valueL.getDisplayName();
+                            String displayNameR = valueR.getDisplayName();
+
+                            if (null == displayNameL && null == displayNameR) {
+                                return 0;
+                            }
+
+                            if (null == displayNameL) {
+                                return -1;
+                            }
+
+                            if (null == displayNameR) {
+                                return 1;
+                            }
+
+                            return displayNameL.compareTo(displayNameR);
+                        }
+                    });
+        }
     }
 
 
@@ -202,7 +282,12 @@ public class PhotoTableAdapter
             protected void setException(Throwable t)
             {
                 super.setException(t);
-                Message msg = handler.obtainMessage(CREATE_PREVIEW_FAILED, t.getLocalizedMessage());
+
+                String error = t.getLocalizedMessage();
+                Log.d(TAG, error);
+                t.printStackTrace();
+
+                Message msg = handler.obtainMessage(CREATE_PREVIEW_FAILED, error);
                 msg.sendToTarget();
             }
         };
@@ -222,7 +307,7 @@ public class PhotoTableAdapter
     @Override
     public long getItemId(int position)
     {
-        if (null == mPhotoItems) {
+        if (null == mAttachItemList) {
             Log.d(TAG, "getItemId(), null == mPhotoFiles");
             return super.getItemId(position);
         }
@@ -234,12 +319,12 @@ public class PhotoTableAdapter
     @Override
     public int getItemCount()
     {
-        if (null == mPhotoItems) {
+        if (null == mAttachItemList) {
             Log.d(TAG, "getItemCount(), null == mPhotoFiles");
             return 0;
         }
 
-        return mPhotoItems.size();
+        return mAttachItemList.size();
     }
 
 
@@ -305,7 +390,7 @@ public class PhotoTableAdapter
 
     public void setSelection(boolean selection)
     {
-        for (int i = 0, size = mPhotoItems.size(); i < size; ++i) {
+        for (int i = 0, size = mAttachItemList.size(); i < size; ++i) {
             if (selection != isSelected(i)) {
                 setSelection(i, selection);
             }
@@ -338,22 +423,24 @@ public class PhotoTableAdapter
 
 
     public void deleteSelected()
+            throws IOException
     {
-        int size = mPhotoItems.size();
+        int size = mAttachItemList.size();
         for (int i = size - 1; i >= 0; --i) {
             if (isSelected(i)) {
-                if (mPhotoItems.get(i).delete()) {
-                    mPhotoItems.remove(i);
+                File attachFile = getAttachFile(i);
+
+                if (attachFile.delete()) {
+                    removeAttach(i);
                     notifyItemRemoved(i);
                 } else {
-                    Toast.makeText(
-                            mContext,
-                            "Can not delete the file: " + mPhotoItems.get(i).getAbsolutePath(),
-                            Toast.LENGTH_LONG).show();
+                    String error = "Can not delete the file: " + attachFile.getAbsolutePath();
+                    Log.d(TAG, error);
+                    throw new IOException(error);
                 }
             }
         }
-        notifyItemRangeChanged(0, mPhotoItems.size());
+        notifyItemRangeChanged(0, mAttachItemList.size());
     }
 
 
@@ -437,8 +524,8 @@ public class PhotoTableAdapter
     protected InputStream getPhotoInputStream(int position)
             throws IOException
     {
-        if (null == mPhotoItems) {
-            String error = "ObjectPhotoFileAdapter, getPhotoInputStream(), mPhotoFiles == null";
+        if (null == mAttachItemList) {
+            String error = "ObjectPhotoFileAdapter, getPhotoInputStream(), mAttachItemList == null";
             Log.d(TAG, error);
             throw new IOException(error);
         }
@@ -446,29 +533,53 @@ public class PhotoTableAdapter
         long itemId = getItemId(position);
 
         if (RecyclerView.NO_ID == itemId) {
-            String error =
-                    "ObjectPhotoFileAdapter, getPhotoInputStream(), RecyclerView.NO_ID == itemId";
+            String error = "PhotoTableAdapter, getPhotoInputStream(), RecyclerView.NO_ID == itemId";
             Log.d(TAG, error);
             throw new IOException(error);
         }
 
-        File photoFile = mPhotoItems.get((int) itemId);
+        File photoFile = getAttachFile((int) itemId);
         InputStream inputStream;
 
         try {
             inputStream = new FileInputStream(photoFile);
 
         } catch (FileNotFoundException e) {
-            String error = "ObjectPhotoFileAdapter, getPhotoInputStream(), position = " + position +
+            String error = "PhotoTableAdapter, getPhotoInputStream(), position = " + position +
                            ", ERROR: " + e.getLocalizedMessage();
             Log.d(TAG, error);
             throw new IOException(error);
         }
 
         Log.d(
-                TAG, "ObjectPhotoFileAdapter, getPhotoInputStream(), position = " + position +
+                TAG, "PhotoTableAdapter, getPhotoInputStream(), position = " + position +
                      ", photoFile = " + photoFile.getAbsolutePath());
         return inputStream;
+    }
+
+
+    protected File getAttachFile(int id)
+            throws IOException
+    {
+        AttachItem item = mAttachItemList.get(id).getValue();
+
+        if (null == item) {
+            String error = "PhotoTableAdapter, getAttachFile(), null == item";
+            Log.d(TAG, error);
+            throw new IOException(error);
+        }
+
+        String attachDisplayName = item.getDisplayName();
+        return new File(mAttachDir, attachDisplayName);
+    }
+
+
+    protected void removeAttach(int id)
+    {
+        String key = mAttachItemList.get(id).getKey();
+        mAttachItemMap.remove(key);
+        mAttachItemList.remove(id);
+        mSelectedItems.delete(id);
     }
 
 

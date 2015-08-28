@@ -33,10 +33,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.fragment.PhotoTableFragment;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.maplib.map.MapBase;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,12 +105,11 @@ public class PhotoTableActivity
         if (null != cameraIntent.resolveActivity(getPackageManager())) {
 
             try {
-                File photoDir = new File(
-                        MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
+                MainApplication app = (MainApplication) getApplication();
+                File photoDir = app.getDocFeatureFolder();
                 String timeStamp =
-                        new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-                File tempFile = new File(
-                        photoDir, Constants.TEMP_PHOTO_FILE_PREFIX + timeStamp + ".jpg");
+                        new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date());
+                File tempFile = new File(photoDir, timeStamp + ".jpg");
 
                 if (!tempFile.exists() && tempFile.createNewFile() ||
                     tempFile.exists() && tempFile.delete() &&
@@ -141,7 +140,7 @@ public class PhotoTableActivity
 
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             if (null != mOnPhotoTakedListener) {
-                mOnPhotoTakedListener.OnPhotoTaked();
+                mOnPhotoTakedListener.OnPhotoTaked(tempPhotoFile);
             }
         }
 
@@ -167,6 +166,6 @@ public class PhotoTableActivity
 
     public interface OnPhotoTakedListener
     {
-        void OnPhotoTaked();
+        void OnPhotoTaked(File tempPhotoFile);
     }
 }

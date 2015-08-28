@@ -34,17 +34,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.PhotoTableActivity;
 import com.nextgis.forestinspector.adapter.PhotoTableAdapter;
-import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.maplib.map.MapBase;
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
+import com.nextgis.maplib.util.AttachItem;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
 
 import static com.nextgis.maplib.util.Constants.TAG;
 
@@ -66,8 +65,7 @@ public class PhotoTableFragment
     protected RecyclerView      mPhotoTable;
     protected PhotoTableAdapter mPhotoTableAdapter;
 
-    protected File[]     mPhotoFiles;
-    protected List<File> mPhotoItems;
+    protected DocumentEditFeature mTempFeature;
 
     private ActionMode mActionMode;
 
@@ -93,8 +91,8 @@ public class PhotoTableFragment
         int photoRealWidthDp = cardViewRealWidthDP - photoSpaces;
         mPhotoRealWidthPX = (int) (photoRealWidthDp * density);
 
-        mPhotoItems = new ArrayList<>();
-        setPhotoItems();
+        MainApplication app = (MainApplication) getActivity().getApplication();
+        mTempFeature = app.getTempFeature();
     }
 
 
@@ -112,8 +110,8 @@ public class PhotoTableFragment
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(
                 getActivity(), mRealPhotoCount, GridLayoutManager.VERTICAL, false);
 
-        mPhotoTableAdapter =
-                new PhotoTableAdapter(getActivity(), mPhotoItems, mPhotoRealWidthPX);
+        mPhotoTableAdapter = new PhotoTableAdapter(
+                getActivity(), mTempFeature.getAttachments(), mPhotoRealWidthPX);
         mPhotoTableAdapter.addListener(this);
 
         mPhotoTable.setLayoutManager(layoutManager);
@@ -133,50 +131,15 @@ public class PhotoTableFragment
 
 
     @Override
-    public void OnPhotoTaked()
+    public void OnPhotoTaked(File tempPhotoFile)
     {
-        setPhotoItems();
+        AttachItem photoAttach = new AttachItem("-1", tempPhotoFile.getName(), "image/jpeg", "");
+        mTempFeature.addAttachment(photoAttach);
 
         if (null != mPhotoTableAdapter) {
+            mPhotoTableAdapter.setAttachItems(mTempFeature.getAttachments());
             mPhotoTableAdapter.notifyDataSetChanged();
         }
-    }
-
-
-    protected void setPhotoItems()
-    {
-        File photoDir =
-                new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
-
-        if (!photoDir.isDirectory()) {
-            throw new IllegalArgumentException("photoDir is not directory");
-        }
-
-        mPhotoFiles = photoDir.listFiles(
-                new FilenameFilter()
-                {
-                    @Override
-                    public boolean accept(
-                            final File dir,
-                            final String name)
-                    {
-                        Log.d(
-                                TAG, "ObjectPhotoFileAdapter, FilenameFilter, dir: " +
-                                     dir.getAbsolutePath() + ", name: " + name);
-
-                        if (name.matches(Constants.TEMP_PHOTO_FILE_PREFIX + ".*\\.jpg")) {
-                            Log.d(
-                                    TAG, "ObjectPhotoFileAdapter, FilenameFilter, name.matches: " +
-                                         true);
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                });
-
-        mPhotoItems.clear();
-        Collections.addAll(mPhotoItems, mPhotoFiles);
     }
 
 
@@ -185,6 +148,8 @@ public class PhotoTableFragment
             int position,
             boolean selection)
     {
+        // TODO: change title for item count
+
         if (mActionMode == null) {
             mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
 
@@ -221,7 +186,14 @@ public class PhotoTableFragment
         switch (item.getItemId()) {
 
             case R.id.menu_delete:
-                mPhotoTableAdapter.deleteSelected();
+                try {
+                    mPhotoTableAdapter.deleteSelected();
+                } catch (IOException e) {
+                    String error = e.getLocalizedMessage();
+                    Log.d(TAG, error);
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+                }
                 mode.finish();
                 return true;
 
