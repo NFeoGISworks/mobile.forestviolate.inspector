@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -53,14 +54,15 @@ public class PhotoTableFragment
         implements PhotoTableActivity.OnPhotoTakedListener,
                    PhotoTableAdapter.OnSelectionChangedListener, ActionMode.Callback
 {
-    protected static final int MIN_IMAGE_SIZE_DP   = 130;
-    protected static final int CARD_VIEW_MARGIN_DP = 8;
-    protected static final int CARD_ELEVATION_DP   = 2;
-    protected static final int CONTENT_PADDING_DP  = 2;
-    protected static final int MAX_ITEM_COUNT      = 4;
-
-    protected int mRealPhotoCount;
-    protected int mPhotoRealWidthPX;
+    protected static final int MIN_IMAGE_SIZE_DP      = 130;
+    protected static final int CARD_VIEW_MARGIN_DP    = 8;
+    protected static final int CARD_ELEVATION_DP      = 2;
+    protected static final int CONTENT_PADDING_DP     = 2;
+    protected static final int MAX_ITEM_COUNT_V       = 4;
+    protected static final int MAX_ITEM_COUNT_H       = 7;
+    protected static final int PHOTO_SPACES           =
+            CONTENT_PADDING_DP * 2 + CARD_ELEVATION_DP * 2 + CARD_VIEW_MARGIN_DP;
+    protected static final int CARD_VIEW_MIN_WIDTH_DP = MIN_IMAGE_SIZE_DP + PHOTO_SPACES;
 
     protected RecyclerView      mPhotoTable;
     protected PhotoTableAdapter mPhotoTableAdapter;
@@ -76,23 +78,9 @@ public class PhotoTableFragment
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        float density = getResources().getDisplayMetrics().density;
-        int widthPixels = getResources().getDisplayMetrics().widthPixels;
-        int widthDP = (int) (widthPixels / density);
-        int widthRestDP = widthDP - CARD_VIEW_MARGIN_DP;
-
-        int photoSpaces = CONTENT_PADDING_DP * 2 + CARD_ELEVATION_DP * 2 + CARD_VIEW_MARGIN_DP;
-
-        int cardViewMinWidthDP = MIN_IMAGE_SIZE_DP + photoSpaces;
-        int minItemCount = widthRestDP / cardViewMinWidthDP;
-
-        mRealPhotoCount = minItemCount > MAX_ITEM_COUNT ? MAX_ITEM_COUNT : minItemCount;
-        int cardViewRealWidthDP = (widthRestDP + CARD_VIEW_MARGIN_DP) / mRealPhotoCount;
-        int photoRealWidthDp = cardViewRealWidthDP - photoSpaces;
-        mPhotoRealWidthPX = (int) (photoRealWidthDp * density);
-
         MainApplication app = (MainApplication) getActivity().getApplication();
         mTempFeature = app.getTempFeature();
+        mPhotoTableAdapter = new PhotoTableAdapter(getActivity(), mTempFeature.getAttachments());
     }
 
 
@@ -102,16 +90,39 @@ public class PhotoTableFragment
             ViewGroup container,
             Bundle savedInstanceState)
     {
-        // TODO: calculate mRealPhotoCount hear for screen rotation
+        int orientation = getResources().getConfiguration().orientation;
+        int maxItemCount;
+
+        switch (orientation) {
+            case Configuration.ORIENTATION_PORTRAIT:
+            default:
+                maxItemCount = MAX_ITEM_COUNT_V;
+                break;
+
+            case Configuration.ORIENTATION_LANDSCAPE:
+                maxItemCount = MAX_ITEM_COUNT_H;
+                break;
+        }
+
+        float density = getResources().getDisplayMetrics().density;
+        int widthPX = getResources().getDisplayMetrics().widthPixels;
+        int widthDP = (int) (widthPX / density);
+        int widthRestDP = widthDP - CARD_VIEW_MARGIN_DP;
+        int minItemCount = widthRestDP / CARD_VIEW_MIN_WIDTH_DP;
+
+        int realPhotoCount = minItemCount > maxItemCount ? maxItemCount : minItemCount;
+        int cardViewRealWidthDP = (widthRestDP + CARD_VIEW_MARGIN_DP) / realPhotoCount;
+        int photoRealWidthDp = cardViewRealWidthDP - PHOTO_SPACES;
+        int photoRealWidthPX = (int) (photoRealWidthDp * density);
+
 
         View view = inflater.inflate(R.layout.fragment_photo_table, null);
         mPhotoTable = (RecyclerView) view.findViewById(R.id.photo_table_rv);
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(
-                getActivity(), mRealPhotoCount, GridLayoutManager.VERTICAL, false);
+                getActivity(), realPhotoCount, GridLayoutManager.VERTICAL, false);
 
-        mPhotoTableAdapter = new PhotoTableAdapter(
-                getActivity(), mTempFeature.getAttachments(), mPhotoRealWidthPX);
+        mPhotoTableAdapter.setImageSizePx(photoRealWidthPX);
         mPhotoTableAdapter.addListener(this);
 
         mPhotoTable.setLayoutManager(layoutManager);
@@ -125,7 +136,10 @@ public class PhotoTableFragment
     @Override
     public void onDestroyView()
     {
-        mPhotoTableAdapter.removeListener(this);
+        if (null != mPhotoTableAdapter) {
+            mPhotoTableAdapter.removeListener(this);
+        }
+
         super.onDestroyView();
     }
 

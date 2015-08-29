@@ -68,7 +68,7 @@ public class PhotoTableAdapter
     protected final static int CREATE_PREVIEW_OK     = 1;
     protected final static int CREATE_PREVIEW_FAILED = 2;
 
-    protected final int IMAGE_SIZE_PX;
+    protected int mImageSizePx;
 
     protected Context mContext;
 
@@ -85,11 +85,9 @@ public class PhotoTableAdapter
 
     public PhotoTableAdapter(
             Context context,
-            Map<String, AttachItem> attachItemMap,
-            int imageSizePx)
+            Map<String, AttachItem> attachItemMap)
     {
         mContext = context;
-        IMAGE_SIZE_PX = imageSizePx;
         setAttachItems(attachItemMap);
 
         mListeners = new ConcurrentLinkedQueue<>();
@@ -167,6 +165,12 @@ public class PhotoTableAdapter
     }
 
 
+    public void setImageSizePx(int imageSizePx)
+    {
+        mImageSizePx = imageSizePx;
+    }
+
+
     @Override
     public ViewHolder onCreateViewHolder(
             ViewGroup parent,
@@ -184,8 +188,8 @@ public class PhotoTableAdapter
             final int position)
     {
         ViewGroup.LayoutParams layoutParams = viewHolder.mImageView.getLayoutParams();
-        layoutParams.height = IMAGE_SIZE_PX;
-        layoutParams.width = IMAGE_SIZE_PX;
+        layoutParams.height = mImageSizePx;
+        layoutParams.width = mImageSizePx;
 
         viewHolder.mPosition = position;
 
@@ -479,8 +483,8 @@ public class PhotoTableAdapter
             byte[] imageData = baos.toByteArray();
             baos.close();
 
-            int targetW = IMAGE_SIZE_PX;
-            int targetH = IMAGE_SIZE_PX;
+            int targetW = mImageSizePx;
+            int targetH = mImageSizePx;
 
             bmOptions.inJustDecodeBounds = true;
             BitmapFactory.decodeByteArray(imageData, 0, imageData.length, bmOptions);
