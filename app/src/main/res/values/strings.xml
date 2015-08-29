@@ -163,4 +163,6 @@
     <string name="action_phototable">Photo table</string>
     <string name="coordinates">Coordinates</string>
     <string name="error_invalid_input">Invalid input parameters</string>
+    <string name="photo_desc">Photo description</string>
+    <string name="enter_photo_desc">Enter a photo description</string>
 </resources>

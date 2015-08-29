@@ -22,11 +22,11 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -35,9 +35,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.dialog.PhotoDescEditorDialog;
+import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.util.AttachItem;
 
 import java.io.BufferedInputStream;
@@ -70,7 +73,7 @@ public class PhotoTableAdapter
 
     protected int mImageSizePx;
 
-    protected Context mContext;
+    protected AppCompatActivity mActivity;
 
     protected Map<String, AttachItem>             mAttachItemMap;
     protected List<Map.Entry<String, AttachItem>> mAttachItemList;
@@ -84,16 +87,16 @@ public class PhotoTableAdapter
 
 
     public PhotoTableAdapter(
-            Context context,
+            AppCompatActivity activity,
             Map<String, AttachItem> attachItemMap)
     {
-        mContext = context;
+        mActivity = activity;
         setAttachItems(attachItemMap);
 
         mListeners = new ConcurrentLinkedQueue<>();
         mSelectedItems = new SparseBooleanArray();
 
-        MainApplication app = (MainApplication) mContext.getApplicationContext();
+        MainApplication app = (MainApplication) mActivity.getApplicationContext();
         mAttachDir = app.getDocFeatureFolder();
     }
 
@@ -207,6 +210,50 @@ public class PhotoTableAdapter
                     }
                 });
 
+        viewHolder.mPhotoDesc.setTag(position);
+
+        try {
+            viewHolder.mPhotoDesc.setText(getDescription(position));
+        } catch (IOException e) {
+            Toast.makeText(
+                    mActivity, "onBindViewHolder() ERROR: " + e.getLocalizedMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+
+        viewHolder.mPhotoDesc.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        TextView descView = (TextView) view;
+                        final int clickedPos = (Integer) descView.getTag();
+
+                        final PhotoDescEditorDialog dialog = new PhotoDescEditorDialog();
+                        dialog.setPhotoDesc(
+                                mAttachItemList.get(clickedPos).getValue().getDescription());
+                        dialog.setOnPositiveClickedListener(
+                                new PhotoDescEditorDialog.OnPositiveClickedListener()
+                                {
+                                    @Override
+                                    public void onPositiveClicked()
+                                    {
+
+                                        String descText = dialog.getText();
+                                        mAttachItemList.get(clickedPos)
+                                                .getValue()
+                                                .setDescription(descText);
+                                        notifyItemChanged(clickedPos);
+                                    }
+                                });
+                        dialog.setKeepInstance(true);
+                        dialog.show(
+                                mActivity.getSupportFragmentManager(),
+                                Constants.FRAGMENT_PHOTO_DESC_EDITOR_DIALOG);
+
+                    }
+                });
+
         viewHolder.mImageView.setLayoutParams(layoutParams);
         viewHolder.mImageView.setImageBitmap(null);
 
@@ -228,8 +275,8 @@ public class PhotoTableAdapter
 
                     case CREATE_PREVIEW_FAILED:
                         Toast.makeText(
-                                mContext, "onBindViewHolder() ERROR: " + msg.obj, Toast.LENGTH_LONG)
-                                .show();
+                                mActivity, "onBindViewHolder() ERROR: " + msg.obj,
+                                Toast.LENGTH_LONG).show();
                         break;
                 }
             }
@@ -578,6 +625,21 @@ public class PhotoTableAdapter
     }
 
 
+    protected String getDescription(int id)
+            throws IOException
+    {
+        AttachItem item = mAttachItemList.get(id).getValue();
+
+        if (null == item) {
+            String error = "PhotoTableAdapter, getDescription(), null == item";
+            Log.d(TAG, error);
+            throw new IOException(error);
+        }
+
+        return item.getDescription();
+    }
+
+
     protected void removeAttach(int id)
     {
         String key = mAttachItemList.get(id).getKey();
@@ -594,6 +656,7 @@ public class PhotoTableAdapter
         public int       mPosition;
         public ImageView mImageView;
         public CheckBox  mCheckBox;
+        public TextView  mPhotoDesc;
 
 
         public ViewHolder(View itemView)
@@ -601,6 +664,7 @@ public class PhotoTableAdapter
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.photo_table_item);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.photo_checkbox);
+            mPhotoDesc = (TextView) itemView.findViewById(R.id.photo_desc);
         }
 
 

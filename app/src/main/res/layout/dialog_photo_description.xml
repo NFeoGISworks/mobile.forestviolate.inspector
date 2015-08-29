@@ -3,6 +3,7 @@
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
   ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
   ~ ******************************************************************************
   ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
   ~
@@ -20,15 +21,30 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <color name="actionBarColor">#009688</color>
-    <color name="primary">#00796b</color>
-    <color name="primary_dark">#004d40</color>
-    <color name="accent">#00bfa5</color>
-    <!--indigo from http://www.google.co.uk/design/spec/style/color.html#color-color-palette -->
-    <color name="tabSecondaryTextColor">#80cbc4</color>
-    <color name="tabTextColor">#ffffff</color>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    >
 
-    <color name="color_black">#000000</color>
-    <color name="color_white">#ffffff</color>
-</resources>
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="24dp"
+        android:orientation="vertical"
+        >
+
+        <EditText
+            android:id="@+id/photo_desc_editor"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:gravity="start|top"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:minLines="3"
+            android:hint="@string/enter_photo_desc"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

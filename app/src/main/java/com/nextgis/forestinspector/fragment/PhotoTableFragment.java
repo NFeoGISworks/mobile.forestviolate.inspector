@@ -80,7 +80,7 @@ public class PhotoTableFragment
 
         MainApplication app = (MainApplication) getActivity().getApplication();
         mTempFeature = app.getTempFeature();
-        mPhotoTableAdapter = new PhotoTableAdapter(getActivity(), mTempFeature.getAttachments());
+        mPhotoTableAdapter = new PhotoTableAdapter((AppCompatActivity) getActivity(), mTempFeature.getAttachments());
     }
 
 
