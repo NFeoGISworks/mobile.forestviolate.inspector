@@ -22,8 +22,12 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -36,23 +40,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.PhotoTableActivity;
 import com.nextgis.forestinspector.adapter.PhotoTableAdapter;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.maplib.util.AttachItem;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import static com.nextgis.maplib.util.Constants.TAG;
 
 
 public class PhotoTableFragment
         extends Fragment
-        implements PhotoTableActivity.OnPhotoTakedListener,
-                   PhotoTableAdapter.OnSelectionChangedListener, ActionMode.Callback
+        implements PhotoTableAdapter.OnSelectionChangedListener, ActionMode.Callback
 {
     protected static final int MIN_IMAGE_SIZE_DP      = 130;
     protected static final int CARD_VIEW_MARGIN_DP    = 8;
@@ -64,9 +70,13 @@ public class PhotoTableFragment
             CONTENT_PADDING_DP * 2 + CARD_ELEVATION_DP * 2 + CARD_VIEW_MARGIN_DP;
     protected static final int CARD_VIEW_MIN_WIDTH_DP = MIN_IMAGE_SIZE_DP + PHOTO_SPACES;
 
-    protected RecyclerView      mPhotoTable;
-    protected PhotoTableAdapter mPhotoTableAdapter;
+    protected static final int REQUEST_TAKE_PHOTO = 1;
 
+    protected RecyclerView         mPhotoTable;
+    protected PhotoTableAdapter    mPhotoTableAdapter;
+    protected FloatingActionButton mCameraBtn;
+
+    protected String mTempPhotoPath = null;
     protected DocumentEditFeature mTempFeature;
 
     private ActionMode mActionMode;
@@ -80,7 +90,8 @@ public class PhotoTableFragment
 
         MainApplication app = (MainApplication) getActivity().getApplication();
         mTempFeature = app.getTempFeature();
-        mPhotoTableAdapter = new PhotoTableAdapter((AppCompatActivity) getActivity(), mTempFeature.getAttachments());
+        mPhotoTableAdapter = new PhotoTableAdapter(
+                (AppCompatActivity) getActivity(), mTempFeature.getAttachments());
     }
 
 
@@ -129,6 +140,22 @@ public class PhotoTableFragment
         mPhotoTable.setAdapter(mPhotoTableAdapter);
         mPhotoTable.setHasFixedSize(true);
 
+
+        mCameraBtn = (FloatingActionButton) view.findViewById(R.id.camera_btn);
+        if (null != mCameraBtn) {
+            mCameraBtn.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            if (mCameraBtn.isEnabled()) {
+                                showCameraActivity();
+                            }
+                        }
+                    });
+        }
+
         return view;
     }
 
@@ -144,8 +171,65 @@ public class PhotoTableFragment
     }
 
 
+    protected void showCameraActivity()
+    {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // Ensure that there's a camera activity to handle the intent
+        if (null != cameraIntent.resolveActivity(getActivity().getPackageManager())) {
+
+            try {
+                MainApplication app = (MainApplication) getActivity().getApplication();
+                File photoDir = app.getDocFeatureFolder();
+                String timeStamp =
+                        new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date());
+                File tempFile = new File(photoDir, timeStamp + ".jpg");
+
+                if (!tempFile.exists() && tempFile.createNewFile() ||
+                    tempFile.exists() && tempFile.delete() &&
+                    tempFile.createNewFile()) {
+
+                    mTempPhotoPath = tempFile.getAbsolutePath();
+                    Log.d(TAG, "mTempPhotoPath: " + mTempPhotoPath);
+
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+                    startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO);
+                }
+
+            } catch (IOException e) {
+                Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
     @Override
-    public void OnPhotoTaked(File tempPhotoFile)
+    public void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data)
+    {
+        File tempPhotoFile = new File(mTempPhotoPath);
+
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            OnPhotoTaked(tempPhotoFile);
+        }
+
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_CANCELED) {
+            if (tempPhotoFile.delete()) {
+                Log.d(
+                        TAG, "tempPhotoFile deleted on Activity.RESULT_CANCELED, path: " +
+                             tempPhotoFile.getAbsolutePath());
+            } else {
+                Log.d(
+                        TAG, "tempPhotoFile delete FAILED on Activity.RESULT_CANCELED, path: " +
+                             tempPhotoFile.getAbsolutePath());
+            }
+        }
+    }
+
+
+    protected void OnPhotoTaked(File tempPhotoFile)
     {
         AttachItem photoAttach = new AttachItem("-1", tempPhotoFile.getName(), "image/jpeg", "");
         mTempFeature.addAttachment(photoAttach);
@@ -162,13 +246,18 @@ public class PhotoTableFragment
             int position,
             boolean selection)
     {
-        // TODO: change title for item count
-
         if (mActionMode == null) {
             mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
+            mActionMode.setTitle("" + mPhotoTableAdapter.getSelectedItemCount());
+            mCameraBtn.setVisibility(View.GONE);
 
         } else if (!mPhotoTableAdapter.isSelectedItems()) {
+            mActionMode.setTitle("");
             mActionMode.finish();
+            mCameraBtn.setVisibility(View.VISIBLE);
+
+        } else {
+            mActionMode.setTitle("" + mPhotoTableAdapter.getSelectedItemCount());
         }
     }
 

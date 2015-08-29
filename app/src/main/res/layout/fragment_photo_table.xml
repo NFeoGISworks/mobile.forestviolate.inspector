@@ -37,4 +37,20 @@
         android:layout_marginBottom="8dp"
         />
 
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/camera_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        fab:fab_size="normal"
+        fab:fab_addButtonColorNormal="?attr/colorPrimary"
+        fab:fab_addButtonColorPressed="?attr/colorAccent"
+        fab:fab_addButtonPlusIconColor="@android:color/white"
+        fab:fab_icon="@drawable/ic_camera"
+        />
+
 </RelativeLayout>
