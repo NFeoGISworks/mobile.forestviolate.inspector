@@ -319,8 +319,8 @@ public class IndictmentActivity extends FIActivity{
 
     protected void loadPhotoAttaches(DocumentEditFeature feature)
     {
-        File photoDir =
-                new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
+        MainApplication app = (MainApplication) getApplicationContext();
+        File photoDir = app.getDocFeatureFolder();
 
         if (!photoDir.isDirectory()) {
             throw new IllegalArgumentException("photoDir is not directory");
