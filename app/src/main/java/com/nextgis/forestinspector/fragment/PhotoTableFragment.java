@@ -25,9 +25,11 @@ package com.nextgis.forestinspector.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -39,6 +41,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
@@ -249,12 +252,10 @@ public class PhotoTableFragment
         if (mActionMode == null) {
             mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
             mActionMode.setTitle("" + mPhotoTableAdapter.getSelectedItemCount());
-            mCameraBtn.setVisibility(View.GONE);
 
         } else if (!mPhotoTableAdapter.isSelectedItems()) {
             mActionMode.setTitle("");
             mActionMode.finish();
-            mCameraBtn.setVisibility(View.VISIBLE);
 
         } else {
             mActionMode.setTitle("" + mPhotoTableAdapter.getSelectedItemCount());
@@ -267,6 +268,7 @@ public class PhotoTableFragment
             ActionMode mode,
             Menu menu)
     {
+        mCameraBtn.setVisibility(View.GONE);
         mode.getMenuInflater().inflate(R.menu.actionmode_photo_table, menu);
         return true;
     }
@@ -283,21 +285,64 @@ public class PhotoTableFragment
 
     @Override
     public boolean onActionItemClicked(
-            ActionMode mode,
+            final ActionMode mode,
             MenuItem item)
     {
         switch (item.getItemId()) {
 
             case R.id.menu_delete:
-                try {
-                    mPhotoTableAdapter.deleteSelected();
-                } catch (IOException e) {
-                    String error = e.getLocalizedMessage();
-                    Log.d(TAG, error);
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
-                }
-                mode.finish();
+
+                Snackbar undoBar = Snackbar.make(
+                        getView(), R.string.photos_will_be_deleted, Snackbar.LENGTH_LONG).setAction(
+                        R.string.cancel, new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                // cancel
+                            }
+                        }).setCallback(
+                        new Snackbar.Callback()
+                        {
+                            @Override
+                            public void onDismissed(
+                                    Snackbar snackbar,
+                                    int event)
+                            {
+                                switch (event) {
+                                    case Snackbar.Callback.DISMISS_EVENT_ACTION:
+                                        break;
+
+                                    case Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE:
+                                    case Snackbar.Callback.DISMISS_EVENT_MANUAL:
+                                    case Snackbar.Callback.DISMISS_EVENT_SWIPE:
+                                    case Snackbar.Callback.DISMISS_EVENT_TIMEOUT:
+                                    default:
+                                        try {
+                                            mPhotoTableAdapter.deleteSelected();
+                                            mode.finish();
+                                        } catch (IOException e) {
+                                            String error = e.getLocalizedMessage();
+                                            Log.d(TAG, error);
+                                            e.printStackTrace();
+                                            Toast.makeText(
+                                                    getActivity(), error, Toast.LENGTH_LONG).show();
+                                        }
+                                        break;
+
+                                }
+
+                                super.onDismissed(snackbar, event);
+                            }
+                        }).setActionTextColor(Color.YELLOW);
+
+                View undoBarView = undoBar.getView();
+                undoBarView.setBackgroundColor(getResources().getColor(R.color.primary_dark));
+                TextView tv = (TextView) undoBarView.findViewById(
+                        android.support.design.R.id.snackbar_text);
+                tv.setTextColor(Color.WHITE);
+
+                undoBar.show();
                 return true;
 
             case R.id.menu_select_all:
@@ -315,5 +360,6 @@ public class PhotoTableFragment
     {
         mPhotoTableAdapter.clearSelection();
         mActionMode = null;
+        mCameraBtn.setVisibility(View.VISIBLE);
     }
 }

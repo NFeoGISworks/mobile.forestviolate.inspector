@@ -165,4 +165,5 @@
     <string name="error_invalid_input">Invalid input parameters</string>
     <string name="photo_desc">Photo description</string>
     <string name="enter_photo_desc">Enter a photo description</string>
+    <string name="photos_will_be_deleted">Photos will be deleted</string>
 </resources>
