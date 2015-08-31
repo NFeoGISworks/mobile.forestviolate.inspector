@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.adapter;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.PhotoTableActivity;
 import com.nextgis.forestinspector.dialog.PhotoDescEditorDialog;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.util.AttachItem;
@@ -85,12 +87,17 @@ public class PhotoTableAdapter
 
     protected Queue<OnSelectionChangedListener> mListeners;
 
+    protected boolean mIsPhotoViewer = false;
+    protected Integer mClickedId;
+
 
     public PhotoTableAdapter(
             AppCompatActivity activity,
-            Map<String, AttachItem> attachItemMap)
+            Map<String, AttachItem> attachItemMap,
+            boolean isPhotoViewer)
     {
         mActivity = activity;
+        mIsPhotoViewer = isPhotoViewer;
         setAttachItems(attachItemMap);
 
         mListeners = new ConcurrentLinkedQueue<>();
@@ -190,25 +197,33 @@ public class PhotoTableAdapter
             final ViewHolder viewHolder,
             final int position)
     {
-        ViewGroup.LayoutParams layoutParams = viewHolder.mImageView.getLayoutParams();
-        layoutParams.height = mImageSizePx;
-        layoutParams.width = mImageSizePx;
-
         viewHolder.mPosition = position;
 
-        viewHolder.mCheckBox.setTag(position);
-        viewHolder.mCheckBox.setChecked(isSelected(position));
-        viewHolder.mCheckBox.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View view)
+        if (mIsPhotoViewer) {
+            viewHolder.mCheckBox.setVisibility(View.GONE);
+        } else {
+            viewHolder.mCheckBox.setTag(position);
+            viewHolder.mCheckBox.setChecked(isSelected(position));
+            viewHolder.mCheckBox.setOnClickListener(
+                    new View.OnClickListener()
                     {
-                        CheckBox checkBox = (CheckBox) view;
-                        int clickedPos = (Integer) checkBox.getTag();
-                        setSelection(clickedPos, checkBox.isChecked());
-                    }
-                });
+                        @Override
+                        public void onClick(View view)
+                        {
+                            CheckBox checkBox = (CheckBox) view;
+                            int clickedPos = (Integer) checkBox.getTag();
+                            setSelection(clickedPos, checkBox.isChecked());
+                        }
+                    });
+        }
+
+
+        if (mIsPhotoViewer) {
+            viewHolder.mPhotoDesc.setEllipsize(null);
+            viewHolder.mPhotoDesc.setMaxLines(999);
+            viewHolder.mPhotoDesc.setBackgroundColor(
+                    mActivity.getResources().getColor(R.color.color_photo_desc_background));
+        }
 
         viewHolder.mPhotoDesc.setTag(position);
 
@@ -254,10 +269,35 @@ public class PhotoTableAdapter
                     }
                 });
 
+        ViewGroup.LayoutParams layoutParams = viewHolder.mImageView.getLayoutParams();
+        layoutParams.height = mImageSizePx;
+        layoutParams.width = mImageSizePx;
+
         viewHolder.mImageView.setLayoutParams(layoutParams);
         viewHolder.mImageView.setImageBitmap(null);
+        viewHolder.mImageView.setTag(position);
 
-        addListener(viewHolder);
+        if (!mIsPhotoViewer) {
+            viewHolder.mImageView.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            ImageView imageView = (ImageView) view;
+                            mClickedId = (Integer) imageView.getTag();
+
+                            String key = mAttachItemList.get(mClickedId).getKey();
+
+                            Intent intent = new Intent(mActivity, PhotoTableActivity.class);
+                            intent.putExtra("photo_viewer", true);
+                            intent.putExtra("photo_item_key", key);
+                            mActivity.startActivity(intent);
+                        }
+                    });
+
+            addListener(viewHolder);
+        }
 
         final Handler handler = new Handler()
         {
@@ -545,6 +585,11 @@ public class PhotoTableAdapter
             bmOptions.inPurgeable = true;
 
             Bitmap small = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, bmOptions);
+
+            if (mIsPhotoViewer) {
+                return small;
+            }
+
             int smallW = small.getWidth();
             int smallH = small.getHeight();
 
@@ -646,6 +691,14 @@ public class PhotoTableAdapter
         mAttachItemMap.remove(key);
         mAttachItemList.remove(id);
         mSelectedItems.delete(id);
+    }
+
+
+    public Integer getClickedId()
+    {
+        Integer id = mClickedId;
+        mClickedId = null;
+        return id;
     }
 
 

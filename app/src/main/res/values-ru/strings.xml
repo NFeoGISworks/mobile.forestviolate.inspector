@@ -167,4 +167,5 @@
     <string name="photo_desc">Описание фотографии</string>
     <string name="enter_photo_desc">Введите описание фотографии</string>
     <string name="photos_will_be_deleted">Фотографии будут удалены</string>
+    <string name="view_photo">Просмотр фото</string>
 </resources>

@@ -25,7 +25,6 @@ package com.nextgis.forestinspector.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -55,6 +54,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.nextgis.maplib.util.Constants.TAG;
 
@@ -82,7 +83,9 @@ public class PhotoTableFragment
     protected String mTempPhotoPath = null;
     protected DocumentEditFeature mTempFeature;
 
-    private ActionMode mActionMode;
+    protected ActionMode mActionMode;
+
+    protected boolean mIsPhotoViewer = false;
 
 
     @Override
@@ -93,8 +96,21 @@ public class PhotoTableFragment
 
         MainApplication app = (MainApplication) getActivity().getApplication();
         mTempFeature = app.getTempFeature();
+        Map<String, AttachItem> items = mTempFeature.getAttachments();
+
+        Bundle extras = getActivity().getIntent().getExtras();
+        if (null != extras) {
+            mIsPhotoViewer = extras.getBoolean("photo_viewer");
+            String key = extras.getString("photo_item_key");
+
+            if (mIsPhotoViewer) {
+                items = new TreeMap<>();
+                items.put(key, mTempFeature.getAttachments().get(key));
+            }
+        }
+
         mPhotoTableAdapter = new PhotoTableAdapter(
-                (AppCompatActivity) getActivity(), mTempFeature.getAttachments());
+                (AppCompatActivity) getActivity(), items, mIsPhotoViewer);
     }
 
 
@@ -124,10 +140,21 @@ public class PhotoTableFragment
         int widthRestDP = widthDP - CARD_VIEW_MARGIN_DP;
         int minItemCount = widthRestDP / CARD_VIEW_MIN_WIDTH_DP;
 
-        int realPhotoCount = minItemCount > maxItemCount ? maxItemCount : minItemCount;
+        int realPhotoCount;
+        if (mIsPhotoViewer) {
+            realPhotoCount = 1;
+        } else {
+            realPhotoCount = minItemCount > maxItemCount ? maxItemCount : minItemCount;
+        }
+
         int cardViewRealWidthDP = (widthRestDP + CARD_VIEW_MARGIN_DP) / realPhotoCount;
         int photoRealWidthDp = cardViewRealWidthDP - PHOTO_SPACES;
         int photoRealWidthPX = (int) (photoRealWidthDp * density);
+
+
+        if (mIsPhotoViewer) {
+            getActivity().setTitle(R.string.view_photo);
+        }
 
 
         View view = inflater.inflate(R.layout.fragment_photo_table, null);
@@ -146,17 +173,22 @@ public class PhotoTableFragment
 
         mCameraBtn = (FloatingActionButton) view.findViewById(R.id.camera_btn);
         if (null != mCameraBtn) {
-            mCameraBtn.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
+
+            if (mIsPhotoViewer) {
+                mCameraBtn.setVisibility(View.GONE);
+            } else {
+                mCameraBtn.setOnClickListener(
+                        new View.OnClickListener()
                         {
-                            if (mCameraBtn.isEnabled()) {
-                                showCameraActivity();
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (mCameraBtn.isEnabled()) {
+                                    showCameraActivity();
+                                }
                             }
-                        }
-                    });
+                        });
+            }
         }
 
         return view;
@@ -171,6 +203,18 @@ public class PhotoTableFragment
         }
 
         super.onDestroyView();
+    }
+
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        Integer clickedId = mPhotoTableAdapter.getClickedId();
+        if (!mIsPhotoViewer && null != clickedId) {
+            mPhotoTableAdapter.notifyItemChanged(clickedId);
+        }
     }
 
 
@@ -293,54 +337,60 @@ public class PhotoTableFragment
             case R.id.menu_delete:
 
                 Snackbar undoBar = Snackbar.make(
-                        getView(), R.string.photos_will_be_deleted, Snackbar.LENGTH_LONG).setAction(
-                        R.string.cancel, new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                // cancel
-                            }
-                        }).setCallback(
-                        new Snackbar.Callback()
-                        {
-                            @Override
-                            public void onDismissed(
-                                    Snackbar snackbar,
-                                    int event)
-                            {
-                                switch (event) {
-                                    case Snackbar.Callback.DISMISS_EVENT_ACTION:
-                                        break;
+                        getView(), R.string.photos_will_be_deleted, Snackbar.LENGTH_LONG)
+                        .setAction(
+                                R.string.cancel, new View.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(View v)
+                                    {
+                                        // cancel
+                                    }
+                                })
+                        .setCallback(
+                                new Snackbar.Callback()
+                                {
+                                    @Override
+                                    public void onDismissed(
+                                            Snackbar snackbar,
+                                            int event)
+                                    {
+                                        switch (event) {
+                                            case Snackbar.Callback.DISMISS_EVENT_ACTION:
+                                                break;
 
-                                    case Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE:
-                                    case Snackbar.Callback.DISMISS_EVENT_MANUAL:
-                                    case Snackbar.Callback.DISMISS_EVENT_SWIPE:
-                                    case Snackbar.Callback.DISMISS_EVENT_TIMEOUT:
-                                    default:
-                                        try {
-                                            mPhotoTableAdapter.deleteSelected();
-                                            mode.finish();
-                                        } catch (IOException e) {
-                                            String error = e.getLocalizedMessage();
-                                            Log.d(TAG, error);
-                                            e.printStackTrace();
-                                            Toast.makeText(
-                                                    getActivity(), error, Toast.LENGTH_LONG).show();
+                                            case Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE:
+                                            case Snackbar.Callback.DISMISS_EVENT_MANUAL:
+                                            case Snackbar.Callback.DISMISS_EVENT_SWIPE:
+                                            case Snackbar.Callback.DISMISS_EVENT_TIMEOUT:
+                                            default:
+                                                try {
+                                                    mPhotoTableAdapter.deleteSelected();
+                                                    mode.finish();
+                                                } catch (IOException e) {
+                                                    String error = e.getLocalizedMessage();
+                                                    Log.d(TAG, error);
+                                                    e.printStackTrace();
+                                                    Toast.makeText(
+                                                            getActivity(), error, Toast.LENGTH_LONG)
+                                                            .show();
+                                                }
+                                                break;
+
                                         }
-                                        break;
 
-                                }
-
-                                super.onDismissed(snackbar, event);
-                            }
-                        }).setActionTextColor(Color.YELLOW);
+                                        super.onDismissed(snackbar, event);
+                                    }
+                                })
+                        .setActionTextColor(
+                                getResources().getColor(R.color.color_undobar_action_text));
 
                 View undoBarView = undoBar.getView();
-                undoBarView.setBackgroundColor(getResources().getColor(R.color.primary_dark));
+                undoBarView.setBackgroundColor(
+                        getResources().getColor(R.color.color_undobar_background));
                 TextView tv = (TextView) undoBarView.findViewById(
                         android.support.design.R.id.snackbar_text);
-                tv.setTextColor(Color.WHITE);
+                tv.setTextColor(getResources().getColor(R.color.color_undobar_text));
 
                 undoBar.show();
                 return true;
