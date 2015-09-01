@@ -140,7 +140,7 @@ public class DocumentsLayer extends NGWVectorLayer {
             String authority,
             SyncResult syncResult)
     {
-        if (0 != (mSyncType & com.nextgis.maplib.util.Constants.SYNC_NONE) || !mIsInitialized) {
+        if (0 != (mSyncType & com.nextgis.maplib.util.Constants.SYNC_NONE) || mFields.isEmpty()) {
             return;
         }
 
