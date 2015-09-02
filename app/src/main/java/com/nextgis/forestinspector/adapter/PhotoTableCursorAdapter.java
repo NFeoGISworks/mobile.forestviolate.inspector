@@ -26,6 +26,7 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.Constants;
 
@@ -49,6 +50,18 @@ public class PhotoTableCursorAdapter
     {
         super(activity, attachItemMap, isPhotoViewer);
         mAttachesUri = attachesUri;
+    }
+
+
+    @Override
+    public void onBindViewHolder(
+            final ViewHolder viewHolder,
+            final int position)
+    {
+        super.onBindViewHolder(viewHolder, position);
+
+        viewHolder.mCheckBox.setVisibility(View.GONE);
+        viewHolder.mPhotoDesc.setOnClickListener(null);
     }
 
 

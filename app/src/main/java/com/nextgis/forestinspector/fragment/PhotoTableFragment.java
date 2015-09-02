@@ -89,7 +89,8 @@ public class PhotoTableFragment
 
     protected ActionMode mActionMode;
 
-    protected boolean mIsPhotoViewer = false;
+    protected boolean mIsPhotoViewer      = false;
+    protected boolean mIsPhotoTableViewer = false;
 
     protected String mDocumentsLayerPathName;
 
@@ -120,6 +121,7 @@ public class PhotoTableFragment
 
         Activity activity = getActivity();
         if (activity instanceof IDocumentFeatureSource) {
+            mIsPhotoTableViewer = true;
             IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
             DocumentFeature feature = documentFeatureSource.getFeature();
 
@@ -220,7 +222,7 @@ public class PhotoTableFragment
         mCameraBtn = (FloatingActionButton) view.findViewById(R.id.camera_btn);
         if (null != mCameraBtn) {
 
-            if (mIsPhotoViewer) {
+            if (mIsPhotoTableViewer || mIsPhotoViewer) {
                 mCameraBtn.setVisibility(View.GONE);
             } else {
                 mCameraBtn.setOnClickListener(
@@ -452,6 +454,9 @@ public class PhotoTableFragment
     {
         mPhotoTableAdapter.clearSelection();
         mActionMode = null;
-        mCameraBtn.setVisibility(View.VISIBLE);
+
+        if (!mIsPhotoTableViewer) {
+            mCameraBtn.setVisibility(View.VISIBLE);
+        }
     }
 }
