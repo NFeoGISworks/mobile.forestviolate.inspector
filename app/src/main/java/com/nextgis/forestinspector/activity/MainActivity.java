@@ -910,7 +910,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             publishProgress(getString(R.string.working), mStep, Constants.STEP_STATE_WORK);
 
-            /*if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name, map, this)){
+            if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name, map, this)){
                 publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
@@ -927,7 +927,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             if(isCancelled())
                 return false;
-*/
+
             // step 5: load documents
 
             mStep = 4;
