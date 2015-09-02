@@ -162,7 +162,8 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                 if (mFeature.getAttachments() != null && mFeature.getAttachments().size() > 0) {
                     mTabFragmentList.add(
                             new PhotoTableFragment(
-                                    getString(R.string.action_phototable), docs.getPath().getName()));
+                                    getString(R.string.photo_table_tab_name),
+                                    docs.getPath().getName()));
                 }
             }
             else if(nType == Constants.DOC_TYPE_SHEET){

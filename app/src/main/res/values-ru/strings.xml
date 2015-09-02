@@ -115,6 +115,7 @@
     <string name="indictment_tab_name">Акт о лесонарушении</string>
     <string name="sheet_tab_name">Ведомость перечета</string>
     <string name="vehicle_tab_name">Акт об обнаруж. орудий заготовки</string>
+    <string name="photo_table_tab_name">Фототаблица</string>
     <string name="on">от</string>
     <string name="forestry">лесничество</string>
     <string name="district_forestry">участковое лесничество</string>

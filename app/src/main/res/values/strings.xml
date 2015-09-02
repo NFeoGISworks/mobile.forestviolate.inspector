@@ -114,6 +114,7 @@
     <string name="indictment_tab_name">Indictment</string>
     <string name="sheet_tab_name">Sheet</string>
     <string name="vehicle_tab_name">Vehicle</string>
+    <string name="photo_table_tab_name">Photo table</string>
     <string name="on">on</string>
     <string name="forestry">forestry</string>
     <string name="district_forestry">district forestry</string>
