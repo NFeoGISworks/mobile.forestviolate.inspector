@@ -38,7 +38,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.PhotoTableActivity;
 import com.nextgis.forestinspector.dialog.PhotoDescEditorDialog;
@@ -47,9 +46,6 @@ import com.nextgis.maplib.util.AttachItem;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -66,7 +62,7 @@ import java.util.concurrent.RunnableFuture;
 import static com.nextgis.maplib.util.Constants.TAG;
 
 
-public class PhotoTableAdapter
+public abstract class PhotoTableAdapter
         extends RecyclerView.Adapter<PhotoTableAdapter.ViewHolder>
 {
     protected final static int CREATE_PREVIEW_DONE   = 0;
@@ -80,8 +76,6 @@ public class PhotoTableAdapter
     protected Map<String, AttachItem>             mAttachItemMap;
     protected List<Map.Entry<String, AttachItem>> mAttachItemList;
 
-    protected File mAttachDir;
-
     protected SparseBooleanArray mSelectedItems;
     protected boolean mSelectState = false;
 
@@ -89,6 +83,10 @@ public class PhotoTableAdapter
 
     protected boolean mIsPhotoViewer = false;
     protected Integer mClickedId;
+
+
+    protected abstract InputStream getPhotoInputStream(int position)
+            throws IOException;
 
 
     public PhotoTableAdapter(
@@ -102,9 +100,6 @@ public class PhotoTableAdapter
 
         mListeners = new ConcurrentLinkedQueue<>();
         mSelectedItems = new SparseBooleanArray();
-
-        MainApplication app = (MainApplication) mActivity.getApplicationContext();
-        mAttachDir = app.getDocFeatureFolder();
     }
 
 
@@ -399,7 +394,7 @@ public class PhotoTableAdapter
     public long getItemId(int position)
     {
         if (null == mAttachItemList) {
-            Log.d(TAG, "getItemId(), null == mPhotoFiles");
+            Log.d(TAG, "getItemId(), null == mAttachItemList");
             return super.getItemId(position);
         }
 
@@ -411,7 +406,7 @@ public class PhotoTableAdapter
     public int getItemCount()
     {
         if (null == mAttachItemList) {
-            Log.d(TAG, "getItemCount(), null == mPhotoFiles");
+            Log.d(TAG, "getItemCount(), null == mAttachItemList");
             return 0;
         }
 
@@ -519,16 +514,8 @@ public class PhotoTableAdapter
         int size = mAttachItemList.size();
         for (int i = size - 1; i >= 0; --i) {
             if (isSelected(i)) {
-                File attachFile = getAttachFile(i);
-
-                if (attachFile.delete()) {
-                    removeAttach(i);
-                    notifyItemRemoved(i);
-                } else {
-                    String error = "Can not delete the file: " + attachFile.getAbsolutePath();
-                    Log.d(TAG, error);
-                    throw new IOException(error);
-                }
+                removeAttach(i);
+                notifyItemRemoved(i);
             }
         }
         notifyItemRangeChanged(0, mAttachItemList.size());
@@ -601,72 +588,19 @@ public class PhotoTableAdapter
 
 
         } catch (IOException e) {
-            String error = "ObjectPhotoAdapter ERROR: " + e.getLocalizedMessage();
+            String error = "PhotoTableAdapter, ERROR: " + e.getLocalizedMessage();
             Log.d(TAG, error);
             e.printStackTrace();
             throw new IOException(error);
         }
 
         if (null == result) {
-            String error = "ObjectPhotoAdapter ERROR: null == result";
+            String error = "PhotoTableAdapter, ERROR: null == result";
             Log.d(TAG, error);
             throw new IOException(error);
         }
 
         return result;
-    }
-
-
-    protected InputStream getPhotoInputStream(int position)
-            throws IOException
-    {
-        if (null == mAttachItemList) {
-            String error = "ObjectPhotoFileAdapter, getPhotoInputStream(), mAttachItemList == null";
-            Log.d(TAG, error);
-            throw new IOException(error);
-        }
-
-        long itemId = getItemId(position);
-
-        if (RecyclerView.NO_ID == itemId) {
-            String error = "PhotoTableAdapter, getPhotoInputStream(), RecyclerView.NO_ID == itemId";
-            Log.d(TAG, error);
-            throw new IOException(error);
-        }
-
-        File photoFile = getAttachFile((int) itemId);
-        InputStream inputStream;
-
-        try {
-            inputStream = new FileInputStream(photoFile);
-
-        } catch (FileNotFoundException e) {
-            String error = "PhotoTableAdapter, getPhotoInputStream(), position = " + position +
-                           ", ERROR: " + e.getLocalizedMessage();
-            Log.d(TAG, error);
-            throw new IOException(error);
-        }
-
-        Log.d(
-                TAG, "PhotoTableAdapter, getPhotoInputStream(), position = " + position +
-                     ", photoFile = " + photoFile.getAbsolutePath());
-        return inputStream;
-    }
-
-
-    protected File getAttachFile(int id)
-            throws IOException
-    {
-        AttachItem item = mAttachItemList.get(id).getValue();
-
-        if (null == item) {
-            String error = "PhotoTableAdapter, getAttachFile(), null == item";
-            Log.d(TAG, error);
-            throw new IOException(error);
-        }
-
-        String attachDisplayName = item.getDisplayName();
-        return new File(mAttachDir, attachDisplayName);
     }
 
 
@@ -686,6 +620,7 @@ public class PhotoTableAdapter
 
 
     protected void removeAttach(int id)
+            throws IOException
     {
         String key = mAttachItemList.get(id).getKey();
         mAttachItemMap.remove(key);

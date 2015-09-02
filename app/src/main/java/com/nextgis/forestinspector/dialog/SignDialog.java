@@ -108,7 +108,8 @@ public class SignDialog
         }
 
         DocumentEditFeature feature = app.getTempFeature();
-        AttachItem signAttach = new AttachItem("-1", Constants.SIGN_FILENAME, "image/png", "sign");
+        AttachItem signAttach = new AttachItem(
+                "-1", Constants.SIGN_FILENAME, "image/png", Constants.SIGN_DESCRIPTION);
         feature.addAttachment(signAttach);
 
         if(documentsLayer.insert(feature)) {
