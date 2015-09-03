@@ -1,7 +1,3 @@
 <component name="CopyrightManager">
-  <settings default="forest inspector">
-    <module2copyright>
-      <element module="All" copyright="forest inspector" />
-    </module2copyright>
-  </settings>
+  <settings default="" />
 </component>

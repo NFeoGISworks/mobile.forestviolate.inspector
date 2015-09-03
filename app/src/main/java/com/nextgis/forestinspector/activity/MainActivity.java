@@ -55,6 +55,7 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.api.IProgressor;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoGeometryFactory;
@@ -65,10 +66,13 @@ import com.nextgis.maplib.datasource.ngw.Resource;
 import com.nextgis.maplib.datasource.ngw.ResourceGroup;
 import com.nextgis.maplib.display.SimpleFeatureRenderer;
 import com.nextgis.maplib.display.SimplePolygonStyle;
+import com.nextgis.maplib.display.SimpleTiledPolygonStyle;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.util.GeoConstants;
+import com.nextgis.maplib.util.MapUtil;
+import com.nextgis.maplib.util.NGException;
 import com.nextgis.maplib.util.NGWUtil;
 import com.nextgis.maplib.util.NetworkUtil;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
@@ -83,9 +87,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -367,7 +375,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         if(extent.isInit()) {
             //download
             try {
-                downloadTiles(ksLayer, initAsyncTask, nStep, map.getFullBounds(), extent, 5, 12);
+                downloadTiles(ksLayer, initAsyncTask, nStep, extent, 5, 12);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -395,13 +403,14 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         initAsyncTask.publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
     }
 
-    private void downloadTiles(final RemoteTMSLayerUI osmLayer, final InitAsyncTask initAsyncTask, final int nStep, final GeoEnvelope fullBound, GeoEnvelope loadBounds, int zoomFrom, int zoomTo) throws InterruptedException {
+    private void downloadTiles(final RemoteTMSLayerUI osmLayer, final InitAsyncTask initAsyncTask, final int nStep, GeoEnvelope loadBounds, int zoomFrom, int zoomTo) throws InterruptedException {
         //download
         initAsyncTask.publishProgress(getString(R.string.form_tiles_list), nStep, Constants.STEP_STATE_WORK);
-        final List<TileItem> tilesList = new ArrayList<>();
+        final List<TileItem> tilesList = new LinkedList<>();
         for(int zoom = zoomFrom; zoom < zoomTo + 1; zoom++) {
-            tilesList.addAll(osmLayer.getTielsForBounds(fullBound, loadBounds, zoom));
+            tilesList.addAll(MapUtil.getTileItems(loadBounds, zoom, osmLayer.getTMSType()));
         }
+
         int threadCount = Constants.DOWNLOAD_SEPARATE_THREADS;
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
                 threadCount, threadCount, com.nextgis.maplib.util.Constants.KEEP_ALIVE_TIME,
@@ -422,39 +431,56 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             }
         });
 
-        final int[] tileCompleteCount = {0, tilesList.size() / 100};
-        if(tileCompleteCount[1] == 0)
-            tileCompleteCount[1] = 1;
+        int tilesSize = tilesList.size();
+        List<Future> futures = new ArrayList<>(tilesSize);
 
-        for (int i = 0; i < tilesList.size(); ++i) {
+        for (int i = 0; i < tilesSize; ++i) {
+            if (Thread.currentThread().isInterrupted()) {
+                break;
+            }
+
             final TileItem tile = tilesList.get(i);
-            threadPool.execute(
-                new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        android.os.Process.setThreadPriority(
-                                com.nextgis.maplib.util.Constants.DEFAULT_DOWNLOAD_THREAD_PRIORITY);
 
-                        osmLayer.downloadTile(tile);
-
-                        synchronized (osmLayer) {
-                            tileCompleteCount[0]++;
-                            if(tileCompleteCount[0] % tileCompleteCount[1] == 0) {
-                                //progress
-                                float complete = tileCompleteCount[0];
-                                int percent = (int) (complete * 100 / tilesList.size());
-                                initAsyncTask.publishProgress(percent + "% " + getString(R.string.downloaded), nStep, Constants.STEP_STATE_WORK);
-                            }
-                        }
-                    }
-                }
-            );
+            futures.add(
+                    threadPool.submit(
+                            new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    android.os.Process.setThreadPriority(
+                                            com.nextgis.maplib.util.Constants.DEFAULT_DRAW_THREAD_PRIORITY);
+                                    osmLayer.downloadTile(tile);
+                                }
+                            }));
         }
-        threadPool.shutdown();
-        //wait until downloaded end or 20 minutes
-        threadPool.awaitTermination(1200000, com.nextgis.maplib.util.Constants.KEEP_ALIVE_TIME_UNIT);
+
+        // wait for download ending
+        int nProgressStep = futures.size() / com.nextgis.maplib.util.Constants.DRAW_NOTIFY_STEP_PERCENT;
+        if(nProgressStep == 0)
+            nProgressStep = 1;
+        double percentFract = 100.0 / futures.size();
+
+        for (int i = 0, futuresSize = futures.size(); i < futuresSize; i++) {
+            if (Thread.currentThread().isInterrupted()) {
+                break;
+            }
+
+            try {
+                Future future = futures.get(i);
+                future.get(); // wait for task ending
+
+                if(i % nProgressStep == 0) {
+                    int percent = (int) (i * percentFract);
+                    initAsyncTask.publishProgress(percent + "% " + getString(R.string.downloaded), nStep, Constants.STEP_STATE_WORK);
+                }
+
+            } catch (CancellationException | InterruptedException e) {
+                //e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     protected boolean checkServerLayers(INGWResource resource, Map<String, Long> keys){
@@ -545,7 +571,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         }
     }
 
-    protected boolean loadForestCadastre(long resourceId, String accountName, MapBase map){
+    protected boolean loadForestCadastre(long resourceId, String accountName, MapBase map, IProgressor progressor){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
         float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
@@ -559,22 +585,29 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
                 minX, minY, maxX, maxY));
         ngwVectorLayer.setVisible(true);
-        //TODO: add layer draw default style and quarter labels
         ngwVectorLayer.setAccountName(accountName);
         ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
         ngwVectorLayer.setMinZoom(0);
-        ngwVectorLayer.setMaxZoom(100);
-        SimplePolygonStyle style = new SimplePolygonStyle(getResources().getColor(R.color.primary_dark));
+        ngwVectorLayer.setMaxZoom(25);
+        //TODO: add layer draw default style and quarter labels
+        SimpleTiledPolygonStyle style = new SimpleTiledPolygonStyle(getResources().getColor(R.color.primary_dark));
         style.setFill(false);
         SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
         ngwVectorLayer.setRenderer(renderer);
 
         map.addLayer(ngwVectorLayer);
 
-        return ngwVectorLayer.download() == null;
+        try {
+            ngwVectorLayer.createFromNGW(progressor);
+        } catch (NGException | IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
-    protected boolean loadDocuments(long resourceId, String accountName, MapBase map){
+    protected boolean loadDocuments(long resourceId, String accountName, MapBase map, IProgressor progressor){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
         float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
@@ -590,22 +623,28 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
                 minX, minY, maxX, maxY));
         ngwVectorLayer.setVisible(true);
-        //TODO: add layer draw default style and quarter labels
         ngwVectorLayer.setAccountName(accountName);
         ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_ALL);
         ngwVectorLayer.setMinZoom(0);
-        ngwVectorLayer.setMaxZoom(100);
-        SimplePolygonStyle style = new SimplePolygonStyle(Color.RED);
+        ngwVectorLayer.setMaxZoom(25);
+        SimpleTiledPolygonStyle style = new SimpleTiledPolygonStyle(Color.RED);
         SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
         ngwVectorLayer.setRenderer(renderer);
 
         map.addLayer(ngwVectorLayer);
 
-        return ngwVectorLayer.download() == null;
+        try {
+            ngwVectorLayer.createFromNGW(progressor);
+        } catch (NGException | IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     protected boolean loadLinkedTables(long resourceId, String accountName, String layerName,
-                                       DocumentsLayer docs){
+                                       DocumentsLayer docs, IProgressor progressor){
         if(null == docs)
             return false;
 
@@ -626,15 +665,22 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setAccountName(accountName);
         ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
         ngwVectorLayer.setMinZoom(0);
-        ngwVectorLayer.setMaxZoom(100);
+        ngwVectorLayer.setMaxZoom(25);
 
         docs.addLayer(ngwVectorLayer);
 
-        return ngwVectorLayer.download() == null;
+        try {
+            ngwVectorLayer.createFromNGW(progressor);
+        } catch (NGException | IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     protected boolean loadLookupTables(long resourceId, String accountName, String layerName,
-                                       DocumentsLayer docs){
+                                       DocumentsLayer docs, IProgressor progressor){
 
         NGWLookupTable ngwTable = new NGWLookupTable(getApplicationContext(),
                 docs.createLayerStorage(layerName));
@@ -644,12 +690,19 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         ngwTable.setAccountName(accountName);
         ngwTable.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
 
+        try {
+            ngwTable.fillFromNGW(progressor);
+        } catch (NGException | IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         docs.addLayer(ngwTable);
 
-        return ngwTable.download() == null;
+        return true;
     }
 
-    protected boolean loadNotes(long resourceId, String accountName, MapBase map){
+    protected boolean loadNotes(long resourceId, String accountName, MapBase map, IProgressor progressor) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
 
@@ -663,11 +716,18 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         ngwVectorLayer.setAccountName(accountName);
         ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
         ngwVectorLayer.setMinZoom(0);
-        ngwVectorLayer.setMaxZoom(100);
+        ngwVectorLayer.setMaxZoom(25);
 
         map.addLayer(ngwVectorLayer);
 
-        return ngwVectorLayer.download() == null;
+        try {
+            ngwVectorLayer.createFromNGW(progressor);
+        } catch (NGException | IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     public void addIndictment() {
@@ -725,20 +785,25 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
      * A async task to execute resources functions (connect, loadChildren, etc.) asynchronously.
      */
     protected class InitAsyncTask
-            extends AsyncTask<Void, Integer, Boolean>
+            extends AsyncTask<Void, Integer, Boolean> implements IProgressor
     {
         protected String mMessage;
         protected Account mAccount;
+        protected int mMaxProgress;
+        protected String mProgressMessage;
+        protected int mStep;
+
 
         public InitAsyncTask(Account account) {
             mAccount = account;
+            mMaxProgress = 0;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
 
             // step 1: connect to server
-            int nStep = 0;
+            mStep = 0;
             int nTimeout = 4000;
             final MainApplication app = (MainApplication) getApplication();
             final String sLogin = app.getAccountLogin(mAccount);
@@ -750,10 +815,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             }
 
             Connection connection = new Connection("tmp", sLogin, sPassword, sURL);
-            publishProgress(getString(R.string.connecting), nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.connecting), mStep, Constants.STEP_STATE_WORK);
 
             if(!connection.connect()){
-                publishProgress(getString(R.string.error_connect_failed), nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_connect_failed), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -764,7 +829,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else{
-                publishProgress(getString(R.string.connected), nStep, Constants.STEP_STATE_WORK);
+                publishProgress(getString(R.string.connected), mStep, Constants.STEP_STATE_WORK);
             }
 
             if(isCancelled())
@@ -772,7 +837,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 1: find keys
 
-            publishProgress(getString(R.string.check_tables_exist), nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.check_tables_exist), mStep, Constants.STEP_STATE_WORK);
 
             Map<String, Long> keys = new HashMap<>();
             keys.put(Constants.KEY_INSPECTORS, -1L);
@@ -788,7 +853,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             keys.put(Constants.KEY_THICKNESS_TYPES, -1L);
 
             if(!checkServerLayers(connection, keys)){
-                publishProgress(getString(R.string.error_wrong_server), nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_wrong_server), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -799,7 +864,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), mStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -807,12 +872,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 2: get inspector detail
             // name, description, bbox
-            nStep = 1;
+            mStep = 1;
 
-            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), mStep, Constants.STEP_STATE_WORK);
 
             if(!getInspectorDetail(connection, keys.get(Constants.KEY_INSPECTORS), sLogin)){
-                publishProgress(getString(R.string.error_get_inspector_detail), nStep, Constants.STEP_STATE_ERROR);
+                publishProgress(getString(R.string.error_get_inspector_detail), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -823,7 +888,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), mStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -831,22 +896,22 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 3: create base layers
 
-            nStep = 2;
+            mStep = 2;
             MapBase map = app.getMap();
 
-            createBasicLayers(map, this, nStep);
+            createBasicLayers(map, this, mStep);
 
             if(isCancelled())
                 return false;
 
             // step 4: forest cadastre
 
-            nStep = 3;
+            mStep = 3;
 
-            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), mStep, Constants.STEP_STATE_WORK);
 
-            if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name, map)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+            if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name, map, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -857,7 +922,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), mStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -865,12 +930,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 5: load documents
 
-            nStep = 4;
+            mStep = 4;
 
-            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), mStep, Constants.STEP_STATE_WORK);
 
-            if (!loadDocuments(keys.get(Constants.KEY_DOCUMENTS), mAccount.name, map)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+            if (!loadDocuments(keys.get(Constants.KEY_DOCUMENTS), mAccount.name, map, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -881,7 +946,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), mStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -889,7 +954,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load sheets
 
-            nStep = 5;
+            mStep = 5;
             int nSubStep = 1;
             int nTotalSubSteps = 7;
             DocumentsLayer documentsLayer = null;
@@ -901,11 +966,11 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 }
             }
 
-            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), mStep, Constants.STEP_STATE_WORK);
 
             if (!loadLinkedTables(keys.get(Constants.KEY_SHEET), mAccount.name,
-                    Constants.KEY_LAYER_SHEET, documentsLayer)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+                    Constants.KEY_LAYER_SHEET, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -921,13 +986,13 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load productions
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, mStep,
                     Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLinkedTables(keys.get(Constants.KEY_PRODUCTION), mAccount.name,
-                    Constants.KEY_LAYER_PRODUCTION, documentsLayer)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+                    Constants.KEY_LAYER_PRODUCTION, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -943,13 +1008,13 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 6: load vehicles
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, mStep,
                     Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLinkedTables(keys.get(Constants.KEY_VEHICLES), mAccount.name,
-                    Constants.KEY_LAYER_VEHICLES, documentsLayer)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+                    Constants.KEY_LAYER_VEHICLES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -963,13 +1028,13 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             if(isCancelled())
                 return false;
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, mStep,
                     Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLookupTables(keys.get(Constants.KEY_VIOLATE_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_VIOLATE_TYPES, documentsLayer)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+                    Constants.KEY_LAYER_VIOLATE_TYPES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -983,13 +1048,13 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             if(isCancelled())
                 return false;
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, mStep,
                     Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLookupTables(keys.get(Constants.KEY_SPECIES_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_SPECIES_TYPES, documentsLayer)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+                    Constants.KEY_LAYER_SPECIES_TYPES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -1003,13 +1068,13 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             if(isCancelled())
                 return false;
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, mStep,
                     Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLookupTables(keys.get(Constants.KEY_THICKNESS_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_THICKNESS_TYPES, documentsLayer)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+                    Constants.KEY_LAYER_THICKNESS_TYPES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -1023,12 +1088,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             if(isCancelled())
                 return false;
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, nStep,
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, mStep,
                     Constants.STEP_STATE_WORK);
 
             if (!loadLookupTables(keys.get(Constants.KEY_FOREST_CAT_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_FOREST_CAT_TYPES, documentsLayer)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+                    Constants.KEY_LAYER_FOREST_CAT_TYPES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -1039,7 +1104,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), mStep, Constants.STEP_STATE_DONE);
             }
 
             if(isCancelled())
@@ -1047,12 +1112,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
             // step 7: load notes
 
-            nStep = 6;
+            mStep = 6;
 
-            publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
+            publishProgress(getString(R.string.working), mStep, Constants.STEP_STATE_WORK);
 
-            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, map)){
-                publishProgress(getString(R.string.error_unexpected), nStep, Constants.STEP_STATE_ERROR);
+            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, map, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -1063,7 +1128,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return false;
             }
             else {
-                publishProgress(getString(R.string.done), nStep, Constants.STEP_STATE_DONE);
+                publishProgress(getString(R.string.done), mStep, Constants.STEP_STATE_DONE);
             }
 
             //TODO: load additional tables
@@ -1109,6 +1174,32 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public void setMax(int maxValue) {
+            mMaxProgress = maxValue;
+        }
+
+        @Override
+        public boolean isCanceled() {
+            return super.isCancelled();
+        }
+
+        @Override
+        public void setValue(int value) {
+            mMessage = mProgressMessage + " (" + value + " " + getString(R.string.of) + " " + mMaxProgress + ")";
+            publishProgress(mStep, Constants.STEP_STATE_WORK);
+        }
+
+        @Override
+        public void setIndeterminate(boolean indeterminate) {
+
+        }
+
+        @Override
+        public void setMessage(String message) {
+            mProgressMessage = message;
         }
     }
 }
