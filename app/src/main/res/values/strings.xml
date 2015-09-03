@@ -114,6 +114,7 @@
     <string name="indictment_tab_name">Indictment</string>
     <string name="sheet_tab_name">Sheet</string>
     <string name="vehicle_tab_name">Vehicle</string>
+    <string name="photo_table_tab_name">Photo table</string>
     <string name="on">on</string>
     <string name="forestry">forestry</string>
     <string name="district_forestry">district forestry</string>
@@ -163,4 +164,8 @@
     <string name="action_phototable">Photo table</string>
     <string name="coordinates">Coordinates</string>
     <string name="error_invalid_input">Invalid input parameters</string>
+    <string name="photo_desc">Photo description</string>
+    <string name="enter_photo_desc">Enter a photo description</string>
+    <string name="photos_will_be_deleted">Photos will be deleted</string>
+    <string name="view_photo">View photo</string>
 </resources>

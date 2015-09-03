@@ -57,15 +57,28 @@
 
             <TextView
                 android:id="@+id/photo_desc"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp"
-                android:gravity="center_vertical"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_marginTop="2dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
                 android:layout_alignParentBottom="true"
                 android:layout_below="@+id/photo_table_item"
+                android:gravity="start|top"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="gone"
+                android:lines="2"
+                android:minLines="2"
+                android:maxLines="2"
+                android:ellipsize="end"
+                />
+
+            <CheckBox
+                android:id="@+id/photo_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@color/color_white"
                 />
 
         </RelativeLayout>

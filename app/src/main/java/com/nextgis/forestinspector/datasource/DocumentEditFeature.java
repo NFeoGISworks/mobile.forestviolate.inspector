@@ -37,6 +37,7 @@ import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.datasource.GeoPolygon;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplib.util.AttachItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,26 +52,40 @@ import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
  */
 public class DocumentEditFeature extends DocumentFeature {
     protected List<Long> mParcelIds;
+    protected int        mNewAttachId;
 
-    public DocumentEditFeature(long id, List<Field> fields) {
+
+    public DocumentEditFeature(
+            long id,
+            List<Field> fields)
+    {
         super(id, fields);
 
         mParcelIds = new ArrayList<>();
+        mNewAttachId = 0;
     }
 
-    public List<Long> getParcelIds() {
+
+    public List<Long> getParcelIds()
+    {
         return mParcelIds;
     }
 
-    public String getTerritoryText(String area, String district, String parcel, String unit) {
+
+    public String getTerritoryText(
+            String area,
+            String district,
+            String parcel,
+            String unit)
+    {
 
         String where = getWhereClauseForParcelIds();
-        if(null == where || TextUtils.isEmpty(where))
+        if (null == where || TextUtils.isEmpty(where))
             return "";
 
         MapBase map = MapBase.getInstance();
         DocumentsLayer docsLayer = null;
-        for(int i = 0; i < map.getLayerCount(); i++) {
+        for (int i = 0; i < map.getLayerCount(); i++) {
             ILayer layer = map.getLayer(i);
             if (layer instanceof DocumentsLayer) {
                 docsLayer = (DocumentsLayer) layer;
@@ -78,30 +93,35 @@ public class DocumentEditFeature extends DocumentFeature {
             }
         }
 
-        if(docsLayer == null)
+        if (docsLayer == null)
             return "";
 
-        VectorLayer parcelsLayer = (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
+        VectorLayer parcelsLayer =
+                (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
 
         Cursor cursor = parcelsLayer.query(null, " " + where, null, null, null);
         GeoEnvelope env = new GeoEnvelope();
         Map<String, Map<String, String>> data = new HashMap<>();
 
-        if(cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
                 try {
-                    GeoGeometry geom = GeoGeometryFactory.fromBlob(cursor.getBlob(cursor.getColumnIndex(FIELD_GEOM)));
+                    GeoGeometry geom = GeoGeometryFactory.fromBlob(
+                            cursor.getBlob(cursor.getColumnIndex(FIELD_GEOM)));
                     env.merge(geom.getEnvelope());
 
-                    String sLv = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV));
-                    String sUlv = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV));
-                    String sParcel = cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
+                    String sLv = cursor.getString(
+                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV));
+                    String sUlv = cursor.getString(
+                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV));
+                    String sParcel = cursor.getString(
+                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
 
 
                     String key = sLv + " " + area + " " + sUlv + " " + district;
                     String value_u = "";
                     String key_u = parcel + " " + sParcel;
-                    if(data.containsKey(key)) {
+                    if (data.containsKey(key)) {
                         Map<String, String> data_u = data.get(key);
                         if(data_u.containsKey(key_u)){
                             data_u.put(key_u, data_u.get(key_u) + ", " + value_u);
@@ -189,5 +209,18 @@ public class DocumentEditFeature extends DocumentFeature {
                 feature.setFieldValue(Constants.FIELD_DOC_ID, id);
             }
         }
+    }
+
+
+    @Override
+    public void addAttachment(AttachItem item)
+    {
+        String attachId = item.getAttachId();
+        if (attachId.equals("-1")) {
+            attachId = "" + mNewAttachId;
+            ++mNewAttachId;
+        }
+
+        mAttachments.put(attachId, item);
     }
 }

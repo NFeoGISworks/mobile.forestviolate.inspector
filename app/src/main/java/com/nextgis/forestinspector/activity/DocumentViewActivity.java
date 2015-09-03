@@ -28,11 +28,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
 import com.nextgis.forestinspector.fragment.MapViewFragment;
+import com.nextgis.forestinspector.fragment.PhotoTableFragment;
 import com.nextgis.forestinspector.fragment.SheetViewFragment;
 import com.nextgis.forestinspector.fragment.TabFragment;
 import com.nextgis.forestinspector.fragment.VehicleViewFragment;
@@ -115,7 +115,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), nType, docs.getName());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), nType, docs);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -144,7 +144,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
 
         protected List<TabFragment> mTabFragmentList;
 
-        public SectionsPagerAdapter(FragmentManager fm, int nType, String docsLayerName) {
+        public SectionsPagerAdapter(FragmentManager fm, int nType, DocumentsLayer docs) {
             super(fm);
 
             mTabFragmentList = new ArrayList<>();
@@ -160,7 +160,10 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     mTabFragmentList.add(new VehicleViewFragment(getString(R.string.vehicle_tab_name)));
                 // photo table
                 if (mFeature.getAttachments() != null && mFeature.getAttachments().size() > 0) {
-                    // TODO: 28.07.15 create photo table
+                    mTabFragmentList.add(
+                            new PhotoTableFragment(
+                                    getString(R.string.photo_table_tab_name),
+                                    docs.getPath().getName()));
                 }
             }
             else if(nType == Constants.DOC_TYPE_SHEET){

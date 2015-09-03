@@ -21,36 +21,30 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragment.PhotoTableFragment"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
     >
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/photo_table_rv"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        />
-
-    <com.getbase.floatingactionbutton.FloatingActionButton
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/camera_btn"
-        android:layout_width="wrap_content"
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        fab:fab_size="normal"
-        fab:fab_addButtonColorNormal="?attr/colorPrimary"
-        fab:fab_addButtonColorPressed="?attr/colorAccent"
-        fab:fab_addButtonPlusIconColor="@android:color/white"
-        fab:fab_icon="@drawable/ic_camera"
-        />
+        android:layout_width="match_parent"
+        android:layout_marginBottom="24dp"
+        android:orientation="vertical"
+        >
 
-</RelativeLayout>
+        <EditText
+            android:id="@+id/photo_desc_editor"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:gravity="start|top"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:minLines="3"
+            android:hint="@string/enter_photo_desc"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -29,7 +29,7 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
@@ -38,20 +38,17 @@ import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.map.LayerFactory;
 import com.nextgis.maplib.map.LayerGroup;
-import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.NGWVectorLayer;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.FeatureChanges;
 import com.nextgis.maplib.util.FileUtil;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,13 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static com.nextgis.maplib.util.Constants.CHANGE_OPERATION_CHANGED;
-import static com.nextgis.maplib.util.Constants.CHANGE_OPERATION_NEW;
-import static com.nextgis.maplib.util.Constants.FIELD_ID;
-import static com.nextgis.maplib.util.Constants.JSON_LAYERS_KEY;
-import static com.nextgis.maplib.util.Constants.JSON_PATH_KEY;
-import static com.nextgis.maplib.util.Constants.LAYER_PREFIX;
-import static com.nextgis.maplib.util.Constants.NOT_FOUND;
+import static com.nextgis.maplib.util.Constants.*;
 
 /**
  * documents layer class for specific needs (sync, relationship tables, etc.)
@@ -114,7 +105,6 @@ public class DocumentsLayer extends NGWVectorLayer {
         }
 
         //get connected layers
-
         for(int i = 0; i < mLayers.size(); ++i){
             ILayer layer = mLayers.get(i);
             if(layer instanceof NGWVectorLayer){
@@ -131,6 +121,9 @@ public class DocumentsLayer extends NGWVectorLayer {
                 }
             }
         }
+
+        // get attaches
+        feature.addAttachments(getAttachMap("" + feature.getId()));
 
         return feature;
     }
@@ -401,6 +394,8 @@ public class DocumentsLayer extends NGWVectorLayer {
         }
 
         //add attachments
+        MainApplication app = (MainApplication) mContext.getApplicationContext();
+        File attachFolder = app.getDocFeatureFolder();
         Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + getPath().getName() +
                 "/" + docId + "/" +  "attach");
         for(Map.Entry<String, AttachItem> entry : feature.getAttachments().entrySet()){
@@ -419,8 +414,7 @@ public class DocumentsLayer extends NGWVectorLayer {
                 String featureId = pathSegments.get(pathSegments.size() - 3);
                 String attachId = pathSegments.get(pathSegments.size() - 1);
                 File to = new File(mPath, featureId + File.separator + attachId);
-                File from = new File(MapBase.getInstance().getPath(), Constants.TEMP_DOCUMENT_FEATURE_FOLDER +
-                File.separator + item.getDisplayName());
+                File from = new File(attachFolder, item.getDisplayName());
                 if(!FileUtil.copyRecursive(from, to)){
                     Log.d(Constants.FITAG, "create attach file failed");
                 }

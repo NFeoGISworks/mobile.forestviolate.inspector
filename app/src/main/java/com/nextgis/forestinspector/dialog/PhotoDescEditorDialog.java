@@ -20,38 +20,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nextgis.forestinspector.activity;
+package com.nextgis.forestinspector.dialog;
 
+import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.EditText;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.fragment.PhotoTableFragment;
-import com.nextgis.forestinspector.util.Constants;
 
 
-public class PhotoTableActivity
-        extends FIActivity
+public class PhotoDescEditorDialog
+        extends YesNoDialog
 {
+    protected EditText mEditor;
+    protected String mPhotoDesc;
+
+
+    @NonNull
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
+        View view = View.inflate(getActivity(), R.layout.dialog_photo_description, null);
+        mEditor = (EditText) view.findViewById(R.id.photo_desc_editor);
+        mEditor.setText(mPhotoDesc);
 
-        setContentView(R.layout.activity_photo_table);
-        setToolbar(R.id.main_toolbar);
+        setIcon(R.drawable.ic_action_image_edit);
+        setTitle(R.string.photo_desc);
+        setView(view);
+        setPositiveText(R.string.ok);
 
-        final FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+        return super.onCreateDialog(savedInstanceState);
+    }
 
-        PhotoTableFragment photoTableFragment =
-                (PhotoTableFragment) fm.findFragmentByTag(Constants.FRAGMENT_PHOTO_TABLE);
 
-        if (photoTableFragment == null) {
-            photoTableFragment = new PhotoTableFragment();
-        }
+    public void setPhotoDesc(String photoDesc)
+    {
+        mPhotoDesc = photoDesc;
+    }
 
-        ft.replace(R.id.photo_table_fragment, photoTableFragment, Constants.FRAGMENT_PHOTO_TABLE);
-        ft.commit();
+
+    public String getText()
+    {
+        return mEditor.getText().toString();
     }
 }

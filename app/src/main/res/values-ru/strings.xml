@@ -115,6 +115,7 @@
     <string name="indictment_tab_name">Акт о лесонарушении</string>
     <string name="sheet_tab_name">Ведомость перечета</string>
     <string name="vehicle_tab_name">Акт об обнаруж. орудий заготовки</string>
+    <string name="photo_table_tab_name">Фототаблица</string>
     <string name="on">от</string>
     <string name="forestry">лесничество</string>
     <string name="district_forestry">участковое лесничество</string>
@@ -164,4 +165,8 @@
     <string name="action_phototable">Фототаблица</string>
     <string name="coordinates">Координаты</string>
     <string name="error_invalid_input">Invalid input parameters</string>
+    <string name="photo_desc">Описание фотографии</string>
+    <string name="enter_photo_desc">Введите описание фотографии</string>
+    <string name="photos_will_be_deleted">Фотографии будут удалены</string>
+    <string name="view_photo">Просмотр фото</string>
 </resources>

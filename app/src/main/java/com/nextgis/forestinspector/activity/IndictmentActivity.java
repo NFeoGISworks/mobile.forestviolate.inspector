@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,12 +47,18 @@ import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
+import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplibui.control.DateTime;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+
+import static com.nextgis.maplib.util.Constants.TAG;
+
 
 /**
  * Form of indictment
@@ -70,6 +77,7 @@ public class IndictmentActivity extends FIActivity{
     protected String mUserDesc;
 
     protected final int INDICTMENT_ACTIVITY = 555;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,6 +107,8 @@ public class IndictmentActivity extends FIActivity{
                 mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TYPE, Constants.DOC_TYPE_INDICTMENT);
                 mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
                 mNewFeature.setFieldValue(Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+
+                loadPhotoAttaches(mNewFeature);
             }
         }
 
@@ -262,7 +272,8 @@ public class IndictmentActivity extends FIActivity{
         if(null == mNewFeature)
             return;
 
-        mIndictmentNumber.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_NUMBER));
+        mIndictmentNumber.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_NUMBER));
         mDateTime.setValue(mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
         mAuthor.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
         mPlace.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
@@ -293,14 +304,55 @@ public class IndictmentActivity extends FIActivity{
             }
         }
 
-        mAuthorSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
-        mDescription.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION));
+        mAuthorSay.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
+        mDescription.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION));
         mCrime.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
         mWhen.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
         mWho.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
-        mDetectorSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
+        mDetectorSay.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
         mCrimeSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
         mTerritory.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
+    }
+
+    protected void loadPhotoAttaches(DocumentEditFeature feature)
+    {
+        MainApplication app = (MainApplication) getApplicationContext();
+        File photoDir = app.getDocFeatureFolder();
+
+        if (!photoDir.isDirectory()) {
+            throw new IllegalArgumentException("photoDir is not directory");
+        }
+
+        File[] photoFiles = photoDir.listFiles(
+                new FilenameFilter()
+                {
+                    @Override
+                    public boolean accept(
+                            final File dir,
+                            final String name)
+                    {
+                        Log.d(
+                                TAG, "loadPhotoAttaches(), FilenameFilter, dir: " +
+                                     dir.getAbsolutePath() + ", name: " + name);
+
+                        if (name.matches(".*\\.jpg")) {
+                            Log.d(
+                                    TAG, "loadPhotoAttaches(), FilenameFilter, name.matches: " +
+                                         true);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                });
+
+        for (File photoFile : photoFiles) {
+            AttachItem photoAttach = new AttachItem("-1", photoFile.getName(), "image/jpeg", "");
+            feature.addAttachment(photoAttach);
+        }
     }
 
     protected String getNewNumber(String passId){
