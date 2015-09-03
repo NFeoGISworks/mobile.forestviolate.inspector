@@ -116,48 +116,49 @@ public class PhotoTableFragment
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
+        Bundle extras = getActivity().getIntent().getExtras();
+        String photoItemKey = null;
+        if (null != extras) {
+            photoItemKey = extras.getString("photo_item_key");
+            mIsPhotoViewer = extras.getBoolean("photo_viewer");
+        }
+
         MainApplication app = (MainApplication) getActivity().getApplication();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        DocumentFeature feature = ((IDocumentFeatureSource) activity).getFeature();
+
         Map<String, AttachItem> attaches;
+        Uri attachesUri = null;
 
-        Activity activity = getActivity();
-        if (activity instanceof IDocumentFeatureSource) {
+        if (null != feature) {
             mIsPhotoTableViewer = true;
-            IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
-            DocumentFeature feature = documentFeatureSource.getFeature();
-
-            if (null != feature) {
-                attaches = feature.getAttachments();
-                Uri attachesUri = Uri.parse(
-                        "content://" + app.getAuthority() + "/" + mDocumentsLayerPathName + "/" +
-                        feature.getId() + "/attach");
-
-                mPhotoTableAdapter = new PhotoTableCursorAdapter(
-                        (AppCompatActivity) getActivity(), attaches, attachesUri, mIsPhotoViewer);
-            }
+            attachesUri = Uri.parse(
+                    "content://" + app.getAuthority() + "/" + mDocumentsLayerPathName + "/" +
+                    feature.getId() + "/attach");
+            attaches = feature.getAttachments();
 
         } else {
             mTempFeature = app.getTempFeature();
             attaches = mTempFeature.getAttachments();
-
-            Bundle extras = getActivity().getIntent().getExtras();
-            if (null != extras) {
-                mIsPhotoViewer = extras.getBoolean("photo_viewer");
-                String key = extras.getString("photo_item_key");
-
-                if (mIsPhotoViewer) {
-                    attaches = new TreeMap<>();
-                    attaches.put(key, mTempFeature.getAttachments().get(key));
-                }
-            }
-
-            mPhotoTableAdapter = new PhotoTableFileAdapter(
-                    (AppCompatActivity) getActivity(), attaches, mIsPhotoViewer);
         }
 
-        if (null == mPhotoTableAdapter) {
-            String error = "PhotoTableFragment, onCreate(), null == mPhotoTableAdapter";
+        if (null == attaches) {
+            String error = "PhotoTableFragment, onCreate(), null == attaches";
             Log.d(TAG, error);
             throw new RuntimeException(error);
+        }
+
+        if (mIsPhotoViewer) {
+            Map<String, AttachItem> attachesTmp = attaches;
+            attaches = new TreeMap<>();
+            attaches.put(photoItemKey, attachesTmp.get(photoItemKey));
+        }
+
+        if (mIsPhotoTableViewer) {
+            mPhotoTableAdapter = new PhotoTableCursorAdapter(
+                    activity, feature.getId(), attaches, attachesUri, mIsPhotoViewer);
+        } else {
+            mPhotoTableAdapter = new PhotoTableFileAdapter(activity, attaches, mIsPhotoViewer);
         }
     }
 

@@ -23,10 +23,13 @@
 package com.nextgis.forestinspector.adapter;
 
 import android.content.ContentUris;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import com.nextgis.forestinspector.activity.PhotoTableActivity;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.Constants;
 
@@ -39,16 +42,20 @@ import java.util.Map;
 public class PhotoTableCursorAdapter
         extends PhotoTableAdapter
 {
-    protected Uri mAttachesUri;
+    protected long mFeatureId;
+    protected Uri  mAttachesUri;
 
 
     public PhotoTableCursorAdapter(
             AppCompatActivity activity,
+            long featureId,
             Map<String, AttachItem> attachItemMap,
             Uri attachesUri,
             boolean isPhotoViewer)
     {
         super(activity, attachItemMap, isPhotoViewer);
+
+        mFeatureId = featureId;
         mAttachesUri = attachesUri;
     }
 
@@ -62,6 +69,30 @@ public class PhotoTableCursorAdapter
 
         viewHolder.mCheckBox.setVisibility(View.GONE);
         viewHolder.mPhotoDesc.setOnClickListener(null);
+
+        if (!mIsPhotoViewer) {
+            viewHolder.mImageView.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            ImageView imageView = (ImageView) view;
+                            mClickedId = (Integer) imageView.getTag();
+
+                            String key = mAttachItemList.get(mClickedId).getKey();
+
+                            Intent intent = new Intent(mActivity, PhotoTableActivity.class);
+                            intent.putExtra("photo_viewer", true);
+                            intent.putExtra("photo_item_key", key);
+                            intent.putExtra("feature_id", mFeatureId);
+                            mActivity.startActivity(intent);
+                        }
+                    });
+
+            //addListener(viewHolder); // it is in super
+        }
+
     }
 
 
