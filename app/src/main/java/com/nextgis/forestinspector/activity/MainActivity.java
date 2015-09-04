@@ -388,8 +388,9 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         mixerLayer.setName(mixerLayerName);
         mixerLayer.setURL(mixerLayerURL);
         mixerLayer.setTMSType(GeoConstants.TMSTYPE_OSM);
-        mixerLayer.setMaxZoom(25);
+        mixerLayer.setMaxZoom(19);
         mixerLayer.setMinZoom(0);
+        mixerLayer.setTileMaxAge(com.nextgis.maplib.util.Constants.ONE_DAY);
         mixerLayer.setVisible(true);
 
         map.addLayer(mixerLayer);
