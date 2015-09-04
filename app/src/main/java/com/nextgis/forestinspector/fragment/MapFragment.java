@@ -227,10 +227,10 @@ public class MapFragment
         if (null != mMap) {
             if(prefs.getBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, true)){
                 //zoom to inspector extent
-                float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
-                float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
-                float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
-                float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+                float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+                float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+                float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+                float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
                 mMap.zoomToExtent(new GeoEnvelope(minX, maxX, minY, maxY));
 
                 final SharedPreferences.Editor edit = prefs.edit();

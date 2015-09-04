@@ -21,14 +21,6 @@
   -->
 
 <resources>
-    <string-array name="violation_type">
-        <item>Незаконная рубка</item>
-    </string-array>
-    <string-array name="forest_cat_type">
-        <item>Эксплуатационные леса</item>
-        <item>Запретные полосы вдоль нерестовых рек</item>
-        <item>Зеленая зона (Защитные леса)</item>
-    </string-array>
     <string-array name="sync_periods">
         <item>10 минут</item>
         <item>30 минут</item>

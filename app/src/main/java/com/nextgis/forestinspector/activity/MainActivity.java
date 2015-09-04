@@ -328,10 +328,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         initAsyncTask.publishProgress(getString(R.string.working), nStep, Constants.STEP_STATE_WORK);
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
-        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
-        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
-        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
         //add OpenStreetMap layer on application first run
         String layerName = getString(R.string.osm);
@@ -573,10 +573,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
     protected boolean loadForestCadastre(long resourceId, String accountName, MapBase map, IProgressor progressor){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
-        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
-        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
-        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
         NGWVectorLayerUI ngwVectorLayer =
                 new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_CADASTRE));
@@ -609,10 +609,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
 
     protected boolean loadDocuments(long resourceId, String accountName, MapBase map, IProgressor progressor){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
-        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
-        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
-        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
         DocumentsLayer ngwVectorLayer =
                 new DocumentsLayer(getApplicationContext(),
@@ -649,10 +649,10 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             return false;
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -180.0f);
-        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -90.0f);
-        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 180.0f);
-        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 90.0f);
+        float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+        float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+        float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+        float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
         NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(getApplicationContext(),
                 docs.createLayerStorage(layerName));
