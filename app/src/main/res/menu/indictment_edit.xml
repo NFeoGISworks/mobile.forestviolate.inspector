@@ -51,11 +51,11 @@
     <item android:id="@+id/action_sign"
           android:title="@string/sign_and_save"
           android:orderInCategory="100"
-          android:icon="@drawable/ic_action_apply"
+          android:icon="@drawable/ic_action_apply_dark"
           app:showAsAction="always"/>
     <item android:id="@+id/action_cancel"
           android:title="@string/cancel"
           android:orderInCategory="100"
-          android:icon="@drawable/ic_action_cancel"
+          android:icon="@drawable/ic_action_cancel_dark"
           app:showAsAction="always"/>
 </menu>
