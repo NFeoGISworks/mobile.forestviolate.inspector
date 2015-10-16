@@ -132,7 +132,7 @@ public class IndictmentActivity extends FIActivity{
             mAuthor.setText(mUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
 
             mDateTime = (DateTime)findViewById(R.id.create_datetime);
-            mDateTime.init(null, null);
+            mDateTime.init(null, null, null);
             mDateTime.setCurrentDate();
 
             mPlace = (EditText) findViewById(R.id.place);

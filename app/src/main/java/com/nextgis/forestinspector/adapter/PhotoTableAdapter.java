@@ -248,7 +248,6 @@ public abstract class PhotoTableAdapter
                                     @Override
                                     public void onPositiveClicked()
                                     {
-
                                         String descText = dialog.getText();
                                         mAttachItemList.get(clickedPos)
                                                 .getValue()
