@@ -247,25 +247,27 @@ public class IndictmentActivity extends FIActivity{
     }
 
     protected void saveControlsToFeature(){
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
-        if(null != mViolationTypeSpinner)
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolationTypeSpinner.getSelectedItem().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
-        if(null != mForestCatTypeSpinner)
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE, mForestCatTypeSpinner.getSelectedItem().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE, mWhen.getText().toString());
-        //mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_TRANS, );
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER, mUserDesc);
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
-        mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
+        if(null != mNewFeature) {
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
+            if (null != mViolationTypeSpinner)
+                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolationTypeSpinner.getSelectedItem().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
+            if (null != mForestCatTypeSpinner)
+                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE, mForestCatTypeSpinner.getSelectedItem().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE, mWhen.getText().toString());
+            //mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_TRANS, );
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER, mUserDesc);
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
+            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
+        }
     }
 
     protected void restoreControlsFromFeature(){
