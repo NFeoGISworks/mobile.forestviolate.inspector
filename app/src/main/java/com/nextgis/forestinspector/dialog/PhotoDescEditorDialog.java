@@ -37,6 +37,14 @@ public class PhotoDescEditorDialog
     protected String mPhotoDesc;
 
 
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        setKeepInstance(true);
+        super.onCreate(savedInstanceState);
+    }
+
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)

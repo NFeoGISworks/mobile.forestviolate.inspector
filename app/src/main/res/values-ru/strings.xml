@@ -3,6 +3,7 @@
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
   ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
   ~ ******************************************************************************
   ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
   ~
@@ -132,6 +133,7 @@
     <string name="species">Порода</string>
     <string name="thickness">Толщина</string>
     <string name="count">Кол-во</string>
+    <string name="height_rank">Разряд высот</string>
     <string name="category">Категория хлыстов</string>
     <string name="click_to_set_value">Щелкните что бы установить значение</string>
     <string name="error_number_mast_be_set">Не введен номер акта</string>
@@ -155,6 +157,7 @@
     <string name="action_production">Продукция для изъятия</string>
     <string name="add">Добавить</string>
     <string name="add_production">Добавить продукцию для изъятия</string>
+    <string name="add_trees">Добавить деревья</string>
     <string name="species_detail">Вид продукции (хлысты, сортименты, иное), порода деревьев</string>
     <string name="cat_detail">Деловая или дровяная</string>
     <string name="length_detail">Длина (метр)</string>

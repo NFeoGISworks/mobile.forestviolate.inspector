@@ -2,6 +2,7 @@
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
   ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
   ~ ******************************************************************************
   ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
   ~
@@ -131,6 +132,7 @@
     <string name="species">Species</string>
     <string name="thickness">Thickness</string>
     <string name="count">Count</string>
+    <string name="height_rank">Height rank</string>
     <string name="category">Category</string>
     <string name="click_to_set_value">Click here to set value</string>
     <string name="error_number_mast_be_set">The number must be set</string>
@@ -154,6 +156,7 @@
     <string name="action_production">Confiscate production</string>
     <string name="add">Add</string>
     <string name="add_production">Add production</string>
+    <string name="add_trees">Add trees</string>
     <string name="species_detail">Product Type (whips, assortments, otherwise), tree species</string>
     <string name="cat_detail">Business or wood</string>
     <string name="length_detail">Length (meter)</string>

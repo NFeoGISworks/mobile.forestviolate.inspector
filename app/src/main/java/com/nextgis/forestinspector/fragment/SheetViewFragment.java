@@ -29,10 +29,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
-import com.nextgis.forestinspector.adapter.InitStepListAdapter;
 import com.nextgis.forestinspector.adapter.SheetViewListAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
@@ -40,26 +38,38 @@ import com.nextgis.maplib.datasource.Feature;
 
 import java.util.List;
 
+
 /**
  * Created by bishop on 28.07.15.
  */
-public class SheetViewFragment extends TabFragment {
+public class SheetViewFragment
+        extends TabFragment
+{
 
-    public SheetViewFragment() {
+    public SheetViewFragment()
+    {
     }
 
+
     @SuppressLint("ValidFragment")
-    public SheetViewFragment(String name) {
+    public SheetViewFragment(String name)
+    {
         super(name);
     }
 
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_sheet, container, false);
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
+    {
+        final View view = inflater.inflate(R.layout.fragment_sheetview, container, false);
 
         Activity activity = getActivity();
-        if(activity instanceof IDocumentFeatureSource) {
+
+        if (activity instanceof IDocumentFeatureSource) {
             IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
             DocumentFeature feature = documentFeatureSource.getFeature();
 

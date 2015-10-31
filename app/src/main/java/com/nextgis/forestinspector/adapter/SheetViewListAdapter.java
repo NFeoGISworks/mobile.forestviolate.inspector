@@ -69,7 +69,7 @@ public class SheetViewListAdapter extends BaseAdapter {
         View v = convertView;
         if (null == v) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            v = inflater.inflate(R.layout.row_sheet_item, null);
+            v = inflater.inflate(R.layout.row_sheetview_item, null);
         }
 
         Feature item = (Feature) getItem(position);
