@@ -255,7 +255,6 @@ public abstract class PhotoTableAdapter
                                         notifyItemChanged(clickedPos);
                                     }
                                 });
-                        dialog.setKeepInstance(true);
                         dialog.show(
                                 mActivity.getSupportFragmentManager(),
                                 Constants.FRAGMENT_PHOTO_DESC_EDITOR_DIALOG);
