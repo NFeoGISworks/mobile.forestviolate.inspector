@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -732,8 +733,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
     }
 
     public void addIndictment() {
-        Intent intentAbout = new Intent(this, IndictmentActivity.class);
-        startActivity(intentAbout);
+        Intent intentIndictment = new Intent(this, IndictmentActivity.class);
+        startActivity(intentIndictment);
     }
 
     public void addSheet() {
@@ -852,6 +853,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
             keys.put(Constants.KEY_SPECIES_TYPES, -1L);
             keys.put(Constants.KEY_FOREST_CAT_TYPES, -1L);
             keys.put(Constants.KEY_THICKNESS_TYPES, -1L);
+            keys.put(Constants.KEY_TREES_TYPES, -1L);
+            keys.put(Constants.KEY_HEIGHT_TYPES, -1L);
 
             if(!checkServerLayers(connection, keys)){
                 publishProgress(getString(R.string.error_wrong_server), mStep, Constants.STEP_STATE_ERROR);
@@ -1033,7 +1036,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                     Constants.STEP_STATE_WORK);
             nSubStep++;
 
-            if (!loadLookupTables(keys.get(Constants.KEY_VIOLATE_TYPES), mAccount.name,
+            if (!loadLookupTables(
+                    keys.get(Constants.KEY_VIOLATE_TYPES), mAccount.name,
                     Constants.KEY_LAYER_VIOLATE_TYPES, documentsLayer, this)){
                 publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
@@ -1053,8 +1057,49 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                     Constants.STEP_STATE_WORK);
             nSubStep++;
 
-            if (!loadLookupTables(keys.get(Constants.KEY_SPECIES_TYPES), mAccount.name,
+            if (!loadLookupTables(
+                    keys.get(Constants.KEY_SPECIES_TYPES), mAccount.name,
                     Constants.KEY_LAYER_SPECIES_TYPES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+
+            if(isCancelled())
+                return false;
+
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, mStep,
+                    Constants.STEP_STATE_WORK);
+            nSubStep++;
+
+            if (!loadLookupTables(keys.get(Constants.KEY_TREES_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_TREES_TYPES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
+
+                try {
+                    Thread.sleep(nTimeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+
+            if(isCancelled())
+                return false;
+
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, mStep,
+                    Constants.STEP_STATE_WORK);
+            nSubStep++;
+
+            if (!loadLookupTables(keys.get(Constants.KEY_HEIGHT_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_HEIGHT_TYPES, documentsLayer, this)){
                 publishProgress(getString(R.string.error_unexpected), mStep, Constants.STEP_STATE_ERROR);
 
                 try {

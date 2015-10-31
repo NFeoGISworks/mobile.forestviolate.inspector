@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -44,6 +45,8 @@ public interface Constants
     String KEY_FOREST_CAT_TYPES = "forest_cat_types";
     String KEY_SPECIES_TYPES    = "species_types";
     String KEY_THICKNESS_TYPES  = "thickness_types";
+    String KEY_TREES_TYPES      = "trees_types";
+    String KEY_HEIGHT_TYPES     = "height_types";
 
     String KEY_LAYER_DOCUMENTS        = "documents";
     String KEY_LAYER_SHEET            = "sheet";
@@ -55,6 +58,8 @@ public interface Constants
     String KEY_LAYER_FOREST_CAT_TYPES = "forest_cat_types";
     String KEY_LAYER_SPECIES_TYPES    = "species_types";
     String KEY_LAYER_THICKNESS_TYPES  = "thickness_types";
+    String KEY_LAYER_TREES_TYPES      = "trees_types";
+    String KEY_LAYER_HEIGHT_TYPES     = "height_types";
 
     /**
      * inspectors keys
@@ -126,10 +131,12 @@ public interface Constants
     /**
      * sheet fields
      */
+    String FIELD_SHEET_UNIT      = "unit";
     String FIELD_SHEET_SPECIES   = "poroda";
-    String FIELD_SHEET_THICKNESS = "diameter";
-    String FIELD_SHEET_COUNT     = "count";
     String FIELD_SHEET_CATEGORY  = "additions";
+    String FIELD_SHEET_THICKNESS = "diameter";
+    String FIELD_SHEET_HEIGHTS   = "heights";
+    String FIELD_SHEET_COUNT     = "count";
 
     /**
      * cadastre fields
@@ -160,6 +167,7 @@ public interface Constants
      */
     int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
 
+    String FRAGMENT_SHEET_FILL_DIALOG        = "sheet_fill_dialog";
     String FRAGMENT_PHOTO_TABLE              = "photo_table";
     String FRAGMENT_PHOTO_DESC_EDITOR_DIALOG = "photo_desc_editor_dialog";
 }

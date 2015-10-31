@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -21,25 +22,45 @@
 
 package com.nextgis.forestinspector.activity;
 
+import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.CheckListAdapter;
+import com.nextgis.forestinspector.adapter.SheetListAdapter;
+import com.nextgis.forestinspector.dialog.SheetFillDialog;
+import com.nextgis.forestinspector.util.Constants;
 
-/**
- * Created by bishop on 08.08.15.
- */
-public class SheetActivity extends CheckListActivity {
+
+public class SheetActivity
+        extends CheckListActivity
+        implements SheetFillDialog.OnAddTreesListener
+{
 
     @Override
-    protected int getContentViewId() {
-        return 0;
+    protected int getContentViewId()
+    {
+        return R.layout.activity_sheet;
     }
 
-    @Override
-    protected void add() {
 
+    @Override
+    protected CheckListAdapter getAdapter()
+    {
+        return new SheetListAdapter(this, mDocumentFeature);
     }
 
+
     @Override
-    protected CheckListAdapter getAdapter() {
-        return null;
+    protected void add()
+    {
+        final SheetFillDialog dialog = new SheetFillDialog();
+        dialog.setOnAddTreesListener(this);
+        dialog.show(
+                getSupportFragmentManager(), Constants.FRAGMENT_SHEET_FILL_DIALOG);
+    }
+
+
+    @Override
+    public void onAddTrees()
+    {
+        mAdapter.notifyDataSetChanged();
     }
 }
