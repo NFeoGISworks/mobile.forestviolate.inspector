@@ -63,22 +63,22 @@ public class SheetListAdapter
         Feature item = (Feature) getItem(position);
 
         TextView unit = (TextView) view.findViewById(R.id.unit);
-        unit.setText(item.getFieldValueAsString(Constants.FIELD_SHEET_UNIT));
+        unit.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_UNIT));
 
         TextView species = (TextView) view.findViewById(R.id.species);
-        species.setText(item.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES));
+        species.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES));
 
         TextView category = (TextView) view.findViewById(R.id.category);
-        category.setText(item.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY));
+        category.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY));
 
         TextView thickness = (TextView) view.findViewById(R.id.thickness);
-        thickness.setText(item.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS));
+        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS));
 
         TextView height = (TextView) view.findViewById(R.id.height);
-        height.setText(item.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS));
+        height.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS));
 
         TextView count = (TextView) view.findViewById(R.id.count);
-        count.setText(item.getFieldValueAsString(Constants.FIELD_SHEET_COUNT));
+        count.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_COUNT));
 
         return view;
     }
