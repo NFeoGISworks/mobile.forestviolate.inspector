@@ -21,29 +21,24 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:orientation="vertical"
-    >
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        >
+    <item android:state_enabled="false"
+          android:color="@color/button_dialog_disabled_text_color"/>
 
-        <EditText
-            android:id="@+id/photo_desc_editor"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:gravity="start|top"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:minLines="3"
-            android:hint="@string/enter_photo_desc"
-            />
+    <item android:state_window_focused="false"
+          android:color="@color/button_dialog_normal_text_color"/>
 
-    </LinearLayout>
+    <item android:state_pressed="true"
+          android:color="@color/button_dialog_pressed_text_color"/>
 
-</LinearLayout>
+    <item android:state_selected="true"
+          android:color="@color/button_dialog_normal_text_color"/>
+
+    <item android:state_activated="true"
+          android:color="@color/button_dialog_normal_text_color"/>
+
+    <item android:color="@color/button_dialog_normal_text_color"/>
+    <!-- not selected -->
+
+</selector>

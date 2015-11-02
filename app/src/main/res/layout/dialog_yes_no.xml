@@ -36,11 +36,10 @@
         android:orientation="vertical"
         >
 
-
         <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:padding="12dp"
+            android:padding="10dp"
             android:background="@drawable/dialog_yes_no_title_background"
             android:orientation="horizontal"
             >
@@ -49,7 +48,7 @@
                 android:id="@+id/dialog_icon_yn"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginRight="12dp"
+                android:layout_marginRight="10dp"
                 android:layout_gravity="center_vertical"
                 android:visibility="gone"
                 />
@@ -58,6 +57,7 @@
                 android:id="@+id/dialog_title_yn"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_marginRight="10dp"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/color_white"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -72,19 +72,21 @@
             android:visibility="gone"
             />
 
-        <ScrollView
+        <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_marginTop="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
             >
 
-            <LinearLayout
-                android:layout_height="wrap_content"
+            <!--http://stackoverflow.com/a/15961335/4727406-->
+            <ScrollView
                 android:layout_width="match_parent"
-                android:orientation="vertical"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 >
 
                 <LinearLayout
@@ -97,56 +99,33 @@
 
                 </LinearLayout>
 
+            </ScrollView>
 
-                <TableLayout
-                    android:id="@+id/dialog_buttons_yn"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:stretchColumns="0,1"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    >
+            <LinearLayout
+                android:id="@+id/dialog_buttons_yn"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="right"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                >
 
-                    <TableRow
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        >
+                <Button
+                    android:id="@+id/dialog_btn_negative_yn"
+                    android:visibility="invisible"
+                    style="@style/dialogButtonStyle"
+                    />
 
-                        <Button
-                            android:id="@+id/dialog_btn_negative_yn"
-                            android:layout_height="wrap_content"
-                            android:layout_width="1dp"
-                            android:layout_weight="1"
-                            android:layout_marginRight="12dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:paddingLeft="5dp"
-                            android:paddingRight="5dp"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:visibility="invisible"
-                            />
-
-                        <Button
-                            android:id="@+id/dialog_btn_positive_yn"
-                            android:layout_height="wrap_content"
-                            android:layout_width="1dp"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="12dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:paddingLeft="5dp"
-                            android:paddingRight="5dp"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:visibility="invisible"
-                            />
-
-                    </TableRow>
-
-                </TableLayout>
+                <Button
+                    android:id="@+id/dialog_btn_positive_yn"
+                    android:visibility="invisible"
+                    style="@style/dialogButtonStyle"
+                    />
 
             </LinearLayout>
 
-        </ScrollView>
+        </LinearLayout>
 
     </LinearLayout>
 

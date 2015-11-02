@@ -35,7 +35,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
 
@@ -60,7 +59,7 @@ public class YesNoDialog
     protected LinearLayout mDialogLayout;
     protected TextView     mMessage;
     protected View         mView;
-    protected TableLayout  mButtons;
+    protected LinearLayout mButtons;
     protected Button       mBtnPositive;
     protected Button       mBtnNegative;
 
@@ -113,7 +112,7 @@ public class YesNoDialog
         mIcon = (ImageView) dialog.findViewById(R.id.dialog_icon_yn);
         mTitle = (TextView) dialog.findViewById(R.id.dialog_title_yn);
         mDialogLayout = (LinearLayout) dialog.findViewById(R.id.dialog_layout_yn);
-        mButtons = (TableLayout) dialog.findViewById(R.id.dialog_buttons_yn);
+        mButtons = (LinearLayout) dialog.findViewById(R.id.dialog_buttons_yn);
         mBtnPositive = (Button) dialog.findViewById(R.id.dialog_btn_positive_yn);
         mBtnNegative = (Button) dialog.findViewById(R.id.dialog_btn_negative_yn);
 
