@@ -28,15 +28,15 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/dialog_yes_no_background"
-        android:orientation="vertical"
         >
 
         <LinearLayout
+            android:id="@+id/title"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:padding="10dp"
@@ -45,19 +45,21 @@
             >
 
             <ImageView
-                android:id="@+id/dialog_icon_yn"
+                android:id="@+id/dialog_icon"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_gravity="center_vertical"
                 android:visibility="gone"
                 />
 
             <TextView
-                android:id="@+id/dialog_title_yn"
+                android:id="@+id/dialog_title"
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/color_white"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -66,20 +68,21 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/divider"
             android:layout_height="2dp"
             android:layout_width="match_parent"
             android:background="@color/color_black"
             android:visibility="gone"
+            android:layout_below="@+id/title"
             />
 
         <LinearLayout
+            android:id="@+id/main_view"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_margin="10dp"
             android:orientation="vertical"
+            android:layout_below="@+id/divider"
             >
 
             <!--http://stackoverflow.com/a/15961335/4727406-->
@@ -90,7 +93,7 @@
                 >
 
                 <LinearLayout
-                    android:id="@+id/dialog_layout_yn"
+                    android:id="@+id/dialog_layout"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:orientation="vertical"
@@ -102,23 +105,25 @@
             </ScrollView>
 
             <LinearLayout
-                android:id="@+id/dialog_buttons_yn"
+                android:id="@+id/dialog_buttons"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginTop="5dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginEnd="2dp"
                 android:layout_gravity="right"
                 android:orientation="horizontal"
                 android:visibility="gone"
                 >
 
                 <Button
-                    android:id="@+id/dialog_btn_negative_yn"
+                    android:id="@+id/dialog_btn_negative"
                     android:visibility="invisible"
                     style="@style/dialogButtonStyle"
                     />
 
                 <Button
-                    android:id="@+id/dialog_btn_positive_yn"
+                    android:id="@+id/dialog_btn_positive"
                     android:visibility="invisible"
                     style="@style/dialogButtonStyle"
                     />
@@ -127,6 +132,6 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

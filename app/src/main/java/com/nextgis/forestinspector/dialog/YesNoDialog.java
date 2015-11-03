@@ -109,12 +109,12 @@ public class YesNoDialog
 
         dialog.setContentView(R.layout.dialog_yes_no);
 
-        mIcon = (ImageView) dialog.findViewById(R.id.dialog_icon_yn);
-        mTitle = (TextView) dialog.findViewById(R.id.dialog_title_yn);
-        mDialogLayout = (LinearLayout) dialog.findViewById(R.id.dialog_layout_yn);
-        mButtons = (LinearLayout) dialog.findViewById(R.id.dialog_buttons_yn);
-        mBtnPositive = (Button) dialog.findViewById(R.id.dialog_btn_positive_yn);
-        mBtnNegative = (Button) dialog.findViewById(R.id.dialog_btn_negative_yn);
+        mIcon = (ImageView) dialog.findViewById(R.id.dialog_icon);
+        mTitle = (TextView) dialog.findViewById(R.id.dialog_title);
+        mDialogLayout = (LinearLayout) dialog.findViewById(R.id.dialog_layout);
+        mButtons = (LinearLayout) dialog.findViewById(R.id.dialog_buttons);
+        mBtnPositive = (Button) dialog.findViewById(R.id.dialog_btn_positive);
+        mBtnNegative = (Button) dialog.findViewById(R.id.dialog_btn_negative);
 
         if (null != mIconId) {
             mIcon.setVisibility(View.VISIBLE);
