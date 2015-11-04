@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -26,66 +27,94 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 
 import java.util.List;
 
+
 /**
  * The list of sheet items
  */
-public class SheetViewListAdapter extends BaseAdapter {
-
+public class SheetViewListAdapter
+        extends BaseAdapter
+{
     protected List<Feature> mFeatures;
-    protected Context mContext;
+    protected Context       mContext;
 
-    public SheetViewListAdapter(Context context, List<Feature> features) {
+
+    public SheetViewListAdapter(
+            Context context,
+            List<Feature> features)
+    {
         mContext = context;
         mFeatures = features;
     }
 
+
     @Override
-    public int getCount() {
-        if(null == mFeatures)
+    public int getCount()
+    {
+        if (null == mFeatures) {
             return 0;
+        }
         return mFeatures.size();
     }
 
+
     @Override
-    public Object getItem(int position) {
+    public Object getItem(int position)
+    {
         return mFeatures.get(position);
     }
 
+
     @Override
-    public long getItemId(int position) {
+    public long getItemId(int position)
+    {
         return position;
     }
 
+
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-        if (null == v) {
+    public View getView(
+            int position,
+            View convertView,
+            ViewGroup parent)
+    {
+        View view = convertView;
+        if (null == view) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            v = inflater.inflate(R.layout.row_sheetview_item, null);
+            view = inflater.inflate(R.layout.row_sheet_item, null);
         }
+
+        CheckBox checkBox = (CheckBox) view.findViewById(R.id.check);
+        checkBox.setVisibility(View.GONE);
+
 
         Feature item = (Feature) getItem(position);
 
-        TextView species = (TextView) v.findViewById(R.id.species);
+        TextView unit = (TextView) view.findViewById(R.id.unit);
+        unit.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_UNIT));
+
+        TextView species = (TextView) view.findViewById(R.id.species);
         species.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES));
 
-        TextView thickness = (TextView) v.findViewById(R.id.thickness);
-        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS));
-
-        TextView count = (TextView) v.findViewById(R.id.count);
-        count.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_COUNT));
-
-        TextView category = (TextView) v.findViewById(R.id.category);
+        TextView category = (TextView) view.findViewById(R.id.category);
         category.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY));
 
-        return v;
+        TextView thickness = (TextView) view.findViewById(R.id.thickness);
+        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS));
+
+        TextView height = (TextView) view.findViewById(R.id.height);
+        height.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS));
+
+        TextView count = (TextView) view.findViewById(R.id.count);
+        count.setText(": " + item.getFieldValueAsString(Constants.FIELD_SHEET_COUNT));
+
+        return view;
     }
 }
