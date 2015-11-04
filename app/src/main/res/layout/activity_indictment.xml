@@ -38,6 +38,13 @@
             android:layout_height="match_parent"
             android:layout_margin="5dp">
 
+            <!--http://stackoverflow.com/a/1662088/4727406-->
+            <View
+                android:focusableInTouchMode="true"
+                android:layout_width="0px"
+                android:layout_height="0px"
+                />
+
             <!-- номер акта -->
             <LinearLayout
                 android:orientation="horizontal"
