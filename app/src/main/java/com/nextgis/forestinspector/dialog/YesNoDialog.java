@@ -107,7 +107,7 @@ public class YesNoDialog
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        dialog.setContentView(R.layout.dialog_yes_no);
+        dialog.setContentView(R.layout.dialog_yesno);
 
         mIcon = (ImageView) dialog.findViewById(R.id.dialog_icon);
         mTitle = (TextView) dialog.findViewById(R.id.dialog_title);
@@ -206,8 +206,8 @@ public class YesNoDialog
     protected void setMessageView()
     {
         LinearLayout layout =
-                (LinearLayout) View.inflate(getActivity(), R.layout.dialog_yes_no_message, null);
-        mMessage = (TextView) layout.findViewById(R.id.dialog_message_yn);
+                (LinearLayout) View.inflate(getActivity(), R.layout.dialog_yesno_message, null);
+        mMessage = (TextView) layout.findViewById(R.id.dialog_message);
         mDialogLayout.setVisibility(View.VISIBLE);
         mDialogLayout.addView(layout);
     }

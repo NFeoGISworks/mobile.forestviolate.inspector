@@ -118,13 +118,13 @@
 
                 <Button
                     android:id="@+id/dialog_btn_negative"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     style="@style/dialogButtonStyle"
                     />
 
                 <Button
                     android:id="@+id/dialog_btn_positive"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     style="@style/dialogButtonStyle"
                     />
 
