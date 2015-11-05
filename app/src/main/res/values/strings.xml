@@ -172,4 +172,6 @@
     <string name="enter_photo_desc">Enter a photo description</string>
     <string name="photos_will_be_deleted">Photos will be deleted</string>
     <string name="view_photo">View photo</string>
+    <string name="action_sync">Synchronization</string>
+    <string name="change_data">Change data</string>
 </resources>

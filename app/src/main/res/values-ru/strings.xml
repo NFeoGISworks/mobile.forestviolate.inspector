@@ -173,4 +173,6 @@
     <string name="enter_photo_desc">Введите описание фотографии</string>
     <string name="photos_will_be_deleted">Фотографии будут удалены</string>
     <string name="view_photo">Просмотр фото</string>
+    <string name="action_sync">Синхронизация</string>
+    <string name="change_data">Изменение данных</string>
 </resources>

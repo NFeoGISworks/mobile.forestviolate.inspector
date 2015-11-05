@@ -27,6 +27,7 @@ import com.nextgis.forestinspector.adapter.CheckListAdapter;
 import com.nextgis.forestinspector.adapter.SheetListAdapter;
 import com.nextgis.forestinspector.dialog.SheetFillDialog;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.datasource.Feature;
 
 
 public class SheetActivity
@@ -45,6 +46,16 @@ public class SheetActivity
     protected CheckListAdapter getAdapter()
     {
         return new SheetListAdapter(this, mDocumentFeature);
+    }
+
+
+    @Override
+    protected void onListItemClick(int position)
+    {
+        final SheetFillDialog dialog = new SheetFillDialog();
+        dialog.setOnAddTreesListener(this);
+        dialog.setFeature((Feature) mAdapter.getItem(position));
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SHEET_FILL_DIALOG);
     }
 
 

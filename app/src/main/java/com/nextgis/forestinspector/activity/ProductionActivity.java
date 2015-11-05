@@ -57,6 +57,13 @@ public class ProductionActivity extends CheckListActivity{
         return new ProductionListAdapter(this, mDocumentFeature);
     }
 
+
+    @Override
+    protected void onListItemClick(int position) {
+
+    }
+
+
     protected void contentsChanged(){
         if(null != mAdapter)
             mAdapter.notifyDataSetChanged();

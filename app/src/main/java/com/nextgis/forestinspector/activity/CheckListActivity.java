@@ -35,7 +35,6 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.CheckListAdapter;
@@ -100,10 +99,7 @@ public abstract class CheckListActivity extends FIActivity implements IDocumentF
                             View view,
                             int position,
                             long id) {
-                        CheckBox cb = (CheckBox) view.findViewById(R.id.check);
-                        boolean isChecked = !cb.isChecked();
-                        cb.setChecked(isChecked);
-                        onUpdateSelectedItems(isChecked, position);
+                        onListItemClick(position);
                     }
                 });
 
@@ -120,6 +116,7 @@ public abstract class CheckListActivity extends FIActivity implements IDocumentF
     protected abstract int getContentViewId();
     protected abstract void add();
     protected abstract CheckListAdapter getAdapter();
+    protected abstract void onListItemClick(int position);
 
     public void onUpdateSelectedItems(boolean isChecked, int tag){
         Bundle bundle = new Bundle();

@@ -50,6 +50,7 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
@@ -66,17 +67,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.nextgis.maplib.util.GeoConstants.GTMultiPoint;
+
 
 public class SheetFillDialog
         extends YesNoDialog
         implements GpsEventListener
 {
-    protected AppCompatSpinner mUnit;
-    protected AppCompatSpinner mSpecies;
-    protected AppCompatSpinner mCategory;
-    protected AppCompatSpinner mThickness;
-    protected AppCompatSpinner mHeight;
-    protected EditText         mCount;
+    public static final String UNKNOWN_LOCATION = "-";
+
+    protected Feature mFeature;
+
+    protected Location mFeatureLocation;
+    protected String   mUnit;
+    protected String   mSpecies;
+    protected String   mCategory;
+    protected String   mThickness;
+    protected String   mHeight;
+    protected String   mCount;
+
+    protected AppCompatSpinner mUnitView;
+    protected AppCompatSpinner mSpeciesView;
+    protected AppCompatSpinner mCategoryView;
+    protected AppCompatSpinner mThicknessView;
+    protected AppCompatSpinner mHeightView;
+    protected EditText         mCountView;
 
     protected ArrayAdapter<String> mUnitAdapter;
     protected ArrayAdapter<String> mSpeciesAdapter;
@@ -123,6 +138,34 @@ public class SheetFillDialog
             mThicknessAdapter = getArrayAdapter(Constants.KEY_LAYER_THICKNESS_TYPES, true);
             mHeightAdapter = getArrayAdapter(Constants.KEY_LAYER_HEIGHT_TYPES, true);
         }
+
+        if (null != mFeature) {
+            // TODO: make for another types
+            GeoGeometry geometry = mFeature.getGeometry();
+            switch (geometry.getType()) {
+                case GTMultiPoint: {
+                    GeoMultiPoint mpt = (GeoMultiPoint) geometry;
+                    GeoPoint pt = new GeoPoint(mpt.get(0));
+                    pt.setCRS(GeoConstants.CRS_WEB_MERCATOR);
+                    pt.project(GeoConstants.CRS_WGS84);
+                    mFeatureLocation = new Location("");
+                    mFeatureLocation.setLatitude(pt.getY());
+                    mFeatureLocation.setLongitude(pt.getX());
+                    break;
+                }
+                default: {
+                    mFeatureLocation = new Location(SheetFillDialog.UNKNOWN_LOCATION);
+                    break;
+                }
+            }
+
+            mUnit = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_UNIT);
+            mSpecies = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES);
+            mCategory = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY);
+            mThickness = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS);
+            mHeight = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS);
+            mCount = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_COUNT);
+        }
     }
 
 
@@ -157,6 +200,25 @@ public class SheetFillDialog
     }
 
 
+    protected void setListSelection(
+            AppCompatSpinner view,
+            ArrayAdapter<String> adapter,
+            String value)
+    {
+        if (null == adapter) {
+            return;
+        }
+
+        for (int i = 0, count = adapter.getCount(); i < count; ++i) {
+            String item = adapter.getItem(i);
+            if (item.equals(value)) {
+                view.setSelection(i);
+                break;
+            }
+        }
+    }
+
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
@@ -169,29 +231,60 @@ public class SheetFillDialog
 
         createLocationPanelView(view);
 
-        mUnit = (AppCompatSpinner) view.findViewById(R.id.unit);
-        mUnit.setAdapter(mUnitAdapter);
+        mUnitView = (AppCompatSpinner) view.findViewById(R.id.unit);
+        mUnitView.setAdapter(mUnitAdapter);
+        if (null != mUnit) {
+            setListSelection(mUnitView, mUnitAdapter, mUnit);
+            mUnit = null;
+        }
 
-        mSpecies = (AppCompatSpinner) view.findViewById(R.id.species);
-        mSpecies.setAdapter(mSpeciesAdapter);
+        mSpeciesView = (AppCompatSpinner) view.findViewById(R.id.species);
+        mSpeciesView.setAdapter(mSpeciesAdapter);
+        if (null != mSpecies) {
+            setListSelection(mSpeciesView, mSpeciesAdapter, mSpecies);
+            mSpecies = null;
+        }
 
-        mCategory = (AppCompatSpinner) view.findViewById(R.id.category);
-        mCategory.setAdapter(mCategoryAdapter);
+        mCategoryView = (AppCompatSpinner) view.findViewById(R.id.category);
+        mCategoryView.setAdapter(mCategoryAdapter);
+        if (null != mCategory) {
+            setListSelection(mCategoryView, mCategoryAdapter, mCategory);
+            mCategory = null;
+        }
 
-        mThickness = (AppCompatSpinner) view.findViewById(R.id.thickness);
-        mThickness.setAdapter(mThicknessAdapter);
+        mThicknessView = (AppCompatSpinner) view.findViewById(R.id.thickness);
+        mThicknessView.setAdapter(mThicknessAdapter);
+        if (null != mThickness) {
+            setListSelection(mThicknessView, mThicknessAdapter, mThickness);
+            mThickness = null;
+        }
 
-        mHeight = (AppCompatSpinner) view.findViewById(R.id.height);
-        mHeight.setAdapter(mHeightAdapter);
+        mHeightView = (AppCompatSpinner) view.findViewById(R.id.height);
+        mHeightView.setAdapter(mHeightAdapter);
+        if (null != mHeight) {
+            setListSelection(mHeightView, mHeightAdapter, mHeight);
+            mHeight = null;
+        }
 
-        mCount = (EditText) view.findViewById(R.id.count);
-        mCount.setFilters(new InputFilter[] {new InputFilterMinMax(1, 1000)});
+        mCountView = (EditText) view.findViewById(R.id.count);
+        mCountView.setFilters(new InputFilter[] {new InputFilterMinMax(1, 1000)});
+        if (null != mCount) {
+            mCountView.setText(mCount);
+            mCount = null;
+        }
 
 
         setIcon(R.drawable.ic_action_image_edit);
-        setTitle(R.string.add_trees);
         setView(view);
-        setPositiveText(R.string.add);
+
+        if (null != mFeature) {
+            setTitle(R.string.change_data);
+            setPositiveText(R.string.save);
+        } else {
+            setTitle(R.string.add_trees);
+            setPositiveText(R.string.add);
+        }
+
         setNegativeText(R.string.cancel);
 
         setOnPositiveClickedListener(
@@ -250,6 +343,10 @@ public class SheetFillDialog
                     @Override
                     public void onClick(View view)
                     {
+                        if (null != mFeatureLocation) {
+                            mFeatureLocation = null;
+                        }
+
                         RotateAnimation rotateAnimation = new RotateAnimation(
                                 0, 360, Animation.RELATIVE_TO_SELF, 0.5f,
                                 Animation.RELATIVE_TO_SELF, 0.5f);
@@ -262,7 +359,17 @@ public class SheetFillDialog
                     }
                 });
 
-        setLocationText(gpsEventSource.getLastKnownLocation());
+
+        if (null != mFeatureLocation) {
+            if (mFeatureLocation.getProvider().equals(UNKNOWN_LOCATION)) {
+                setLocationText(null);
+            } else {
+                setLocationText(mFeatureLocation);
+            }
+
+        } else {
+            setLocationText(gpsEventSource.getLastKnownLocation());
+        }
     }
 
 
@@ -341,6 +448,12 @@ public class SheetFillDialog
     }
 
 
+    public void setFeature(Feature feature)
+    {
+        mFeature = feature;
+    }
+
+
     public void addTrees()
     {
         if (null == mLocation) {
@@ -369,13 +482,13 @@ public class SheetFillDialog
 
 
         String unitValue =
-                mUnit.getSelectedItem() == null ? null : mUnit.getSelectedItem().toString();
+                mUnitView.getSelectedItem() == null ? null : mUnitView.getSelectedItem().toString();
 
-        Integer thicknessValue = Integer.parseInt(mThickness.getSelectedItem().toString());
+        Integer thicknessValue = Integer.parseInt(mThicknessView.getSelectedItem().toString());
 
-        Integer countValue = TextUtils.isEmpty(mCount.getText())
+        Integer countValue = TextUtils.isEmpty(mCountView.getText())
                              ? 1
-                             : Integer.parseInt(mCount.getText().toString());
+                             : Integer.parseInt(mCountView.getText().toString());
 
         GeoPoint pt = new GeoPoint(mLocation.getLongitude(), mLocation.getLatitude());
         pt.setCRS(GeoConstants.CRS_WGS84);
@@ -383,24 +496,28 @@ public class SheetFillDialog
         GeoMultiPoint geometryValue = new GeoMultiPoint();
         geometryValue.add(pt);
 
+        Feature feature;
+        if (null != mFeature) {
+            feature = mFeature;
+        } else {
+            feature = new Feature(
+                    com.nextgis.maplib.util.Constants.NOT_FOUND, sheetLayer.getFields());
+            activity.getFeature().addSubFeature(Constants.KEY_LAYER_SHEET, feature);
+        }
 
-        Feature feature = new Feature(
-                com.nextgis.maplib.util.Constants.NOT_FOUND, sheetLayer.getFields());
         feature.setFieldValue(
                 Constants.FIELD_SHEET_UNIT, unitValue);
         feature.setFieldValue(
-                Constants.FIELD_SHEET_SPECIES, mSpecies.getSelectedItem().toString());
+                Constants.FIELD_SHEET_SPECIES, mSpeciesView.getSelectedItem().toString());
         feature.setFieldValue(
-                Constants.FIELD_SHEET_CATEGORY, mCategory.getSelectedItem().toString());
+                Constants.FIELD_SHEET_CATEGORY, mCategoryView.getSelectedItem().toString());
         feature.setFieldValue(
                 Constants.FIELD_SHEET_THICKNESS, thicknessValue);
         feature.setFieldValue(
-                Constants.FIELD_SHEET_HEIGHTS, mHeight.getSelectedItem().toString());
+                Constants.FIELD_SHEET_HEIGHTS, mHeightView.getSelectedItem().toString());
         feature.setFieldValue(
                 Constants.FIELD_SHEET_COUNT, countValue);
         feature.setGeometry(geometryValue);
-
-        activity.getFeature().addSubFeature(Constants.KEY_LAYER_SHEET, feature);
     }
 
 
