@@ -34,6 +34,14 @@ public interface Constants
     String SIGN_FILENAME                = "sign.png";
     String SIGN_DESCRIPTION             = "sign";
 
+    /**
+     * init sync status
+     */
+    String BROADCAST_MESSAGE = "forestviolate.inspector.sync_message";
+    String KEY_STEP = "sync_step";
+    String KEY_STATE = "sync_state";
+    String KEY_MESSAGE = "sync_message";
+
     String KEY_INSPECTORS       = "inspectors";
     String KEY_DOCUMENTS        = "docs";
     String KEY_SHEET            = "sheet";

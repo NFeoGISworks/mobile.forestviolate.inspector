@@ -161,6 +161,10 @@
                 />
         </service>
 
+        <service
+            android:name=".service.InitService">
+        </service>
+
         <provider
             android:name="com.nextgis.maplib.datasource.LayerContentProvider"
             android:authorities="com.nextgis.forestinspector.provider"

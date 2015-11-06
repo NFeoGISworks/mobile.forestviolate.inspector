@@ -137,6 +137,24 @@ public class InitStepListAdapter extends BaseAdapter {
         return v;
     }
 
+    public void setMessage(int step, int state, String message) {
+        if(step > 0) {
+            for (int i = 0; i < step; i++) {
+                InitStepListAdapter.InitStep initStep =
+                        (InitStepListAdapter.InitStep) getItem(i);
+                initStep.mStepDescription = mContext.getString(R.string.done);
+                initStep.mState = Constants.STEP_STATE_DONE;
+            }
+        }
+
+        InitStepListAdapter.InitStep initStep =
+                (InitStepListAdapter.InitStep) getItem(step);
+        initStep.mStepDescription = message;
+        initStep.mState = state;
+
+        notifyDataSetChanged();
+    }
+
     public class InitStep {
         public String mStepName;
         public String mStepDescription;
