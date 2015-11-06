@@ -21,29 +21,30 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:orientation="vertical"
-    >
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        >
+    <item android:state_window_focused="false"
+          android:state_enabled="true"
+          android:drawable="@drawable/btn_dialog_normal"/>
 
-        <EditText
-            android:id="@+id/photo_desc_editor"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:gravity="start|top"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:minLines="3"
-            android:hint="@string/enter_photo_desc"
-            />
+    <item android:state_window_focused="false"
+          android:state_enabled="false"
+          android:drawable="@drawable/btn_dialog_disable"/>
 
-    </LinearLayout>
+    <item android:state_pressed="true"
+          android:drawable="@drawable/btn_dialog_pressed"/>
 
-</LinearLayout>
+    <item android:state_focused="true"
+          android:state_enabled="true"
+          android:drawable="@drawable/btn_dialog_pressed"/>
+
+    <item android:state_enabled="true"
+          android:drawable="@drawable/btn_dialog_normal"/>
+
+    <item android:state_focused="true"
+          android:drawable="@drawable/btn_dialog_disable"/>
+
+    <item
+        android:drawable="@drawable/btn_dialog_disable"/>
+
+</selector>

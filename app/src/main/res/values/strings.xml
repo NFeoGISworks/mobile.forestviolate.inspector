@@ -121,6 +121,7 @@
     <string name="district_forestry">district forestry</string>
     <string name="parcel">parcel</string>
     <string name="unit">unit(s)</string>
+    <string name="unit_caps">Unit(s)</string>
     <string name="possible_crime_desc">At the site of illegal logging are found individuals allegedly engaged in illegal logging</string>
     <string name="officer_desc">Guns illegal logging handed enforcement officers</string>
     <string name="inspector_desc">Inspector</string>
@@ -171,4 +172,6 @@
     <string name="enter_photo_desc">Enter a photo description</string>
     <string name="photos_will_be_deleted">Photos will be deleted</string>
     <string name="view_photo">View photo</string>
+    <string name="action_sync">Synchronization</string>
+    <string name="change_data">Change data</string>
 </resources>

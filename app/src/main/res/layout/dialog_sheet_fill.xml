@@ -26,95 +26,103 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     >
+    <!--http://stackoverflow.com/a/1662088/4727406-->
 
-    <ScrollView
+    <TextView
+        android:id="@+id/coordinates_text"
+        android:text="@string/coordinates"
+        style="@style/normal_text"
+        />
+
+    <include
+        layout="@layout/fragment_location_panel"/>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         >
 
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
+            android:text="@string/unit_caps"
+            />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/unit"
-                />
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/unit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/unit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/species"
+            />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/species"
-                />
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/species"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/species"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/category"
+            />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/category"
-                />
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/thickness"
+            />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/thickness"
-                />
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/thickness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/thickness"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/height_rank"
+            />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/height_rank"
-                />
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/height"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/count"
+            />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/count"
-                />
+        <!--http://stackoverflow.com/a/1662088/4727406-->
+        <EditText
+            android:id="@+id/count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="1"
+            />
 
-            <EditText
-                android:id="@+id/count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:hint="1"
-                />
-
-        </LinearLayout>
-
-    </ScrollView>
+    </LinearLayout>
 
 </LinearLayout>

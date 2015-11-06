@@ -122,6 +122,7 @@
     <string name="district_forestry">участковое лесничество</string>
     <string name="parcel">квартал</string>
     <string name="unit">выдел(а)</string>
+    <string name="unit_caps">Выдел(а)</string>
     <string name="possible_crime_desc">На месте незаконной рубки обнаружены лица, предположительно осуществляющие незаконную заготовку древесины</string>
     <string name="officer_desc">Орудия незаконной рубки переданы сотруднику ОВД</string>
     <string name="inspector_desc">Лесной инспектор</string>
@@ -172,4 +173,6 @@
     <string name="enter_photo_desc">Введите описание фотографии</string>
     <string name="photos_will_be_deleted">Фотографии будут удалены</string>
     <string name="view_photo">Просмотр фото</string>
+    <string name="action_sync">Синхронизация</string>
+    <string name="change_data">Изменение данных</string>
 </resources>

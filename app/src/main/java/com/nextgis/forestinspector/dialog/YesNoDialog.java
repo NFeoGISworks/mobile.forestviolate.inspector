@@ -35,7 +35,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
 
@@ -60,7 +59,7 @@ public class YesNoDialog
     protected LinearLayout mDialogLayout;
     protected TextView     mMessage;
     protected View         mView;
-    protected TableLayout  mButtons;
+    protected LinearLayout mButtons;
     protected Button       mBtnPositive;
     protected Button       mBtnNegative;
 
@@ -108,14 +107,14 @@ public class YesNoDialog
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        dialog.setContentView(R.layout.dialog_yes_no);
+        dialog.setContentView(R.layout.dialog_yesno);
 
-        mIcon = (ImageView) dialog.findViewById(R.id.dialog_icon_yn);
-        mTitle = (TextView) dialog.findViewById(R.id.dialog_title_yn);
-        mDialogLayout = (LinearLayout) dialog.findViewById(R.id.dialog_layout_yn);
-        mButtons = (TableLayout) dialog.findViewById(R.id.dialog_buttons_yn);
-        mBtnPositive = (Button) dialog.findViewById(R.id.dialog_btn_positive_yn);
-        mBtnNegative = (Button) dialog.findViewById(R.id.dialog_btn_negative_yn);
+        mIcon = (ImageView) dialog.findViewById(R.id.dialog_icon);
+        mTitle = (TextView) dialog.findViewById(R.id.dialog_title);
+        mDialogLayout = (LinearLayout) dialog.findViewById(R.id.dialog_layout);
+        mButtons = (LinearLayout) dialog.findViewById(R.id.dialog_buttons);
+        mBtnPositive = (Button) dialog.findViewById(R.id.dialog_btn_positive);
+        mBtnNegative = (Button) dialog.findViewById(R.id.dialog_btn_negative);
 
         if (null != mIconId) {
             mIcon.setVisibility(View.VISIBLE);
@@ -207,8 +206,8 @@ public class YesNoDialog
     protected void setMessageView()
     {
         LinearLayout layout =
-                (LinearLayout) View.inflate(getActivity(), R.layout.dialog_yes_no_message, null);
-        mMessage = (TextView) layout.findViewById(R.id.dialog_message_yn);
+                (LinearLayout) View.inflate(getActivity(), R.layout.dialog_yesno_message, null);
+        mMessage = (TextView) layout.findViewById(R.id.dialog_message);
         mDialogLayout.setVisibility(View.VISIBLE);
         mDialogLayout.addView(layout);
     }

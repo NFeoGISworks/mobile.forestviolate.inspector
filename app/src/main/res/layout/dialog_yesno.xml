@@ -28,36 +28,38 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/dialog_yes_no_background"
-        android:orientation="vertical"
         >
 
-
         <LinearLayout
+            android:id="@+id/title"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:padding="12dp"
+            android:padding="10dp"
             android:background="@drawable/dialog_yes_no_title_background"
             android:orientation="horizontal"
             >
 
             <ImageView
-                android:id="@+id/dialog_icon_yn"
+                android:id="@+id/dialog_icon"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginRight="12dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_gravity="center_vertical"
                 android:visibility="gone"
                 />
 
             <TextView
-                android:id="@+id/dialog_title_yn"
+                android:id="@+id/dialog_title"
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/color_white"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -66,29 +68,32 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/divider"
             android:layout_height="2dp"
             android:layout_width="match_parent"
             android:background="@color/color_black"
             android:visibility="gone"
+            android:layout_below="@+id/title"
             />
 
-        <ScrollView
+        <LinearLayout
+            android:id="@+id/main_view"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_marginTop="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginBottom="24dp"
+            android:layout_margin="10dp"
+            android:orientation="vertical"
+            android:layout_below="@+id/divider"
             >
 
-            <LinearLayout
-                android:layout_height="wrap_content"
+            <!--http://stackoverflow.com/a/15961335/4727406-->
+            <ScrollView
                 android:layout_width="match_parent"
-                android:orientation="vertical"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 >
 
                 <LinearLayout
-                    android:id="@+id/dialog_layout_yn"
+                    android:id="@+id/dialog_layout"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:orientation="vertical"
@@ -97,57 +102,36 @@
 
                 </LinearLayout>
 
+            </ScrollView>
 
-                <TableLayout
-                    android:id="@+id/dialog_buttons_yn"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:stretchColumns="0,1"
-                    android:orientation="horizontal"
+            <LinearLayout
+                android:id="@+id/dialog_buttons"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_gravity="right"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                >
+
+                <Button
+                    android:id="@+id/dialog_btn_negative"
                     android:visibility="gone"
-                    >
+                    style="@style/dialogButtonStyle"
+                    />
 
-                    <TableRow
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        >
-
-                        <Button
-                            android:id="@+id/dialog_btn_negative_yn"
-                            android:layout_height="wrap_content"
-                            android:layout_width="1dp"
-                            android:layout_weight="1"
-                            android:layout_marginRight="12dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:paddingLeft="5dp"
-                            android:paddingRight="5dp"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:visibility="invisible"
-                            />
-
-                        <Button
-                            android:id="@+id/dialog_btn_positive_yn"
-                            android:layout_height="wrap_content"
-                            android:layout_width="1dp"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="12dp"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:paddingLeft="5dp"
-                            android:paddingRight="5dp"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:visibility="invisible"
-                            />
-
-                    </TableRow>
-
-                </TableLayout>
+                <Button
+                    android:id="@+id/dialog_btn_positive"
+                    android:visibility="gone"
+                    style="@style/dialogButtonStyle"
+                    />
 
             </LinearLayout>
 
-        </ScrollView>
+        </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

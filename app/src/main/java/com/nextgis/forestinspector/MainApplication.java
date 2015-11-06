@@ -114,7 +114,7 @@ public class MainApplication extends GISApplication {
     public void setTempFeature(DocumentEditFeature tempFeature) {
         mTempFeature = tempFeature;
         //delete photos of previous feature
-        if (null == tempFeature && FileUtil.deleteRecursive(mDocFeatureFolder))
+        if (null == tempFeature && FileUtil.renameAndDelete(mDocFeatureFolder))
             FileUtil.createDir(mDocFeatureFolder);
     }
 }

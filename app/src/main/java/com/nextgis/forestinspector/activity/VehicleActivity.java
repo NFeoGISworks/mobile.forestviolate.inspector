@@ -41,4 +41,10 @@ public class VehicleActivity extends CheckListActivity {
     protected CheckListAdapter getAdapter() {
         return null;
     }
+
+
+    @Override
+    protected void onListItemClick(int position) {
+
+    }
 }
