@@ -86,14 +86,13 @@ public class SheetFillDialog
     protected String   mHeight;
     protected String   mCount;
 
-    protected AppCompatSpinner mUnitView;
+    protected EditText         mUnitView;
     protected AppCompatSpinner mSpeciesView;
     protected AppCompatSpinner mCategoryView;
     protected AppCompatSpinner mThicknessView;
     protected AppCompatSpinner mHeightView;
     protected EditText         mCountView;
 
-    protected ArrayAdapter<String> mUnitAdapter;
     protected ArrayAdapter<String> mSpeciesAdapter;
     protected ArrayAdapter<String> mCategoryAdapter;
     protected ArrayAdapter<String> mThicknessAdapter;
@@ -132,7 +131,6 @@ public class SheetFillDialog
         }
 
         if (null != mDocsLayer) {
-            mUnitAdapter = getArrayAdapter(Constants.KEY_LAYER_CADASTRE, false);
             mSpeciesAdapter = getArrayAdapter(Constants.KEY_LAYER_SPECIES_TYPES, false);
             mCategoryAdapter = getArrayAdapter(Constants.KEY_LAYER_TREES_TYPES, false);
             mThicknessAdapter = getArrayAdapter(Constants.KEY_LAYER_THICKNESS_TYPES, true);
@@ -231,10 +229,9 @@ public class SheetFillDialog
 
         createLocationPanelView(view);
 
-        mUnitView = (AppCompatSpinner) view.findViewById(R.id.unit);
-        mUnitView.setAdapter(mUnitAdapter);
+        mUnitView = (EditText) view.findViewById(R.id.unit);
         if (null != mUnit) {
-            setListSelection(mUnitView, mUnitAdapter, mUnit);
+            mUnitView.setText(mUnit);
             mUnit = null;
         }
 
@@ -481,9 +478,6 @@ public class SheetFillDialog
         }
 
 
-        String unitValue =
-                mUnitView.getSelectedItem() == null ? null : mUnitView.getSelectedItem().toString();
-
         Integer thicknessValue = Integer.parseInt(mThicknessView.getSelectedItem().toString());
 
         Integer countValue = TextUtils.isEmpty(mCountView.getText())
@@ -506,7 +500,7 @@ public class SheetFillDialog
         }
 
         feature.setFieldValue(
-                Constants.FIELD_SHEET_UNIT, unitValue);
+                Constants.FIELD_SHEET_UNIT, mUnitView.getText().toString());
         feature.setFieldValue(
                 Constants.FIELD_SHEET_SPECIES, mSpeciesView.getSelectedItem().toString());
         feature.setFieldValue(

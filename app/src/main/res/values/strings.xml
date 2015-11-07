@@ -122,6 +122,7 @@
     <string name="parcel">parcel</string>
     <string name="unit">unit(s)</string>
     <string name="unit_caps">Unit(s)</string>
+    <string name="unit_hint">Enter a unit number(s)</string>
     <string name="possible_crime_desc">At the site of illegal logging are found individuals allegedly engaged in illegal logging</string>
     <string name="officer_desc">Guns illegal logging handed enforcement officers</string>
     <string name="inspector_desc">Inspector</string>

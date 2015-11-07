@@ -54,10 +54,11 @@
             android:text="@string/unit_caps"
             />
 
-        <android.support.v7.widget.AppCompatSpinner
+        <EditText
             android:id="@+id/unit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/unit_hint"
             />
 
         <TextView
