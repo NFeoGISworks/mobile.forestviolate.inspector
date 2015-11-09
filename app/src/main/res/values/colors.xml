@@ -89,9 +89,9 @@
     <color name="sdf_titleTextColorDark">@color/color_white</color>
     <color name="sdf_titleDividerColorDark">@color/color_white</color>
     <color name="sdf_buttonNormalBackgroundColorDark">@color/sdf_backgroundSolidColorDark</color>
-    <color name="sdf_buttonNormalTextColorDark">@color/color_500</color>
-    <color name="sdf_buttonPressedBackgroundColorDark">@color/color_grey_400</color>
-    <color name="sdf_buttonPressedTextColorDark">@color/color_500</color>
+    <color name="sdf_buttonNormalTextColorDark">@color/color_200</color>
+    <color name="sdf_buttonPressedBackgroundColorDark">@color/color_grey_600</color>
+    <color name="sdf_buttonPressedTextColorDark">@color/color_200</color>
     <color name="sdf_buttonDisabledBackgroundColorDark">@color/sdf_backgroundSolidColorDark</color>
     <color name="sdf_buttonDisabledTextColorDark">@color/color_800</color>
     <color name="sdf_messageTextColorDark">@color/color_white</color>
