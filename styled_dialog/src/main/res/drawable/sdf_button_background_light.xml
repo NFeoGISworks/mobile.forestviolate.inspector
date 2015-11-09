@@ -21,22 +21,30 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <corners
-        android:topLeftRadius="4dp"
-        android:topRightRadius="4dp"
-        />
+    <item android:state_window_focused="false"
+          android:state_enabled="true"
+          android:drawable="@drawable/sdf_button_background_light_normal"/>
 
-    <solid
-        android:color="@color/primary"
-        />
+    <item android:state_window_focused="false"
+          android:state_enabled="false"
+          android:drawable="@drawable/sdf_button_background_light_disable"/>
 
-<!--
-    <stroke
-        android:width="2dp"
-        android:color="@color/color_black"
-        />
--->
+    <item android:state_pressed="true"
+          android:drawable="@drawable/sdf_button_background_light_pressed"/>
 
-</shape>
+    <item android:state_focused="true"
+          android:state_enabled="true"
+          android:drawable="@drawable/sdf_button_background_light_pressed"/>
+
+    <item android:state_enabled="true"
+          android:drawable="@drawable/sdf_button_background_light_normal"/>
+
+    <item android:state_focused="true"
+          android:drawable="@drawable/sdf_button_background_light_disable"/>
+
+    <item
+        android:drawable="@drawable/sdf_button_background_light_disable"/>
+
+</selector>

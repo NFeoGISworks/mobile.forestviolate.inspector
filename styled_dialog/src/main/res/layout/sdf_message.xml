@@ -21,21 +21,30 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    >
 
-    <corners
-        android:radius="4dp"
-        />
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="24dp"
+        android:orientation="vertical"
+        >
 
-    <solid
-        android:color="@color/color_white"
-        />
+        <TextView
+            android:id="@+id/dialog_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/sdf_messageTextColor"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            android:lineSpacingExtra="6dp"
+            />
 
-<!--
-    <stroke
-        android:width="2dp"
-        android:color="@color/color_white"
-        />
--->
+    </LinearLayout>
 
-</shape>
+</LinearLayout>

@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nextgis.forestinspector.dialog;
+package com.nextgis.styled_dialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -29,6 +29,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.internal.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -36,10 +37,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.nextgis.forestinspector.R;
 
 
-public class YesNoDialog
+public class StyledDialogFragment
         extends DialogFragment
 {
     protected Integer mIconId;
@@ -54,14 +54,17 @@ public class YesNoDialog
     protected CharSequence mPositiveText;
     protected CharSequence mNegativeText;
 
+    protected Integer mThemeResId;
+    protected boolean mIsThemeDark = false;
+
     protected ImageView    mIcon;
     protected TextView     mTitle;
     protected LinearLayout mDialogLayout;
     protected TextView     mMessage;
     protected View         mView;
     protected LinearLayout mButtons;
-    protected Button       mBtnPositive;
-    protected Button       mBtnNegative;
+    protected Button       mButtonPositive;
+    protected Button       mButtonNegative;
 
     protected OnPositiveClickedListener mOnPositiveClickedListener;
     protected OnNegativeClickedListener mOnNegativeClickedListener;
@@ -98,7 +101,18 @@ public class YesNoDialog
     {
         // Idea from here
         // http://thanhcs.blogspot.ru/2014/10/android-custom-dialog-fragment.html
-        Dialog dialog = new Dialog(getActivity());
+
+        ContextThemeWrapper context;
+
+        if (null != mThemeResId) {
+            context = new ContextThemeWrapper(getActivity(), mThemeResId);
+        } else if (mIsThemeDark) {
+            context = new ContextThemeWrapper(getActivity(), R.style.SdfTheme_Dark);
+        } else {
+            context = new ContextThemeWrapper(getActivity(), R.style.SdfTheme_Light);
+        }
+
+        Dialog dialog = new Dialog(context);
 
         Window window = dialog.getWindow();
         window.requestFeature(Window.FEATURE_NO_TITLE);
@@ -107,14 +121,14 @@ public class YesNoDialog
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        dialog.setContentView(R.layout.dialog_yesno);
+        dialog.setContentView(R.layout.sdf_layout);
 
-        mIcon = (ImageView) dialog.findViewById(R.id.dialog_icon);
-        mTitle = (TextView) dialog.findViewById(R.id.dialog_title);
-        mDialogLayout = (LinearLayout) dialog.findViewById(R.id.dialog_layout);
-        mButtons = (LinearLayout) dialog.findViewById(R.id.dialog_buttons);
-        mBtnPositive = (Button) dialog.findViewById(R.id.dialog_btn_positive);
-        mBtnNegative = (Button) dialog.findViewById(R.id.dialog_btn_negative);
+        mIcon = (ImageView) dialog.findViewById(R.id.title_icon);
+        mTitle = (TextView) dialog.findViewById(R.id.title_text);
+        mDialogLayout = (LinearLayout) dialog.findViewById(R.id.dialog_body);
+        mButtons = (LinearLayout) dialog.findViewById(R.id.buttons);
+        mButtonPositive = (Button) dialog.findViewById(R.id.button_positive);
+        mButtonNegative = (Button) dialog.findViewById(R.id.button_negative);
 
         if (null != mIconId) {
             mIcon.setVisibility(View.VISIBLE);
@@ -144,31 +158,31 @@ public class YesNoDialog
 
         if (null != mPositiveTextId) {
             mButtons.setVisibility(View.VISIBLE);
-            mBtnPositive.setVisibility(View.VISIBLE);
-            mBtnPositive.setText(mPositiveTextId);
+            mButtonPositive.setVisibility(View.VISIBLE);
+            mButtonPositive.setText(mPositiveTextId);
         }
         if (null != mPositiveText) {
             mButtons.setVisibility(View.VISIBLE);
-            mBtnPositive.setVisibility(View.VISIBLE);
-            mBtnPositive.setText(mPositiveText);
+            mButtonPositive.setVisibility(View.VISIBLE);
+            mButtonPositive.setText(mPositiveText);
         }
 
         if (null != mNegativeTextId) {
             mButtons.setVisibility(View.VISIBLE);
-            mBtnNegative.setVisibility(View.VISIBLE);
-            mBtnNegative.setText(mNegativeTextId);
+            mButtonNegative.setVisibility(View.VISIBLE);
+            mButtonNegative.setText(mNegativeTextId);
         }
         if (null != mNegativeText) {
             mButtons.setVisibility(View.VISIBLE);
-            mBtnNegative.setVisibility(View.VISIBLE);
-            mBtnNegative.setText(mNegativeText);
+            mButtonNegative.setVisibility(View.VISIBLE);
+            mButtonNegative.setText(mNegativeText);
         }
 
 
         if (null != mOnPositiveClickedListener) {
             mButtons.setVisibility(View.VISIBLE);
-            mBtnPositive.setVisibility(View.VISIBLE);
-            mBtnPositive.setOnClickListener(
+            mButtonPositive.setVisibility(View.VISIBLE);
+            mButtonPositive.setOnClickListener(
                     new View.OnClickListener()
                     {
                         @Override
@@ -184,8 +198,8 @@ public class YesNoDialog
 
         if (null != mOnNegativeClickedListener) {
             mButtons.setVisibility(View.VISIBLE);
-            mBtnNegative.setVisibility(View.VISIBLE);
-            mBtnNegative.setOnClickListener(
+            mButtonNegative.setVisibility(View.VISIBLE);
+            mButtonNegative.setOnClickListener(
                     new View.OnClickListener()
                     {
                         @Override
@@ -200,22 +214,6 @@ public class YesNoDialog
         }
 
         return dialog;
-    }
-
-
-    protected void setMessageView()
-    {
-        LinearLayout layout =
-                (LinearLayout) View.inflate(getActivity(), R.layout.dialog_yesno_message, null);
-        mMessage = (TextView) layout.findViewById(R.id.dialog_message);
-        mDialogLayout.setVisibility(View.VISIBLE);
-        mDialogLayout.addView(layout);
-    }
-
-
-    public void setView(View view)
-    {
-        mView = view;
     }
 
 
@@ -239,98 +237,126 @@ public class YesNoDialog
     }
 
 
-    public YesNoDialog setKeepInstance(boolean keepInstance)
+    public StyledDialogFragment setKeepInstance(boolean keepInstance)
     {
         mKeepInstance = keepInstance;
         return this;
     }
 
 
-    public YesNoDialog setIcon(int iconId)
+    public void setThemeResId(Integer themeResId)
+    {
+        mThemeResId = themeResId;
+    }
+
+
+    public void setThemeDark(boolean isDarkTheme)
+    {
+        mIsThemeDark = isDarkTheme;
+    }
+
+
+    protected void setMessageView()
+    {
+        LinearLayout layout =
+                (LinearLayout) View.inflate(getActivity(), R.layout.sdf_message, null);
+        mMessage = (TextView) layout.findViewById(R.id.dialog_message);
+        mDialogLayout.setVisibility(View.VISIBLE);
+        mDialogLayout.addView(layout);
+    }
+
+
+    public void setView(View view)
+    {
+        mView = view;
+    }
+
+
+    public StyledDialogFragment setIcon(int iconId)
     {
         mIconId = iconId;
         return this;
     }
 
 
-    public YesNoDialog setTitle(int titleId)
+    public StyledDialogFragment setTitle(int titleId)
     {
         mTitleId = titleId;
         return this;
     }
 
 
-    public YesNoDialog setTitle(CharSequence titleText)
+    public StyledDialogFragment setTitle(CharSequence titleText)
     {
         mTitleText = titleText;
         return this;
     }
 
 
-    public YesNoDialog setMessage(int messageId)
+    public StyledDialogFragment setMessage(int messageId)
     {
         mMessageId = messageId;
         return this;
     }
 
 
-    public YesNoDialog setMessage(CharSequence messageText)
+    public StyledDialogFragment setMessage(CharSequence messageText)
     {
         mMessageText = messageText;
         return this;
     }
 
 
-    public YesNoDialog setPositiveText(int positiveTextId)
+    public StyledDialogFragment setPositiveText(int positiveTextId)
     {
         mPositiveTextId = positiveTextId;
         return this;
     }
 
 
-    public YesNoDialog setPositiveText(CharSequence positiveText)
+    public StyledDialogFragment setPositiveText(CharSequence positiveText)
     {
         mPositiveText = positiveText;
         return this;
     }
 
 
-    public YesNoDialog setNegativeText(int negativeTextId)
+    public StyledDialogFragment setNegativeText(int negativeTextId)
     {
         mNegativeTextId = negativeTextId;
         return this;
     }
 
 
-    public YesNoDialog setNegativeText(CharSequence negativeText)
+    public StyledDialogFragment setNegativeText(CharSequence negativeText)
     {
         mNegativeText = negativeText;
         return this;
     }
 
 
-    public YesNoDialog setOnPositiveClickedListener(OnPositiveClickedListener onPositiveClickedListener)
+    public StyledDialogFragment setOnPositiveClickedListener(OnPositiveClickedListener onPositiveClickedListener)
     {
         mOnPositiveClickedListener = onPositiveClickedListener;
         return this;
     }
 
 
-    public YesNoDialog setOnNegativeClickedListener(OnNegativeClickedListener onNegativeClickedListener)
+    public StyledDialogFragment setOnNegativeClickedListener(OnNegativeClickedListener onNegativeClickedListener)
     {
         mOnNegativeClickedListener = onNegativeClickedListener;
         return this;
     }
 
 
-    public YesNoDialog setOnCancelListener(OnCancelListener onCancelListener)
+    public StyledDialogFragment setOnCancelListener(OnCancelListener onCancelListener)
     {
         mOnCancelListener = onCancelListener;
         return this;
     }
 
 
-    public YesNoDialog setOnDismissListener(OnDismissListener onDismissListener)
+    public StyledDialogFragment setOnDismissListener(OnDismissListener onDismissListener)
     {
         mOnDismissListener = onDismissListener;
         return this;

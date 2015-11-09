@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/dialog_yes_no_background"
+        android:background="?attr/sdf_background"
         >
 
         <LinearLayout
@@ -40,12 +40,12 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:padding="10dp"
-            android:background="@drawable/dialog_yes_no_title_background"
+            android:background="?attr/sdf_titleBackground"
             android:orientation="horizontal"
             >
 
             <ImageView
-                android:id="@+id/dialog_icon"
+                android:id="@+id/title_icon"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginRight="10dp"
@@ -55,23 +55,23 @@
                 />
 
             <TextView
-                android:id="@+id/dialog_title"
+                android:id="@+id/title_text"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginRight="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_gravity="center_vertical"
-                android:textColor="@color/color_white"
+                android:textColor="?attr/sdf_titleTextColor"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 />
 
         </LinearLayout>
 
         <View
-            android:id="@+id/divider"
+            android:id="@+id/title_divider"
             android:layout_height="2dp"
             android:layout_width="match_parent"
-            android:background="@color/color_black"
+            android:background="?attr/sdf_titleDividerColor"
             android:visibility="gone"
             android:layout_below="@+id/title"
             />
@@ -82,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_margin="10dp"
             android:orientation="vertical"
-            android:layout_below="@+id/divider"
+            android:layout_below="@+id/title_divider"
             >
 
             <!--http://stackoverflow.com/a/15961335/4727406-->
@@ -93,7 +93,7 @@
                 >
 
                 <LinearLayout
-                    android:id="@+id/dialog_layout"
+                    android:id="@+id/dialog_body"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:orientation="vertical"
@@ -105,7 +105,7 @@
             </ScrollView>
 
             <LinearLayout
-                android:id="@+id/dialog_buttons"
+                android:id="@+id/buttons"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginTop="5dp"
@@ -117,15 +117,15 @@
                 >
 
                 <Button
-                    android:id="@+id/dialog_btn_negative"
+                    android:id="@+id/button_negative"
                     android:visibility="gone"
-                    style="@style/dialogButtonStyle"
+                    style="@style/sdf_button_style"
                     />
 
                 <Button
-                    android:id="@+id/dialog_btn_positive"
+                    android:id="@+id/button_positive"
                     android:visibility="gone"
-                    style="@style/dialogButtonStyle"
+                    style="@style/sdf_button_style"
                     />
 
             </LinearLayout>

@@ -21,14 +21,21 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-       android:shape="rectangle"
-    >
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <corners android:radius="2dp"/>
+    <corners
+        android:radius="4dp"
+        />
 
     <solid
-        android:color="@color/button_dialog_normal_color"
+        android:color="@color/sdf_backgroundSolidColorLight"
         />
+
+<!--
+    <stroke
+        android:width="2dp"
+        android:color="@color/color_white"
+        />
+-->
 
 </shape>

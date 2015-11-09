@@ -28,7 +28,7 @@
     <corners android:radius="2dp"/>
 
     <solid
-        android:color="@color/button_dialog_disabled_color"
+        android:color="@color/sdf_buttonNormalBackgroundColorDark"
         />
 
 </shape>

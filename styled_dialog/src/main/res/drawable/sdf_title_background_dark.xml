@@ -21,24 +21,22 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:state_enabled="false"
-          android:color="@color/button_dialog_disabled_text_color"/>
+    <corners
+        android:topLeftRadius="4dp"
+        android:topRightRadius="4dp"
+        />
 
-    <item android:state_window_focused="false"
-          android:color="@color/button_dialog_normal_text_color"/>
+    <solid
+        android:color="@color/sdf_titleBackgroundColorDark"
+        />
 
-    <item android:state_pressed="true"
-          android:color="@color/button_dialog_pressed_text_color"/>
+<!--
+    <stroke
+        android:width="2dp"
+        android:color="@color/color_black"
+        />
+-->
 
-    <item android:state_selected="true"
-          android:color="@color/button_dialog_normal_text_color"/>
-
-    <item android:state_activated="true"
-          android:color="@color/button_dialog_normal_text_color"/>
-
-    <item android:color="@color/button_dialog_normal_text_color"/>
-    <!-- not selected -->
-
-</selector>
+</shape>
