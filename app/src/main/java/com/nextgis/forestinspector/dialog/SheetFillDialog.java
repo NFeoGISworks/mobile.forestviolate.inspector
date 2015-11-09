@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -60,6 +61,7 @@ import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.LocationUtil;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
+import com.nextgis.styled_dialog.StyledDialogFragment;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -71,7 +73,7 @@ import static com.nextgis.maplib.util.GeoConstants.GTMultiPoint;
 
 
 public class SheetFillDialog
-        extends YesNoDialog
+        extends StyledDialogFragment
         implements GpsEventListener
 {
     public static final String UNKNOWN_LOCATION = "-";

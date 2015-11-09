@@ -28,10 +28,11 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.EditText;
 import com.nextgis.forestinspector.R;
+import com.nextgis.styled_dialog.StyledDialogFragment;
 
 
 public class PhotoDescEditorDialog
-        extends YesNoDialog
+        extends StyledDialogFragment
 {
     protected EditText mEditor;
     protected String mPhotoDesc;

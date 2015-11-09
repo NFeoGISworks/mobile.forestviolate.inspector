@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,6 +44,7 @@ import com.nextgis.forestinspector.activity.PhotoTableActivity;
 import com.nextgis.forestinspector.dialog.PhotoDescEditorDialog;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.util.AttachItem;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -217,7 +219,7 @@ public abstract class PhotoTableAdapter
             viewHolder.mPhotoDesc.setEllipsize(null);
             viewHolder.mPhotoDesc.setMaxLines(999);
             viewHolder.mPhotoDesc.setBackgroundColor(
-                    mActivity.getResources().getColor(R.color.color_photo_desc_background));
+                    mActivity.getResources().getColor(R.color.photoDescBackgroundColor));
         }
 
         viewHolder.mPhotoDesc.setTag(position);
@@ -240,6 +242,7 @@ public abstract class PhotoTableAdapter
                         final int clickedPos = (Integer) descView.getTag();
 
                         final PhotoDescEditorDialog dialog = new PhotoDescEditorDialog();
+                        dialog.setThemeDark(isThemeDark());
                         dialog.setPhotoDesc(
                                 mAttachItemList.get(clickedPos).getValue().getDescription());
                         dialog.setOnPositiveClickedListener(
@@ -377,6 +380,15 @@ public abstract class PhotoTableAdapter
         };
 
         new Thread(future).start();
+    }
+
+
+    // TODO: this is hack, make it via GISApplication
+    public boolean isThemeDark()
+    {
+        return PreferenceManager.getDefaultSharedPreferences(mActivity)
+                .getString(SettingsConstantsUI.KEY_PREF_THEME, "light")
+                .equals("dark");
     }
 
 

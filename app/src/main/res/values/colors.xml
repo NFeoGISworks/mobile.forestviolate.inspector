@@ -67,15 +67,33 @@
     <color name="color_undobar_text">@color/color_white</color>
     <color name="color_undobar_action_text">#ffff00</color>
 
-    <color name="color_photo_desc_background">#e8e8e8</color>
+    <color name="photoDescBackgroundColor">#e8e8e8</color>
+    <color name="checkBoxBackgroundColor">@color/color_white</color>
 
-    <color name="button_dialog_normal_text_color">@color/color_500</color>
-    <color name="button_dialog_normal_color">@color/color_000</color>
+    <!--StyledDialogFragment light colors-->
+    <color name="sdf_backgroundSolidColorLight">@color/color_white</color>
+    <color name="sdf_titleBackgroundColorLight">@color/color_500</color>
+    <color name="sdf_titleTextColorLight">@color/color_white</color>
+    <color name="sdf_titleDividerColorLight">@color/color_black</color>
+    <color name="sdf_buttonNormalBackgroundColorLight">@color/sdf_backgroundSolidColorLight</color>
+    <color name="sdf_buttonNormalTextColorLight">@color/color_500</color>
+    <color name="sdf_buttonPressedBackgroundColorLight">@color/color_grey_400</color>
+    <color name="sdf_buttonPressedTextColorLight">@color/color_500</color>
+    <color name="sdf_buttonDisabledBackgroundColorLight">@color/sdf_backgroundSolidColorLight</color>
+    <color name="sdf_buttonDisabledTextColorLight">@color/color_200</color>
+    <color name="sdf_messageTextColorLight">@color/color_black</color>
 
-    <color name="button_dialog_pressed_text_color">@color/color_500</color>
-    <color name="button_dialog_pressed_color">@color/color_grey_400</color>
-
-    <color name="button_dialog_disabled_text_color">@color/color_200</color>
-    <color name="button_dialog_disabled_color">@color/color_000</color>
+    <!--StyledDialogFragment dark colors-->
+    <color name="sdf_backgroundSolidColorDark">@color/color_grey_800</color>
+    <color name="sdf_titleBackgroundColorDark">@color/color_500</color>
+    <color name="sdf_titleTextColorDark">@color/color_white</color>
+    <color name="sdf_titleDividerColorDark">@color/color_white</color>
+    <color name="sdf_buttonNormalBackgroundColorDark">@color/sdf_backgroundSolidColorDark</color>
+    <color name="sdf_buttonNormalTextColorDark">@color/color_500</color>
+    <color name="sdf_buttonPressedBackgroundColorDark">@color/color_grey_400</color>
+    <color name="sdf_buttonPressedTextColorDark">@color/color_500</color>
+    <color name="sdf_buttonDisabledBackgroundColorDark">@color/sdf_backgroundSolidColorDark</color>
+    <color name="sdf_buttonDisabledTextColorDark">@color/color_800</color>
+    <color name="sdf_messageTextColorDark">@color/color_white</color>
 
 </resources>
