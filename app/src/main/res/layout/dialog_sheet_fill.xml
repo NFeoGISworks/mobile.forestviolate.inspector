@@ -30,41 +30,39 @@
     >
     <!--http://stackoverflow.com/a/1662088/4727406-->
 
-    <TextView
-        android:id="@+id/coordinates_text"
-        android:text="@string/coordinates"
-        style="@style/normal_text"
-        />
-
-    <include
-        layout="@layout/fragment_location_panel"/>
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="0dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
+        android:layout_marginBottom="0dp"
         >
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/coordinates_text"
+            android:text="@string/coordinates"
+            style="@style/dialog_desc_text"
+            />
+
+        <include
+            layout="@layout/fragment_location_panel"/>
+
+        <TextView
             android:text="@string/unit_caps"
+            style="@style/dialog_desc_text"
             />
 
         <EditText
             android:id="@+id/unit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:hint="@string/unit_hint"
+            style="@style/dialog_edit_text"
             />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/species"
+            style="@style/dialog_desc_text"
             />
 
         <android.support.v7.widget.AppCompatSpinner
@@ -74,9 +72,8 @@
             />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/category"
+            style="@style/dialog_desc_text"
             />
 
         <android.support.v7.widget.AppCompatSpinner
@@ -86,9 +83,8 @@
             />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/thickness"
+            style="@style/dialog_desc_text"
             />
 
         <android.support.v7.widget.AppCompatSpinner
@@ -98,9 +94,8 @@
             />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/height_rank"
+            style="@style/dialog_desc_text"
             />
 
         <android.support.v7.widget.AppCompatSpinner
@@ -110,18 +105,16 @@
             />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/count"
+            style="@style/dialog_desc_text"
             />
 
         <!--http://stackoverflow.com/a/1662088/4727406-->
         <EditText
             android:id="@+id/count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:inputType="number"
             android:hint="1"
+            style="@style/dialog_edit_text"
             />
 
     </LinearLayout>

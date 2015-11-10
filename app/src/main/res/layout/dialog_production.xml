@@ -26,88 +26,94 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="5dp"
     android:focusableInTouchMode="true"
     >
     <!--http://stackoverflow.com/a/1662088/4727406-->
 
-    <TextView
-        android:text="@string/coordinates"
-        style="@style/normal_text"
-        />
-
-    <include
-        layout="@layout/fragment_location_panel"/>
-
-    <TextView
-        android:id="@+id/species_desc"
-        android:text="@string/species_detail"
-        style="@style/normal_text"
-        />
-
-    <EditText
-        android:id="@+id/species"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        />
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="0dp"
+        >
 
-    <TextView
-        android:id="@+id/cat_desc"
-        android:text="@string/cat_detail"
-        style="@style/normal_text"
-        />
+        <TextView
+            android:text="@string/coordinates"
+            style="@style/dialog_desc_text"
+            />
 
-    <EditText
-        android:id="@+id/cat"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        />
+        <include
+            layout="@layout/fragment_location_panel"/>
 
-    <!-- length -->
+        <TextView
+            android:id="@+id/species_desc"
+            android:text="@string/species_detail"
+            style="@style/dialog_desc_text"
+            />
 
-    <TextView
-        android:id="@+id/length_desc"
-        android:text="@string/length_detail"
-        style="@style/normal_text"
-        />
+        <EditText
+            android:id="@+id/species"
+            android:inputType="text"
+            style="@style/dialog_edit_text"
+            />
 
-    <EditText
-        android:id="@+id/length"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        />
+        <TextView
+            android:id="@+id/cat_desc"
+            android:text="@string/cat_detail"
+            style="@style/dialog_desc_text"
+            />
 
-    <!-- thickness -->
+        <EditText
+            android:id="@+id/cat"
+            android:inputType="text"
+            style="@style/dialog_edit_text"
+            />
 
-    <TextView
-        android:id="@+id/thickness_desc"
-        android:text="@string/thickness_detail"
-        style="@style/normal_text"
-        />
+        <!-- length -->
 
-    <EditText
-        android:id="@+id/thickness"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        />
+        <TextView
+            android:id="@+id/length_desc"
+            android:text="@string/length_detail"
+            style="@style/dialog_desc_text"
+            />
 
-    <!-- count -->
+        <EditText
+            android:id="@+id/length"
+            android:inputType="numberDecimal"
+            style="@style/dialog_edit_text"
+            />
 
-    <TextView
-        android:id="@+id/count_desc"
-        android:text="@string/count_detail"
-        style="@style/normal_text"
-        />
+        <!-- thickness -->
 
-    <EditText
-        android:id="@+id/count"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        />
+        <TextView
+            android:id="@+id/thickness_desc"
+            android:text="@string/thickness_detail"
+            style="@style/dialog_desc_text"
+            />
+
+        <EditText
+            android:id="@+id/thickness"
+            android:inputType="numberDecimal"
+            style="@style/dialog_edit_text"
+            />
+
+        <!-- count -->
+
+        <TextView
+            android:id="@+id/count_desc"
+            android:text="@string/count_detail"
+            style="@style/dialog_desc_text"
+            />
+
+        <EditText
+            android:id="@+id/count"
+            android:inputType="number"
+            style="@style/dialog_edit_text"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>
