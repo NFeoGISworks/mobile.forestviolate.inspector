@@ -242,7 +242,6 @@ public abstract class PhotoTableAdapter
                         final int clickedPos = (Integer) descView.getTag();
 
                         final PhotoDescEditorDialog dialog = new PhotoDescEditorDialog();
-                        dialog.setThemeDark(isThemeDark());
                         dialog.setPhotoDesc(
                                 mAttachItemList.get(clickedPos).getValue().getDescription());
                         dialog.setOnPositiveClickedListener(
@@ -380,15 +379,6 @@ public abstract class PhotoTableAdapter
         };
 
         new Thread(future).start();
-    }
-
-
-    // TODO: this is hack, make it via GISApplication
-    public boolean isThemeDark()
-    {
-        return PreferenceManager.getDefaultSharedPreferences(mActivity)
-                .getString(SettingsConstantsUI.KEY_PREF_THEME, "light")
-                .equals("dark");
     }
 
 

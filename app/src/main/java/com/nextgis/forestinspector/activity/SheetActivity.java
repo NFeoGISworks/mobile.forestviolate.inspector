@@ -56,7 +56,6 @@ public class SheetActivity
     {
         final SheetFillDialog dialog = new SheetFillDialog();
         dialog.setOnAddTreesListener(this);
-        dialog.setThemeDark(isThemeDark());
         dialog.setFeature((Feature) mAdapter.getItem(position));
         dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SHEET_FILL_DIALOG);
     }
@@ -67,18 +66,8 @@ public class SheetActivity
     {
         final SheetFillDialog dialog = new SheetFillDialog();
         dialog.setOnAddTreesListener(this);
-        dialog.setThemeDark(isThemeDark());
         dialog.show(
                 getSupportFragmentManager(), Constants.FRAGMENT_SHEET_FILL_DIALOG);
-    }
-
-
-    // TODO: this is hack, make it via GISApplication
-    public boolean isThemeDark()
-    {
-        return PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(SettingsConstantsUI.KEY_PREF_THEME, "light")
-                .equals("dark");
     }
 
 

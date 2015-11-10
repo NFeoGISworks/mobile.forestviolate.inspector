@@ -24,10 +24,12 @@ package com.nextgis.forestinspector.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.EditText;
 import com.nextgis.forestinspector.R;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
 import com.nextgis.styled_dialog.StyledDialogFragment;
 
 
@@ -35,7 +37,7 @@ public class PhotoDescEditorDialog
         extends StyledDialogFragment
 {
     protected EditText mEditor;
-    protected String mPhotoDesc;
+    protected String   mPhotoDesc;
 
 
     @Override
@@ -54,6 +56,8 @@ public class PhotoDescEditorDialog
         mEditor = (EditText) view.findViewById(R.id.photo_desc_editor);
         mEditor.setText(mPhotoDesc);
 
+        setThemeDark(isAppThemeDark());
+
         if (isThemeDark()) {
             setIcon(R.drawable.ic_action_image_edit);
         } else {
@@ -65,6 +69,15 @@ public class PhotoDescEditorDialog
         setPositiveText(R.string.ok);
 
         return super.onCreateDialog(savedInstanceState);
+    }
+
+
+    // TODO: this is hack, make it via GISApplication
+    public boolean isAppThemeDark()
+    {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(SettingsConstantsUI.KEY_PREF_THEME, "light")
+                .equals("dark");
     }
 
 

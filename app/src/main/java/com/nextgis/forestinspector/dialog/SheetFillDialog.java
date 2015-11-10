@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.dialog;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -273,6 +272,8 @@ public class SheetFillDialog
         }
 
 
+        setThemeDark(isAppThemeDark());
+
         if (isThemeDark()) {
             setIcon(R.drawable.ic_action_image_edit);
         } else {
@@ -316,6 +317,15 @@ public class SheetFillDialog
                 });
 
         return super.onCreateDialog(savedInstanceState);
+    }
+
+
+    // TODO: this is hack, make it via GISApplication
+    public boolean isAppThemeDark()
+    {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(SettingsConstantsUI.KEY_PREF_THEME, "light")
+                .equals("dark");
     }
 
 

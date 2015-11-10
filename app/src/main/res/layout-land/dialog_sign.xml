@@ -37,7 +37,7 @@
         <com.nextgis.maplibui.formcontrol.Sign
             android:id="@+id/sign"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="180dp"
             />
 
     </LinearLayout>

@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -22,12 +23,9 @@
 package com.nextgis.forestinspector.dialog;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
@@ -40,70 +38,113 @@ import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.FileUtil;
 import com.nextgis.maplibui.formcontrol.Sign;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
+import com.nextgis.styled_dialog.StyledDialogFragment;
 
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by bishop on 02.08.15.
- */
+
 public class SignDialog
-        extends DialogFragment {
+        extends StyledDialogFragment
+{
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        setKeepInstance(true);
+        super.onCreate(savedInstanceState);
+    }
+
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Context context = getActivity();
+    public Dialog onCreateDialog(Bundle savedInstanceState)
+    {
+        View view = View.inflate(getActivity(), R.layout.dialog_sign, null);
+        final Sign sign = (Sign) view.findViewById(R.id.sign);
 
-        View view = View.inflate(context, R.layout.dialog_sign, null);
-        final Sign sig = (Sign) view.findViewById(R.id.sign);
+        if (isThemeDark()) {
+            setIcon(R.drawable.ic_action_image_edit);
+        } else {
+            setIcon(R.drawable.ic_action_image_edit);
+        }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(getString(R.string.sign_and_save))
-        .setView(view)
-        .setNegativeButton(R.string.fix, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        setThemeDark(isAppThemeDark());
 
-            }
-        })
-        .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainApplication app = (MainApplication) getActivity().getApplication();
-                File temPath = app.getDocFeatureFolder();
-                FileUtil.createDir(temPath);
-                File sigFile = new File(temPath, Constants.SIGN_FILENAME);
-                try {
-                    sig.save(194, 102, false, sigFile);
-                    onCreateDocument();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        // Create the AlertDialog object and return it
-        return builder.create();
+        if (isThemeDark()) {
+            setIcon(R.drawable.ic_action_image_edit);
+        } else {
+            setIcon(R.drawable.ic_action_image_edit);
+        }
+
+        setTitle(R.string.sign_and_save);
+        setView(view);
+        setNegativeText(R.string.fix);
+        setPositiveText(R.string.save);
+
+
+        setOnNegativeClickedListener(
+                new SheetFillDialog.OnNegativeClickedListener()
+                {
+                    @Override
+                    public void onNegativeClicked()
+                    {
+                        // cancel
+                    }
+                });
+
+        setOnPositiveClickedListener(
+                new SheetFillDialog.OnPositiveClickedListener()
+                {
+                    @Override
+                    public void onPositiveClicked()
+                    {
+                        MainApplication app = (MainApplication) getActivity().getApplication();
+                        File temPath = app.getDocFeatureFolder();
+                        FileUtil.createDir(temPath);
+                        File sigFile = new File(temPath, Constants.SIGN_FILENAME);
+                        try {
+                            sign.save(194, 102, false, sigFile);
+                            onCreateDocument();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        return super.onCreateDialog(savedInstanceState);
     }
 
-    private void onCreateDocument(){
+
+    // TODO: this is hack, make it via GISApplication
+    public boolean isAppThemeDark()
+    {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(SettingsConstantsUI.KEY_PREF_THEME, "light")
+                .equals("dark");
+    }
+
+
+    private void onCreateDocument()
+    {
         //save picture to file and add it as attachment
 
         MainApplication app = (MainApplication) getActivity().getApplication();
         MapBase mapBase = app.getMap();
         DocumentsLayer documentsLayer = null;
         //get documents layer
-        for(int i = 0; i < mapBase.getLayerCount(); i++){
+        for (int i = 0; i < mapBase.getLayerCount(); i++) {
             ILayer layer = mapBase.getLayer(i);
-            if(layer instanceof DocumentsLayer){
+            if (layer instanceof DocumentsLayer) {
                 documentsLayer = (DocumentsLayer) layer;
                 break;
             }
         }
 
-        if(null == documentsLayer) {
-            Toast.makeText(getActivity(),
-                    getString(R.string.error_documents_layer_not_found), Toast.LENGTH_LONG).show();
+        if (null == documentsLayer) {
+            Toast.makeText(
+                    getActivity(), getString(R.string.error_documents_layer_not_found),
+                    Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -112,14 +153,13 @@ public class SignDialog
                 "-1", Constants.SIGN_FILENAME, "image/png", Constants.SIGN_DESCRIPTION);
         feature.addAttachment(signAttach);
 
-        if(documentsLayer.insert(feature)) {
+        if (documentsLayer.insert(feature)) {
             //remove temp feature
             app.setTempFeature(null);
             getActivity().finish();
-        }
-        else {
-            Toast.makeText(getActivity(),
-                    getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getActivity(), getString(R.string.error_db_insert), Toast.LENGTH_LONG)
+                    .show();
         }
     }
 }
