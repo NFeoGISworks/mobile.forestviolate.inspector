@@ -273,7 +273,12 @@ public class SheetFillDialog
         }
 
 
-        setIcon(R.drawable.ic_action_image_edit);
+        if (isThemeDark()) {
+            setIcon(R.drawable.ic_action_image_edit);
+        } else {
+            setIcon(R.drawable.ic_action_image_edit);
+        }
+
         setView(view);
 
         if (null != mFeature) {

@@ -263,6 +263,12 @@ public class StyledDialogFragment
     }
 
 
+    public boolean isThemeDark()
+    {
+        return mIsThemeDark;
+    }
+
+
     protected void setMessageView()
     {
         LinearLayout layout =

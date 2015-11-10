@@ -54,7 +54,12 @@ public class PhotoDescEditorDialog
         mEditor = (EditText) view.findViewById(R.id.photo_desc_editor);
         mEditor.setText(mPhotoDesc);
 
-        setIcon(R.drawable.ic_action_image_edit);
+        if (isThemeDark()) {
+            setIcon(R.drawable.ic_action_image_edit);
+        } else {
+            setIcon(R.drawable.ic_action_image_edit);
+        }
+
         setTitle(R.string.photo_desc);
         setView(view);
         setPositiveText(R.string.ok);
