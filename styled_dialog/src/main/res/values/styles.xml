@@ -26,16 +26,22 @@
     <attr name="sdf_titleBackground" format="reference"/>
     <attr name="sdf_titleTextColor" format="reference"/>
     <attr name="sdf_titleDividerColor" format="reference"/>
+    <attr name="sdf_titleDividerVisibility" format="reference"/>
     <attr name="sdf_buttonBackground" format="reference"/>
     <attr name="sdf_buttonTextColor" format="reference"/>
     <attr name="sdf_messageTextColor" format="reference"/>
 
+    <!-- These are alias to the android:visibility values -->
+    <integer name="view_visible">0</integer> <!-- This is VISIBLE -->
+    <integer name="view_invisible">1</integer> <!-- This is INVISIBLE -->
+    <integer name="view_gone">2</integer> <!-- This is GONE -->
 
     <style name="SdfTheme.Light" parent="">
         <item name="sdf_background">@drawable/sdf_background_light</item>
         <item name="sdf_titleBackground">@drawable/sdf_title_background_light</item>
         <item name="sdf_titleTextColor">@color/sdf_titleTextColorLight</item>
         <item name="sdf_titleDividerColor">@color/sdf_titleDividerColorLight</item>
+        <item name="sdf_titleDividerVisibility">@integer/sdf_titleDividerVisibilityLight</item>
         <item name="sdf_buttonBackground">@drawable/sdf_button_background_light</item>
         <item name="sdf_buttonTextColor">@color/sdf_button_text_color_light</item>
         <item name="sdf_messageTextColor">@color/sdf_messageTextColorLight</item>
@@ -46,6 +52,7 @@
         <item name="sdf_titleBackground">@drawable/sdf_title_background_dark</item>
         <item name="sdf_titleTextColor">@color/sdf_titleTextColorDark</item>
         <item name="sdf_titleDividerColor">@color/sdf_titleDividerColorDark</item>
+        <item name="sdf_titleDividerVisibility">@integer/sdf_titleDividerVisibilityDark</item>
         <item name="sdf_buttonBackground">@drawable/sdf_button_background_dark</item>
         <item name="sdf_buttonTextColor">@color/sdf_button_text_color_dark</item>
         <item name="sdf_messageTextColor">@color/sdf_messageTextColorDark</item>

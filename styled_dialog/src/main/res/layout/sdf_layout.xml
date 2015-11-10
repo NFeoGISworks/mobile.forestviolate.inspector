@@ -72,7 +72,7 @@
             android:layout_height="2dp"
             android:layout_width="match_parent"
             android:background="?attr/sdf_titleDividerColor"
-            android:visibility="gone"
+            android:visibility="?attr/sdf_titleDividerVisibility"
             android:layout_below="@+id/title"
             />
 

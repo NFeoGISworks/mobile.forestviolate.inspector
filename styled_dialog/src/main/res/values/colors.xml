@@ -39,11 +39,13 @@
     <color name="color_grey_900">#212121</color>
     <color name="color_grey_999">@color/color_black</color>
 
+
     <!--StyledDialogFragment light colors-->
     <color name="sdf_backgroundSolidColorLight">@color/color_white</color>
     <color name="sdf_titleBackgroundColorLight">@color/color_grey_500</color>
     <color name="sdf_titleTextColorLight">@color/color_white</color>
     <color name="sdf_titleDividerColorLight">@color/color_black</color>
+    <integer name="sdf_titleDividerVisibilityLight">@integer/view_gone</integer>
     <color name="sdf_buttonNormalBackgroundColorLight">@color/sdf_backgroundSolidColorLight</color>
     <color name="sdf_buttonNormalTextColorLight">@color/color_grey_700</color>
     <color name="sdf_buttonPressedBackgroundColorLight">@color/color_grey_400</color>
@@ -57,6 +59,7 @@
     <color name="sdf_titleBackgroundColorDark">@color/color_grey_500</color>
     <color name="sdf_titleTextColorDark">@color/color_white</color>
     <color name="sdf_titleDividerColorDark">@color/color_white</color>
+    <integer name="sdf_titleDividerVisibilityDark">@integer/view_gone</integer>
     <color name="sdf_buttonNormalBackgroundColorDark">@color/sdf_backgroundSolidColorDark</color>
     <color name="sdf_buttonNormalTextColorDark">@color/color_grey_300</color>
     <color name="sdf_buttonPressedBackgroundColorDark">@color/color_grey_400</color>

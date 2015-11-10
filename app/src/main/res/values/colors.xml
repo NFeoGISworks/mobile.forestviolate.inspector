@@ -72,8 +72,12 @@
 
     <!--StyledDialogFragment light colors-->
     <color name="sdf_backgroundSolidColorLight">@color/color_white</color>
+    <!--<color name="sdf_titleBackgroundColorLight">@color/sdf_backgroundSolidColorLight</color>-->
+    <!--<color name="sdf_titleTextColorLight">@color/color_black</color>-->
+    <!--<integer name="sdf_titleDividerVisibilityLight">@integer/view_visible</integer>-->
     <color name="sdf_titleBackgroundColorLight">@color/color_500</color>
     <color name="sdf_titleTextColorLight">@color/color_white</color>
+    <integer name="sdf_titleDividerVisibilityLight">@integer/view_gone</integer>
     <color name="sdf_titleDividerColorLight">@color/color_black</color>
     <color name="sdf_buttonNormalBackgroundColorLight">@color/sdf_backgroundSolidColorLight</color>
     <color name="sdf_buttonNormalTextColorLight">@color/color_500</color>
@@ -85,8 +89,12 @@
 
     <!--StyledDialogFragment dark colors-->
     <color name="sdf_backgroundSolidColorDark">@color/color_grey_800</color>
+    <!--<color name="sdf_titleBackgroundColorDark">@color/sdf_backgroundSolidColorDark</color>-->
+    <!--<color name="sdf_titleTextColorDark">@color/color_white</color>-->
+    <!--<integer name="sdf_titleDividerVisibilityDark">@integer/view_visible</integer>-->
     <color name="sdf_titleBackgroundColorDark">@color/color_500</color>
     <color name="sdf_titleTextColorDark">@color/color_white</color>
+    <integer name="sdf_titleDividerVisibilityDark">@integer/view_gone</integer>
     <color name="sdf_titleDividerColorDark">@color/color_white</color>
     <color name="sdf_buttonNormalBackgroundColorDark">@color/sdf_backgroundSolidColorDark</color>
     <color name="sdf_buttonNormalTextColorDark">@color/color_200</color>

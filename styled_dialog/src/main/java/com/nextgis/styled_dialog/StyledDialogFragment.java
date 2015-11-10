@@ -59,6 +59,7 @@ public class StyledDialogFragment
 
     protected ImageView    mIcon;
     protected TextView     mTitle;
+    protected View         mTitleDivider;
     protected LinearLayout mDialogLayout;
     protected TextView     mMessage;
     protected View         mView;
@@ -70,6 +71,8 @@ public class StyledDialogFragment
     protected OnNegativeClickedListener mOnNegativeClickedListener;
     protected OnCancelListener          mOnCancelListener;
     protected OnDismissListener         mOnDismissListener;
+
+    protected Integer mTitleDividerVisibility;
 
     protected boolean mKeepInstance = false;
 
@@ -125,6 +128,7 @@ public class StyledDialogFragment
 
         mIcon = (ImageView) dialog.findViewById(R.id.title_icon);
         mTitle = (TextView) dialog.findViewById(R.id.title_text);
+        mTitleDivider = dialog.findViewById(R.id.title_divider);
         mDialogLayout = (LinearLayout) dialog.findViewById(R.id.dialog_body);
         mButtons = (LinearLayout) dialog.findViewById(R.id.buttons);
         mButtonPositive = (Button) dialog.findViewById(R.id.button_positive);
@@ -140,6 +144,9 @@ public class StyledDialogFragment
         }
         if (null != mTitleText) {
             mTitle.setText(mTitleText);
+        }
+        if (null != mTitleDividerVisibility) {
+            mTitleDivider.setVisibility(mTitleDividerVisibility);
         }
 
         if (null != mMessageId) {
@@ -290,6 +297,12 @@ public class StyledDialogFragment
     {
         mTitleText = titleText;
         return this;
+    }
+
+
+    public void setTitleDividerVisibility(int visibility)
+    {
+        mTitleDividerVisibility = visibility;
     }
 
 
