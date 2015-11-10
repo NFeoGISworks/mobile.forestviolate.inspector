@@ -3,6 +3,7 @@
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
   ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
   ~ ******************************************************************************
   ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
   ~
@@ -20,69 +21,93 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_margin="5dp">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:focusableInTouchMode="true"
+    >
+    <!--http://stackoverflow.com/a/1662088/4727406-->
 
-    <TextView style="@style/normal_text"
-              android:text="@string/coordinates"/>
+    <TextView
+        android:text="@string/coordinates"
+        style="@style/normal_text"
+        />
 
     <include
         layout="@layout/fragment_location_panel"/>
 
-    <TextView style="@style/normal_text"
-              android:text="@string/species_detail"
-              android:id="@+id/species_desc"/>
+    <TextView
+        android:id="@+id/species_desc"
+        android:text="@string/species_detail"
+        style="@style/normal_text"
+        />
 
     <EditText
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/species"
-        android:inputType="text"/>
-
-    <TextView style="@style/normal_text"
-              android:text="@string/cat_detail"
-              android:id="@+id/cat_desc"/>
-
-    <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:inputType="text"
+        />
+
+    <TextView
+        android:id="@+id/cat_desc"
+        android:text="@string/cat_detail"
+        style="@style/normal_text"
+        />
+
+    <EditText
         android:id="@+id/cat"
-        android:inputType="text"/>
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        />
 
     <!-- length -->
-    <TextView style="@style/normal_text"
-              android:text="@string/length_detail"
-              android:id="@+id/length_desc"/>
+
+    <TextView
+        android:id="@+id/length_desc"
+        android:text="@string/length_detail"
+        style="@style/normal_text"
+        />
 
     <EditText
+        android:id="@+id/length"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/length"
-        android:inputType="numberDecimal"/>
+        android:inputType="numberDecimal"
+        />
 
     <!-- thickness -->
-    <TextView style="@style/normal_text"
-              android:text="@string/thickness_detail"
-              android:id="@+id/thickness_desc"/>
+
+    <TextView
+        android:id="@+id/thickness_desc"
+        android:text="@string/thickness_detail"
+        style="@style/normal_text"
+        />
 
     <EditText
+        android:id="@+id/thickness"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/thickness"
-        android:inputType="numberDecimal"/>
+        android:inputType="numberDecimal"
+        />
 
     <!-- count -->
-    <TextView style="@style/normal_text"
-              android:text="@string/count_detail"
-              android:id="@+id/count_desc"/>
+
+    <TextView
+        android:id="@+id/count_desc"
+        android:text="@string/count_detail"
+        style="@style/normal_text"
+        />
 
     <EditText
+        android:id="@+id/count"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/count"
-        android:inputType="number"/>
+        android:inputType="number"
+        />
 
 </LinearLayout>

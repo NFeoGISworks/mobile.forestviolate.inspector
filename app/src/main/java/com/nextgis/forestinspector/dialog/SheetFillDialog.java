@@ -42,12 +42,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.DaveKoelle.AlphanumComparator;
-import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.SheetActivity;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.GpsEventListener;
+import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoGeometry;
@@ -119,7 +119,8 @@ public class SheetFillDialog
         super.onCreate(savedInstanceState);
 
 
-        MainApplication app = (MainApplication) getActivity().getApplication();
+        IGISApplication app = (IGISApplication) getActivity().getApplication();
+        gpsEventSource = app.getGpsEventSource();
         MapBase map = app.getMap();
 
         mDocsLayer = null;
@@ -222,10 +223,6 @@ public class SheetFillDialog
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        MainApplication app = (MainApplication) getActivity().getApplication();
-        gpsEventSource = app.getGpsEventSource();
-        gpsEventSource.addListener(this);
-
         View view = View.inflate(getActivity(), R.layout.dialog_sheet_fill, null);
 
         createLocationPanelView(view);
@@ -320,20 +317,28 @@ public class SheetFillDialog
     }
 
 
+    @Override
+    public void onPause()
+    {
+        gpsEventSource.removeListener(this);
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        gpsEventSource.addListener(this);
+    }
+
+
     // TODO: this is hack, make it via GISApplication
     public boolean isAppThemeDark()
     {
         return PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getString(SettingsConstantsUI.KEY_PREF_THEME, "light")
                 .equals("dark");
-    }
-
-
-    @Override
-    public void onDestroyView()
-    {
-        gpsEventSource.removeListener(this);
-        super.onDestroyView();
     }
 
 
