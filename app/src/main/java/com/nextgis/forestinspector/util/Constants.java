@@ -156,11 +156,11 @@ public interface Constants
     /**
      * production fields
      */
-    String FIELD_PRODUCTION_SPECIES  = "poroda";
-    String FIELD_PRODUCTION_TYPE     = "type_desc";
-    String FIELD_PRODUCTION_LENGTH   = "length";
-    String FIELD_PRODUCTION_DIAMETER = "diameter";
-    String FIELD_PRODUCTION_COUNT    = "count";
+    String FIELD_PRODUCTION_SPECIES   = "poroda";
+    String FIELD_PRODUCTION_TYPE      = "type_desc";
+    String FIELD_PRODUCTION_LENGTH    = "length";
+    String FIELD_PRODUCTION_THICKNESS = "diameter";
+    String FIELD_PRODUCTION_COUNT     = "count";
 
     int DOWNLOAD_SEPARATE_THREADS = 10;
 
@@ -176,7 +176,9 @@ public interface Constants
     int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
 
     String FRAGMENT_SHEET_FILL_DIALOG        = "sheet_fill_dialog";
+    String FRAGMENT_PRODUCTION_FILL_DIALOG   = "production_fill_dialog";
     String FRAGMENT_VEHICLE_FILL_DIALOG      = "vehicle_fill_dialog";
+    String FRAGMENT_SIGN_DIALOG              = "sign_dialog";
     String FRAGMENT_PHOTO_TABLE              = "photo_table";
     String FRAGMENT_PHOTO_DESC_EDITOR_DIALOG = "photo_desc_editor_dialog";
 }

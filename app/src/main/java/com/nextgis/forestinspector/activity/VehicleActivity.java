@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -51,7 +52,7 @@ public class VehicleActivity
     @Override
     protected void onListItemClick(int position)
     {
-        final VehicleFillDialog dialog = new VehicleFillDialog();
+        VehicleFillDialog dialog = new VehicleFillDialog();
         dialog.setOnAddVehicleListener(this);
         dialog.setFeature((Feature) mAdapter.getItem(position));
         dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_VEHICLE_FILL_DIALOG);
@@ -61,7 +62,7 @@ public class VehicleActivity
     @Override
     protected void add()
     {
-        final VehicleFillDialog dialog = new VehicleFillDialog();
+        VehicleFillDialog dialog = new VehicleFillDialog();
         dialog.setOnAddVehicleListener(this);
         dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_VEHICLE_FILL_DIALOG);
     }

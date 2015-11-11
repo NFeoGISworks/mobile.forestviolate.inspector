@@ -3,6 +3,7 @@
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
   ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
   ~ ******************************************************************************
   ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
   ~
@@ -20,23 +21,30 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:fab="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
     <include
-        layout="@layout/actionbar"/>
+        layout="@layout/actionbar"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        >
 
-        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:id="@+id/list" >
+        <ListView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list"
+            >
 
         </ListView>
 

@@ -161,7 +161,7 @@
     <string name="add_production">Добавить продукцию для изъятия</string>
     <string name="add_trees">Добавить деревья</string>
     <string name="species_detail">Вид продукции (хлысты, сортименты, иное), порода деревьев</string>
-    <string name="cat_detail">Деловая или дровяная</string>
+    <string name="type_detail">Деловая или дровяная</string>
     <string name="length_detail">Длина (метр)</string>
     <string name="thickness_detail">Толщина</string>
     <string name="count_detail">Количество</string>
@@ -169,7 +169,7 @@
     <string name="action_vehicle">Акт об обнаружении орудий заготовки</string>
     <string name="action_phototable">Фототаблица</string>
     <string name="coordinates">Координаты</string>
-    <string name="error_invalid_input">Invalid input parameters</string>
+    <string name="error_invalid_input">Неверные параметры</string>
     <string name="photo_desc">Описание фотографии</string>
     <string name="enter_photo_desc">Введите описание фотографии</string>
     <string name="photos_will_be_deleted">Фотографии будут удалены</string>

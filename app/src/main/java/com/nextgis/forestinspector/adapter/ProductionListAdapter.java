@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -21,63 +22,68 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.CheckListActivity;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 
-import java.util.List;
 
-/**
- * Created by bishop on 07.08.15.
- */
-public class ProductionListAdapter extends CheckListAdapter {
-
-    public ProductionListAdapter(CheckListActivity activity, DocumentFeature feature) {
+public class ProductionListAdapter
+        extends CheckListAdapter
+{
+    public ProductionListAdapter(
+            CheckListActivity activity,
+            DocumentFeature feature)
+    {
         super(activity, feature);
         mFeatures = mFeature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
     }
 
+
     @Override
-    public void notifyDataSetChanged() {
+    public void notifyDataSetChanged()
+    {
         mFeatures = mFeature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
         super.notifyDataSetChanged();
     }
 
+
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = super.getView(position, convertView, parent);
+    public View getView(
+            int position,
+            View convertView,
+            ViewGroup parent)
+    {
+        View view = super.getView(position, convertView, parent);
 
         Feature item = (Feature) getItem(position);
 
-        TextView species = (TextView) v.findViewById(R.id.species);
+        TextView species = (TextView) view.findViewById(R.id.species);
         species.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_SPECIES));
 
-        TextView thickness = (TextView) v.findViewById(R.id.thickness);
-        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_DIAMETER));
+        TextView type = (TextView) view.findViewById(R.id.category);
+        type.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_TYPE));
 
-        TextView count = (TextView) v.findViewById(R.id.count);
-        count.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_COUNT));
-
-        TextView category = (TextView) v.findViewById(R.id.category);
-        category.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_TYPE));
-
-        TextView length = (TextView) v.findViewById(R.id.length);
+        TextView length = (TextView) view.findViewById(R.id.length);
         length.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_LENGTH));
 
-        return v;
+        TextView thickness = (TextView) view.findViewById(R.id.thickness);
+        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_THICKNESS));
+
+        TextView count = (TextView) view.findViewById(R.id.count);
+        count.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_COUNT));
+
+        return view;
     }
 
+
     @Override
-    protected int getRowItemResource() {
+    protected int getRowItemResource()
+    {
         return R.layout.row_production_item;
     }
 }

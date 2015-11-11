@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -27,6 +28,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -185,10 +187,21 @@ public class VehicleFillDialog
                     @Override
                     public void onPositiveClicked()
                     {
-                        addVehicle();
+                        if (TextUtils.isEmpty(mNameView.getText().toString()) ||
+                            TextUtils.isEmpty(mDescView.getText().toString()) ||
+                            TextUtils.isEmpty(mNumsView.getText().toString()) ||
+                            TextUtils.isEmpty(mUserView.getText().toString())) {
 
-                        if (null != mOnAddVehicleListener) {
-                            mOnAddVehicleListener.onAddVehicle();
+                            Toast.makeText(
+                                    getActivity(), getString(R.string.error_invalid_input),
+                                    Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            addVehicle();
+
+                            if (null != mOnAddVehicleListener) {
+                                mOnAddVehicleListener.onAddVehicle();
+                            }
                         }
                     }
                 });

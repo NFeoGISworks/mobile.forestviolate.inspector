@@ -160,7 +160,7 @@
     <string name="add_production">Add production</string>
     <string name="add_trees">Add trees</string>
     <string name="species_detail">Product Type (whips, assortments, otherwise), tree species</string>
-    <string name="cat_detail">Business or wood</string>
+    <string name="type_detail">Business or wood</string>
     <string name="length_detail">Length (meter)</string>
     <string name="thickness_detail">Thickness</string>
     <string name="count_detail">Count</string>

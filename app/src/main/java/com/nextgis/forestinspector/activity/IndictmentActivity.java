@@ -36,7 +36,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
@@ -451,7 +450,7 @@ public class IndictmentActivity extends FIActivity{
 
         //show dialog with sign and save / edit buttons
         SignDialog signDialog = new SignDialog();
-        signDialog.show(getSupportFragmentManager(), "sign_dialog");
+        signDialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SIGN_DIALOG);
     }
 
     private void onFillPhoto() {

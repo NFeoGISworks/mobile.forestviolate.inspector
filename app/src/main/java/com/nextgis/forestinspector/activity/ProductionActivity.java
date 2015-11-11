@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -21,74 +22,53 @@
 
 package com.nextgis.forestinspector.activity;
 
-import android.widget.BaseAdapter;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.CheckListAdapter;
 import com.nextgis.forestinspector.adapter.ProductionListAdapter;
-import com.nextgis.forestinspector.dialog.ProductionInputDialog;
-import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.dialog.ProductionFillDialog;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
-import com.nextgis.maplib.datasource.GeoGeometry;
-import com.nextgis.maplib.datasource.GeoMultiPoint;
-import com.nextgis.maplib.map.MapBase;
-import com.nextgis.maplib.map.VectorLayer;
-
-/**
- * Created by bishop on 07.08.15.
- */
-public class ProductionActivity extends CheckListActivity{
 
 
+public class ProductionActivity
+        extends CheckListActivity
+        implements ProductionFillDialog.OnAddProductionListener
+{
     @Override
-    protected int getContentViewId() {
+    protected int getContentViewId()
+    {
         return R.layout.activity_production;
     }
 
-    protected void add(){
-        //create input dialog
-        ProductionInputDialog inputDialog = new ProductionInputDialog();
-        inputDialog.show(getSupportFragmentManager(), "production_input_dialog");
-    }
 
     @Override
-    protected CheckListAdapter getAdapter() {
+    protected CheckListAdapter getAdapter()
+    {
         return new ProductionListAdapter(this, mDocumentFeature);
     }
 
 
     @Override
-    protected void onListItemClick(int position) {
-
+    protected void onListItemClick(int position)
+    {
+        ProductionFillDialog dialog = new ProductionFillDialog();
+        dialog.setOnAddProductionListener(this);
+        dialog.setFeature((Feature) mAdapter.getItem(position));
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_PRODUCTION_FILL_DIALOG);
     }
 
 
-    protected void contentsChanged(){
-        if(null != mAdapter)
-            mAdapter.notifyDataSetChanged();
+    protected void add()
+    {
+        ProductionFillDialog dialog = new ProductionFillDialog();
+        dialog.setOnAddProductionListener(this);
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_PRODUCTION_FILL_DIALOG);
     }
 
-    public void addProduction(GeoGeometry mpt, String species, String cat, double length, double thickness, int count){
 
-        //get production layer
-        MapBase map = MapBase.getInstance();
-        DocumentsLayer documentsLayer = (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
-        if(null == documentsLayer)
-            return;
-
-        VectorLayer productionLayer = (VectorLayer) documentsLayer.getLayerByName(Constants.KEY_LAYER_PRODUCTION);
-        if(null == productionLayer)
-            return;
-
-        Feature feature = new Feature(com.nextgis.maplib.util.Constants.NOT_FOUND, productionLayer.getFields());
-        feature.setFieldValue(Constants.FIELD_PRODUCTION_SPECIES, species);
-        feature.setFieldValue(Constants.FIELD_PRODUCTION_TYPE, cat);
-        feature.setFieldValue(Constants.FIELD_PRODUCTION_LENGTH, length);
-        feature.setFieldValue(Constants.FIELD_PRODUCTION_DIAMETER, thickness);
-        feature.setFieldValue(Constants.FIELD_PRODUCTION_COUNT, count);
-        feature.setGeometry(mpt);
-        mDocumentFeature.addSubFeature(Constants.KEY_LAYER_PRODUCTION, feature);
-        contentsChanged();
+    @Override
+    public void onAddProduction()
+    {
+        mAdapter.notifyDataSetChanged();
     }
 }

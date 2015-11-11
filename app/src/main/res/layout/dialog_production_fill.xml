@@ -40,6 +40,8 @@
         android:layout_marginBottom="0dp"
         >
 
+        <!-- coordinates -->
+
         <TextView
             android:text="@string/coordinates"
             style="@style/dialog_desc_text"
@@ -48,28 +50,32 @@
         <include
             layout="@layout/fragment_location_panel"/>
 
+        <!-- species -->
+
         <TextView
             android:id="@+id/species_desc"
             android:text="@string/species_detail"
             style="@style/dialog_desc_text"
             />
 
-        <EditText
+        <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/species"
-            android:inputType="text"
-            style="@style/dialog_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             />
 
+        <!-- type -->
+
         <TextView
-            android:id="@+id/cat_desc"
-            android:text="@string/cat_detail"
+            android:id="@+id/type_desc"
+            android:text="@string/type_detail"
             style="@style/dialog_desc_text"
             />
 
-        <EditText
-            android:id="@+id/cat"
-            android:inputType="text"
-            style="@style/dialog_edit_text"
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             />
 
         <!-- length -->
@@ -94,10 +100,10 @@
             style="@style/dialog_desc_text"
             />
 
-        <EditText
+        <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/thickness"
-            android:inputType="numberDecimal"
-            style="@style/dialog_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             />
 
         <!-- count -->
@@ -108,9 +114,11 @@
             style="@style/dialog_desc_text"
             />
 
+        <!--http://stackoverflow.com/a/1662088/4727406-->
         <EditText
             android:id="@+id/count"
             android:inputType="number"
+            android:hint="1"
             style="@style/dialog_edit_text"
             />
 

@@ -42,7 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.DaveKoelle.AlphanumComparator;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.SheetActivity;
+import com.nextgis.forestinspector.activity.ProductionActivity;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.InputFilterMinMax;
@@ -71,7 +71,7 @@ import java.util.Map;
 import static com.nextgis.maplib.util.GeoConstants.GTMultiPoint;
 
 
-public class SheetFillDialog
+public class ProductionFillDialog
         extends StyledDialogFragment
         implements GpsEventListener
 {
@@ -80,24 +80,21 @@ public class SheetFillDialog
     protected Feature  mFeature;
     protected Location mFeatureLocation;
 
-    protected String mUnit;
     protected String mSpecies;
-    protected String mCategory;
+    protected String mType;
+    protected String mLength;
     protected String mThickness;
-    protected String mHeight;
     protected String mCount;
 
-    protected EditText         mUnitView;
     protected AppCompatSpinner mSpeciesView;
-    protected AppCompatSpinner mCategoryView;
+    protected AppCompatSpinner mTypeView;
+    protected EditText         mLengthView;
     protected AppCompatSpinner mThicknessView;
-    protected AppCompatSpinner mHeightView;
     protected EditText         mCountView;
 
     protected ArrayAdapter<String> mSpeciesAdapter;
-    protected ArrayAdapter<String> mCategoryAdapter;
+    protected ArrayAdapter<String> mTypeAdapter;
     protected ArrayAdapter<String> mThicknessAdapter;
-    protected ArrayAdapter<String> mHeightAdapter;
 
     protected TextView mLatView;
     protected TextView mLongView;
@@ -109,7 +106,7 @@ public class SheetFillDialog
 
     protected DocumentsLayer mDocsLayer;
 
-    protected OnAddTreesListener mOnAddTreesListener;
+    protected OnAddProductionListener mOnAddProductionListener;
 
 
     @Override
@@ -134,9 +131,8 @@ public class SheetFillDialog
 
         if (null != mDocsLayer) {
             mSpeciesAdapter = getArrayAdapter(Constants.KEY_LAYER_SPECIES_TYPES, false);
-            mCategoryAdapter = getArrayAdapter(Constants.KEY_LAYER_TREES_TYPES, false);
+            mTypeAdapter = getArrayAdapter(Constants.KEY_LAYER_TREES_TYPES, false);
             mThicknessAdapter = getArrayAdapter(Constants.KEY_LAYER_THICKNESS_TYPES, true);
-            mHeightAdapter = getArrayAdapter(Constants.KEY_LAYER_HEIGHT_TYPES, true);
         }
 
         if (null != mFeature) {
@@ -154,17 +150,16 @@ public class SheetFillDialog
                     break;
                 }
                 default: {
-                    mFeatureLocation = new Location(SheetFillDialog.UNKNOWN_LOCATION);
+                    mFeatureLocation = new Location(ProductionFillDialog.UNKNOWN_LOCATION);
                     break;
                 }
             }
 
-            mUnit = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_UNIT);
-            mSpecies = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES);
-            mCategory = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY);
-            mThickness = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS);
-            mHeight = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS);
-            mCount = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_COUNT);
+            mSpecies = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_SPECIES);
+            mType = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_TYPE);
+            mLength = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_LENGTH);
+            mThickness = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_THICKNESS);
+            mCount = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_COUNT);
         }
     }
 
@@ -223,15 +218,9 @@ public class SheetFillDialog
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        View view = View.inflate(getActivity(), R.layout.dialog_sheet_fill, null);
+        View view = View.inflate(getActivity(), R.layout.dialog_production_fill, null);
 
         createLocationPanelView(view);
-
-        mUnitView = (EditText) view.findViewById(R.id.unit);
-        if (null != mUnit) {
-            mUnitView.setText(mUnit);
-            mUnit = null;
-        }
 
         mSpeciesView = (AppCompatSpinner) view.findViewById(R.id.species);
         mSpeciesView.setAdapter(mSpeciesAdapter);
@@ -240,11 +229,19 @@ public class SheetFillDialog
             mSpecies = null;
         }
 
-        mCategoryView = (AppCompatSpinner) view.findViewById(R.id.category);
-        mCategoryView.setAdapter(mCategoryAdapter);
-        if (null != mCategory) {
-            setListSelection(mCategoryView, mCategoryAdapter, mCategory);
-            mCategory = null;
+        mTypeView = (AppCompatSpinner) view.findViewById(R.id.type);
+        mTypeView.setAdapter(mTypeAdapter);
+        if (null != mType) {
+            setListSelection(mTypeView, mTypeAdapter, mType);
+            mType = null;
+        }
+
+        mLengthView = (EditText) view.findViewById(R.id.length); // TODO: numberDecimal
+        // TODO: make input filter for double numbers
+//        mLengthView.setFilters(new InputFilter[] {new InputFilterMinMax(0, 200)});
+        if (null != mLength) {
+            mLengthView.setText(mLength);
+            mLength = null;
         }
 
         mThicknessView = (AppCompatSpinner) view.findViewById(R.id.thickness);
@@ -254,15 +251,8 @@ public class SheetFillDialog
             mThickness = null;
         }
 
-        mHeightView = (AppCompatSpinner) view.findViewById(R.id.height);
-        mHeightView.setAdapter(mHeightAdapter);
-        if (null != mHeight) {
-            setListSelection(mHeightView, mHeightAdapter, mHeight);
-            mHeight = null;
-        }
-
         mCountView = (EditText) view.findViewById(R.id.count);
-        mCountView.setFilters(new InputFilter[] {new InputFilterMinMax(1, 1000)});
+        mCountView.setFilters(new InputFilter[] {new InputFilterMinMax(1, 10000)});
         if (null != mCount) {
             mCountView.setText(mCount);
             mCount = null;
@@ -283,28 +273,35 @@ public class SheetFillDialog
             setTitle(R.string.change_data);
             setPositiveText(R.string.save);
         } else {
-            setTitle(R.string.add_trees);
+            setTitle(R.string.add_production);
             setPositiveText(R.string.add);
         }
 
         setNegativeText(R.string.cancel);
 
         setOnPositiveClickedListener(
-                new SheetFillDialog.OnPositiveClickedListener()
+                new OnPositiveClickedListener()
                 {
                     @Override
                     public void onPositiveClicked()
                     {
-                        addTrees();
+                        if (TextUtils.isEmpty(mLengthView.getText().toString())) {
+                            Toast.makeText(
+                                    getActivity(), getString(R.string.error_invalid_input),
+                                    Toast.LENGTH_SHORT).show();
 
-                        if (null != mOnAddTreesListener) {
-                            mOnAddTreesListener.onAddTrees();
+                        } else {
+                            addProduction();
+
+                            if (null != mOnAddProductionListener) {
+                                mOnAddProductionListener.onAddProduction();
+                            }
                         }
                     }
                 });
 
         setOnNegativeClickedListener(
-                new SheetFillDialog.OnNegativeClickedListener()
+                new OnNegativeClickedListener()
                 {
                     @Override
                     public void onNegativeClicked()
@@ -473,7 +470,7 @@ public class SheetFillDialog
     }
 
 
-    public void addTrees()
+    public void addProduction()
     {
         if (null == mLocation) {
             Toast.makeText(getActivity(), getString(R.string.error_no_location), Toast.LENGTH_LONG)
@@ -481,7 +478,7 @@ public class SheetFillDialog
             return;
         }
 
-        SheetActivity activity = (SheetActivity) getActivity();
+        ProductionActivity activity = (ProductionActivity) getActivity();
         if (null == activity) {
             return;
         }
@@ -493,14 +490,16 @@ public class SheetFillDialog
             return;
         }
 
-        VectorLayer sheetLayer =
-                (VectorLayer) documentsLayer.getLayerByName(Constants.KEY_LAYER_SHEET);
-        if (null == sheetLayer) {
+        VectorLayer productionLayer =
+                (VectorLayer) documentsLayer.getLayerByName(Constants.KEY_LAYER_PRODUCTION);
+        if (null == productionLayer) {
             return;
         }
 
 
-        Integer thicknessValue = Integer.parseInt(mThicknessView.getSelectedItem().toString());
+        Double lengthValue = Double.parseDouble(mLengthView.getText().toString());
+
+        Double thicknessValue = Double.parseDouble(mThicknessView.getSelectedItem().toString());
 
         Integer countValue = TextUtils.isEmpty(mCountView.getText())
                              ? 1
@@ -517,34 +516,32 @@ public class SheetFillDialog
             feature = mFeature;
         } else {
             feature = new Feature(
-                    com.nextgis.maplib.util.Constants.NOT_FOUND, sheetLayer.getFields());
-            activity.getFeature().addSubFeature(Constants.KEY_LAYER_SHEET, feature);
+                    com.nextgis.maplib.util.Constants.NOT_FOUND, productionLayer.getFields());
+            activity.getFeature().addSubFeature(Constants.KEY_LAYER_PRODUCTION, feature);
         }
 
         feature.setFieldValue(
-                Constants.FIELD_SHEET_UNIT, mUnitView.getText().toString());
+                Constants.FIELD_PRODUCTION_SPECIES, mSpeciesView.getSelectedItem().toString());
         feature.setFieldValue(
-                Constants.FIELD_SHEET_SPECIES, mSpeciesView.getSelectedItem().toString());
+                Constants.FIELD_PRODUCTION_TYPE, mTypeView.getSelectedItem().toString());
         feature.setFieldValue(
-                Constants.FIELD_SHEET_CATEGORY, mCategoryView.getSelectedItem().toString());
+                Constants.FIELD_PRODUCTION_LENGTH, lengthValue);
         feature.setFieldValue(
-                Constants.FIELD_SHEET_THICKNESS, thicknessValue);
+                Constants.FIELD_PRODUCTION_THICKNESS, thicknessValue);
         feature.setFieldValue(
-                Constants.FIELD_SHEET_HEIGHTS, mHeightView.getSelectedItem().toString());
-        feature.setFieldValue(
-                Constants.FIELD_SHEET_COUNT, countValue);
+                Constants.FIELD_PRODUCTION_COUNT, countValue);
         feature.setGeometry(geometryValue);
     }
 
 
-    public void setOnAddTreesListener(OnAddTreesListener listener)
+    public void setOnAddProductionListener(OnAddProductionListener listener)
     {
-        mOnAddTreesListener = listener;
+        mOnAddProductionListener = listener;
     }
 
 
-    public interface OnAddTreesListener
+    public interface OnAddProductionListener
     {
-        void onAddTrees();
+        void onAddProduction();
     }
 }

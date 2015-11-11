@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -27,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
@@ -35,39 +35,54 @@ import com.nextgis.maplib.datasource.Feature;
 
 import java.util.List;
 
-/**
- * Created by bishop on 07.08.15.
- */
-public class ProductionViewListAdapter extends BaseAdapter {
+
+public class ProductionViewListAdapter
+        extends BaseAdapter
+{
     protected List<Feature> mFeatures;
     protected Context mContext;
     protected DocumentFeature mFeature;
 
-    public ProductionViewListAdapter(Context context, DocumentFeature feature) {
+
+    public ProductionViewListAdapter(
+            Context context,
+            DocumentFeature feature)
+    {
         mContext = context;
         mFeature = feature;
     }
 
+
     @Override
-    public int getCount() {
-        if(null == mFeatures)
+    public int getCount()
+    {
+        if (null == mFeatures) {
             return 0;
+        }
         return mFeatures.size();
     }
 
+
     @Override
-    public Object getItem(int position) {
+    public Object getItem(int position)
+    {
         return mFeatures.get(position);
     }
 
+
     @Override
-    public long getItemId(int position) {
+    public long getItemId(int position)
+    {
         return position;
     }
 
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(
+            int position,
+            View convertView,
+            ViewGroup parent)
+    {
         View v = convertView;
         if (null == v) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -80,7 +95,7 @@ public class ProductionViewListAdapter extends BaseAdapter {
         species.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_SPECIES));
 
         TextView thickness = (TextView) v.findViewById(R.id.thickness);
-        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_DIAMETER));
+        thickness.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_THICKNESS));
 
         TextView count = (TextView) v.findViewById(R.id.count);
         count.setText(": " + item.getFieldValueAsString(Constants.FIELD_PRODUCTION_COUNT));

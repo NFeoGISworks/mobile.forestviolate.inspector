@@ -40,6 +40,8 @@
         android:layout_marginBottom="0dp"
         >
 
+        <!-- coordinates -->
+
         <TextView
             android:id="@+id/coordinates_text"
             android:text="@string/coordinates"
@@ -48,6 +50,8 @@
 
         <include
             layout="@layout/fragment_location_panel"/>
+
+        <!-- unit -->
 
         <TextView
             android:text="@string/unit_caps"
@@ -60,6 +64,8 @@
             style="@style/dialog_edit_text"
             />
 
+        <!-- species -->
+
         <TextView
             android:text="@string/species"
             style="@style/dialog_desc_text"
@@ -70,6 +76,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
+
+        <!-- category -->
 
         <TextView
             android:text="@string/category"
@@ -82,6 +90,8 @@
             android:layout_height="wrap_content"
             />
 
+        <!-- thickness -->
+
         <TextView
             android:text="@string/thickness"
             style="@style/dialog_desc_text"
@@ -92,6 +102,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
+
+        <!-- height -->
 
         <TextView
             android:text="@string/height_rank"
@@ -104,8 +116,10 @@
             android:layout_height="wrap_content"
             />
 
+        <!-- count -->
+
         <TextView
-            android:text="@string/count"
+            android:text="@string/count_detail"
             style="@style/dialog_desc_text"
             />
 

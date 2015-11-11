@@ -52,7 +52,7 @@ public class SheetActivity
     @Override
     protected void onListItemClick(int position)
     {
-        final SheetFillDialog dialog = new SheetFillDialog();
+        SheetFillDialog dialog = new SheetFillDialog();
         dialog.setOnAddTreesListener(this);
         dialog.setFeature((Feature) mAdapter.getItem(position));
         dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SHEET_FILL_DIALOG);
@@ -62,7 +62,7 @@ public class SheetActivity
     @Override
     protected void add()
     {
-        final SheetFillDialog dialog = new SheetFillDialog();
+        SheetFillDialog dialog = new SheetFillDialog();
         dialog.setOnAddTreesListener(this);
         dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SHEET_FILL_DIALOG);
     }
