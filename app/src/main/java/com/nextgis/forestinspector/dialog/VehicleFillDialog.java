@@ -2,7 +2,6 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
- * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -28,34 +27,26 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatSpinner;
-import android.text.InputFilter;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.DaveKoelle.AlphanumComparator;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.SheetActivity;
+import com.nextgis.forestinspector.activity.VehicleActivity;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.IGISApplication;
-import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.MapBase;
-import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.LocationUtil;
@@ -63,15 +54,11 @@ import com.nextgis.maplibui.util.SettingsConstantsUI;
 import com.nextgis.styled_dialog.StyledDialogFragment;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import static com.nextgis.maplib.util.GeoConstants.GTMultiPoint;
 
 
-public class SheetFillDialog
+public class VehicleFillDialog
         extends StyledDialogFragment
         implements GpsEventListener
 {
@@ -80,24 +67,15 @@ public class SheetFillDialog
     protected Feature  mFeature;
     protected Location mFeatureLocation;
 
-    protected String mUnit;
-    protected String mSpecies;
-    protected String mCategory;
-    protected String mThickness;
-    protected String mHeight;
-    protected String mCount;
+    protected String mName;
+    protected String mDesc;
+    protected String mNums;
+    protected String mUser;
 
-    protected EditText         mUnitView;
-    protected AppCompatSpinner mSpeciesView;
-    protected AppCompatSpinner mCategoryView;
-    protected AppCompatSpinner mThicknessView;
-    protected AppCompatSpinner mHeightView;
-    protected EditText         mCountView;
-
-    protected ArrayAdapter<String> mSpeciesAdapter;
-    protected ArrayAdapter<String> mCategoryAdapter;
-    protected ArrayAdapter<String> mThicknessAdapter;
-    protected ArrayAdapter<String> mHeightAdapter;
+    protected EditText mNameView;
+    protected EditText mDescView;
+    protected EditText mNumsView;
+    protected EditText mUserView;
 
     protected TextView mLatView;
     protected TextView mLongView;
@@ -107,9 +85,7 @@ public class SheetFillDialog
 
     protected GpsEventSource gpsEventSource;
 
-    protected DocumentsLayer mDocsLayer;
-
-    protected OnAddTreesListener mOnAddTreesListener;
+    protected OnAddVehicleListener mOnAddVehicleListener;
 
 
     @Override
@@ -121,23 +97,6 @@ public class SheetFillDialog
 
         IGISApplication app = (IGISApplication) getActivity().getApplication();
         gpsEventSource = app.getGpsEventSource();
-        MapBase map = app.getMap();
-
-        mDocsLayer = null;
-        for (int i = 0; i < map.getLayerCount(); i++) {
-            ILayer layer = map.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                mDocsLayer = (DocumentsLayer) layer;
-                break;
-            }
-        }
-
-        if (null != mDocsLayer) {
-            mSpeciesAdapter = getArrayAdapter(Constants.KEY_LAYER_SPECIES_TYPES, false);
-            mCategoryAdapter = getArrayAdapter(Constants.KEY_LAYER_TREES_TYPES, false);
-            mThicknessAdapter = getArrayAdapter(Constants.KEY_LAYER_THICKNESS_TYPES, true);
-            mHeightAdapter = getArrayAdapter(Constants.KEY_LAYER_HEIGHT_TYPES, true);
-        }
 
         if (null != mFeature) {
             // TODO: make for another types
@@ -154,67 +113,15 @@ public class SheetFillDialog
                     break;
                 }
                 default: {
-                    mFeatureLocation = new Location(SheetFillDialog.UNKNOWN_LOCATION);
+                    mFeatureLocation = new Location(VehicleFillDialog.UNKNOWN_LOCATION);
                     break;
                 }
             }
 
-            mUnit = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_UNIT);
-            mSpecies = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES);
-            mCategory = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY);
-            mThickness = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS);
-            mHeight = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS);
-            mCount = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_COUNT);
-        }
-    }
-
-
-    protected ArrayAdapter<String> getArrayAdapter(
-            String layerKey,
-            boolean numberSort)
-    {
-        NGWLookupTable table = (NGWLookupTable) mDocsLayer.getLayerByName(layerKey);
-
-        if (null != table) {
-            Map<String, String> data = table.getData();
-            List<String> dataArray = new ArrayList<>();
-
-            for (Map.Entry<String, String> entry : data.entrySet()) {
-                dataArray.add(entry.getKey());
-            }
-
-            if (numberSort) {
-                Collections.sort(dataArray, new AlphanumComparator());
-            } else {
-                Collections.sort(dataArray);
-            }
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    getActivity(), android.R.layout.simple_spinner_item, dataArray);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-            return adapter;
-        }
-
-        return null;
-    }
-
-
-    protected void setListSelection(
-            AppCompatSpinner view,
-            ArrayAdapter<String> adapter,
-            String value)
-    {
-        if (null == adapter) {
-            return;
-        }
-
-        for (int i = 0, count = adapter.getCount(); i < count; ++i) {
-            String item = adapter.getItem(i);
-            if (item.equals(value)) {
-                view.setSelection(i);
-                break;
-            }
+            mName = mFeature.getFieldValueAsString(Constants.FIELD_VEHICLE_NAME);
+            mDesc = mFeature.getFieldValueAsString(Constants.FIELD_VEHICLE_DESCRIPTION);
+            mNums = mFeature.getFieldValueAsString(Constants.FIELD_VEHICLE_ENGINE_NUM);
+            mUser = mFeature.getFieldValueAsString(Constants.FIELD_VEHICLE_USER);
         }
     }
 
@@ -223,49 +130,32 @@ public class SheetFillDialog
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        View view = View.inflate(getActivity(), R.layout.dialog_sheet_fill, null);
+        View view = View.inflate(getActivity(), R.layout.dialog_vehicle_fill, null);
 
         createLocationPanelView(view);
 
-        mUnitView = (EditText) view.findViewById(R.id.unit);
-        if (null != mUnit) {
-            mUnitView.setText(mUnit);
-            mUnit = null;
+        mNameView = (EditText) view.findViewById(R.id.name);
+        if (null != mName) {
+            mNameView.setText(mName);
+            mName = null;
         }
 
-        mSpeciesView = (AppCompatSpinner) view.findViewById(R.id.species);
-        mSpeciesView.setAdapter(mSpeciesAdapter);
-        if (null != mSpecies) {
-            setListSelection(mSpeciesView, mSpeciesAdapter, mSpecies);
-            mSpecies = null;
+        mDescView = (EditText) view.findViewById(R.id.desc);
+        if (null != mDesc) {
+            mDescView.setText(mDesc);
+            mDesc = null;
         }
 
-        mCategoryView = (AppCompatSpinner) view.findViewById(R.id.category);
-        mCategoryView.setAdapter(mCategoryAdapter);
-        if (null != mCategory) {
-            setListSelection(mCategoryView, mCategoryAdapter, mCategory);
-            mCategory = null;
+        mNumsView = (EditText) view.findViewById(R.id.nums);
+        if (null != mNums) {
+            mNumsView.setText(mNums);
+            mNums = null;
         }
 
-        mThicknessView = (AppCompatSpinner) view.findViewById(R.id.thickness);
-        mThicknessView.setAdapter(mThicknessAdapter);
-        if (null != mThickness) {
-            setListSelection(mThicknessView, mThicknessAdapter, mThickness);
-            mThickness = null;
-        }
-
-        mHeightView = (AppCompatSpinner) view.findViewById(R.id.height);
-        mHeightView.setAdapter(mHeightAdapter);
-        if (null != mHeight) {
-            setListSelection(mHeightView, mHeightAdapter, mHeight);
-            mHeight = null;
-        }
-
-        mCountView = (EditText) view.findViewById(R.id.count);
-        mCountView.setFilters(new InputFilter[] {new InputFilterMinMax(1, 1000)});
-        if (null != mCount) {
-            mCountView.setText(mCount);
-            mCount = null;
+        mUserView = (EditText) view.findViewById(R.id.user);
+        if (null != mUser) {
+            mUserView.setText(mUser);
+            mUser = null;
         }
 
 
@@ -283,28 +173,28 @@ public class SheetFillDialog
             setTitle(R.string.change_data);
             setPositiveText(R.string.save);
         } else {
-            setTitle(R.string.add_trees);
+            setTitle(R.string.add_vehicle);
             setPositiveText(R.string.add);
         }
 
         setNegativeText(R.string.cancel);
 
         setOnPositiveClickedListener(
-                new SheetFillDialog.OnPositiveClickedListener()
+                new OnPositiveClickedListener()
                 {
                     @Override
                     public void onPositiveClicked()
                     {
-                        addTrees();
+                        addVehicle();
 
-                        if (null != mOnAddTreesListener) {
-                            mOnAddTreesListener.onAddTrees();
+                        if (null != mOnAddVehicleListener) {
+                            mOnAddVehicleListener.onAddVehicle();
                         }
                     }
                 });
 
         setOnNegativeClickedListener(
-                new SheetFillDialog.OnNegativeClickedListener()
+                new OnNegativeClickedListener()
                 {
                     @Override
                     public void onNegativeClicked()
@@ -473,7 +363,7 @@ public class SheetFillDialog
     }
 
 
-    public void addTrees()
+    public void addVehicle()
     {
         if (null == mLocation) {
             Toast.makeText(getActivity(), getString(R.string.error_no_location), Toast.LENGTH_LONG)
@@ -481,7 +371,7 @@ public class SheetFillDialog
             return;
         }
 
-        SheetActivity activity = (SheetActivity) getActivity();
+        VehicleActivity activity = (VehicleActivity) getActivity();
         if (null == activity) {
             return;
         }
@@ -493,18 +383,12 @@ public class SheetFillDialog
             return;
         }
 
-        VectorLayer sheetLayer =
-                (VectorLayer) documentsLayer.getLayerByName(Constants.KEY_LAYER_SHEET);
-        if (null == sheetLayer) {
+        VectorLayer vehicleLayer =
+                (VectorLayer) documentsLayer.getLayerByName(Constants.KEY_LAYER_VEHICLES);
+        if (null == vehicleLayer) {
             return;
         }
 
-
-        Integer thicknessValue = Integer.parseInt(mThicknessView.getSelectedItem().toString());
-
-        Integer countValue = TextUtils.isEmpty(mCountView.getText())
-                             ? 1
-                             : Integer.parseInt(mCountView.getText().toString());
 
         GeoPoint pt = new GeoPoint(mLocation.getLongitude(), mLocation.getLatitude());
         pt.setCRS(GeoConstants.CRS_WGS84);
@@ -517,96 +401,30 @@ public class SheetFillDialog
             feature = mFeature;
         } else {
             feature = new Feature(
-                    com.nextgis.maplib.util.Constants.NOT_FOUND, sheetLayer.getFields());
-            activity.getFeature().addSubFeature(Constants.KEY_LAYER_SHEET, feature);
+                    com.nextgis.maplib.util.Constants.NOT_FOUND, vehicleLayer.getFields());
+            activity.getFeature().addSubFeature(Constants.KEY_LAYER_VEHICLES, feature);
         }
 
         feature.setFieldValue(
-                Constants.FIELD_SHEET_UNIT, mUnitView.getText().toString());
+                Constants.FIELD_VEHICLE_NAME, mNameView.getText().toString());
         feature.setFieldValue(
-                Constants.FIELD_SHEET_SPECIES, mSpeciesView.getSelectedItem().toString());
+                Constants.FIELD_VEHICLE_DESCRIPTION, mDescView.getText().toString());
         feature.setFieldValue(
-                Constants.FIELD_SHEET_CATEGORY, mCategoryView.getSelectedItem().toString());
+                Constants.FIELD_VEHICLE_ENGINE_NUM, mNumsView.getText().toString());
         feature.setFieldValue(
-                Constants.FIELD_SHEET_THICKNESS, thicknessValue);
-        feature.setFieldValue(
-                Constants.FIELD_SHEET_HEIGHTS, mHeightView.getSelectedItem().toString());
-        feature.setFieldValue(
-                Constants.FIELD_SHEET_COUNT, countValue);
+                Constants.FIELD_VEHICLE_USER, mUserView.getText().toString());
         feature.setGeometry(geometryValue);
     }
 
 
-    public void setOnAddTreesListener(OnAddTreesListener listener)
+    public void setOnAddVehicleListener(OnAddVehicleListener listener)
     {
-        mOnAddTreesListener = listener;
+        mOnAddVehicleListener = listener;
     }
 
 
-    public interface OnAddTreesListener
+    public interface OnAddVehicleListener
     {
-        void onAddTrees();
-    }
-
-
-    // http://stackoverflow.com/a/14212734/4727406
-    public class InputFilterMinMax
-            implements InputFilter
-    {
-        private int min, max;
-
-
-        public InputFilterMinMax(
-                int min,
-                int max)
-        {
-            this.min = min;
-            this.max = max;
-        }
-
-
-        public InputFilterMinMax(
-                String min,
-                String max)
-        {
-            this.min = Integer.parseInt(min);
-            this.max = Integer.parseInt(max);
-        }
-
-
-        // http://stackoverflow.com/a/19072151/4727406
-        @Override
-        public CharSequence filter(
-                CharSequence source,
-                int start,
-                int end,
-                Spanned dest,
-                int dstart,
-                int dend)
-        {
-            try {
-                // Remove the string out of destination that is to be replaced
-                String newVal = dest.toString().substring(0, dstart) +
-                                dest.toString().substring(dend, dest.toString().length());
-                // Add the new string in
-                newVal = newVal.substring(0, dstart) + source.toString() +
-                         newVal.substring(dstart, newVal.length());
-                int input = Integer.parseInt(newVal);
-                if (isInRange(min, max, input)) {
-                    return null;
-                }
-            } catch (NumberFormatException nfe) {
-            }
-            return "";
-        }
-
-
-        private boolean isInRange(
-                int a,
-                int b,
-                int c)
-        {
-            return b > a ? c >= a && c <= b : c >= b && c <= a;
-        }
+        void onAddVehicle();
     }
 }

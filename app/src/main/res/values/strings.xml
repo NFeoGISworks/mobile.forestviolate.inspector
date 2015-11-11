@@ -175,4 +175,12 @@
     <string name="view_photo">View photo</string>
     <string name="action_sync">Synchronization</string>
     <string name="change_data">Change data</string>
+    <string name="vehicle_name">Equipment name</string>
+    <string name="vehicle_name_hint">Enter an equipment name</string>
+    <string name="vehicle_desc">Equipment description</string>
+    <string name="vehicle_desc_hint">Enter an equipment description</string>
+    <string name="vehicle_engine_nums">Aggregates numbers</string>
+    <string name="vehicle_engine_nums_hint">Enter an aggregates numbers</string>
+    <string name="vehicle_user">Proprietor\'s information</string>
+    <string name="vehicle_user_hint">Enter a proprietor\'s information</string>
 </resources>

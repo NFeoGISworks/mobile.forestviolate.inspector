@@ -39,9 +39,6 @@ import com.nextgis.maplib.datasource.Feature;
 import java.util.List;
 
 
-/**
- * Created by bishop on 28.07.15.
- */
 public class SheetViewFragment
         extends TabFragment
 {

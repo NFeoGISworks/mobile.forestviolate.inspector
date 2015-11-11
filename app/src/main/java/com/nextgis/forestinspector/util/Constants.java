@@ -38,9 +38,9 @@ public interface Constants
      * init sync status
      */
     String BROADCAST_MESSAGE = "forestviolate.inspector.sync_message";
-    String KEY_STEP = "sync_step";
-    String KEY_STATE = "sync_state";
-    String KEY_MESSAGE = "sync_message";
+    String KEY_STEP          = "sync_step";
+    String KEY_STATE         = "sync_state";
+    String KEY_MESSAGE       = "sync_message";
 
     String KEY_INSPECTORS       = "inspectors";
     String KEY_DOCUMENTS        = "docs";
@@ -176,6 +176,7 @@ public interface Constants
     int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
 
     String FRAGMENT_SHEET_FILL_DIALOG        = "sheet_fill_dialog";
+    String FRAGMENT_VEHICLE_FILL_DIALOG      = "vehicle_fill_dialog";
     String FRAGMENT_PHOTO_TABLE              = "photo_table";
     String FRAGMENT_PHOTO_DESC_EDITOR_DIALOG = "photo_desc_editor_dialog";
 }

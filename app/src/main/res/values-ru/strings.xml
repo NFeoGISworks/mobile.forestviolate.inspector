@@ -176,4 +176,13 @@
     <string name="view_photo">Просмотр фото</string>
     <string name="action_sync">Синхронизация</string>
     <string name="change_data">Изменение данных</string>
+    <string name="add_vehicle">Добавить технику</string>
+    <string name="vehicle_name">Наименование техники</string>
+    <string name="vehicle_name_hint">Введите наименование техники</string>
+    <string name="vehicle_desc">Описание техники</string>
+    <string name="vehicle_desc_hint">Введите описание техники</string>
+    <string name="vehicle_engine_nums">Номера агрегатов</string>
+    <string name="vehicle_engine_nums_hint">Введите номера агрегатов</string>
+    <string name="vehicle_user">Сведения о собственнике</string>
+    <string name="vehicle_user_hint">Введите сведения о собственнике</string>
 </resources>

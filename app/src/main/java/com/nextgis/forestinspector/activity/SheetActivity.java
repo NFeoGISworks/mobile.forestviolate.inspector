@@ -22,14 +22,12 @@
 
 package com.nextgis.forestinspector.activity;
 
-import android.preference.PreferenceManager;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.CheckListAdapter;
 import com.nextgis.forestinspector.adapter.SheetListAdapter;
 import com.nextgis.forestinspector.dialog.SheetFillDialog;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
-import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 
 public class SheetActivity
@@ -66,8 +64,7 @@ public class SheetActivity
     {
         final SheetFillDialog dialog = new SheetFillDialog();
         dialog.setOnAddTreesListener(this);
-        dialog.show(
-                getSupportFragmentManager(), Constants.FRAGMENT_SHEET_FILL_DIALOG);
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SHEET_FILL_DIALOG);
     }
 
 

@@ -21,30 +21,55 @@
 
 package com.nextgis.forestinspector.activity;
 
+import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.CheckListAdapter;
+import com.nextgis.forestinspector.adapter.VehicleListAdapter;
+import com.nextgis.forestinspector.dialog.VehicleFillDialog;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.datasource.Feature;
 
-/**
- * Created by bishop on 08.08.15.
- */
-public class VehicleActivity extends CheckListActivity {
-    @Override
-    protected int getContentViewId() {
-        return 0;
-    }
 
-    @Override
-    protected void add() {
-
-    }
+public class VehicleActivity
+        extends CheckListActivity
+        implements VehicleFillDialog.OnAddVehicleListener
+{
 
     @Override
-    protected CheckListAdapter getAdapter() {
-        return null;
+    protected int getContentViewId()
+    {
+        return R.layout.activity_vehicle;
     }
 
 
     @Override
-    protected void onListItemClick(int position) {
+    protected CheckListAdapter getAdapter()
+    {
+        return new VehicleListAdapter(this, mDocumentFeature);
+    }
 
+
+    @Override
+    protected void onListItemClick(int position)
+    {
+        final VehicleFillDialog dialog = new VehicleFillDialog();
+        dialog.setOnAddVehicleListener(this);
+        dialog.setFeature((Feature) mAdapter.getItem(position));
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_VEHICLE_FILL_DIALOG);
+    }
+
+
+    @Override
+    protected void add()
+    {
+        final VehicleFillDialog dialog = new VehicleFillDialog();
+        dialog.setOnAddVehicleListener(this);
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_VEHICLE_FILL_DIALOG);
+    }
+
+
+    @Override
+    public void onAddVehicle()
+    {
+        mAdapter.notifyDataSetChanged();
     }
 }
