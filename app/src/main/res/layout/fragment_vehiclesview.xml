@@ -20,94 +20,125 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="5dp">
+        android:layout_margin="5dp"
+        >
 
         <!-- составитель акта -->
-        <TextView style="@style/description_text"
+
+        <TextView
+            style="@style/description_text"
             android:text="@string/author"
             />
 
-        <TextView style="@style/normal_text"
-            android:id="@+id/author"/>
+        <TextView
+            style="@style/normal_text"
+            android:id="@+id/author"
+            />
 
         <!-- date & time -->
-        <TextView style="@style/description_text"
+
+        <TextView
+            style="@style/description_text"
             android:text="@string/date_time_create"
             />
 
-        <TextView style="@style/normal_text"
+        <TextView
+            style="@style/normal_text"
             android:id="@+id/create_datetime"
             />
 
         <!-- place -->
-        <TextView  style="@style/description_text"
+
+        <TextView
+            style="@style/description_text"
             android:text="@string/place_create"
             />
 
-        <TextView style="@style/normal_text"
+        <TextView
+            style="@style/normal_text"
             android:id="@+id/place"
             />
 
         <!-- text 1. -->
-        <TextView style="@style/normal_text"
+
+        <TextView
+            style="@style/normal_text"
             android:id="@+id/intro"
             />
 
-        <TextView style="@style/normal_text"
-                  android:id="@+id/vehicle"
+        <TextView
+            style="@style/normal_text"
+            android:id="@+id/vehicle"
             />
 
         <!-- crime -->
-        <TextView  style="@style/description_text"
+
+        <TextView
+            style="@style/description_text"
             android:text="@string/possible_crime_desc"
             />
 
-        <TextView style="@style/normal_text"
+        <TextView
+            style="@style/normal_text"
             android:id="@+id/possible_crime"
             />
 
         <!-- officer -->
-        <TextView style="@style/description_text"
+
+        <TextView
+            style="@style/description_text"
             android:text="@string/officer_desc"
-        />
-
-        <TextView style="@style/normal_text"
-              android:id="@+id/officer"
-        />
-
-        <!-- inspector -->
-        <TextView style="@style/description_text"
-                  android:text="@string/inspector_desc"
             />
 
-        <TextView style="@style/normal_text"
-                  android:id="@+id/inspector"
+        <TextView
+            style="@style/normal_text"
+            android:id="@+id/officer"
+            />
+
+        <!-- inspector -->
+
+        <TextView
+            style="@style/description_text"
+            android:text="@string/inspector_desc"
+            />
+
+        <TextView
+            style="@style/normal_text"
+            android:id="@+id/inspector"
             />
 
 
         <!-- civil -->
-        <TextView style="@style/description_text"
-                  android:text="@string/civil_desc"
+
+        <TextView
+            style="@style/description_text"
+            android:text="@string/civil_desc"
             />
 
-        <TextView style="@style/normal_text"
-                  android:id="@+id/civil"
+        <TextView
+            style="@style/normal_text"
+            android:id="@+id/civil"
             />
 
         <!-- desc -->
-        <TextView  style="@style/description_text"
-                   android:text="@string/description_desc"
+
+        <TextView
+            style="@style/description_text"
+            android:text="@string/description_desc"
             />
 
-        <TextView style="@style/normal_text"
+        <TextView
+            style="@style/normal_text"
             android:id="@+id/description"
             />
 

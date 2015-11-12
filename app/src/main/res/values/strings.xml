@@ -114,6 +114,7 @@
     <string name="no_selected_documents">The document is not selected</string>
     <string name="indictment_tab_name">Indictment</string>
     <string name="sheet_tab_name">Sheet</string>
+    <string name="production_tab_name">Production</string>
     <string name="vehicle_tab_name">Vehicle</string>
     <string name="photo_table_tab_name">Photo table</string>
     <string name="on">on</string>
@@ -154,6 +155,7 @@
     <string name="sync_switch">Switch sync on/off</string>
     <string name="length">Length</string>
     <string name="production">6. Type and number of products subject to withdrawal, as well as products that are seized at the site forest violations.</string>
+    <string name="production_link">See tab \"Production\"</string>
     <string name="user_trans">The official products for the removal of the transmitter</string>
     <string name="action_production">Confiscate production</string>
     <string name="add">Add</string>

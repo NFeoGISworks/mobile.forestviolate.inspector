@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -33,22 +34,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
-import com.nextgis.forestinspector.adapter.ProductionListAdapter;
-import com.nextgis.forestinspector.adapter.ProductionViewListAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
-import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.AttachItem;
 
-import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -117,10 +111,6 @@ public class IndictmentViewFragment extends TabFragment {
 
                 TextView description = (TextView) view.findViewById(R.id.description);
                 description.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESCRIPTION));
-
-                ProductionViewListAdapter adapter = new ProductionViewListAdapter(getActivity(), feature);
-                ListView list = (ListView) view.findViewById(R.id.productionList);
-                list.setAdapter(adapter);
 
                 TextView userTrans = (TextView) view.findViewById(R.id.user_trans);
                 String userTransText = userTrans.getText().toString();

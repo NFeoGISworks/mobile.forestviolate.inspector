@@ -115,6 +115,7 @@
     <string name="no_selected_documents">Документ не выбран</string>
     <string name="indictment_tab_name">Акт о лесонарушении</string>
     <string name="sheet_tab_name">Ведомость перечета</string>
+    <string name="production_tab_name">Продукция для изъятия</string>
     <string name="vehicle_tab_name">Акт об обнаруж. орудий заготовки</string>
     <string name="photo_table_tab_name">Фототаблица</string>
     <string name="on">от</string>
@@ -155,6 +156,7 @@
     <string name="sync_switch">Вкл./выкл. синхронизацию</string>
     <string name="length">Длина</string>
     <string name="production">6. Вид и количество продукции, подлежащей изъятию, а также продукции на которую наложен арест на месте лесонарушения.</string>
+    <string name="production_link">См. вкладку \"Продукция для изъятия\"</string>
     <string name="user_trans">Должностное лицо, передающее продукцию для изъятия</string>
     <string name="action_production">Продукция для изъятия</string>
     <string name="add">Добавить</string>
