@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -69,57 +70,47 @@ public class VehicleViewFragment
         Activity activity = getActivity();
         if (activity instanceof IDocumentFeatureSource) {
             IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
-            DocumentFeature parentFeature = documentFeatureSource.getFeature();
+            DocumentFeature feature = documentFeatureSource.getFeature();
 
-            if (null != parentFeature) {
+            if (null != feature) {
+                //author
+                TextView author = (TextView) view.findViewById(R.id.author);
+                author.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER));
 
-                Date date = (Date) parentFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
+                //create_datetime
+                TextView createDateTime = (TextView) view.findViewById(R.id.create_datetime);
+                createDateTime.setText(
+                        feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE));
+
+                //place
+                TextView place = (TextView) view.findViewById(R.id.place);
+                place.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_PLACE));
+
+                //intro
+                Date date = (Date) feature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
                 String sDate = DateFormat.getDateInstance().format(date);
                 String sIndictmentNum =
-                        parentFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);
+                        feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);
 
                 String parentDoc =
                         getString(R.string.found_logging) + " (" + getString(R.string.indictment) +
                         " " + getString(R.string.number) + " " + sIndictmentNum + " " +
                         getString(R.string.on) + " " + sDate + ")";
 
-                DocumentFeature feature = null;
-                List<Feature> features =
-                        parentFeature.getSubFeatures(Constants.KEY_LAYER_DOCUMENTS);
-                if (features != null && features.size() > 0) {
-                    feature = (DocumentFeature) features.get(0);
-                }
+                TextView intro = (TextView) view.findViewById(R.id.intro);
+                intro.setText(
+                        feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_PICK) +
+                        " " +
+                        parentDoc);
 
-                if (null != feature) {
-                    //author
-                    TextView author = (TextView) view.findViewById(R.id.author);
-                    author.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER));
+                //vehicle
+                List<Feature> vehicleItems = feature.getSubFeatures(Constants.KEY_LAYER_VEHICLES);
 
-                    //create_datetime
-                    TextView createDateTime = (TextView) view.findViewById(R.id.create_datetime);
-                    createDateTime.setText(
-                            feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE));
-
-                    //place
-                    TextView place = (TextView) view.findViewById(R.id.place);
-                    place.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_PLACE));
-
-                    //intro
-                    TextView intro = (TextView) view.findViewById(R.id.intro);
-                    intro.setText(
-                            feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_PICK) +
-                            " " +
-                            parentDoc);
-
-                    //vehicle
-                    TextView vehicle = (TextView) view.findViewById(R.id.vehicle);
-
-                    List<Feature> vehicleItems =
-                            feature.getSubFeatures(Constants.KEY_LAYER_VEHICLES);
+                if (null != vehicleItems) {
                     String vehiclesDesc = "";
                     int counter = 0;
                     for (Feature item : vehicleItems) {
-                        vehiclesDesc += "" + ++counter + ". ";
+                        vehiclesDesc += ++counter + ". ";
                         vehiclesDesc +=
                                 item.getFieldValueAsString(Constants.FIELD_VEHICLE_NAME) + ", ";
                         vehiclesDesc +=
@@ -137,33 +128,36 @@ public class VehicleViewFragment
                         vehiclesDesc = getString(R.string.n_a);
                     }
 
+                    TextView vehicle = (TextView) view.findViewById(R.id.vehicle);
                     vehicle.setText(getString(R.string.vehicles_found) + ":\n" + vehiclesDesc);
-
-                    //possible_crime
-                    TextView possibleCrime = (TextView) view.findViewById(R.id.possible_crime);
-                    possibleCrime.setText(
-                            feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_CRIME));
-
-                    //officer
-                    TextView officer = (TextView) view.findViewById(R.id.officer);
-                    officer.setText(
-                            feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_TRANS));
-
-                    //inspector
-                    TextView inspector = (TextView) view.findViewById(R.id.inspector);
-                    inspector.setText(
-                            feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_AUTHOR));
-
-                    //civil
-                    TextView civil = (TextView) view.findViewById(R.id.civil);
-                    civil.setText(
-                            feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
-
-                    //description
-                    TextView description = (TextView) view.findViewById(R.id.description);
-                    description.setText(
-                            feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DESCRIPTION));
                 }
+
+                //possible_crime
+                TextView possibleCrime = (TextView) view.findViewById(R.id.possible_crime);
+                possibleCrime.setText(
+                        feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_CRIME));
+
+                //officer
+                TextView officer = (TextView) view.findViewById(R.id.officer);
+                officer.setText(
+                        feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_TRANS));
+
+                //inspector
+                TextView inspector = (TextView) view.findViewById(R.id.inspector);
+                inspector.setText(
+                        feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_AUTHOR));
+
+                //civil
+                TextView civil = (TextView) view.findViewById(R.id.civil);
+                civil.setText(
+                        feature.getFieldValueAsString(
+                                Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
+
+                //description
+                TextView description = (TextView) view.findViewById(R.id.description);
+                description.setText(
+                        feature.getFieldValueAsString(
+                                Constants.FIELD_DOCUMENTS_DESCRIPTION));
             }
         }
         return view;
