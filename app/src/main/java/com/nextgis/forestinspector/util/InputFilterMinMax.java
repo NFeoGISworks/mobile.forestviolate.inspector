@@ -27,7 +27,7 @@ import android.text.Spanned;
 
 
 // http://stackoverflow.com/a/14212734/4727406
-public abstract class InputFilterMinMax<E extends Comparable<E>>
+public abstract class InputFilterMinMax<E extends Number & Comparable<E>>
         implements InputFilter
 {
     protected E mMin, mMax;
