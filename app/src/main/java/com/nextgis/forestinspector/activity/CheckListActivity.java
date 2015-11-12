@@ -24,7 +24,6 @@ package com.nextgis.forestinspector.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBar;
 import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -176,12 +175,6 @@ public abstract class CheckListActivity extends FIActivity implements IDocumentF
     {
         MenuInflater inflater = actionMode.getMenuInflater();
         inflater.inflate(R.menu.check_list, menu);
-
-
-        ActionBar bar = getSupportActionBar();
-        if (null != bar) {
-            bar.hide();
-        }
         return true;
     }
 
@@ -191,10 +184,6 @@ public abstract class CheckListActivity extends FIActivity implements IDocumentF
         mSelectState = false;
         setSelection();
         mActionMode = null;
-        ActionBar bar = getSupportActionBar();
-        if (null != bar) {
-            bar.show();
-        }
     }
 
 
