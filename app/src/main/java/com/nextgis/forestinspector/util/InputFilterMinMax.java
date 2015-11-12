@@ -27,18 +27,18 @@ import android.text.Spanned;
 
 
 // http://stackoverflow.com/a/14212734/4727406
-public class InputFilterMinMax
+public abstract class InputFilterMinMax<E extends Comparable<E>>
         implements InputFilter
 {
-    private int min, max;
+    protected E mMin, mMax;
 
 
     public InputFilterMinMax(
-            int min,
-            int max)
+            E min,
+            E max)
     {
-        this.min = min;
-        this.max = max;
+        mMin = min;
+        mMax = max;
     }
 
 
@@ -46,8 +46,8 @@ public class InputFilterMinMax
             String min,
             String max)
     {
-        this.min = Integer.parseInt(min);
-        this.max = Integer.parseInt(max);
+        mMin = parseVal(min);
+        mMax = parseVal(max);
     }
 
 
@@ -68,8 +68,8 @@ public class InputFilterMinMax
             // Add the new string in
             newVal = newVal.substring(0, dstart) + source.toString() +
                      newVal.substring(dstart, newVal.length());
-            int input = Integer.parseInt(newVal);
-            if (isInRange(min, max, input)) {
+            E input = parseVal(newVal);
+            if (isInRange(mMin, mMax, input)) {
                 return null;
             }
         } catch (NumberFormatException nfe) {
@@ -78,11 +78,19 @@ public class InputFilterMinMax
     }
 
 
-    private boolean isInRange(
-            int a,
-            int b,
-            int c)
+    protected boolean isInRange(
+            E a,
+            E b,
+            E c)
     {
-        return b > a ? c >= a && c <= b : c >= b && c <= a;
+//        return b > a
+//               ? c >= a && c <= b
+//               : c >= b && c <= a;
+        return b.compareTo(a) > 0
+               ? c.compareTo(a) >= 0 && c.compareTo(b) <= 0
+               : c.compareTo(b) >= 0 && c.compareTo(a) <= 0;
     }
+
+
+    protected abstract E parseVal(String stringVal);
 }

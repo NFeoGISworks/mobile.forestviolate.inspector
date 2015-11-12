@@ -45,7 +45,7 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.SheetActivity;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.forestinspector.util.InputFilterMinMax;
+import com.nextgis.forestinspector.util.InputFilterMinMaxInteger;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.api.ILayer;
@@ -262,7 +262,7 @@ public class SheetFillDialog
         }
 
         mCountView = (EditText) view.findViewById(R.id.count);
-        mCountView.setFilters(new InputFilter[] {new InputFilterMinMax(1, 1000)});
+        mCountView.setFilters(new InputFilter[] {new InputFilterMinMaxInteger(1, 1000)});
         if (null != mCount) {
             mCountView.setText(mCount);
             mCount = null;

@@ -45,7 +45,8 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.ProductionActivity;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.forestinspector.util.InputFilterMinMax;
+import com.nextgis.forestinspector.util.InputFilterMinMaxDouble;
+import com.nextgis.forestinspector.util.InputFilterMinMaxInteger;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.api.ILayer;
@@ -237,8 +238,7 @@ public class ProductionFillDialog
         }
 
         mLengthView = (EditText) view.findViewById(R.id.length); // TODO: numberDecimal
-        // TODO: make input filter for double numbers
-//        mLengthView.setFilters(new InputFilter[] {new InputFilterMinMax(0, 200)});
+        mLengthView.setFilters(new InputFilter[] {new InputFilterMinMaxDouble(0.0, 200.0)});
         if (null != mLength) {
             mLengthView.setText(mLength);
             mLength = null;
@@ -252,7 +252,7 @@ public class ProductionFillDialog
         }
 
         mCountView = (EditText) view.findViewById(R.id.count);
-        mCountView.setFilters(new InputFilter[] {new InputFilterMinMax(1, 10000)});
+        mCountView.setFilters(new InputFilter[] {new InputFilterMinMaxInteger(1, 10000)});
         if (null != mCount) {
             mCountView.setText(mCount);
             mCount = null;
