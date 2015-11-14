@@ -68,7 +68,7 @@ public abstract class ListViewerFragment
 
 
     @Override
-    final public void onCreate(Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);

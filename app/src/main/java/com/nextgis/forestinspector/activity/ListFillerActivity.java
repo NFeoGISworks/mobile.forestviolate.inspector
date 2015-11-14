@@ -51,7 +51,7 @@ public abstract class ListFillerActivity
 
 
     @Override
-    final protected void onCreate(Bundle savedInstanceState)
+    protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 

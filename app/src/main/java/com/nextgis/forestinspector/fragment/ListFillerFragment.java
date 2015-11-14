@@ -70,7 +70,7 @@ public abstract class ListFillerFragment
 
 
     @Override
-    final public View onCreateView(
+    public View onCreateView(
             LayoutInflater inflater,
             ViewGroup container,
             Bundle savedInstanceState)
