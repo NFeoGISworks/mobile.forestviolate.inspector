@@ -3,7 +3,6 @@
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
  * Author:  NikitaFeodonit, nfeodonit@yandex.com
- * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -21,32 +20,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nextgis.forestinspector.fragment;
+package com.nextgis.forestinspector.activity;
 
-import android.annotation.SuppressLint;
-import com.nextgis.forestinspector.adapter.ListFillerAdapter;
-import com.nextgis.forestinspector.adapter.SheetViewerAdapter;
-import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.fragment.ListFillerFragment;
+import com.nextgis.forestinspector.fragment.SheetFillerFragment;
+import com.nextgis.forestinspector.util.Constants;
 
 
-public class SheetViewFragment
-        extends ListViewerFragment
+public class SheetFillerActivity
+        extends ListFillerActivity
 {
-    public SheetViewFragment()
+    protected String getFragmentTag()
     {
+        return Constants.FRAGMENT_SHEET_FILLER;
     }
 
 
-    @SuppressLint("ValidFragment")
-    public SheetViewFragment(String name)
+    protected ListFillerFragment getListFillerFragment()
     {
-        super(name);
-    }
-
-
-    @Override
-    protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
-    {
-        return new SheetViewerAdapter(feature);
+        return new SheetFillerFragment("");
     }
 }

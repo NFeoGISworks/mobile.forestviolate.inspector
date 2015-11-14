@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -422,8 +423,23 @@ public class IndictmentActivity extends FIActivity{
         startActivityForResult(intent, INDICTMENT_ACTIVITY);
     }
 
+    private void onFillSheet() {
+        Intent intent = new Intent(this, SheetFillerActivity.class);
+        startActivity(intent);
+    }
+
     private void onFillProduction() {
-        Intent intent = new Intent(this, ProductionActivity.class);
+        Intent intent = new Intent(this, ProductionFillerActivity.class);
+        startActivity(intent);
+    }
+
+    private void onFillVehicle() {
+        Intent intent = new Intent(this, VehicleFillerActivity.class);
+        startActivity(intent);
+    }
+
+    private void onFillPhoto() {
+        Intent intent = new Intent(this, PhotoTableActivity.class);
         startActivity(intent);
     }
 
@@ -451,20 +467,5 @@ public class IndictmentActivity extends FIActivity{
         //show dialog with sign and save / edit buttons
         SignDialog signDialog = new SignDialog();
         signDialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SIGN_DIALOG);
-    }
-
-    private void onFillPhoto() {
-        Intent intent = new Intent(this, PhotoTableActivity.class);
-        startActivity(intent);
-    }
-
-    private void onFillVehicle() {
-        Intent intent = new Intent(this, VehicleActivity.class);
-        startActivity(intent);
-    }
-
-    private void onFillSheet() {
-        Intent intent = new Intent(this, SheetActivity.class);
-        startActivity(intent);
     }
 }

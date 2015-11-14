@@ -27,15 +27,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.SparseBooleanArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +39,6 @@ import com.nextgis.forestinspector.activity.PhotoTableActivity;
 import com.nextgis.forestinspector.dialog.PhotoDescEditorDialog;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.util.AttachItem;
-import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -55,9 +49,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 
@@ -65,7 +57,7 @@ import static com.nextgis.maplib.util.Constants.TAG;
 
 
 public abstract class PhotoTableAdapter
-        extends RecyclerView.Adapter<PhotoTableAdapter.ViewHolder>
+        extends SelectedItemsAdapter
 {
     protected final static int CREATE_PREVIEW_DONE   = 0;
     protected final static int CREATE_PREVIEW_OK     = 1;
@@ -77,11 +69,6 @@ public abstract class PhotoTableAdapter
 
     protected Map<String, AttachItem>             mAttachItemMap;
     protected List<Map.Entry<String, AttachItem>> mAttachItemList;
-
-    protected SparseBooleanArray mSelectedItems;
-    protected boolean mSelectState = false;
-
-    protected Queue<OnSelectionChangedListener> mListeners;
 
     protected boolean mIsPhotoViewer = false;
     protected Integer mClickedId;
@@ -96,12 +83,11 @@ public abstract class PhotoTableAdapter
             Map<String, AttachItem> attachItemMap,
             boolean isPhotoViewer)
     {
+        super();
+
         mActivity = activity;
         mIsPhotoViewer = isPhotoViewer;
         setAttachItems(attachItemMap);
-
-        mListeners = new ConcurrentLinkedQueue<>();
-        mSelectedItems = new SparseBooleanArray();
     }
 
 
@@ -179,43 +165,31 @@ public abstract class PhotoTableAdapter
 
 
     @Override
-    public ViewHolder onCreateViewHolder(
-            ViewGroup parent,
-            int viewType)
+    protected int getItemViewResId()
     {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_photo_table, parent, false);
-        return new ViewHolder(view);
+        return R.layout.item_photo_table;
+    }
+
+
+    @Override
+    protected SelectedItemsAdapter.ViewHolder getViewHolder(View itemView)
+    {
+        return new PhotoTableAdapter.ViewHolder(itemView);
     }
 
 
     @Override
     public void onBindViewHolder(
-            final ViewHolder viewHolder,
+            final SelectedItemsAdapter.ViewHolder holder,
             final int position)
     {
-        viewHolder.mPosition = position;
+        super.onBindViewHolder(holder, position);
+
+        final PhotoTableAdapter.ViewHolder viewHolder = (PhotoTableAdapter.ViewHolder) holder;
 
         if (mIsPhotoViewer) {
             viewHolder.mCheckBox.setVisibility(View.GONE);
-        } else {
-            viewHolder.mCheckBox.setTag(position);
-            viewHolder.mCheckBox.setChecked(isSelected(position));
-            viewHolder.mCheckBox.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View view)
-                        {
-                            CheckBox checkBox = (CheckBox) view;
-                            int clickedPos = (Integer) checkBox.getTag();
-                            setSelection(clickedPos, checkBox.isChecked());
-                        }
-                    });
-        }
 
-
-        if (mIsPhotoViewer) {
             viewHolder.mPhotoDesc.setEllipsize(null);
             viewHolder.mPhotoDesc.setMaxLines(999);
             viewHolder.mPhotoDesc.setBackgroundColor(
@@ -290,8 +264,6 @@ public abstract class PhotoTableAdapter
                             mActivity.startActivity(intent);
                         }
                     });
-
-            addListener(viewHolder);
         }
 
         final Handler handler = new Handler()
@@ -382,11 +354,20 @@ public abstract class PhotoTableAdapter
     }
 
 
-    @Override
-    public void onViewRecycled(ViewHolder holder)
+    public static class ViewHolder
+            extends SelectedItemsAdapter.ViewHolder
     {
-        removeListener(holder);
-        super.onViewRecycled(holder);
+        public ImageView mImageView;
+        public TextView  mPhotoDesc;
+
+
+        public ViewHolder(View itemView)
+        {
+            super(itemView);
+
+            mImageView = (ImageView) itemView.findViewById(R.id.photo_table_item);
+            mPhotoDesc = (TextView) itemView.findViewById(R.id.photo_desc);
+        }
     }
 
 
@@ -414,126 +395,14 @@ public abstract class PhotoTableAdapter
     }
 
 
-    /**
-     * Count the selected items
-     *
-     * @return Selected items count
-     */
-    public int getSelectedItemCount()
-    {
-        return mSelectedItems.size();
-    }
-
-
-    /**
-     * Indicates if the item at position position is selected
-     *
-     * @param position
-     *         Position of the item to check
-     *
-     * @return true if the item is selected, false otherwise
-     */
-    public boolean isSelected(int position)
-    {
-        return mSelectedItems.get(position, false);
-    }
-
-
-    public boolean isSelectedItems()
-    {
-        return mSelectedItems.size() > 0;
-    }
-
-
-    /**
-     * Clear the selection status for all items
-     */
-    public void clearSelection()
-    {
-        mSelectState = false;
-        setSelection(false);
-    }
-
-
-    /**
-     * Toggle the selection status of the item at a given position
-     *
-     * @param position
-     *         Position of the item to toggle the selection status for
-     */
-    public void toggleSelection(int position)
-    {
-        setSelection(position, mSelectedItems.get(position, false));
-    }
-
-
-    public void toggleSelection()
-    {
-        mSelectState = !mSelectState;
-        setSelection(mSelectState);
-    }
-
-
-    public void setSelection(boolean selection)
-    {
-        for (int i = 0, size = mAttachItemList.size(); i < size; ++i) {
-            if (selection != isSelected(i)) {
-                setSelection(i, selection);
-            }
-        }
-    }
-
-
-    /**
-     * Set the selection status of the item at a given position to the given state
-     *
-     * @param position
-     *         Position of the item to toggle the selection status for
-     * @param selection
-     *         State for the item at position
-     */
-    public void setSelection(
-            int position,
-            boolean selection)
-    {
-        if (selection) {
-            mSelectedItems.put(position, true);
-        } else {
-            mSelectedItems.delete(position);
-        }
-
-        for (OnSelectionChangedListener listener : mListeners) {
-            listener.onSelectionChanged(position, selection);
-        }
-    }
-
-
-    public void deleteSelected()
+    protected void deleteSelected(int id)
             throws IOException
     {
-        int size = mAttachItemList.size();
-        for (int i = size - 1; i >= 0; --i) {
-            if (isSelected(i)) {
-                removeAttach(i);
-                notifyItemRemoved(i);
-            }
-        }
-        notifyItemRangeChanged(0, mAttachItemList.size());
-    }
+        super.deleteSelected(id);
 
-
-    /**
-     * Indicates the list of selected items
-     *
-     * @return List of selected items ids
-     */
-    public List<Integer> getSelectedItems()
-    {
-        List<Integer> items = new ArrayList<>(mSelectedItems.size());
-        for (int i = 0, size = mSelectedItems.size(); i < size; ++i) {
-            items.add(mSelectedItems.keyAt(i));
-        }
-        return items;
+        String key = mAttachItemList.get(id).getKey();
+        mAttachItemMap.remove(key);
+        mAttachItemList.remove(id);
     }
 
 
@@ -619,75 +488,10 @@ public abstract class PhotoTableAdapter
     }
 
 
-    protected void removeAttach(int id)
-            throws IOException
-    {
-        String key = mAttachItemList.get(id).getKey();
-        mAttachItemMap.remove(key);
-        mAttachItemList.remove(id);
-        mSelectedItems.delete(id);
-    }
-
-
     public Integer getClickedId()
     {
         Integer id = mClickedId;
         mClickedId = null;
         return id;
-    }
-
-
-    public static class ViewHolder
-            extends RecyclerView.ViewHolder
-            implements PhotoTableAdapter.OnSelectionChangedListener
-    {
-        public int       mPosition;
-        public ImageView mImageView;
-        public CheckBox  mCheckBox;
-        public TextView  mPhotoDesc;
-
-
-        public ViewHolder(View itemView)
-        {
-            super(itemView);
-            mImageView = (ImageView) itemView.findViewById(R.id.photo_table_item);
-            mCheckBox = (CheckBox) itemView.findViewById(R.id.photo_checkbox);
-            mPhotoDesc = (TextView) itemView.findViewById(R.id.photo_desc);
-        }
-
-
-        @Override
-        public void onSelectionChanged(
-                int position,
-                boolean selection)
-        {
-            if (position == getAdapterPosition()) {
-                mCheckBox.setChecked(selection);
-            }
-        }
-    }
-
-
-    public void addListener(OnSelectionChangedListener listener)
-    {
-        if (mListeners != null && !mListeners.contains(listener)) {
-            mListeners.add(listener);
-        }
-    }
-
-
-    public void removeListener(OnSelectionChangedListener listener)
-    {
-        if (mListeners != null) {
-            mListeners.remove(listener);
-        }
-    }
-
-
-    public interface OnSelectionChangedListener
-    {
-        void onSelectionChanged(
-                int position,
-                boolean selection);
     }
 }

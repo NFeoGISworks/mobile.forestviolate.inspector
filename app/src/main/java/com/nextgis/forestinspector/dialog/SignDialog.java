@@ -84,7 +84,7 @@ public class SignDialog
 
 
         setOnNegativeClickedListener(
-                new SheetFillDialog.OnNegativeClickedListener()
+                new ListFillerDialog.OnNegativeClickedListener()
                 {
                     @Override
                     public void onNegativeClicked()
@@ -94,7 +94,7 @@ public class SignDialog
                 });
 
         setOnPositiveClickedListener(
-                new SheetFillDialog.OnPositiveClickedListener()
+                new ListFillerDialog.OnPositiveClickedListener()
                 {
                     @Override
                     public void onPositiveClicked()

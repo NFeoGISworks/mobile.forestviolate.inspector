@@ -22,23 +22,25 @@
 
 package com.nextgis.forestinspector.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
+import android.support.v7.widget.AppCompatSpinner;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.DaveKoelle.AlphanumComparator;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.VehicleActivity;
+import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.GpsEventListener;
@@ -49,6 +51,7 @@ import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.LocationUtil;
@@ -56,11 +59,15 @@ import com.nextgis.maplibui.util.SettingsConstantsUI;
 import com.nextgis.styled_dialog.StyledDialogFragment;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static com.nextgis.maplib.util.GeoConstants.GTMultiPoint;
 
 
-public class VehicleFillDialog
+public abstract class ListFillerDialog
         extends StyledDialogFragment
         implements GpsEventListener
 {
@@ -69,25 +76,24 @@ public class VehicleFillDialog
     protected Feature  mFeature;
     protected Location mFeatureLocation;
 
-    protected String mName;
-    protected String mDesc;
-    protected String mNums;
-    protected String mUser;
-
-    protected EditText mNameView;
-    protected EditText mDescView;
-    protected EditText mNumsView;
-    protected EditText mUserView;
-
     protected TextView mLatView;
     protected TextView mLongView;
     protected TextView mAltView;
     protected TextView mAccView;
-    protected Location mLocation;
 
     protected GpsEventSource gpsEventSource;
+    protected Location       mLocation;
 
-    protected OnAddVehicleListener mOnAddVehicleListener;
+    protected OnAddListener mOnAddListener;
+
+
+    protected abstract int getDialogViewResId();
+
+    protected abstract void setFieldViews(View parentView);
+
+    protected abstract String getLayerName();
+
+    protected abstract void setFeatureFieldsValues(Feature feature);
 
 
     @Override
@@ -115,15 +121,61 @@ public class VehicleFillDialog
                     break;
                 }
                 default: {
-                    mFeatureLocation = new Location(VehicleFillDialog.UNKNOWN_LOCATION);
+                    mFeatureLocation = new Location(ListFillerDialog.UNKNOWN_LOCATION);
                     break;
                 }
             }
+        }
+    }
 
-            mName = mFeature.getFieldValueAsString(Constants.FIELD_VEHICLE_NAME);
-            mDesc = mFeature.getFieldValueAsString(Constants.FIELD_VEHICLE_DESCRIPTION);
-            mNums = mFeature.getFieldValueAsString(Constants.FIELD_VEHICLE_ENGINE_NUM);
-            mUser = mFeature.getFieldValueAsString(Constants.FIELD_VEHICLE_USER);
+
+    protected ArrayAdapter<String> getArrayAdapter(
+            DocumentsLayer docsLayer,
+            String layerKey,
+            boolean numberSort)
+    {
+        NGWLookupTable table = (NGWLookupTable) docsLayer.getLayerByName(layerKey);
+
+        if (null != table) {
+            Map<String, String> data = table.getData();
+            List<String> dataArray = new ArrayList<>();
+
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                dataArray.add(entry.getKey());
+            }
+
+            if (numberSort) {
+                Collections.sort(dataArray, new AlphanumComparator());
+            } else {
+                Collections.sort(dataArray);
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    getActivity(), android.R.layout.simple_spinner_item, dataArray);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            return adapter;
+        }
+
+        return null;
+    }
+
+
+    protected void setListSelection(
+            AppCompatSpinner view,
+            ArrayAdapter<String> adapter,
+            String value)
+    {
+        if (null == adapter) {
+            return;
+        }
+
+        for (int i = 0, count = adapter.getCount(); i < count; ++i) {
+            String item = adapter.getItem(i);
+            if (item.equals(value)) {
+                view.setSelection(i);
+                break;
+            }
         }
     }
 
@@ -132,34 +184,11 @@ public class VehicleFillDialog
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        View view = View.inflate(getActivity(), R.layout.dialog_vehicle_fill, null);
+        View view = View.inflate(getActivity(), getDialogViewResId(), null);
 
         createLocationPanelView(view);
 
-        mNameView = (EditText) view.findViewById(R.id.name);
-        if (null != mName) {
-            mNameView.setText(mName);
-            mName = null;
-        }
-
-        mDescView = (EditText) view.findViewById(R.id.desc);
-        if (null != mDesc) {
-            mDescView.setText(mDesc);
-            mDesc = null;
-        }
-
-        mNumsView = (EditText) view.findViewById(R.id.nums);
-        if (null != mNums) {
-            mNumsView.setText(mNums);
-            mNums = null;
-        }
-
-        mUserView = (EditText) view.findViewById(R.id.user);
-        if (null != mUser) {
-            mUserView.setText(mUser);
-            mUser = null;
-        }
-
+        setFieldViews(view);
 
         setThemeDark(isAppThemeDark());
 
@@ -175,7 +204,7 @@ public class VehicleFillDialog
             setTitle(R.string.change_data);
             setPositiveText(R.string.save);
         } else {
-            setTitle(R.string.add_vehicle);
+            setTitle(R.string.add_data);
             setPositiveText(R.string.add);
         }
 
@@ -187,21 +216,14 @@ public class VehicleFillDialog
                     @Override
                     public void onPositiveClicked()
                     {
-                        if (TextUtils.isEmpty(mNameView.getText().toString()) ||
-                            TextUtils.isEmpty(mDescView.getText().toString()) ||
-                            TextUtils.isEmpty(mNumsView.getText().toString()) ||
-                            TextUtils.isEmpty(mUserView.getText().toString())) {
+                        if (!isCorrectValues()) {
+                            return;
+                        }
 
-                            Toast.makeText(
-                                    getActivity(), getString(R.string.error_invalid_input),
-                                    Toast.LENGTH_SHORT).show();
+                        addData();
 
-                        } else {
-                            addVehicle();
-
-                            if (null != mOnAddVehicleListener) {
-                                mOnAddVehicleListener.onAddVehicle();
-                            }
+                        if (null != mOnAddListener) {
+                            mOnAddListener.onAdd();
                         }
                     }
                 });
@@ -376,16 +398,26 @@ public class VehicleFillDialog
     }
 
 
-    public void addVehicle()
+    protected boolean isCorrectValues()
     {
         if (null == mLocation) {
             Toast.makeText(getActivity(), getString(R.string.error_no_location), Toast.LENGTH_LONG)
                     .show();
-            return;
+            return false;
         }
 
-        VehicleActivity activity = (VehicleActivity) getActivity();
-        if (null == activity) {
+        return true;
+    }
+
+
+    public void addData()
+    {
+        Activity activity = getActivity();
+        IDocumentFeatureSource documentSource = null;
+        if (activity instanceof IDocumentFeatureSource) {
+            documentSource = (IDocumentFeatureSource) activity;
+        }
+        if (null == documentSource) {
             return;
         }
 
@@ -396,9 +428,8 @@ public class VehicleFillDialog
             return;
         }
 
-        VectorLayer vehicleLayer =
-                (VectorLayer) documentsLayer.getLayerByName(Constants.KEY_LAYER_VEHICLES);
-        if (null == vehicleLayer) {
+        VectorLayer subDocLayer = (VectorLayer) documentsLayer.getLayerByName(getLayerName());
+        if (null == subDocLayer) {
             return;
         }
 
@@ -409,35 +440,29 @@ public class VehicleFillDialog
         GeoMultiPoint geometryValue = new GeoMultiPoint();
         geometryValue.add(pt);
 
+
         Feature feature;
         if (null != mFeature) {
             feature = mFeature;
         } else {
             feature = new Feature(
-                    com.nextgis.maplib.util.Constants.NOT_FOUND, vehicleLayer.getFields());
-            activity.getFeature().addSubFeature(Constants.KEY_LAYER_VEHICLES, feature);
+                    com.nextgis.maplib.util.Constants.NOT_FOUND, subDocLayer.getFields());
+            documentSource.getFeature().addSubFeature(getLayerName(), feature);
         }
 
-        feature.setFieldValue(
-                Constants.FIELD_VEHICLE_NAME, mNameView.getText().toString());
-        feature.setFieldValue(
-                Constants.FIELD_VEHICLE_DESCRIPTION, mDescView.getText().toString());
-        feature.setFieldValue(
-                Constants.FIELD_VEHICLE_ENGINE_NUM, mNumsView.getText().toString());
-        feature.setFieldValue(
-                Constants.FIELD_VEHICLE_USER, mUserView.getText().toString());
         feature.setGeometry(geometryValue);
+        setFeatureFieldsValues(feature);
     }
 
 
-    public void setOnAddVehicleListener(OnAddVehicleListener listener)
+    public void setOnAddListener(OnAddListener listener)
     {
-        mOnAddVehicleListener = listener;
+        mOnAddListener = listener;
     }
 
 
-    public interface OnAddVehicleListener
+    public interface OnAddListener
     {
-        void onAddVehicle();
+        void onAdd();
     }
 }

@@ -80,7 +80,7 @@ public class PhotoTableFileAdapter
 
 
     @Override
-    protected void removeAttach(int id)
+    protected void deleteSelected(int id)
             throws IOException
     {
         File attachFile = getAttachFile(id);
@@ -90,7 +90,7 @@ public class PhotoTableFileAdapter
             Log.d(TAG, error);
             throw new IOException(error);
         }
-        super.removeAttach(id);
+        super.deleteSelected(id);
     }
 
 

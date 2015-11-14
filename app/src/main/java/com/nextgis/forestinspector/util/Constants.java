@@ -175,9 +175,10 @@ public interface Constants
      */
     int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
 
-    String FRAGMENT_SHEET_FILL_DIALOG        = "sheet_fill_dialog";
-    String FRAGMENT_PRODUCTION_FILL_DIALOG   = "production_fill_dialog";
-    String FRAGMENT_VEHICLE_FILL_DIALOG      = "vehicle_fill_dialog";
+    String FRAGMENT_PRODUCTION_FILLER        = "production_filler";
+    String FRAGMENT_SHEET_FILLER             = "sheet_filler";
+    String FRAGMENT_VEHICLE_FILLER           = "vehicle_filler";
+    String FRAGMENT_LIST_FILLER_DIALOG       = "list_filler_dialog";
     String FRAGMENT_SIGN_DIALOG              = "sign_dialog";
     String FRAGMENT_PHOTO_TABLE              = "photo_table";
     String FRAGMENT_PHOTO_DESC_EDITOR_DIALOG = "photo_desc_editor_dialog";

@@ -62,10 +62,12 @@ public class PhotoTableCursorAdapter
 
     @Override
     public void onBindViewHolder(
-            final ViewHolder viewHolder,
+            final SelectedItemsAdapter.ViewHolder holder,
             final int position)
     {
-        super.onBindViewHolder(viewHolder, position);
+        super.onBindViewHolder(holder, position);
+
+        PhotoTableAdapter.ViewHolder viewHolder = (PhotoTableAdapter.ViewHolder) holder;
 
         viewHolder.mCheckBox.setVisibility(View.GONE);
         viewHolder.mPhotoDesc.setOnClickListener(null);
@@ -92,7 +94,6 @@ public class PhotoTableCursorAdapter
 
             //addListener(viewHolder); // it is in super
         }
-
     }
 
 

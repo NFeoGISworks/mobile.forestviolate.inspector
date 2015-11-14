@@ -233,7 +233,7 @@ public class PhotoTableFragment
                             public void onClick(View v)
                             {
                                 if (mCameraBtn.isEnabled()) {
-                                    showCameraActivity();
+                                    onAdd();
                                 }
                             }
                         });
@@ -264,6 +264,12 @@ public class PhotoTableFragment
         if (!mIsPhotoViewer && null != clickedId) {
             mPhotoTableAdapter.notifyItemChanged(clickedId);
         }
+    }
+
+
+    protected void onAdd()
+    {
+        showCameraActivity();
     }
 
 
@@ -346,7 +352,7 @@ public class PhotoTableFragment
             mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
             mActionMode.setTitle("" + mPhotoTableAdapter.getSelectedItemCount());
 
-        } else if (!mPhotoTableAdapter.isSelectedItems()) {
+        } else if (!mPhotoTableAdapter.hasSelectedItems()) {
             mActionMode.setTitle("");
             mActionMode.finish();
 
@@ -362,7 +368,7 @@ public class PhotoTableFragment
             Menu menu)
     {
         mCameraBtn.setVisibility(View.GONE);
-        mode.getMenuInflater().inflate(R.menu.actionmode_photo_table, menu);
+        mode.getMenuInflater().inflate(R.menu.list_actionmode, menu);
         return true;
     }
 
@@ -377,11 +383,23 @@ public class PhotoTableFragment
 
 
     @Override
+    public void onDestroyActionMode(ActionMode mode)
+    {
+        mPhotoTableAdapter.clearSelectionForAll();
+        mActionMode = null;
+
+        if (!mIsPhotoTableViewer) {
+            mCameraBtn.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    @Override
     public boolean onActionItemClicked(
             final ActionMode mode,
-            MenuItem item)
+            MenuItem menuItem)
     {
-        switch (item.getItemId()) {
+        switch (menuItem.getItemId()) {
 
             case R.id.menu_delete:
 
@@ -412,7 +430,7 @@ public class PhotoTableFragment
                                     case Snackbar.Callback.DISMISS_EVENT_TIMEOUT:
                                     default:
                                         try {
-                                            mPhotoTableAdapter.deleteSelected();
+                                            mPhotoTableAdapter.deleteAllSelected();
                                             mode.finish();
                                         } catch (IOException e) {
                                             String error = e.getLocalizedMessage();
@@ -441,23 +459,11 @@ public class PhotoTableFragment
                 return true;
 
             case R.id.menu_select_all:
-                mPhotoTableAdapter.toggleSelection();
+                mPhotoTableAdapter.toggleSelectionForAll();
                 return true;
 
             default:
                 return false;
-        }
-    }
-
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode)
-    {
-        mPhotoTableAdapter.clearSelection();
-        mActionMode = null;
-
-        if (!mIsPhotoTableViewer) {
-            mCameraBtn.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -21,7 +21,6 @@
 
 package com.nextgis.forestinspector.datasource;
 
-import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.Field;
 

@@ -23,27 +23,14 @@
 package com.nextgis.forestinspector.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
-import com.nextgis.forestinspector.adapter.ProductionViewListAdapter;
+import com.nextgis.forestinspector.adapter.ListFillerAdapter;
+import com.nextgis.forestinspector.adapter.ProductionViewerAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
-import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.maplib.datasource.Feature;
-
-import java.util.List;
 
 
 public class ProductionViewFragment
-        extends TabFragment
+        extends ListViewerFragment
 {
-
     public ProductionViewFragment()
     {
     }
@@ -56,31 +43,9 @@ public class ProductionViewFragment
     }
 
 
-    @Nullable
     @Override
-    public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState)
+    protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        final View view = inflater.inflate(R.layout.fragment_productionview, container, false);
-
-        Activity activity = getActivity();
-
-        if (activity instanceof IDocumentFeatureSource) {
-            IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
-            DocumentFeature feature = documentFeatureSource.getFeature();
-
-            if (null != feature) {
-
-                List<Feature> features = feature.getSubFeatures(Constants.KEY_LAYER_PRODUCTION);
-                ProductionViewListAdapter adapter =
-                        new ProductionViewListAdapter(getActivity(), features);
-                ListView list = (ListView) view.findViewById(R.id.productionList);
-                list.setAdapter(adapter);
-            }
-        }
-
-        return view;
+        return new ProductionViewerAdapter(feature);
     }
 }
