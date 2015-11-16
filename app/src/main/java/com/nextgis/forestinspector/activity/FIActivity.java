@@ -24,13 +24,16 @@ package com.nextgis.forestinspector.activity;
 import com.nextgis.forestinspector.R;
 import com.nextgis.maplibui.activity.NGActivity;
 
-public class FIActivity extends NGActivity {
+
+public class FIActivity
+        extends NGActivity
+{
 
     @Override
-    protected int getThemeId(boolean isDark) {
-        if(isDark)
-            return R.style.AppTheme_Dark;
-        else
-            return R.style.AppTheme_Light;
+    public int getThemeId()
+    {
+        return mIsDarkTheme
+               ? R.style.AppTheme_Dark
+               : R.style.AppTheme_Light;
     }
 }
