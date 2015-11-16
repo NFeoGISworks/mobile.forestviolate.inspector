@@ -37,8 +37,6 @@ public abstract class ListFillerAdapter
     protected DocumentFeature mFeature;
     protected List<Feature>   mFeatures;
 
-    protected CheckListDataObserver mObserver;
-
     protected ListFillerAdapter.ViewHolder.OnItemClickListener mOnItemClickListener;
 
 
@@ -56,8 +54,7 @@ public abstract class ListFillerAdapter
         super();
         mFeature = feature;
         mFeatures = mFeature.getSubFeatures(getLayerName());
-        mObserver = new CheckListDataObserver();
-        registerAdapterDataObserver(mObserver);
+        registerAdapterDataObserver(new CheckListDataObserver());
     }
 
 
