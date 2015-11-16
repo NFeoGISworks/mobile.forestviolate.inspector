@@ -57,22 +57,7 @@ public abstract class ListFillerAdapter
         mFeature = feature;
         mFeatures = mFeature.getSubFeatures(getLayerName());
         mObserver = new CheckListDataObserver();
-    }
-
-
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView)
-    {
-        super.onAttachedToRecyclerView(recyclerView);
         registerAdapterDataObserver(mObserver);
-    }
-
-
-    @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView)
-    {
-        unregisterAdapterDataObserver(mObserver);
-        super.onDetachedFromRecyclerView(recyclerView);
     }
 
 
