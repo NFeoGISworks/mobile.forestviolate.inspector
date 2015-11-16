@@ -54,7 +54,7 @@ public class VehicleFillerAdapter
 
 
     @Override
-    protected SelectedItemsAdapter.ViewHolder getViewHolder(View itemView)
+    protected CheckListAdapter.ViewHolder getViewHolder(View itemView)
     {
         return new VehicleFillerAdapter.ViewHolder(itemView, mOnItemClickListener);
     }
@@ -62,7 +62,7 @@ public class VehicleFillerAdapter
 
     @Override
     public void onBindViewHolder(
-            SelectedItemsAdapter.ViewHolder holder,
+            CheckListAdapter.ViewHolder holder,
             int position)
     {
         super.onBindViewHolder(holder, position);

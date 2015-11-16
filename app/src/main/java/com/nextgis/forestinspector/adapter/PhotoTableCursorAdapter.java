@@ -62,7 +62,7 @@ public class PhotoTableCursorAdapter
 
     @Override
     public void onBindViewHolder(
-            final SelectedItemsAdapter.ViewHolder holder,
+            final CheckListAdapter.ViewHolder holder,
             final int position)
     {
         super.onBindViewHolder(holder, position);

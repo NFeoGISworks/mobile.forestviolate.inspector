@@ -37,8 +37,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
-public abstract class SelectedItemsAdapter
-        extends RecyclerView.Adapter<SelectedItemsAdapter.ViewHolder>
+public abstract class CheckListAdapter
+        extends RecyclerView.Adapter<CheckListAdapter.ViewHolder>
 {
     protected SparseBooleanArray mSelectedItems;
     protected boolean mSelectState  = false;
@@ -49,10 +49,10 @@ public abstract class SelectedItemsAdapter
 
     protected abstract int getItemViewResId();
 
-    protected abstract SelectedItemsAdapter.ViewHolder getViewHolder(View itemView);
+    protected abstract CheckListAdapter.ViewHolder getViewHolder(View itemView);
 
 
-    public SelectedItemsAdapter()
+    public CheckListAdapter()
     {
         mListeners = new ConcurrentLinkedQueue<>();
         mSelectedItems = new SparseBooleanArray();
@@ -112,7 +112,7 @@ public abstract class SelectedItemsAdapter
 
     public static abstract class ViewHolder
             extends RecyclerView.ViewHolder
-            implements SelectedItemsAdapter.OnSelectionChangedListener
+            implements CheckListAdapter.OnSelectionChangedListener
     {
         public int      mPosition;
         public CheckBox mCheckBox;

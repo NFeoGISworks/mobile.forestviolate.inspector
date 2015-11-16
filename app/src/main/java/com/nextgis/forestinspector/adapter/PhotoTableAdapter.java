@@ -57,7 +57,7 @@ import static com.nextgis.maplib.util.Constants.TAG;
 
 
 public abstract class PhotoTableAdapter
-        extends SelectedItemsAdapter
+        extends CheckListAdapter
 {
     protected final static int CREATE_PREVIEW_DONE   = 0;
     protected final static int CREATE_PREVIEW_OK     = 1;
@@ -172,7 +172,7 @@ public abstract class PhotoTableAdapter
 
 
     @Override
-    protected SelectedItemsAdapter.ViewHolder getViewHolder(View itemView)
+    protected CheckListAdapter.ViewHolder getViewHolder(View itemView)
     {
         return new PhotoTableAdapter.ViewHolder(itemView);
     }
@@ -180,7 +180,7 @@ public abstract class PhotoTableAdapter
 
     @Override
     public void onBindViewHolder(
-            final SelectedItemsAdapter.ViewHolder holder,
+            final CheckListAdapter.ViewHolder holder,
             final int position)
     {
         super.onBindViewHolder(holder, position);
@@ -355,7 +355,7 @@ public abstract class PhotoTableAdapter
 
 
     public static class ViewHolder
-            extends SelectedItemsAdapter.ViewHolder
+            extends CheckListAdapter.ViewHolder
     {
         public ImageView mImageView;
         public TextView  mPhotoDesc;

@@ -32,7 +32,7 @@ import java.util.List;
 
 
 public abstract class ListFillerAdapter
-        extends SelectedItemsAdapter
+        extends CheckListAdapter
 {
     protected DocumentFeature mFeature;
     protected List<Feature>   mFeatures;
@@ -89,7 +89,7 @@ public abstract class ListFillerAdapter
 
 
     public static class ViewHolder
-            extends SelectedItemsAdapter.ViewHolder
+            extends CheckListAdapter.ViewHolder
             implements View.OnClickListener
     {
         public OnItemClickListener mListener;
