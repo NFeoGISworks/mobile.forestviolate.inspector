@@ -27,8 +27,8 @@ import com.nextgis.maplibui.activity.NGPreferenceActivity;
 public class FIPreferenceActivity extends NGPreferenceActivity {
 
     @Override
-    protected int getThemeId(boolean isDark) {
-        if(isDark)
+    protected int getThemeId() {
+        if(mIsDarkTheme)
             return R.style.AppTheme_Dark;
         else
             return R.style.AppTheme_Light;
