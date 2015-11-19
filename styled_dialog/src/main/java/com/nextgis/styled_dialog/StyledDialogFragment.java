@@ -81,7 +81,10 @@ public class StyledDialogFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setRetainInstance(mKeepInstance);
+
+        if (null == getParentFragment()) {
+            setRetainInstance(mKeepInstance);
+        }
     }
 
 

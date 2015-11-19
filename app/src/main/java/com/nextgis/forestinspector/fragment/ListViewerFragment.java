@@ -49,6 +49,7 @@ public abstract class ListViewerFragment
 
     protected abstract ListFillerAdapter getFillerAdapter(DocumentFeature feature);
 
+
     protected RecyclerView.LayoutManager getListLayoutManager()
     {
         return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -71,7 +72,10 @@ public abstract class ListViewerFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+
+        if (null == getParentFragment()) {
+            setRetainInstance(true);
+        }
 
         Activity activity = getActivity();
 

@@ -114,7 +114,10 @@ public class PhotoTableFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+
+        if (null == getParentFragment()) {
+            setRetainInstance(true);
+        }
 
         Bundle extras = getActivity().getIntent().getExtras();
         String photoItemKey = null;
