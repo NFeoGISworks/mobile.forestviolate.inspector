@@ -23,7 +23,7 @@
 package com.nextgis.forestinspector.activity;
 
 import com.nextgis.forestinspector.fragment.ListFillerFragment;
-import com.nextgis.forestinspector.fragment.VehicleFillerFragment;
+import com.nextgis.forestinspector.fragment.VehicleListFillerFragment;
 import com.nextgis.forestinspector.util.Constants;
 
 
@@ -38,6 +38,6 @@ public class VehicleFillerActivity
 
     protected ListFillerFragment getListFillerFragment()
     {
-        return new VehicleFillerFragment("");
+        return new VehicleListFillerFragment("");
     }
 }

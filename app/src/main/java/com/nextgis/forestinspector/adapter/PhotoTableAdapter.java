@@ -35,7 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.PhotoTableActivity;
+import com.nextgis.forestinspector.activity.PhotoTableFillerActivity;
 import com.nextgis.forestinspector.dialog.PhotoDescEditorDialog;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.util.AttachItem;
@@ -57,7 +57,7 @@ import static com.nextgis.maplib.util.Constants.TAG;
 
 
 public abstract class PhotoTableAdapter
-        extends CheckListAdapter
+        extends ListSelectorAdapter
 {
     protected final static int CREATE_PREVIEW_DONE   = 0;
     protected final static int CREATE_PREVIEW_OK     = 1;
@@ -172,7 +172,7 @@ public abstract class PhotoTableAdapter
 
 
     @Override
-    protected CheckListAdapter.ViewHolder getViewHolder(View itemView)
+    protected ListSelectorAdapter.ViewHolder getViewHolder(View itemView)
     {
         return new PhotoTableAdapter.ViewHolder(itemView);
     }
@@ -180,7 +180,7 @@ public abstract class PhotoTableAdapter
 
     @Override
     public void onBindViewHolder(
-            final CheckListAdapter.ViewHolder holder,
+            final ListSelectorAdapter.ViewHolder holder,
             final int position)
     {
         super.onBindViewHolder(holder, position);
@@ -258,7 +258,7 @@ public abstract class PhotoTableAdapter
 
                             String key = mAttachItemList.get(mClickedId).getKey();
 
-                            Intent intent = new Intent(mActivity, PhotoTableActivity.class);
+                            Intent intent = new Intent(mActivity, PhotoTableFillerActivity.class);
                             intent.putExtra("photo_viewer", true);
                             intent.putExtra("photo_item_key", key);
                             mActivity.startActivity(intent);
@@ -355,7 +355,7 @@ public abstract class PhotoTableAdapter
 
 
     public static class ViewHolder
-            extends CheckListAdapter.ViewHolder
+            extends ListSelectorAdapter.ViewHolder
     {
         public ImageView mImageView;
         public TextView  mPhotoDesc;

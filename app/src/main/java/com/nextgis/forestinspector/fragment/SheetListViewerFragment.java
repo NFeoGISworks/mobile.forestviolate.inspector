@@ -3,6 +3,7 @@
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
  * Author:  NikitaFeodonit, nfeodonit@yandex.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -24,23 +25,20 @@ package com.nextgis.forestinspector.fragment;
 
 import android.annotation.SuppressLint;
 import com.nextgis.forestinspector.adapter.ListFillerAdapter;
-import com.nextgis.forestinspector.adapter.VehicleFillerAdapter;
+import com.nextgis.forestinspector.adapter.SheetListViewerAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
-import com.nextgis.forestinspector.dialog.ListFillerDialog;
-import com.nextgis.forestinspector.dialog.VehicleFillerDialog;
 
 
-public class VehicleFillerFragment
-        extends ListFillerFragment
-        implements ListFillerDialog.OnAddListener
+public class SheetListViewerFragment
+        extends ListViewerFragment
 {
-    public VehicleFillerFragment()
+    public SheetListViewerFragment()
     {
     }
 
 
     @SuppressLint("ValidFragment")
-    public VehicleFillerFragment(String name)
+    public SheetListViewerFragment(String name)
     {
         super(name);
     }
@@ -49,13 +47,6 @@ public class VehicleFillerFragment
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        return new VehicleFillerAdapter(feature);
-    }
-
-
-    @Override
-    protected ListFillerDialog getFillerDialog()
-    {
-        return new VehicleFillerDialog();
+        return new SheetListViewerAdapter(feature);
     }
 }

@@ -29,49 +29,48 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Toast;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.forestinspector.util.InputFilterMinMaxDouble;
 import com.nextgis.forestinspector.util.InputFilterMinMaxInteger;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.map.MapBase;
 
 
-public class SheetFillerDialog
+public class ProductionListFillerDialog
         extends ListFillerDialog
 {
-    protected String mUnit;
     protected String mSpecies;
-    protected String mCategory;
+    protected String mType;
+    protected String mLength;
     protected String mThickness;
-    protected String mHeight;
     protected String mCount;
 
-    protected EditText         mUnitView;
     protected AppCompatSpinner mSpeciesView;
-    protected AppCompatSpinner mCategoryView;
+    protected AppCompatSpinner mTypeView;
+    protected EditText         mLengthView;
     protected AppCompatSpinner mThicknessView;
-    protected AppCompatSpinner mHeightView;
     protected EditText         mCountView;
 
     protected ArrayAdapter<String> mSpeciesAdapter;
-    protected ArrayAdapter<String> mCategoryAdapter;
+    protected ArrayAdapter<String> mTypeAdapter;
     protected ArrayAdapter<String> mThicknessAdapter;
-    protected ArrayAdapter<String> mHeightAdapter;
 
 
     @Override
     protected int getDialogViewResId()
     {
-        return R.layout.dialog_sheet_fill;
+        return R.layout.dialog_production_list_filler;
     }
 
 
     @Override
     protected String getLayerName()
     {
-        return Constants.KEY_LAYER_SHEET;
+        return Constants.KEY_LAYER_PRODUCTION;
     }
 
 
@@ -81,12 +80,11 @@ public class SheetFillerDialog
         super.onCreate(savedInstanceState);
 
         if (null != mFeature) {
-            mUnit = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_UNIT);
-            mSpecies = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES);
-            mCategory = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY);
-            mThickness = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS);
-            mHeight = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS);
-            mCount = mFeature.getFieldValueAsString(Constants.FIELD_SHEET_COUNT);
+            mSpecies = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_SPECIES);
+            mType = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_TYPE);
+            mLength = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_LENGTH);
+            mThickness = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_THICKNESS);
+            mCount = mFeature.getFieldValueAsString(Constants.FIELD_PRODUCTION_COUNT);
         }
 
         MapBase map = MapBase.getInstance();
@@ -101,9 +99,8 @@ public class SheetFillerDialog
 
         if (null != docs) {
             mSpeciesAdapter = getArrayAdapter(docs, Constants.KEY_LAYER_SPECIES_TYPES, false);
-            mCategoryAdapter = getArrayAdapter(docs, Constants.KEY_LAYER_TREES_TYPES, false);
+            mTypeAdapter = getArrayAdapter(docs, Constants.KEY_LAYER_TREES_TYPES, false);
             mThicknessAdapter = getArrayAdapter(docs, Constants.KEY_LAYER_THICKNESS_TYPES, true);
-            mHeightAdapter = getArrayAdapter(docs, Constants.KEY_LAYER_HEIGHT_TYPES, true);
         }
     }
 
@@ -111,12 +108,6 @@ public class SheetFillerDialog
     @Override
     protected void setFieldViews(View parentView)
     {
-        mUnitView = (EditText) parentView.findViewById(R.id.unit);
-        if (null != mUnit) {
-            mUnitView.setText(mUnit);
-            mUnit = null;
-        }
-
         mSpeciesView = (AppCompatSpinner) parentView.findViewById(R.id.species);
         mSpeciesView.setAdapter(mSpeciesAdapter);
         if (null != mSpecies) {
@@ -124,11 +115,18 @@ public class SheetFillerDialog
             mSpecies = null;
         }
 
-        mCategoryView = (AppCompatSpinner) parentView.findViewById(R.id.category);
-        mCategoryView.setAdapter(mCategoryAdapter);
-        if (null != mCategory) {
-            setListSelection(mCategoryView, mCategoryAdapter, mCategory);
-            mCategory = null;
+        mTypeView = (AppCompatSpinner) parentView.findViewById(R.id.type);
+        mTypeView.setAdapter(mTypeAdapter);
+        if (null != mType) {
+            setListSelection(mTypeView, mTypeAdapter, mType);
+            mType = null;
+        }
+
+        mLengthView = (EditText) parentView.findViewById(R.id.length);
+        mLengthView.setFilters(new InputFilter[] {new InputFilterMinMaxDouble(0.0, 200.0)});
+        if (null != mLength) {
+            mLengthView.setText(mLength);
+            mLength = null;
         }
 
         mThicknessView = (AppCompatSpinner) parentView.findViewById(R.id.thickness);
@@ -138,15 +136,8 @@ public class SheetFillerDialog
             mThickness = null;
         }
 
-        mHeightView = (AppCompatSpinner) parentView.findViewById(R.id.height);
-        mHeightView.setAdapter(mHeightAdapter);
-        if (null != mHeight) {
-            setListSelection(mHeightView, mHeightAdapter, mHeight);
-            mHeight = null;
-        }
-
         mCountView = (EditText) parentView.findViewById(R.id.count);
-        mCountView.setFilters(new InputFilter[] {new InputFilterMinMaxInteger(1, 1000)});
+        mCountView.setFilters(new InputFilter[] {new InputFilterMinMaxInteger(1, 10000)});
         if (null != mCount) {
             mCountView.setText(mCount);
             mCount = null;
@@ -155,25 +146,43 @@ public class SheetFillerDialog
 
 
     @Override
+    protected boolean isCorrectValues()
+    {
+        if (!super.isCorrectValues()) {
+            return false;
+        }
+
+        if (TextUtils.isEmpty(mLengthView.getText().toString())) {
+            Toast.makeText(
+                    getActivity(), getString(R.string.error_invalid_input), Toast.LENGTH_SHORT)
+                    .show();
+            return false;
+        }
+
+        return true;
+    }
+
+
+    @Override
     protected void setFeatureFieldsValues(Feature feature)
     {
-        Integer thicknessValue = Integer.parseInt(mThicknessView.getSelectedItem().toString());
+        Double lengthValue = Double.parseDouble(mLengthView.getText().toString());
+
+        Double thicknessValue = Double.parseDouble(mThicknessView.getSelectedItem().toString());
 
         Integer countValue = TextUtils.isEmpty(mCountView.getText())
                              ? 1
                              : Integer.parseInt(mCountView.getText().toString());
 
         feature.setFieldValue(
-                Constants.FIELD_SHEET_UNIT, mUnitView.getText().toString());
+                Constants.FIELD_PRODUCTION_SPECIES, mSpeciesView.getSelectedItem().toString());
         feature.setFieldValue(
-                Constants.FIELD_SHEET_SPECIES, mSpeciesView.getSelectedItem().toString());
+                Constants.FIELD_PRODUCTION_TYPE, mTypeView.getSelectedItem().toString());
         feature.setFieldValue(
-                Constants.FIELD_SHEET_CATEGORY, mCategoryView.getSelectedItem().toString());
+                Constants.FIELD_PRODUCTION_LENGTH, lengthValue);
         feature.setFieldValue(
-                Constants.FIELD_SHEET_THICKNESS, thicknessValue);
+                Constants.FIELD_PRODUCTION_THICKNESS, thicknessValue);
         feature.setFieldValue(
-                Constants.FIELD_SHEET_HEIGHTS, mHeightView.getSelectedItem().toString());
-        feature.setFieldValue(
-                Constants.FIELD_SHEET_COUNT, countValue);
+                Constants.FIELD_PRODUCTION_COUNT, countValue);
     }
 }

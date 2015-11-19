@@ -63,7 +63,7 @@ import static com.nextgis.maplib.util.Constants.TAG;
 /**
  * Form of indictment
  */
-public class IndictmentActivity
+public class IndictmentCreatorActivity
         extends FIActivity
 {
     protected static final int INDICTMENT_ACTIVITY = 1101;
@@ -123,7 +123,7 @@ public class IndictmentActivity
 
         if (null != mNewFeature) {
 
-            setContentView(R.layout.activity_indictment);
+            setContentView(R.layout.activity_indictment_creator);
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
@@ -443,7 +443,7 @@ public class IndictmentActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.indictment_edit, menu);
+        getMenuInflater().inflate(R.menu.indictment_creator, menu);
         return true;
     }
 
@@ -527,7 +527,7 @@ public class IndictmentActivity
 
     private void onFillPhoto()
     {
-        Intent intent = new Intent(this, PhotoTableActivity.class);
+        Intent intent = new Intent(this, PhotoTableFillerActivity.class);
         startActivity(intent);
     }
 

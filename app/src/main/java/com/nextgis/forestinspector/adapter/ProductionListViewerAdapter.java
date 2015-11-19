@@ -25,10 +25,10 @@ package com.nextgis.forestinspector.adapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 
 
-public class SheetViewerAdapter
-        extends SheetFillerAdapter
+public class ProductionListViewerAdapter
+        extends ProductionListFillerAdapter
 {
-    public SheetViewerAdapter(DocumentFeature feature)
+    public ProductionListViewerAdapter(DocumentFeature feature)
     {
         super(feature);
         mHideCheckBox = true;

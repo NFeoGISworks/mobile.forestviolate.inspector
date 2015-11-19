@@ -23,7 +23,7 @@
 package com.nextgis.forestinspector.activity;
 
 import com.nextgis.forestinspector.fragment.ListFillerFragment;
-import com.nextgis.forestinspector.fragment.SheetFillerFragment;
+import com.nextgis.forestinspector.fragment.SheetListFillerFragment;
 import com.nextgis.forestinspector.util.Constants;
 
 
@@ -38,6 +38,6 @@ public class SheetFillerActivity
 
     protected ListFillerFragment getListFillerFragment()
     {
-        return new SheetFillerFragment("");
+        return new SheetListFillerFragment("");
     }
 }

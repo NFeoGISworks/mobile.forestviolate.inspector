@@ -29,7 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import com.nextgis.forestinspector.activity.PhotoTableActivity;
+import com.nextgis.forestinspector.activity.PhotoTableFillerActivity;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.Constants;
 
@@ -62,7 +62,7 @@ public class PhotoTableCursorAdapter
 
     @Override
     public void onBindViewHolder(
-            final CheckListAdapter.ViewHolder holder,
+            final ListSelectorAdapter.ViewHolder holder,
             final int position)
     {
         super.onBindViewHolder(holder, position);
@@ -84,7 +84,7 @@ public class PhotoTableCursorAdapter
 
                             String key = mAttachItemList.get(mClickedId).getKey();
 
-                            Intent intent = new Intent(mActivity, PhotoTableActivity.class);
+                            Intent intent = new Intent(mActivity, PhotoTableFillerActivity.class);
                             intent.putExtra("photo_viewer", true);
                             intent.putExtra("photo_item_key", key);
                             intent.putExtra("feature_id", mFeatureId);

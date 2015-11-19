@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.Constants;
 
@@ -107,7 +106,7 @@ public class InitStepListAdapter extends BaseAdapter {
         View v = convertView;
         if (null == v) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            v = inflater.inflate(R.layout.row_initstep, null);
+            v = inflater.inflate(R.layout.item_initstep, null);
         }
 
         InitStep item = (InitStep) getItem(position);

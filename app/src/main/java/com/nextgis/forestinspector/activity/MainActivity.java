@@ -342,12 +342,12 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
     }
 
     public void addIndictment() {
-        Intent intentIndictment = new Intent(this, IndictmentActivity.class);
+        Intent intentIndictment = new Intent(this, IndictmentCreatorActivity.class);
         startActivity(intentIndictment);
     }
 
     public void addSheet() {
-        Intent intentSheet = new Intent(this, SheetActivity.class);
+        Intent intentSheet = new Intent(this, SheetCreatorActivity.class);
         startActivity(intentSheet);
     }
 

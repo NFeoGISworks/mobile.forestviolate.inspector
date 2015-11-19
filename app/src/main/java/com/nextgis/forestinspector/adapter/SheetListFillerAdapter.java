@@ -30,10 +30,10 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 
 
-public class VehicleFillerAdapter
+public class SheetListFillerAdapter
         extends ListFillerAdapter
 {
-    public VehicleFillerAdapter(DocumentFeature feature)
+    public SheetListFillerAdapter(DocumentFeature feature)
     {
         super(feature);
     }
@@ -42,68 +42,78 @@ public class VehicleFillerAdapter
     @Override
     protected String getLayerName()
     {
-        return Constants.KEY_LAYER_VEHICLES;
+        return Constants.KEY_LAYER_SHEET;
     }
 
 
     @Override
     protected int getItemViewResId()
     {
-        return R.layout.row_vehicle_item;
+        return R.layout.item_sheet_item;
     }
 
 
     @Override
-    protected CheckListAdapter.ViewHolder getViewHolder(View itemView)
+    protected ListSelectorAdapter.ViewHolder getViewHolder(View itemView)
     {
-        return new VehicleFillerAdapter.ViewHolder(itemView, mOnItemClickListener);
+        return new SheetListFillerAdapter.ViewHolder(itemView, mOnItemClickListener);
     }
 
 
     @Override
     public void onBindViewHolder(
-            CheckListAdapter.ViewHolder holder,
+            ListSelectorAdapter.ViewHolder holder,
             int position)
     {
         super.onBindViewHolder(holder, position);
 
-        VehicleFillerAdapter.ViewHolder viewHolder = (VehicleFillerAdapter.ViewHolder) holder;
+        SheetListFillerAdapter.ViewHolder viewHolder = (SheetListFillerAdapter.ViewHolder) holder;
 
         Feature item = mFeatures.get(position);
 
-        viewHolder.mName.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_VEHICLE_NAME));
+        viewHolder.mUnit.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_UNIT));
 
-        viewHolder.mDesc.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_VEHICLE_DESCRIPTION));
+        viewHolder.mSpecies.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES));
 
-        viewHolder.mNums.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_VEHICLE_ENGINE_NUM));
+        viewHolder.mCategory.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY));
 
-        viewHolder.mUser.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_VEHICLE_USER));
+        viewHolder.mThickness.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS));
+
+        viewHolder.mHeight.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS));
+
+        viewHolder.mCount.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_COUNT));
     }
 
 
     public static class ViewHolder
             extends ListFillerAdapter.ViewHolder
     {
-        TextView mName;
-        TextView mDesc;
-        TextView mNums;
-        TextView mUser;
+        TextView mUnit;
+        TextView mSpecies;
+        TextView mCategory;
+        TextView mThickness;
+        TextView mHeight;
+        TextView mCount;
 
 
         public ViewHolder(
                 View itemView,
-                OnItemClickListener listener)
+                ListFillerAdapter.ViewHolder.OnItemClickListener listener)
         {
             super(itemView, listener);
 
-            mName = (TextView) itemView.findViewById(R.id.name);
-            mDesc = (TextView) itemView.findViewById(R.id.desc);
-            mNums = (TextView) itemView.findViewById(R.id.nums);
-            mUser = (TextView) itemView.findViewById(R.id.user);
+            mUnit = (TextView) itemView.findViewById(R.id.unit);
+            mSpecies = (TextView) itemView.findViewById(R.id.species);
+            mCategory = (TextView) itemView.findViewById(R.id.category);
+            mThickness = (TextView) itemView.findViewById(R.id.thickness);
+            mHeight = (TextView) itemView.findViewById(R.id.height);
+            mCount = (TextView) itemView.findViewById(R.id.count);
         }
     }
 }

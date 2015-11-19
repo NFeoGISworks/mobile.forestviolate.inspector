@@ -32,7 +32,7 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 
 
-public class VehicleFillerDialog
+public class VehicleListFillerDialog
         extends ListFillerDialog
 {
     protected String mName;
@@ -49,7 +49,7 @@ public class VehicleFillerDialog
     @Override
     protected int getDialogViewResId()
     {
-        return R.layout.dialog_vehicle_fill;
+        return R.layout.dialog_vehicle_list_filler;
     }
 
 

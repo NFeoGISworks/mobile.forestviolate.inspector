@@ -51,7 +51,7 @@ import java.util.Calendar;
 /**
  * Form of sheet
  */
-public class SheetActivity
+public class SheetCreatorActivity
         extends FIActivity
 {
     protected static final int SHEET_ACTIVITY = 1102;
@@ -105,7 +105,7 @@ public class SheetActivity
 
         if (null != mNewFeature) {
 
-            setContentView(R.layout.activity_sheet);
+            setContentView(R.layout.activity_sheet_creator);
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
@@ -229,7 +229,7 @@ public class SheetActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.sheet_edit, menu);
+        getMenuInflater().inflate(R.menu.sheet_creator, menu);
         return true;
     }
 

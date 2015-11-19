@@ -33,7 +33,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +45,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
@@ -196,7 +194,7 @@ public class SelectParcelsActivity extends FIActivity implements LoaderManager.L
         // you don't bind any data to the view at this point.
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return LayoutInflater.from(context).inflate(R.layout.row_parcel, parent, false);
+            return LayoutInflater.from(context).inflate(R.layout.item_parcel, parent, false);
         }
 
         // The bindView method is used to bind all data to a given view

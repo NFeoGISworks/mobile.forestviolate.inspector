@@ -30,10 +30,10 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 
 
-public class ProductionFillerAdapter
+public class ProductionListFillerAdapter
         extends ListFillerAdapter
 {
-    public ProductionFillerAdapter(DocumentFeature feature)
+    public ProductionListFillerAdapter(DocumentFeature feature)
     {
         super(feature);
     }
@@ -49,25 +49,25 @@ public class ProductionFillerAdapter
     @Override
     protected int getItemViewResId()
     {
-        return R.layout.row_production_item;
+        return R.layout.item_production_item;
     }
 
 
     @Override
-    protected CheckListAdapter.ViewHolder getViewHolder(View itemView)
+    protected ListSelectorAdapter.ViewHolder getViewHolder(View itemView)
     {
-        return new ProductionFillerAdapter.ViewHolder(itemView, mOnItemClickListener);
+        return new ProductionListFillerAdapter.ViewHolder(itemView, mOnItemClickListener);
     }
 
 
     @Override
     public void onBindViewHolder(
-            CheckListAdapter.ViewHolder holder,
+            ListSelectorAdapter.ViewHolder holder,
             int position)
     {
         super.onBindViewHolder(holder, position);
 
-        ProductionFillerAdapter.ViewHolder viewHolder = (ProductionFillerAdapter.ViewHolder) holder;
+        ProductionListFillerAdapter.ViewHolder viewHolder = (ProductionListFillerAdapter.ViewHolder) holder;
 
         Feature item = mFeatures.get(position);
 

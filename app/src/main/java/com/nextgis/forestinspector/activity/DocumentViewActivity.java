@@ -34,10 +34,10 @@ import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
 import com.nextgis.forestinspector.fragment.MapViewFragment;
 import com.nextgis.forestinspector.fragment.PhotoTableFragment;
-import com.nextgis.forestinspector.fragment.ProductionViewerFragment;
-import com.nextgis.forestinspector.fragment.SheetViewerFragment;
+import com.nextgis.forestinspector.fragment.ProductionListViewerFragment;
+import com.nextgis.forestinspector.fragment.SheetListViewerFragment;
 import com.nextgis.forestinspector.fragment.TabFragment;
-import com.nextgis.forestinspector.fragment.VehicleViewerFragment;
+import com.nextgis.forestinspector.fragment.VehicleViewFragment;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
@@ -160,20 +160,20 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     // sheet
                     if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0) {
                         mTabFragmentList.add(
-                                new SheetViewerFragment(getString(R.string.sheet_tab_name)));
+                                new SheetListViewerFragment(getString(R.string.sheet_tab_name)));
                     }
 
                     // production
                     if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_PRODUCTION) > 0) {
                         mTabFragmentList.add(
-                                new ProductionViewerFragment(
+                                new ProductionListViewerFragment(
                                         getString(R.string.production_tab_name)));
                     }
 
                     // vehicle
                     if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_VEHICLES) > 0) {
                         mTabFragmentList.add(
-                                new VehicleViewerFragment(getString(R.string.vehicle_tab_name)));
+                                new VehicleViewFragment(getString(R.string.vehicle_tab_name)));
                     }
 
                     // photo table
@@ -187,7 +187,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     break;
                 }
                 case Constants.DOC_TYPE_SHEET:{
-                    mTabFragmentList.add(new SheetViewerFragment(getString(R.string.sheet_tab_name)));
+                    mTabFragmentList.add(new SheetListViewerFragment(getString(R.string.sheet_tab_name)));
                     break;
                 }
             }

@@ -42,17 +42,17 @@ import java.util.Date;
 import java.util.List;
 
 
-public class VehicleViewerFragment
+public class VehicleViewFragment
         extends TabFragment
 {
 
-    public VehicleViewerFragment()
+    public VehicleViewFragment()
     {
     }
 
 
     @SuppressLint("ValidFragment")
-    public VehicleViewerFragment(String name)
+    public VehicleViewFragment(String name)
     {
         super(name);
     }
@@ -65,7 +65,7 @@ public class VehicleViewerFragment
             ViewGroup container,
             Bundle savedInstanceState)
     {
-        final View view = inflater.inflate(R.layout.fragment_vehiclesview, container, false);
+        final View view = inflater.inflate(R.layout.fragment_vehicles_view, container, false);
 
         Activity activity = getActivity();
         if (activity instanceof IDocumentFeatureSource) {

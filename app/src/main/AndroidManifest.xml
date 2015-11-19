@@ -96,12 +96,12 @@
             />
 
         <activity
-            android:name=".activity.IndictmentActivity"
+            android:name=".activity.IndictmentCreatorActivity"
             android:label="@string/action_indictment"
             />
 
         <activity
-            android:name=".activity.SheetActivity"
+            android:name=".activity.SheetCreatorActivity"
             android:label="@string/action_indictment"
             />
 
@@ -136,7 +136,7 @@
 
 
         <activity
-            android:name=".activity.PhotoTableActivity"
+            android:name=".activity.PhotoTableFillerActivity"
             android:label="@string/action_phototable"
             />
 

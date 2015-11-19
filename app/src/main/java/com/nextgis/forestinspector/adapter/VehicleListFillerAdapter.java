@@ -30,10 +30,10 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.datasource.Feature;
 
 
-public class SheetFillerAdapter
+public class VehicleListFillerAdapter
         extends ListFillerAdapter
 {
-    public SheetFillerAdapter(DocumentFeature feature)
+    public VehicleListFillerAdapter(DocumentFeature feature)
     {
         super(feature);
     }
@@ -42,78 +42,68 @@ public class SheetFillerAdapter
     @Override
     protected String getLayerName()
     {
-        return Constants.KEY_LAYER_SHEET;
+        return Constants.KEY_LAYER_VEHICLES;
     }
 
 
     @Override
     protected int getItemViewResId()
     {
-        return R.layout.row_sheet_item;
+        return R.layout.item_vehicle_item;
     }
 
 
     @Override
-    protected CheckListAdapter.ViewHolder getViewHolder(View itemView)
+    protected ListSelectorAdapter.ViewHolder getViewHolder(View itemView)
     {
-        return new SheetFillerAdapter.ViewHolder(itemView, mOnItemClickListener);
+        return new VehicleListFillerAdapter.ViewHolder(itemView, mOnItemClickListener);
     }
 
 
     @Override
     public void onBindViewHolder(
-            CheckListAdapter.ViewHolder holder,
+            ListSelectorAdapter.ViewHolder holder,
             int position)
     {
         super.onBindViewHolder(holder, position);
 
-        SheetFillerAdapter.ViewHolder viewHolder = (SheetFillerAdapter.ViewHolder) holder;
+        VehicleListFillerAdapter.ViewHolder viewHolder = (VehicleListFillerAdapter.ViewHolder) holder;
 
         Feature item = mFeatures.get(position);
 
-        viewHolder.mUnit.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_UNIT));
+        viewHolder.mName.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_VEHICLE_NAME));
 
-        viewHolder.mSpecies.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_SPECIES));
+        viewHolder.mDesc.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_VEHICLE_DESCRIPTION));
 
-        viewHolder.mCategory.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_CATEGORY));
+        viewHolder.mNums.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_VEHICLE_ENGINE_NUM));
 
-        viewHolder.mThickness.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_THICKNESS));
-
-        viewHolder.mHeight.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_HEIGHTS));
-
-        viewHolder.mCount.setText(
-                ": " + item.getFieldValueAsString(Constants.FIELD_SHEET_COUNT));
+        viewHolder.mUser.setText(
+                ": " + item.getFieldValueAsString(Constants.FIELD_VEHICLE_USER));
     }
 
 
     public static class ViewHolder
             extends ListFillerAdapter.ViewHolder
     {
-        TextView mUnit;
-        TextView mSpecies;
-        TextView mCategory;
-        TextView mThickness;
-        TextView mHeight;
-        TextView mCount;
+        TextView mName;
+        TextView mDesc;
+        TextView mNums;
+        TextView mUser;
 
 
         public ViewHolder(
                 View itemView,
-                ListFillerAdapter.ViewHolder.OnItemClickListener listener)
+                OnItemClickListener listener)
         {
             super(itemView, listener);
 
-            mUnit = (TextView) itemView.findViewById(R.id.unit);
-            mSpecies = (TextView) itemView.findViewById(R.id.species);
-            mCategory = (TextView) itemView.findViewById(R.id.category);
-            mThickness = (TextView) itemView.findViewById(R.id.thickness);
-            mHeight = (TextView) itemView.findViewById(R.id.height);
-            mCount = (TextView) itemView.findViewById(R.id.count);
+            mName = (TextView) itemView.findViewById(R.id.name);
+            mDesc = (TextView) itemView.findViewById(R.id.desc);
+            mNums = (TextView) itemView.findViewById(R.id.nums);
+            mUser = (TextView) itemView.findViewById(R.id.user);
         }
     }
 }

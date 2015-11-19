@@ -32,7 +32,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
@@ -42,11 +41,9 @@ import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapDrawable;
-import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplibui.api.MapViewEventListener;
-import com.nextgis.maplibui.mapui.MapView;
 import com.nextgis.maplibui.mapui.MapViewOverlays;
-import com.nextgis.maplibui.util.ConstantsUI;
+
 
 /**
  * Created by bishop on 01.08.15.
@@ -72,7 +69,7 @@ public class MapViewFragment  extends TabFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_mapview, container, false);
+        final View view = inflater.inflate(R.layout.fragment_map_view, container, false);
 
         Activity activity = getActivity();
         if(activity instanceof IDocumentFeatureSource) {

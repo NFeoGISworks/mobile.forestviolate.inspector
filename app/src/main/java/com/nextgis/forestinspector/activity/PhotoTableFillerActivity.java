@@ -34,7 +34,7 @@ import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.map.MapBase;
 
 
-public class PhotoTableActivity
+public class PhotoTableFillerActivity
         extends FIActivity
         implements IDocumentFeatureSource
 {
@@ -82,7 +82,7 @@ public class PhotoTableActivity
             }
         }
 
-        setContentView(R.layout.activity_photo_table);
+        setContentView(R.layout.activity_photo_table_filler);
         setToolbar(R.id.main_toolbar);
 
         final FragmentManager fm = getSupportFragmentManager();

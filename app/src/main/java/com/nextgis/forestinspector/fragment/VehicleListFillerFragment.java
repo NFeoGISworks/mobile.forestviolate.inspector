@@ -20,17 +20,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nextgis.forestinspector.adapter;
+package com.nextgis.forestinspector.fragment;
 
+import android.annotation.SuppressLint;
+import com.nextgis.forestinspector.adapter.ListFillerAdapter;
+import com.nextgis.forestinspector.adapter.VehicleListFillerAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.dialog.ListFillerDialog;
+import com.nextgis.forestinspector.dialog.VehicleListFillerDialog;
 
 
-public class ProductionViewerAdapter
-        extends ProductionFillerAdapter
+public class VehicleListFillerFragment
+        extends ListFillerFragment
+        implements ListFillerDialog.OnAddListener
 {
-    public ProductionViewerAdapter(DocumentFeature feature)
+    public VehicleListFillerFragment()
     {
-        super(feature);
-        mHideCheckBox = true;
+    }
+
+
+    @SuppressLint("ValidFragment")
+    public VehicleListFillerFragment(String name)
+    {
+        super(name);
+    }
+
+
+    @Override
+    protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
+    {
+        return new VehicleListFillerAdapter(feature);
+    }
+
+
+    @Override
+    protected ListFillerDialog getFillerDialog()
+    {
+        return new VehicleListFillerDialog();
     }
 }

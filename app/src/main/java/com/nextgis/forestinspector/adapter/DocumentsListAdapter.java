@@ -33,7 +33,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.DocumentViewActivity;
 import com.nextgis.forestinspector.activity.NotificationActivity;
@@ -216,7 +215,7 @@ public class DocumentsListAdapter extends BaseAdapter
         View v = convertView;
         if (null == v) {
             LayoutInflater inflater = LayoutInflater.from(mActivity);
-            v = inflater.inflate(R.layout.row_document, null);
+            v = inflater.inflate(R.layout.item_document, null);
         }
 
         Document item = (Document) getItem(position);

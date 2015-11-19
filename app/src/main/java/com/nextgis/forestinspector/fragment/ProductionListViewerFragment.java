@@ -24,23 +24,20 @@ package com.nextgis.forestinspector.fragment;
 
 import android.annotation.SuppressLint;
 import com.nextgis.forestinspector.adapter.ListFillerAdapter;
-import com.nextgis.forestinspector.adapter.ProductionFillerAdapter;
+import com.nextgis.forestinspector.adapter.ProductionListViewerAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
-import com.nextgis.forestinspector.dialog.ListFillerDialog;
-import com.nextgis.forestinspector.dialog.ProductionFillerDialog;
 
 
-public class ProductionFillerFragment
-        extends ListFillerFragment
-        implements ListFillerDialog.OnAddListener
+public class ProductionListViewerFragment
+        extends ListViewerFragment
 {
-    public ProductionFillerFragment()
+    public ProductionListViewerFragment()
     {
     }
 
 
     @SuppressLint("ValidFragment")
-    public ProductionFillerFragment(String name)
+    public ProductionListViewerFragment(String name)
     {
         super(name);
     }
@@ -49,13 +46,6 @@ public class ProductionFillerFragment
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        return new ProductionFillerAdapter(feature);
-    }
-
-
-    @Override
-    protected ListFillerDialog getFillerDialog()
-    {
-        return new ProductionFillerDialog();
+        return new ProductionListViewerAdapter(feature);
     }
 }

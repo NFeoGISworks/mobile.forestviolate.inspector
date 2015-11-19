@@ -52,7 +52,7 @@ public class PhotoDescEditorDialog
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        View view = View.inflate(getActivity(), R.layout.dialog_photo_description, null);
+        View view = View.inflate(getActivity(), R.layout.dialog_photo_desc_editor, null);
         mEditor = (EditText) view.findViewById(R.id.photo_desc_editor);
         mEditor.setText(mPhotoDesc);
 
