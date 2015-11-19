@@ -180,6 +180,7 @@
     <string name="action_sync">Synchronization</string>
     <string name="add_data">Add data</string>
     <string name="change_data">Change data</string>
+    <string name="add_vehicle">Add vehicle</string>
     <string name="vehicle_name">Equipment name</string>
     <string name="vehicle_name_hint">Enter an equipment name</string>
     <string name="vehicle_desc">Equipment description</string>
