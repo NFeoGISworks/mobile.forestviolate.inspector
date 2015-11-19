@@ -44,7 +44,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.InitStepListAdapter;
@@ -348,7 +347,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
     }
 
     public void addSheet() {
-
+        Intent intentSheet = new Intent(this, SheetActivity.class);
+        startActivity(intentSheet);
     }
 
     public void addBookmark() {

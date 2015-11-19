@@ -140,6 +140,7 @@
     <string name="click_to_set_value">Click here to set value</string>
     <string name="error_number_mast_be_set">The number must be set</string>
     <string name="error_author_must_be_set">The author must be set</string>
+    <string name="error_sheet_not_contain_entries">The sheet don\'t contain entries</string>
     <string name="set_territory">Select territory</string>
     <string name="error_territory_must_be_set">The violate territory must be set</string>
     <string name="fix">Fix</string>

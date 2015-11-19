@@ -120,6 +120,7 @@ public interface Constants
     String FIELD_DOCUMENTS_TERRITORY       = "territory";
     String FIELD_DOCUMENTS_REGION          = "region";
     String FIELD_DOCUMENTS_VECTOR          = "vector";
+    String FIELD_DOCUMENTS_POS             = "pos";
 
     /**
      * notes fields

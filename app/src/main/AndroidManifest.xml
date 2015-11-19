@@ -101,6 +101,11 @@
             />
 
         <activity
+            android:name=".activity.SheetActivity"
+            android:label="@string/action_indictment"
+            />
+
+        <activity
             android:name=".activity.DocumentViewActivity"
             />
 

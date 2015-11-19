@@ -63,30 +63,34 @@ import static com.nextgis.maplib.util.Constants.TAG;
 /**
  * Form of indictment
  */
-public class IndictmentActivity extends FIActivity{
+public class IndictmentActivity
+        extends FIActivity
+{
+    protected static final int INDICTMENT_ACTIVITY = 1101;
+
     protected DocumentEditFeature mNewFeature;
-    protected DocumentsLayer mDocsLayer;
+    protected DocumentsLayer      mDocsLayer;
+
     protected EditText mIndictmentNumber;
     protected EditText mAuthor, mWhen, mLaw;
     protected EditText mWho, mPlace, mCrime, mCrimeSay;
     protected EditText mDetectorSay, mAuthorSay, mDescription;
     protected DateTime mDateTime;
-    protected Spinner mViolationTypeSpinner;
-    protected Spinner mForestCatTypeSpinner;
+    protected Spinner  mViolationTypeSpinner;
+    protected Spinner  mForestCatTypeSpinner;
     protected TextView mTerritory;
-    protected String mUserDesc;
-
-    protected final int INDICTMENT_ACTIVITY = 555;
+    protected String   mUserDesc;
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
-        MainApplication app = (MainApplication)getApplication();
+        MainApplication app = (MainApplication) getApplication();
         MapBase map = app.getMap();
         mDocsLayer = null;
-        for(int i = 0; i < map.getLayerCount(); i++) {
+        for (int i = 0; i < map.getLayerCount(); i++) {
             ILayer layer = map.getLayer(i);
             if (layer instanceof DocumentsLayer) {
                 mDocsLayer = (DocumentsLayer) layer;
@@ -96,25 +100,28 @@ public class IndictmentActivity extends FIActivity{
 
         // TODO: 04.08.15 save restore bundle new feature id to fill values, previous added
 
-        if(null != mDocsLayer) {
+        if (null != mDocsLayer) {
             mNewFeature = app.getTempFeature();
-            if(mNewFeature == null) {
-                mNewFeature = new DocumentEditFeature(com.nextgis.maplib.util.Constants.NOT_FOUND,
-                        mDocsLayer.getFields());
+            if (mNewFeature == null) {
+                mNewFeature = new DocumentEditFeature(
+                        com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
+                app.setTempFeature(mNewFeature);
 
                 // TODO: 17.08.15 Ask inspector about vector
-                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VECTOR, "-1");
-                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TYPE, Constants.DOC_TYPE_INDICTMENT);
-                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
-                mNewFeature.setFieldValue(Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+                mNewFeature.setFieldValue(
+                        Constants.FIELD_DOCUMENTS_VECTOR, "-1");
+                mNewFeature.setFieldValue(
+                        Constants.FIELD_DOCUMENTS_TYPE, Constants.DOC_TYPE_INDICTMENT);
+                mNewFeature.setFieldValue(
+                        Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
+                mNewFeature.setFieldValue(
+                        Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
 
                 loadPhotoAttaches(mNewFeature);
             }
         }
 
-        if(null != mNewFeature){
-
-            app.setTempFeature(mNewFeature);
+        if (null != mNewFeature) {
 
             setContentView(R.layout.activity_indictment);
 
@@ -125,13 +132,13 @@ public class IndictmentActivity extends FIActivity{
             setToolbar(R.id.main_toolbar);
             setTitle(getText(R.string.indictment));
 
-            mIndictmentNumber = (EditText) findViewById(R.id.indictment_num);
+            mIndictmentNumber = (EditText) findViewById(R.id.doc_num);
             mIndictmentNumber.setText(getNewNumber(sUserPassId));
 
             mAuthor = (EditText) findViewById(R.id.author);
             mAuthor.setText(mUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
 
-            mDateTime = (DateTime)findViewById(R.id.create_datetime);
+            mDateTime = (DateTime) findViewById(R.id.create_datetime);
             mDateTime.init(null, null, null);
             mDateTime.setCurrentDate();
 
@@ -145,7 +152,8 @@ public class IndictmentActivity extends FIActivity{
             mAuthorSay = (EditText) findViewById(R.id.author_say);
             mDescription = (EditText) findViewById(R.id.description);
 
-            NGWLookupTable violationTypeTable = (NGWLookupTable) mDocsLayer.getLayerByName(Constants.KEY_LAYER_VIOLATE_TYPES);
+            NGWLookupTable violationTypeTable =
+                    (NGWLookupTable) mDocsLayer.getLayerByName(Constants.KEY_LAYER_VIOLATE_TYPES);
             if (null != violationTypeTable) {
                 Map<String, String> data = violationTypeTable.getData();
                 List<String> violationTypeArray = new ArrayList<>();
@@ -154,15 +162,16 @@ public class IndictmentActivity extends FIActivity{
                     violationTypeArray.add(entry.getKey());
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                        violationTypeArray);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        this, android.R.layout.simple_spinner_item, violationTypeArray);
 
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mViolationTypeSpinner = (Spinner) findViewById(R.id.violation_type);
                 mViolationTypeSpinner.setAdapter(adapter);
             }
 
-            NGWLookupTable forestCatTypeTable = (NGWLookupTable) mDocsLayer.getLayerByName(Constants.KEY_LAYER_FOREST_CAT_TYPES);
+            NGWLookupTable forestCatTypeTable = (NGWLookupTable) mDocsLayer.getLayerByName(
+                    Constants.KEY_LAYER_FOREST_CAT_TYPES);
             if (null != forestCatTypeTable) {
                 Map<String, String> data = forestCatTypeTable.getData();
                 List<String> forestCatTypeArray = new ArrayList<>();
@@ -171,8 +180,8 @@ public class IndictmentActivity extends FIActivity{
                     forestCatTypeArray.add(entry.getKey());
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                        forestCatTypeArray);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        this, android.R.layout.simple_spinner_item, forestCatTypeArray);
 
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mForestCatTypeSpinner = (Spinner) findViewById(R.id.forest_cat_type);
@@ -180,109 +189,165 @@ public class IndictmentActivity extends FIActivity{
             }
 
             mTerritory = (TextView) findViewById(R.id.territory);
-            mTerritory.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onAddTerritory();
-                }
-            });
+            mTerritory.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            onAddTerritory();
+                        }
+                    });
 
             // setup buttons
             Button createSheetBtn = (Button) findViewById(R.id.create_sheet);
-            createSheetBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onFillSheet();
-                }
-            });
+            createSheetBtn.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            onFillSheet();
+                        }
+                    });
 
             Button createProduction = (Button) findViewById(R.id.create_production);
-            createProduction.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onFillProduction();
-                }
-            });
+            createProduction.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            onFillProduction();
+                        }
+                    });
 
             Button createVehicle = (Button) findViewById(R.id.create_vehicles);
-            createVehicle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onFillVehicle();
-                }
-            });
+            createVehicle.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            onFillVehicle();
+                        }
+                    });
 
             Button createPhotoTable = (Button) findViewById(R.id.create_phototable);
-            createPhotoTable.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onFillPhoto();
-                }
-            });
+            createPhotoTable.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            onFillPhoto();
+                        }
+                    });
 
             Button saveAndSign = (Button) findViewById(R.id.sign_and_save);
-            saveAndSign.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onSign();
-                }
-            });
+            saveAndSign.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            onSign();
+                        }
+                    });
 
             saveControlsToFeature();
         }
     }
 
+
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
 
         saveControlsToFeature();
     }
 
+
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
 
         restoreControlsFromFeature();
     }
 
-    protected void saveControlsToFeature(){
-        if(null != mNewFeature) {
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
-            if (null != mViolationTypeSpinner)
-                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolationTypeSpinner.getSelectedItem().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
-            if (null != mForestCatTypeSpinner)
-                mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE, mForestCatTypeSpinner.getSelectedItem().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE, mWhen.getText().toString());
-            //mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_TRANS, );
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER, mUserDesc);
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
-            mNewFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
+
+    protected void saveControlsToFeature()
+    {
+        if (null != mNewFeature) {
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
+
+            if (null != mViolationTypeSpinner) {
+                mNewFeature.setFieldValue(
+                        Constants.FIELD_DOCUMENTS_VIOLATION_TYPE,
+                        mViolationTypeSpinner.getSelectedItem().toString());
+            }
+
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
+
+            if (null != mForestCatTypeSpinner) {
+                mNewFeature.setFieldValue(
+                        Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE,
+                        mForestCatTypeSpinner.getSelectedItem().toString());
+            }
+
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_DATE_VIOLATE, mWhen.getText().toString());
+            //mNewFeature.setFieldValue(
+            //        Constants.FIELD_DOCUMENTS_USER_TRANS, );
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_USER, mUserDesc);
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
         }
     }
 
-    protected void restoreControlsFromFeature(){
-        if(null == mNewFeature)
+
+    protected void restoreControlsFromFeature()
+    {
+        if (null == mNewFeature) {
             return;
+        }
 
         mIndictmentNumber.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_NUMBER));
-        mDateTime.setValue(mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
-        mAuthor.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
-        mPlace.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
+        mDateTime.setValue(
+                mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
+        mAuthor.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
+        mPlace.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
 
         ArrayAdapter<String> adapter;
-        if(null != mViolationTypeSpinner) {
-            String violationType = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
+        if (null != mViolationTypeSpinner) {
+            String violationType =
+                    (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
             adapter = (ArrayAdapter<String>) mViolationTypeSpinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 String adapterVal = adapter.getItem(i);
@@ -294,8 +359,9 @@ public class IndictmentActivity extends FIActivity{
         }
 
         mLaw.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
-        if(null != mViolationTypeSpinner) {
-            String forestCat = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
+        if (null != mViolationTypeSpinner) {
+            String forestCat =
+                    (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
             adapter = (ArrayAdapter<String>) mForestCatTypeSpinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 String adapterVal = adapter.getItem(i);
@@ -310,14 +376,20 @@ public class IndictmentActivity extends FIActivity{
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
         mDescription.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION));
-        mCrime.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
-        mWhen.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
-        mWho.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
+        mCrime.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
+        mWhen.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
+        mWho.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
         mDetectorSay.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
-        mCrimeSay.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
-        mTerritory.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
+        mCrimeSay.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
+        mTerritory.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
     }
+
 
     protected void loadPhotoAttaches(DocumentEditFeature feature)
     {
@@ -342,8 +414,8 @@ public class IndictmentActivity extends FIActivity{
 
                         if (name.matches(".*\\.jpg")) {
                             Log.d(
-                                    TAG, "loadPhotoAttaches(), FilenameFilter, name.matches: " +
-                                         true);
+                                    TAG,
+                                    "loadPhotoAttaches(), FilenameFilter, name.matches: " + true);
                             return true;
                         } else {
                             return false;
@@ -357,7 +429,9 @@ public class IndictmentActivity extends FIActivity{
         }
     }
 
-    protected String getNewNumber(String passId){
+
+    protected String getNewNumber(String passId)
+    {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH) + 1;
@@ -365,14 +439,18 @@ public class IndictmentActivity extends FIActivity{
         return passId + "/" + month + "-" + year;
     }
 
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.indictment_edit, menu);
         return true;
     }
 
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -382,28 +460,22 @@ public class IndictmentActivity extends FIActivity{
         if (id == R.id.action_sheet) {
             onFillSheet();
             return true;
-        }
-        else if (id == R.id.action_vehicle) {
+        } else if (id == R.id.action_vehicle) {
             onFillVehicle();
             return true;
-        }
-        else if (id == R.id.action_production) {
+        } else if (id == R.id.action_production) {
             onFillProduction();
             return true;
-        }
-        else if (id == R.id.action_photo) {
+        } else if (id == R.id.action_photo) {
             onFillPhoto();
             return true;
-        }
-        else if (id == R.id.action_territory) {
+        } else if (id == R.id.action_territory) {
             onAddTerritory();
             return true;
-        }
-        else if (id == R.id.action_sign) {
+        } else if (id == R.id.action_sign) {
             onSign();
             return true;
-        }
-        else if (id == R.id.action_cancel) {
+        } else if (id == R.id.action_cancel) {
             finish();
             return true;
         }
@@ -411,54 +483,76 @@ public class IndictmentActivity extends FIActivity{
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == INDICTMENT_ACTIVITY){
-            mTerritory.setText(mNewFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
+    protected void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data)
+    {
+        if (requestCode == INDICTMENT_ACTIVITY) {
+            mTerritory.setText(
+                    mNewFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
         }
     }
 
-    private void onAddTerritory() {
+
+    private void onAddTerritory()
+    {
         Intent intent = new Intent(this, SelectTerritoryActivity.class);
         startActivityForResult(intent, INDICTMENT_ACTIVITY);
     }
 
-    private void onFillSheet() {
+
+    private void onFillSheet()
+    {
         Intent intent = new Intent(this, SheetFillerActivity.class);
         startActivity(intent);
     }
 
-    private void onFillProduction() {
+
+    private void onFillProduction()
+    {
         Intent intent = new Intent(this, ProductionFillerActivity.class);
         startActivity(intent);
     }
 
-    private void onFillVehicle() {
+
+    private void onFillVehicle()
+    {
         Intent intent = new Intent(this, VehicleFillerActivity.class);
         startActivity(intent);
     }
 
-    private void onFillPhoto() {
+
+    private void onFillPhoto()
+    {
         Intent intent = new Intent(this, PhotoTableActivity.class);
         startActivity(intent);
     }
 
-    private void onSign() {
+
+    private void onSign()
+    {
         //check required field
-        if(mNewFeature.getGeometry() == null || TextUtils.isEmpty(mTerritory.getText().toString())){
-            Toast.makeText(this, getString(R.string.error_territory_must_be_set), Toast.LENGTH_LONG).show();
+        if (mNewFeature.getGeometry() == null ||
+            TextUtils.isEmpty(mTerritory.getText().toString())) {
+            Toast.makeText(this, getString(R.string.error_territory_must_be_set), Toast.LENGTH_LONG)
+                    .show();
             return;
         }
 
         //number
-        if(TextUtils.isEmpty(mIndictmentNumber.getText().toString())){
-            Toast.makeText(this, getString(R.string.error_number_mast_be_set), Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(mIndictmentNumber.getText().toString())) {
+            Toast.makeText(this, getString(R.string.error_number_mast_be_set), Toast.LENGTH_LONG)
+                    .show();
             return;
         }
 
         //user
-        if(TextUtils.isEmpty(mAuthor.getText().toString())){
-            Toast.makeText(this, getString(R.string.error_author_must_be_set), Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(mAuthor.getText().toString())) {
+            Toast.makeText(this, getString(R.string.error_author_must_be_set), Toast.LENGTH_LONG)
+                    .show();
             return;
         }
 

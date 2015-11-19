@@ -138,13 +138,14 @@
     <string name="count">Кол-во</string>
     <string name="height_rank">Разряд высот</string>
     <string name="category">Категория хлыстов</string>
-    <string name="click_to_set_value">Щелкните что бы установить значение</string>
+    <string name="click_to_set_value">Щелкните, чтобы установить значение</string>
     <string name="error_number_mast_be_set">Не введен номер акта</string>
     <string name="error_author_must_be_set">Не введен автор</string>
+    <string name="error_sheet_not_contain_entries">В таблице перечета нет записей</string>
     <string name="set_territory">Ввод территории лесонарушения</string>
     <string name="error_territory_must_be_set">Должна быть указана территория лесонарушения</string>
     <string name="fix">Исправить</string>
-    <string name="select_violation_territory">После ввода территории щелкните на галку, что бы сохранить изменения или на крест, чтобы отменить</string>
+    <string name="select_violation_territory">После ввода территории щелкните на галку, чтобы сохранить изменения, или на крест, чтобы отменить</string>
     <string name="action_territory">Территория лесонарушения</string>
     <string name="action_apply">Применить</string>
     <string name="error_sheet_is_empty">The sheet is empty</string>
