@@ -3,6 +3,7 @@
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
  * Author:  NikitaFeodonit, nfeodonit@yandex.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -24,20 +25,20 @@ package com.nextgis.forestinspector.fragment;
 
 import android.annotation.SuppressLint;
 import com.nextgis.forestinspector.adapter.ListFillerAdapter;
-import com.nextgis.forestinspector.adapter.ProductionViewerAdapter;
+import com.nextgis.forestinspector.adapter.SheetViewerAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 
 
-public class ProductionViewFragment
+public class SheetViewerFragment
         extends ListViewerFragment
 {
-    public ProductionViewFragment()
+    public SheetViewerFragment()
     {
     }
 
 
     @SuppressLint("ValidFragment")
-    public ProductionViewFragment(String name)
+    public SheetViewerFragment(String name)
     {
         super(name);
     }
@@ -46,6 +47,6 @@ public class ProductionViewFragment
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        return new ProductionViewerAdapter(feature);
+        return new SheetViewerAdapter(feature);
     }
 }

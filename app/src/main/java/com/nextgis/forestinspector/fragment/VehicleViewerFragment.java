@@ -42,17 +42,17 @@ import java.util.Date;
 import java.util.List;
 
 
-public class VehicleViewFragment
+public class VehicleViewerFragment
         extends TabFragment
 {
 
-    public VehicleViewFragment()
+    public VehicleViewerFragment()
     {
     }
 
 
     @SuppressLint("ValidFragment")
-    public VehicleViewFragment(String name)
+    public VehicleViewerFragment(String name)
     {
         super(name);
     }
