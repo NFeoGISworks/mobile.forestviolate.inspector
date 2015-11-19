@@ -36,6 +36,7 @@ import com.nextgis.forestinspector.fragment.MapViewFragment;
 import com.nextgis.forestinspector.fragment.PhotoTableFragment;
 import com.nextgis.forestinspector.fragment.ProductionListViewerFragment;
 import com.nextgis.forestinspector.fragment.SheetListViewerFragment;
+import com.nextgis.forestinspector.fragment.SheetViewFragment;
 import com.nextgis.forestinspector.fragment.TabFragment;
 import com.nextgis.forestinspector.fragment.VehicleViewFragment;
 import com.nextgis.forestinspector.map.DocumentsLayer;
@@ -94,7 +95,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                 break;
             case Constants.DOC_TYPE_SHEET:
                 nType = Constants.DOC_TYPE_SHEET;
-                setTitle(getString(R.string.sheet));
+                setTitle(getString(R.string.sheet_title));
                 break;
             case Constants.DOC_TYPE_VEHICLE: // no separate document type
             default:
@@ -186,8 +187,16 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
 
                     break;
                 }
+
                 case Constants.DOC_TYPE_SHEET:{
-                    mTabFragmentList.add(new SheetListViewerFragment(getString(R.string.sheet_tab_name)));
+                    mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_head)));
+
+                    // sheet
+                    if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0) {
+                        mTabFragmentList.add(
+                                new SheetListViewerFragment(getString(R.string.sheet_tab_name)));
+                    }
+
                     break;
                 }
             }

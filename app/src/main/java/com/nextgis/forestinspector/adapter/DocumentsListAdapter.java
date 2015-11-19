@@ -132,7 +132,7 @@ public class DocumentsListAdapter extends BaseAdapter
                                 doc.mName = mActivity.getString(R.string.indictment);
                                 break;
                             case Constants.DOC_TYPE_SHEET:
-                                doc.mName = mActivity.getString(R.string.sheet);
+                                doc.mName = mActivity.getString(R.string.sheet_item_name);
                                 break;
                             default:
                                 continue;

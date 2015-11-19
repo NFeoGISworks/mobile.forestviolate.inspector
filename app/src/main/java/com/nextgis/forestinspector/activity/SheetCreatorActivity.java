@@ -112,7 +112,7 @@ public class SheetCreatorActivity
             String sUserPassId = prefs.getString(SettingsConstants.KEY_PREF_USERPASSID, "");
 
             setToolbar(R.id.main_toolbar);
-            setTitle(getText(R.string.sheet));
+            setTitle(getText(R.string.sheet_title));
 
             mDocNumber = (EditText) findViewById(R.id.doc_num);
             mDocNumber.setText(getNewNumber(sUserPassId));

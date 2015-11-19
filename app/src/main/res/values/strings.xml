@@ -71,7 +71,10 @@
     <string name="theme">Application theme</string>
     <string name="of">of</string>
     <string name="indictment">Indictment</string>
-    <string name="sheet">Sheet</string>
+    <string name="sheet_title">Tree sheet</string>
+    <string name="sheet_head">Head</string>
+    <string name="sheet_link">See tab \"Sheet\"</string>
+    <string name="sheet_item_name">Sheet</string>
     <string name="note">Note</string>
     <string name="action_indictment">Indictment</string>
     <string name="date_time_create">Creation date and time</string>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Project: Forest violations
+  ~ Purpose: Mobile application for registering facts of the forest violations.
+  ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
+  ~ ******************************************************************************
+  ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        >
+
+        <!-- author -->
+
+        <TextView
+            android:text="@string/author"
+            style="@style/description_text"
+            />
+
+        <TextView
+            android:id="@+id/author"
+            style="@style/normal_text"
+            />
+
+        <!-- date & time -->
+
+        <TextView
+            android:text="@string/date_time_create"
+            style="@style/description_text"
+            />
+
+        <TextView
+            android:id="@+id/create_datetime"
+            style="@style/normal_text"
+            />
+
+        <!-- territory -->
+
+        <TextView
+            android:text="@string/territory"
+            style="@style/description_text"
+            />
+
+        <TextView
+            android:id="@+id/territory"
+            style="@style/normal_text"
+            />
+
+        <!-- sheet link -->
+
+        <TextView
+            android:text="@string/sheet_title"
+            style="@style/description_text"
+            />
+
+        <TextView
+            android:id="@+id/sheet_list_link"
+            android:text="@string/sheet_link"
+            style="@style/normal_text"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="?android:attr/textColorSecondary"
+            />
+
+        <!-- sign -->
+
+        <ImageView
+            android:id="@+id/sign"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0"
+            />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -72,7 +72,10 @@
     <string name="theme">Тема приложения</string>
     <string name="of">из</string>
     <string name="indictment">Акт о лесонарушении</string>
-    <string name="sheet">Ведомость перечета</string>
+    <string name="sheet_title">Ведомость перечета деревьев</string>
+    <string name="sheet_head">Шапка</string>
+    <string name="sheet_link">См. вкладку \"Ведомость перечета\"</string>
+    <string name="sheet_item_name">Ведомость перечета</string>
     <string name="note">Отметки</string>
     <string name="action_indictment">Акт о лесонарушении</string>
     <string name="date_time_create">Дата и время составления</string>

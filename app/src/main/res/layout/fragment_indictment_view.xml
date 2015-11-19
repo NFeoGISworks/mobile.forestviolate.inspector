@@ -145,7 +145,7 @@
 
         <TextView style="@style/normal_text"
                   android:text="@string/production_link"
-                  android:id="@+id/productionListLink"
+                  android:id="@+id/production_list_link"
             />
 
         <TextView style="@style/normal_text"
@@ -216,7 +216,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/sign"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="0"
             android:layout_margin="10dp"
             />
 
