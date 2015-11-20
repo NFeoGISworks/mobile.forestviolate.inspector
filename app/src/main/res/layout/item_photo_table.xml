@@ -40,6 +40,7 @@
         card_view:cardCornerRadius="2dp"
         card_view:cardPreventCornerOverlap="false"
         card_view:cardUseCompatPadding="false"
+        card_view:cardBackgroundColor="?attr/photoTableItemBackgroundColor"
         >
 
         <RelativeLayout
@@ -78,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                android:background="@color/checkBoxBackgroundColor"
+                android:background="?attr/photoTableItemBackgroundColor"
                 />
 
         </RelativeLayout>

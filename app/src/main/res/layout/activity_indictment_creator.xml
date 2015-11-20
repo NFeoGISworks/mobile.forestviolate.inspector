@@ -45,28 +45,42 @@
                 android:layout_height="0px"
                 />
 
-            <!-- номер акта -->
-            <LinearLayout
+            <!-- doc number -->
+
+            <RelativeLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 >
 
                 <TextView
+                    android:id="@+id/doc_num_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/doc_num"
+                    android:layout_toStartOf="@id/doc_num"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/indictment"
                     android:textStyle="bold"
-                    android:id="@+id/textView"/>
+                    android:text="@string/indictment"
+                    />
 
                 <EditText
-                    android:layout_width="match_parent"
+                    android:id="@+id/doc_num"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/doc_num"/>
-            </LinearLayout>
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:minWidth="80dp"
+                    />
 
-            <!-- составитель акта -->
+            </RelativeLayout>
+
+            <!-- author -->
             <TextView style="@style/description_text"
                 android:text="@string/author"
                 />

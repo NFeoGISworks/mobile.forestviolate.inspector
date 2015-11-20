@@ -67,9 +67,6 @@
     <color name="color_undobar_text">@color/color_white</color>
     <color name="color_undobar_action_text">#ffff00</color>
 
-    <color name="photoDescBackgroundColor">#e8e8e8</color>
-    <color name="checkBoxBackgroundColor">@color/color_white</color>
-
     <!--StyledDialogFragment light colors-->
     <color name="sdf_backgroundSolidColorLight">@color/color_white</color>
     <!--<color name="sdf_titleBackgroundColorLight">@color/sdf_backgroundSolidColorLight</color>-->

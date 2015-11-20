@@ -102,6 +102,13 @@ public class IndictmentCreatorActivity
 
         if (null != mDocsLayer) {
             mNewFeature = app.getTempFeature();
+
+            if (null != mNewFeature && Constants.DOC_TYPE_INDICTMENT !=
+                                       mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TYPE)) {
+                app.setTempFeature(null);
+                mNewFeature = null;
+            }
+
             if (mNewFeature == null) {
                 mNewFeature = new DocumentEditFeature(
                         com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
