@@ -86,6 +86,13 @@ public class SheetCreatorActivity
 
         if (null != mDocsLayer) {
             mNewFeature = app.getTempFeature();
+
+            if (null != mNewFeature && Constants.DOC_TYPE_SHEET !=
+                                       mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TYPE)) {
+                app.setTempFeature(null);
+                mNewFeature = null;
+            }
+
             if (mNewFeature == null) {
                 mNewFeature = new DocumentEditFeature(
                         com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
@@ -308,7 +315,8 @@ public class SheetCreatorActivity
         }
 
         if (mNewFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) <= 0) {
-            Toast.makeText(this, getString(R.string.error_sheet_not_contain_entries), Toast.LENGTH_LONG)
+            Toast.makeText(
+                    this, getString(R.string.error_sheet_not_contain_entries), Toast.LENGTH_LONG)
                     .show();
             return;
         }
