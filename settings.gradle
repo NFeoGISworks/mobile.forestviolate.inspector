@@ -1,1 +1,1 @@
-include ':app', ':maplib', ':maplibui', ':styled_dialog'
+include ':app', ':maplib', ':maplibui'

@@ -55,8 +55,8 @@ import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.LocationUtil;
+import com.nextgis.maplibui.dialog.StyledDialogFragment;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
-import com.nextgis.styled_dialog.StyledDialogFragment;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

@@ -37,9 +37,9 @@ import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.FileUtil;
+import com.nextgis.maplibui.dialog.StyledDialogFragment;
 import com.nextgis.maplibui.formcontrol.Sign;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
-import com.nextgis.styled_dialog.StyledDialogFragment;
 
 import java.io.File;
 import java.io.IOException;
