@@ -56,7 +56,6 @@
     <string name="error_get_inspector_detail">Ошибка получения данных аккаунта</string>
     <string name="error_unexpected">Возникла неожиданная ошибка</string>
     <string name="cadastre">Лесоделение</string>
-    <string name="notes">Отметки</string>
     <string name="show_status_panel">Панель статуса</string>
     <string name="show_status_panel_summary">Показать панель статуса внизу экрана</string>
     <string name="show_current_location">Показать текущее местоположение</string>
@@ -76,7 +75,13 @@
     <string name="sheet_head">Шапка</string>
     <string name="sheet_link">См. вкладку \"Ведомость перечета\"</string>
     <string name="sheet_item_name">Ведомость перечета</string>
-    <string name="note">Отметки</string>
+    <string name="notes">Заметки</string>
+    <string name="note_title">Заметка</string>
+    <string name="note_item_name">Заметка</string>
+    <string name="note_start_date">Начальная дата</string>
+    <string name="note_end_date">Конечная дата</string>
+    <string name="note_text">Текст заметки</string>
+    <string name="note_hint">Введите текст заметки</string>
     <string name="action_indictment">Акт о лесонарушении</string>
     <string name="date_time_create">Дата и время составления</string>
     <string name="place_create">Место составления</string>
@@ -97,6 +102,7 @@
     <string name="sign_and_save">Подписать и сохранить</string>
     <string name="create_sheet">Заполнить ведомость перечета</string>
     <string name="create_production">Заполнить вид и количество продукции, подлежащей изъятию</string>
+    <string name="create_note">Создать заметку</string>
     <string name="crime">5. Лицо, совершившее лесонарушение</string>
     <string name="crime_desc">Наименование юридического лица, ФИО индивидуального предпринимателя, юридический и почтовый адрес, банковские реквизиты, ФИО год рождения граждан, данные документа, удостоверяющего личность, фактический адрес проживания, иные сведения позволяющие идентифицировать лицо - нарушителя</string>
     <string name="crime_hint">Введите данные нарушителя</string>
@@ -113,7 +119,7 @@
     <string name="people_say_desc">В случае предоставления объяснений на отдельном листе об этом делается запись</string>
     <string name="downloaded">загружено</string>
     <string name="passid_is">, удостоверение №</string>
-    <string name="action_notification">Заметки</string>
+    <string name="action_notes">Заметки</string>
     <string name="documents_layer">Документы</string>
     <string name="no_selected_documents">Документ не выбран</string>
     <string name="indictment_tab_name">Акт о лесонарушении</string>

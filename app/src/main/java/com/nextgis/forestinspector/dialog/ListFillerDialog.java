@@ -23,14 +23,15 @@
 package com.nextgis.forestinspector.dialog;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatSpinner;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ArrayAdapter;
@@ -100,6 +101,8 @@ public abstract class ListFillerDialog
     public void onCreate(Bundle savedInstanceState)
     {
         setKeepInstance(true);
+        setThemeDark(isAppThemeDark());
+
         super.onCreate(savedInstanceState);
 
 
@@ -180,17 +183,18 @@ public abstract class ListFillerDialog
     }
 
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState)
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
     {
         View view = View.inflate(getActivity(), getDialogViewResId(), null);
 
         createLocationPanelView(view);
 
         setFieldViews(view);
-
-        setThemeDark(isAppThemeDark());
 
         if (isThemeDark()) {
             setIcon(R.drawable.ic_action_image_edit);
@@ -216,15 +220,7 @@ public abstract class ListFillerDialog
                     @Override
                     public void onPositiveClicked()
                     {
-                        if (!isCorrectValues()) {
-                            return;
-                        }
-
                         addData();
-
-                        if (null != mOnAddListener) {
-                            mOnAddListener.onAdd();
-                        }
                     }
                 });
 
@@ -238,7 +234,7 @@ public abstract class ListFillerDialog
                     }
                 });
 
-        return super.onCreateDialog(savedInstanceState);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
 
@@ -287,10 +283,6 @@ public abstract class ListFillerDialog
                     @Override
                     public void onClick(View view)
                     {
-                        if (null != mFeatureLocation) {
-                            mFeatureLocation = null;
-                        }
-
                         RotateAnimation rotateAnimation = new RotateAnimation(
                                 0, 360, Animation.RELATIVE_TO_SELF, 0.5f,
                                 Animation.RELATIVE_TO_SELF, 0.5f);
@@ -298,8 +290,8 @@ public abstract class ListFillerDialog
                         rotateAnimation.setRepeatCount(0);
                         refreshLocation.startAnimation(rotateAnimation);
 
-                        Location location = gpsEventSource.getLastKnownLocation();
-                        setLocationText(location);
+                        mFeatureLocation = gpsEventSource.getLastKnownLocation();
+                        setLocationText(mFeatureLocation);
                     }
                 });
 
@@ -312,7 +304,8 @@ public abstract class ListFillerDialog
             }
 
         } else {
-            setLocationText(gpsEventSource.getLastKnownLocation());
+            mFeatureLocation = gpsEventSource.getLastKnownLocation();
+            setLocationText(mFeatureLocation);
         }
     }
 
@@ -398,6 +391,20 @@ public abstract class ListFillerDialog
     }
 
 
+    public void addData()
+    {
+        if (!isCorrectValues()) {
+            return;
+        }
+
+        saveData();
+
+        if (null != mOnAddListener) {
+            mOnAddListener.onAdd();
+        }
+    }
+
+
     protected boolean isCorrectValues()
     {
         if (null == mLocation) {
@@ -410,7 +417,7 @@ public abstract class ListFillerDialog
     }
 
 
-    public void addData()
+    public void saveData()
     {
         Activity activity = getActivity();
         IDocumentFeatureSource documentSource = null;

@@ -255,7 +255,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            addBookmark();
+                            addNote();
                         }
                     });
         }
@@ -351,7 +351,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         startActivity(intentSheet);
     }
 
-    public void addBookmark() {
+    public void addNote() {
 
     }
 
