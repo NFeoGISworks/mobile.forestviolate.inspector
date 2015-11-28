@@ -55,7 +55,6 @@
     <string name="error_get_inspector_detail">Failed to get inspector detail</string>
     <string name="error_unexpected">Unexpected error occurred</string>
     <string name="cadastre">Forest cadastre</string>
-    <string name="notes">Notes</string>
     <string name="show_status_panel">Status info panel</string>
     <string name="show_status_panel_summary">Show current status info at bottom panel</string>
     <string name="show_current_location">Show current location</string>
@@ -75,7 +74,13 @@
     <string name="sheet_head">Head</string>
     <string name="sheet_link">See tab \"Sheet\"</string>
     <string name="sheet_item_name">Sheet</string>
-    <string name="note">Note</string>
+    <string name="notes">Notes</string>
+    <string name="note_title">Note</string>
+    <string name="note_item_name">Note</string>
+    <string name="note_start_date">Start Date</string>
+    <string name="note_end_date">End Date</string>
+    <string name="note_text">Note text</string>
+    <string name="note_hint">Enter a note text</string>
     <string name="action_indictment">Indictment</string>
     <string name="date_time_create">Creation date and time</string>
     <string name="place_create">Place</string>
@@ -96,6 +101,7 @@
     <string name="sign_and_save">Sign and save</string>
     <string name="create_sheet">Create sheet</string>
     <string name="create_production">Fill production form</string>
+    <string name="create_note">Create note</string>
     <string name="crime">5. A person who commits violations of forest</string>
     <string name="crime_desc">Name of the legal entity, name of the individual entrepreneur, legal and postal address, bank details, name the year of birth of citizens, data of identity document, current address, and other information allowing to identify the person - offender</string>
     <string name="crime_hint">Enter offender details</string>
@@ -112,7 +118,7 @@
     <string name="people_say_desc">In the case of an explanation on a separate sheet of this entry is</string>
     <string name="downloaded">downloaded</string>
     <string name="passid_is">, pass id is</string>
-    <string name="action_notification">Notification</string>
+    <string name="action_notes">Notification</string>
     <string name="documents_layer">Documents</string>
     <string name="no_selected_documents">The document is not selected</string>
     <string name="indictment_tab_name">Indictment</string>

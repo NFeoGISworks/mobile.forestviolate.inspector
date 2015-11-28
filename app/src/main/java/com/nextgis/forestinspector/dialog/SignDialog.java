@@ -22,11 +22,12 @@
 
 package com.nextgis.forestinspector.dialog;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
@@ -52,24 +53,21 @@ public class SignDialog
     public void onCreate(Bundle savedInstanceState)
     {
         setKeepInstance(true);
+        setThemeDark(isAppThemeDark());
+
         super.onCreate(savedInstanceState);
     }
 
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState)
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
     {
         View view = View.inflate(getActivity(), R.layout.dialog_sign, null);
         final Sign sign = (Sign) view.findViewById(R.id.sign);
-
-        if (isThemeDark()) {
-            setIcon(R.drawable.ic_action_image_edit);
-        } else {
-            setIcon(R.drawable.ic_action_image_edit);
-        }
-
-        setThemeDark(isAppThemeDark());
 
         if (isThemeDark()) {
             setIcon(R.drawable.ic_action_image_edit);
@@ -81,7 +79,6 @@ public class SignDialog
         setView(view);
         setNegativeText(R.string.fix);
         setPositiveText(R.string.save);
-
 
         setOnNegativeClickedListener(
                 new ListFillerDialog.OnNegativeClickedListener()
@@ -112,7 +109,7 @@ public class SignDialog
                     }
                 });
 
-        return super.onCreateDialog(savedInstanceState);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
 

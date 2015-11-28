@@ -128,6 +128,8 @@ public interface Constants
     String FIELD_NOTES_DATE_BEG    = "date_beg";
     String FIELD_NOTES_DATE_END    = "date_end";
     String FIELD_NOTES_DESCRIPTION = "descript";
+    String FIELD_NOTES_LOGIN       = "login";
+    String FIELD_NOTES_USER_ID     = "user_id";
 
     /**
      * vehicle fields
@@ -179,6 +181,7 @@ public interface Constants
     String FRAGMENT_PRODUCTION_FILLER        = "production_filler";
     String FRAGMENT_SHEET_FILLER             = "sheet_filler";
     String FRAGMENT_VEHICLE_FILLER           = "vehicle_filler";
+    String FRAGMENT_NOTE_FILLER              = "note_filler";
     String FRAGMENT_LIST_FILLER_DIALOG       = "list_filler_dialog";
     String FRAGMENT_SIGN_DIALOG              = "sign_dialog";
     String FRAGMENT_PHOTO_TABLE              = "photo_table";

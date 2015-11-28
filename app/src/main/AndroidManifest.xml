@@ -110,8 +110,13 @@
             />
 
         <activity
-            android:name=".activity.NotificationActivity"
-            android:label="@string/action_notification"
+            android:name=".activity.NoteViewActivity"
+            android:label="@string/action_notes"
+            />
+
+        <activity
+            android:name=".activity.NoteCreatorActivity"
+            android:label="@string/action_notes"
             />
 
         <activity

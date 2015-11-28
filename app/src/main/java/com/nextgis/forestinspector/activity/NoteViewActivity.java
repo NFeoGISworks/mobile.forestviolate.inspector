@@ -22,18 +22,21 @@
 package com.nextgis.forestinspector.activity;
 
 import android.os.Bundle;
-
 import com.nextgis.forestinspector.R;
 
+
 /**
- * Activity for view and edit notification
+ * Activity for view notes
  */
-public class NotificationActivity extends FIActivity {
+public class NoteViewActivity
+        extends FIActivity
+{
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_notify);
+        setContentView(R.layout.activity_note_view);
         setToolbar(R.id.main_toolbar);
     }
 }

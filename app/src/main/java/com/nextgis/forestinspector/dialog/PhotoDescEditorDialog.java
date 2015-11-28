@@ -22,11 +22,12 @@
 
 package com.nextgis.forestinspector.dialog;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import com.nextgis.forestinspector.R;
 import com.nextgis.maplibui.dialog.StyledDialogFragment;
@@ -44,19 +45,22 @@ public class PhotoDescEditorDialog
     public void onCreate(Bundle savedInstanceState)
     {
         setKeepInstance(true);
+        setThemeDark(isAppThemeDark());
+
         super.onCreate(savedInstanceState);
     }
 
 
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState)
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
     {
         View view = View.inflate(getActivity(), R.layout.dialog_photo_desc_editor, null);
         mEditor = (EditText) view.findViewById(R.id.photo_desc_editor);
         mEditor.setText(mPhotoDesc);
-
-        setThemeDark(isAppThemeDark());
 
         if (isThemeDark()) {
             setIcon(R.drawable.ic_action_image_edit);
@@ -68,7 +72,7 @@ public class PhotoDescEditorDialog
         setView(view);
         setPositiveText(R.string.ok);
 
-        return super.onCreateDialog(savedInstanceState);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
 
