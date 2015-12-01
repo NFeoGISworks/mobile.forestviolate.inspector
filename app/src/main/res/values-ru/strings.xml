@@ -199,4 +199,8 @@
     <string name="vehicle_engine_nums_hint">Введите номера агрегатов</string>
     <string name="vehicle_user">Сведения о собственнике</string>
     <string name="vehicle_user_hint">Введите сведения о собственнике</string>
+    <string name="territory_from_list">Список</string>
+    <string name="territory_from_sheet">Охват по пням</string>
+    <string name="territory_by_walk">Обходом</string>
+    <string name="territory_by_hand">Вручную</string>
 </resources>

@@ -29,7 +29,7 @@
     <include
         layout="@layout/actionbar"/>
 
-    <EditText
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -59,6 +59,7 @@
         fab:fab_addButtonPlusIconColor="@android:color/white"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
+        fab:fab_labelStyle="@style/menu_labels_style"
         >
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -69,6 +70,7 @@
             fab:fab_size="mini"
             fab:fab_icon="@drawable/ic_action_attributes"
             fab:fab_colorPressed="?attr/colorAccent"
+            fab:fab_title="@string/territory_from_list"
             />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -79,6 +81,7 @@
             fab:fab_size="mini"
             fab:fab_icon="@drawable/ic_action_image_nature_people"
             fab:fab_colorPressed="?attr/colorAccent"
+            fab:fab_title="@string/territory_from_sheet"
             />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -89,6 +92,7 @@
             fab:fab_size="mini"
             fab:fab_icon="@drawable/ic_action_maps_directions_walk"
             fab:fab_colorPressed="?attr/colorAccent"
+            fab:fab_title="@string/territory_by_walk"
             />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -99,6 +103,7 @@
             fab:fab_size="mini"
             fab:fab_icon="@drawable/ic_action_add_polygon"
             fab:fab_colorPressed="?attr/colorAccent"
+            fab:fab_title="@string/territory_by_hand"
             />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

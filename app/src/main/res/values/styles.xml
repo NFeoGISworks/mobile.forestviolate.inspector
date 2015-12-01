@@ -65,6 +65,11 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="menu_labels_style">
+        <item name="android:background">@drawable/fab_label_background</item>
+        <item name="android:textColor">@color/textColor.Dark</item>
+    </style>
+
     <style name="description_text">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

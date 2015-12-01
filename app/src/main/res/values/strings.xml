@@ -198,4 +198,8 @@
     <string name="vehicle_engine_nums_hint">Enter an aggregates numbers</string>
     <string name="vehicle_user">Proprietor\'s information</string>
     <string name="vehicle_user_hint">Enter a proprietor\'s information</string>
+    <string name="territory_from_list">List</string>
+    <string name="territory_from_sheet">Hull of sheet</string>
+    <string name="territory_by_walk">By walk</string>
+    <string name="territory_by_hand">By hand</string>
 </resources>

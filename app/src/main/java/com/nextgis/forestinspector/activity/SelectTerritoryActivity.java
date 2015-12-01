@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nextgis.forestinspector.MainApplication;
@@ -40,7 +41,7 @@ import com.nextgis.maplib.api.IGISApplication;
  */
 public class SelectTerritoryActivity extends FIActivity {
     protected DocumentEditFeature mDocumentFeature;
-    protected EditText mTerritoryText;
+    protected TextView mTerritoryText;
 
     protected final int TERRITORY_ACTIVITY = 55;
 
@@ -106,7 +107,7 @@ public class SelectTerritoryActivity extends FIActivity {
         MainApplication app = (MainApplication) getApplication();
         mDocumentFeature = app.getTempFeature();
 
-        mTerritoryText = (EditText) findViewById(R.id.territory);
+        mTerritoryText = (TextView) findViewById(R.id.territory);
     }
 
     private void addBySheet() {
