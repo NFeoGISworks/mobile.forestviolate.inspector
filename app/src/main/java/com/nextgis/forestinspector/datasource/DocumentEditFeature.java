@@ -38,6 +38,7 @@ import com.nextgis.maplib.datasource.GeoPolygon;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.AttachItem;
+import com.nextgis.maplib.util.GeoConstants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,7 +101,8 @@ public class DocumentEditFeature extends DocumentFeature {
                 (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
 
         Cursor cursor = parcelsLayer.query(null, " " + where, null, null, null);
-        GeoEnvelope env = new GeoEnvelope();
+        //GeoEnvelope env = new GeoEnvelope();
+        GeoMultiPolygon multiPolygon = new GeoMultiPolygon();
         Map<String, Map<String, String>> data = new HashMap<>();
 
         if (cursor.moveToFirst()) {
@@ -108,7 +110,14 @@ public class DocumentEditFeature extends DocumentFeature {
                 try {
                     GeoGeometry geom = GeoGeometryFactory.fromBlob(
                             cursor.getBlob(cursor.getColumnIndex(FIELD_GEOM)));
-                    env.merge(geom.getEnvelope());
+                    if(geom.getType() == GeoConstants.GTPolygon){
+                        multiPolygon.add(geom);
+                    }
+                    else if(geom.getType() == GeoConstants.GTMultiPolygon){
+                      GeoMultiPolygon otherMultiPolygon = (GeoMultiPolygon) geom;
+                        multiPolygon.add(otherMultiPolygon.getGeometry(0));
+                    }
+                    //env.merge(geom.getEnvelope());
 
                     String sLv = cursor.getString(
                             cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV));
@@ -144,8 +153,9 @@ public class DocumentEditFeature extends DocumentFeature {
 
         cursor.close();
 
-        if(env.isInit())
-            setGeometryFromEnvelope(env);
+        //if(env.isInit())
+        //    setGeometryFromEnvelope(env);
+        mGeometry = multiPolygon;
 
         String result = "";
         for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
