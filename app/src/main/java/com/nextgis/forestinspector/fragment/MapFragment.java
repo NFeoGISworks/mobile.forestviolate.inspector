@@ -194,20 +194,24 @@ public class MapFragment
             mGpsEventSource.removeListener(this);
         }
 
-
-        final SharedPreferences.Editor edit =
-                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
         if (null != mMap) {
-            edit.putFloat(SettingsConstants.KEY_PREF_ZOOM_LEVEL, mMap.getZoomLevel());
-            GeoPoint point = mMap.getMapCenter();
-            edit.putLong(SettingsConstants.KEY_PREF_SCROLL_X, Double.doubleToRawLongBits(point.getX()));
-            edit.putLong(SettingsConstants.KEY_PREF_SCROLL_Y, Double.doubleToRawLongBits(point.getY()));
-
+            storeMapSettings();
             mMap.removeListener(this);
         }
-        edit.commit();
 
         super.onPause();
+    }
+
+    public void storeMapSettings(){
+        final SharedPreferences.Editor edit =
+                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+
+        edit.putFloat(SettingsConstants.KEY_PREF_ZOOM_LEVEL, mMap.getZoomLevel());
+        GeoPoint point = mMap.getMapCenter();
+        edit.putLong(SettingsConstants.KEY_PREF_SCROLL_X, Double.doubleToRawLongBits(point.getX()));
+        edit.putLong(SettingsConstants.KEY_PREF_SCROLL_Y, Double.doubleToRawLongBits(point.getY()));
+
+        edit.commit();
     }
 
 
@@ -533,5 +537,9 @@ public class MapFragment
         } else {
             Toast.makeText(getActivity(), R.string.error_no_location, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void zoomToExtent(GeoEnvelope envelope){
+        mMap.zoomToExtent(envelope);
     }
 }

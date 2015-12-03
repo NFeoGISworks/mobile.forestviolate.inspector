@@ -21,11 +21,36 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.nextgis.forestinspector.overlay.EditTerritoryOverlay;
+import com.nextgis.maplib.datasource.GeoGeometry;
+
 /**
  * Created by bishop on 02.08.15.
  */
 public class MapEditFragment
         extends MapFragment {
+    protected EditTerritoryOverlay mTerritoryOverlay;
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
+        mTerritoryOverlay = new EditTerritoryOverlay(getActivity(), mMap);
+        mMap.addOverlay(mTerritoryOverlay);
+
+        return view;
+    }
+
+    public void updateTerritory(GeoGeometry geometry) {
+        if(null != geometry) {
+            mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_HIGHLIGHT);
+            zoomToExtent(geometry.getEnvelope());
+            storeMapSettings();
+        }
+    }
 }

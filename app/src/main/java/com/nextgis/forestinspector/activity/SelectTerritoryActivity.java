@@ -33,8 +33,10 @@ import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
+import com.nextgis.forestinspector.fragment.MapEditFragment;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
+import com.nextgis.maplib.datasource.GeoGeometry;
 
 /**
  * Created by bishop on 03.08.15.
@@ -141,6 +143,10 @@ public class SelectTerritoryActivity extends FIActivity {
 
             mTerritoryText.setText(text);
             mDocumentFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, text);
+
+            MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+            if(null != mapFragment)
+                mapFragment.updateTerritory(mDocumentFeature.getGeometry());
         }
     }
 

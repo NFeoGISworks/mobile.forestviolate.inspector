@@ -174,6 +174,7 @@ public class SelectParcelsActivity extends FIActivity implements LoaderManager.L
                 bundle.putString(KEY_QUERY, fullQuery);
                 getSupportLoaderManager().restartLoader(0, bundle, this);
             }
+
             else{
                 getSupportLoaderManager().restartLoader(0, null, this);
             }
@@ -181,8 +182,16 @@ public class SelectParcelsActivity extends FIActivity implements LoaderManager.L
 
             return true;
         }
+        else if (id == R.id.action_apply) {
+            apply();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void apply() {
+        finish();
     }
 
     protected class ParcelCursorAdapter extends CursorAdapter {
