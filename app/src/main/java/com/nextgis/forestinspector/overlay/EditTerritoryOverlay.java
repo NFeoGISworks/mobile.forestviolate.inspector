@@ -63,6 +63,7 @@ import com.nextgis.maplibui.mapui.MapViewOverlays;
 import com.nextgis.maplibui.util.ConstantsUI;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -145,14 +146,22 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         mAnchorTolerancePX = mAnchor.getScaledWidth(context.getResources().getDisplayMetrics());
 
         mDrawItems = new DrawItems();
+        mListeners = new LinkedList<>();
 
+        mMapViewOverlays.addListener(this);
         mHasEdits = false;
 
     }
 
     public boolean setMode(int mode)
     {
+        Activity parent = (Activity) mContext;
+        MainApplication app = (MainApplication) parent.getApplication();
+        mDocumentEditFeature = app.getTempFeature();
+        fillDrawItems(mDocumentEditFeature.getGeometry());
+        
         if (mode == MODE_EDIT) {
+            
             for (EditEventListener listener : mListeners) {
                 listener.onStartEditSession();
             }
@@ -165,10 +174,8 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             mDocumentEditFeature = null;
             mMapViewOverlays.postInvalidate();
         } else if (mode == MODE_HIGHLIGHT) {
-            Activity parent = (Activity) mContext;
-            MainApplication app = (MainApplication) parent.getApplication();
-            mDocumentEditFeature = app.getTempFeature();
-            fillDrawItems(mDocumentEditFeature.getGeometry());
+            // TODO: 04.12.15
+
         } else if (mode == MODE_EDIT_BY_WALK) {
             for (EditEventListener listener : mListeners) {
                 listener.onStartEditSession();
@@ -180,6 +187,10 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         mMode = mode;
 
         return true;
+    }
+
+    public int getMode() {
+        return mMode;
     }
 
     @Override
@@ -243,7 +254,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             case GeoConstants.GTMultiPoint:
                 GeoMultiPoint geoMultiPoint = (GeoMultiPoint) geom;
                 geoPoints = new GeoPoint[geoMultiPoint.size()];
-                for (int i = 0; i < geoMultiPoint.size(); i++) {
+                for (int i = geoMultiPoint.size() - 1; i > -1 ; i--) {
                     geoPoints[i] = geoMultiPoint.get(i);
                 }
                 points = mapToScreen(geoPoints);
@@ -255,7 +266,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                 break;
             case GeoConstants.GTMultiLineString:
                 GeoMultiLineString multiLineString = (GeoMultiLineString)geom;
-                for(int i = 0; i < multiLineString.size(); i++){
+                for(int i =  multiLineString.size() - 1; i > -1; i--){
                     fillDrawLine(i, multiLineString.get(i));
                 }
                 break;
@@ -265,13 +276,13 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                 break;
             case GeoConstants.GTMultiPolygon:
                 GeoMultiPolygon multiPolygon = (GeoMultiPolygon)geom;
-                for(int i = 0; i < multiPolygon.size(); i++){
+                for(int i = multiPolygon.size() - 1; i > -1; i--){
                     fillDrawPolygon(multiPolygon.get(i));
                 }
                 break;
             case GeoConstants.GTGeometryCollection:
                 GeoGeometryCollection collection = (GeoGeometryCollection)geom;
-                for(int i = 0; i < collection.size(); i++){
+                for(int i = collection.size() - 1; i > -1; i--){
                     GeoGeometry geoGeometry = collection.get(i);
                     fillDrawItems(geoGeometry);
                 }

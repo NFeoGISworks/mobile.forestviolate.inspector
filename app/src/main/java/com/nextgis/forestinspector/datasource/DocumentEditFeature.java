@@ -72,6 +72,81 @@ public class DocumentEditFeature extends DocumentFeature {
         return mParcelIds;
     }
 
+    public String getTerritoryTextByGeom(
+            String area,
+            String district,
+            String parcel,
+            String unit)
+    {
+        if(null == mGeometry)
+            return "";
+
+        MapBase map = MapBase.getInstance();
+        DocumentsLayer docsLayer = null;
+        for (int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                docsLayer = (DocumentsLayer) layer;
+                break;
+            }
+        }
+
+        if (docsLayer == null)
+            return "";
+
+        VectorLayer parcelsLayer =
+                (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
+
+        GeoEnvelope env = mGeometry.getEnvelope();
+
+        List<Long> res = parcelsLayer.query(env);
+        String where = getWhereClauseForParcelIds(res);
+        if (null == where || TextUtils.isEmpty(where))
+            return "";
+
+        String columns[] = {Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_PARCEL};
+        Cursor cursor = parcelsLayer.query(columns, " " + where, null, null, null);
+        Map<String, Map<String, String>> data = new HashMap<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    String sLv = cursor.getString(
+                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV));
+                    String sUlv = cursor.getString(
+                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV));
+                    String sParcel = cursor.getString(
+                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
+
+
+                    String key = sLv + " " + area + " " + sUlv + " " + district;
+                    String value_u = "";
+                    String key_u = parcel + " " + sParcel;
+                    if (data.containsKey(key)) {
+                        Map<String, String> data_u = data.get(key);
+                        if(data_u.containsKey(key_u)){
+                            data_u.put(key_u, data_u.get(key_u) + ", " + value_u);
+                        }
+                        else{
+                            data_u.put(key_u, value_u);
+                        }
+                    }
+                    else {
+                        Map<String, String> data_u = new HashMap<>();
+                        data_u.put(key_u, value_u);
+                        data.put(key, data_u);
+                    }
+                }
+                catch ( IllegalArgumentException e){
+                    e.printStackTrace();
+                }
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        return formParcelText(data);
+    }
 
     public String getTerritoryText(
             String area,
@@ -100,6 +175,7 @@ public class DocumentEditFeature extends DocumentFeature {
         VectorLayer parcelsLayer =
                 (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
 
+        String columns[] = {FIELD_GEOM, Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_PARCEL};
         Cursor cursor = parcelsLayer.query(null, " " + where, null, null, null);
         //GeoEnvelope env = new GeoEnvelope();
         GeoMultiPolygon multiPolygon = new GeoMultiPolygon();
@@ -157,6 +233,10 @@ public class DocumentEditFeature extends DocumentFeature {
         //    setGeometryFromEnvelope(env);
         mGeometry = multiPolygon;
 
+        return formParcelText(data);
+    }
+
+    protected String formParcelText(Map<String, Map<String, String>> data) {
         String result = "";
         for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
             result += entry.getKey() + " ";
@@ -202,8 +282,12 @@ public class DocumentEditFeature extends DocumentFeature {
     }
 
     public String getWhereClauseForParcelIds(){
+        return getWhereClauseForParcelIds(getParcelIds());
+    }
+
+    public String getWhereClauseForParcelIds(List<Long> ids){
         String fullQuery = "";
-        for(Long fid : getParcelIds()){
+        for(Long fid : ids){
             if(!TextUtils.isEmpty(fullQuery))
                 fullQuery += " OR ";
             fullQuery += com.nextgis.maplib.util.Constants.FIELD_ID + " = " + fid;

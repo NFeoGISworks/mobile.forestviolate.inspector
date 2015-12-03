@@ -23,17 +23,21 @@ package com.nextgis.forestinspector.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nextgis.forestinspector.activity.SelectTerritoryActivity;
 import com.nextgis.forestinspector.overlay.EditTerritoryOverlay;
 import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplibui.api.EditEventListener;
+import com.nextgis.maplibui.fragment.BottomToolbar;
 
 /**
  * Created by bishop on 02.08.15.
  */
 public class MapEditFragment
-        extends MapFragment {
+        extends MapFragment implements EditEventListener {
     protected EditTerritoryOverlay mTerritoryOverlay;
 
     @Override
@@ -42,6 +46,8 @@ public class MapEditFragment
 
         mTerritoryOverlay = new EditTerritoryOverlay(getActivity(), mMap);
         mMap.addOverlay(mTerritoryOverlay);
+
+        mTerritoryOverlay.addListener(this);
 
         return view;
     }
@@ -53,4 +59,69 @@ public class MapEditFragment
             storeMapSettings();
         }
     }
+
+    public void addByHand() {
+        SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
+        View mainButton = activity.getFAB();
+        if (null != mainButton) {
+            mainButton.setVisibility(View.GONE);
+        }
+
+        mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_EDIT);
+        final BottomToolbar toolbar = activity.getBottomToolbar();
+        toolbar.setVisibility(View.VISIBLE);
+        toolbar.getBackground().setAlpha(128);
+        Menu menu = toolbar.getMenu();
+        if (null != menu) {
+            menu.clear();
+        }
+
+        mTerritoryOverlay.setToolbar(toolbar);
+    }
+
+    @Override
+    public void onStartEditSession() {
+
+    }
+
+    @Override
+    public void onFinishEditSession() {
+        if(mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_NONE ||
+                mTerritoryOverlay.getMode() ==  EditTerritoryOverlay.MODE_HIGHLIGHT)
+            return;
+
+        SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
+        final BottomToolbar toolbar = activity.getBottomToolbar();
+        if (null != toolbar) {
+            toolbar.setVisibility(View.GONE);
+        }
+
+        View mainButton = activity.getFAB();
+        if (null != mainButton) {
+            mainButton.setVisibility(View.VISIBLE);
+        }
+
+        // TODO: 03.12.15 Ask to text from user or intersect with parcels
+    }
+
+    public void addByWalk() {
+        SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
+        View mainButton = activity.getFAB();
+        if (null != mainButton) {
+            mainButton.setVisibility(View.GONE);
+        }
+
+        mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_EDIT_BY_WALK);
+        final BottomToolbar toolbar = activity.getBottomToolbar();
+        toolbar.setVisibility(View.VISIBLE);
+        toolbar.getBackground().setAlpha(128);
+        Menu menu = toolbar.getMenu();
+        if (null != menu) {
+            menu.clear();
+        }
+
+        mTerritoryOverlay.setToolbar(toolbar);
+    }
+
+    // TODO: 04.12.15 dialog fragment for select text or intersect
 }

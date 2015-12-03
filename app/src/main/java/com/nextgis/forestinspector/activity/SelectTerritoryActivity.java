@@ -37,13 +37,15 @@ import com.nextgis.forestinspector.fragment.MapEditFragment;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplibui.fragment.BottomToolbar;
 
 /**
  * Created by bishop on 03.08.15.
  */
 public class SelectTerritoryActivity extends FIActivity {
     protected DocumentEditFeature mDocumentFeature;
-    protected TextView mTerritoryText;
+    protected TextView            mTerritoryText;
+    protected View                mMainButton;
 
     protected final int TERRITORY_ACTIVITY = 55;
 
@@ -53,6 +55,8 @@ public class SelectTerritoryActivity extends FIActivity {
 
         setContentView(R.layout.activity_select_territory);
         setToolbar(R.id.main_toolbar);
+
+        mMainButton = findViewById(R.id.multiple_actions);
 
         final View addByHand = findViewById(R.id.add_by_hand);
         if (null != addByHand) {
@@ -110,6 +114,8 @@ public class SelectTerritoryActivity extends FIActivity {
         mDocumentFeature = app.getTempFeature();
 
         mTerritoryText = (TextView) findViewById(R.id.territory);
+
+        getBottomToolbar().setVisibility(View.GONE);
     }
 
     private void addBySheet() {
@@ -118,10 +124,18 @@ public class SelectTerritoryActivity extends FIActivity {
             Toast.makeText(this, getString(R.string.error_sheet_is_empty), Toast.LENGTH_LONG).show();
         }
         mDocumentFeature.setUnionGeometryFromLayer(Constants.KEY_LAYER_SHEET);
+
+        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if(null != mapFragment)
+            mapFragment.updateTerritory(mDocumentFeature.getGeometry());
     }
 
     private void addByWalk() {
-        // TODO: 03.08.15 Digitize by walking
+        // Digitize by walking
+        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if(null != mapFragment) {
+            mapFragment.addByWalk();
+        }
     }
 
     private void addByParcelList() {
@@ -130,24 +144,40 @@ public class SelectTerritoryActivity extends FIActivity {
     }
 
     private void addByHand() {
-        // TODO: 03.08.15 Draw on map by hand
+        //Draw on map by hand
+        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if(null != mapFragment) {
+            mapFragment.addByHand();
+        }
+    }
+
+    public BottomToolbar getBottomToolbar()
+    {
+        return (BottomToolbar) findViewById(R.id.bottom_toolbar);
+    }
+
+    public View getFAB(){
+        return mMainButton;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == TERRITORY_ACTIVITY){
-            // TODO: 04.08.15 Update map
             String text = mDocumentFeature.getTerritoryText(getString(R.string.forestry),
                     getString(R.string.district_forestry), getString(R.string.parcel),
                     getString(R.string.unit));
 
-            mTerritoryText.setText(text);
-            mDocumentFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, text);
+            setTerritoryText(text);
 
             MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
             if(null != mapFragment)
                 mapFragment.updateTerritory(mDocumentFeature.getGeometry());
         }
+    }
+
+    protected void setTerritoryText(String text){
+        mTerritoryText.setText(text);
+        mDocumentFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, text);
     }
 
     @Override
@@ -181,6 +211,9 @@ public class SelectTerritoryActivity extends FIActivity {
     }
 
     private void apply() {
+        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if(null != mapFragment)
+            mapFragment.onFinishEditSession();
         finish();
     }
 
