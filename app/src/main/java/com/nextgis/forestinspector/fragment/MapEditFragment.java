@@ -24,25 +24,34 @@ package com.nextgis.forestinspector.fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.activity.SelectTerritoryActivity;
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.overlay.EditTerritoryOverlay;
+import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplibui.api.EditEventListener;
 import com.nextgis.maplibui.fragment.BottomToolbar;
+import com.nextgis.maplibui.util.ConstantsUI;
 
 /**
  * Created by bishop on 02.08.15.
  */
 public class MapEditFragment
         extends MapFragment implements EditEventListener {
+
     protected EditTerritoryOverlay mTerritoryOverlay;
+    protected float mTolerancePX;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        mTolerancePX = getActivity().getResources().getDisplayMetrics().density * ConstantsUI.TOLERANCE_DP;
 
         mTerritoryOverlay = new EditTerritoryOverlay(getActivity(), mMap);
         mMap.addOverlay(mTerritoryOverlay);
@@ -124,5 +133,35 @@ public class MapEditFragment
         }
 
         mTerritoryOverlay.setToolbar(toolbar);
+    }
+
+
+    @Override
+    public void onLongPress(MotionEvent event) {
+        if (mTerritoryOverlay.getMode() != EditTerritoryOverlay.MODE_HIGHLIGHT) {
+            return;
+        }
+
+        double dMinX = event.getX() - mTolerancePX;
+        double dMaxX = event.getX() + mTolerancePX;
+        double dMinY = event.getY() - mTolerancePX;
+        double dMaxY = event.getY() + mTolerancePX;
+
+        GeoEnvelope mapEnv = mMap.screenToMap(new GeoEnvelope(dMinX, dMaxX, dMinY, dMaxY));
+        if (null == mapEnv) {
+            return;
+        }
+
+        MainApplication app = (MainApplication) getActivity().getApplication();
+        if(null == app)
+            return;
+        DocumentEditFeature documentFeature = app.getTempFeature();
+        if(null == documentFeature)
+            return;
+
+        GeoGeometry geometry = documentFeature.getGeometry();
+        if (geometry.intersects(mapEnv)) {
+            addByHand();
+        }
     }
 }
