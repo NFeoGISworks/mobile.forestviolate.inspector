@@ -101,7 +101,10 @@ public class MapEditFragment
             mainButton.setVisibility(View.VISIBLE);
         }
 
-        // TODO: 03.12.15 Ask to text from user or intersect with parcels
+        // Ask for text from user input or intersect with parcels
+        activity.showAskParcelTextDialog();
+
+        mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_HIGHLIGHT);
     }
 
     public void addByWalk() {
@@ -122,6 +125,4 @@ public class MapEditFragment
 
         mTerritoryOverlay.setToolbar(toolbar);
     }
-
-    // TODO: 04.12.15 dialog fragment for select text or intersect
 }

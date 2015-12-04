@@ -21,22 +21,33 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
+import com.nextgis.forestinspector.dialog.InputParcelTextDialog;
 import com.nextgis.forestinspector.fragment.MapEditFragment;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
-import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplibui.dialog.SelectZoomLevelsDialog;
+import com.nextgis.maplibui.formcontrol.RadioGroup;
 import com.nextgis.maplibui.fragment.BottomToolbar;
 
 /**
@@ -112,6 +123,9 @@ public class SelectTerritoryActivity extends FIActivity {
 
         MainApplication app = (MainApplication) getApplication();
         mDocumentFeature = app.getTempFeature();
+        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if(null != mapFragment)
+            mapFragment.updateTerritory(mDocumentFeature.getGeometry());
 
         mTerritoryText = (TextView) findViewById(R.id.territory);
 
@@ -175,7 +189,7 @@ public class SelectTerritoryActivity extends FIActivity {
         }
     }
 
-    protected void setTerritoryText(String text){
+    public void setTerritoryText(String text){
         mTerritoryText.setText(text);
         mDocumentFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, text);
     }
@@ -226,11 +240,31 @@ public class SelectTerritoryActivity extends FIActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mTerritoryText.setText(mDocumentFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
+        mTerritoryText.setText(getTerritoryText());
     }
 
     private void showSettings() {
         IGISApplication app = (IGISApplication) getApplication();
         app.showSettings();
+    }
+
+    public void showAskParcelTextDialog() {
+        InputParcelTextDialog newFragment = new InputParcelTextDialog();
+        newFragment.show(getSupportFragmentManager(), "input_parcel_text");
+    }
+
+    public void clearTerritoryGeometry() {
+        mDocumentFeature.setGeometry(null);
+    }
+
+    public void setTerritoryTextByGeom() {
+        String text = mDocumentFeature.getTerritoryTextByGeom(getString(R.string.forestry),
+                getString(R.string.district_forestry), getString(R.string.parcel),
+                getString(R.string.unit));
+        setTerritoryText(text);
+    }
+
+    public String getTerritoryText() {
+        return mDocumentFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY);
     }
 }

@@ -31,7 +31,6 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.internal.widget.ThemeUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -174,8 +173,8 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             mDocumentEditFeature = null;
             mMapViewOverlays.postInvalidate();
         } else if (mode == MODE_HIGHLIGHT) {
-            // TODO: 04.12.15
-
+            mDrawItems.setSelectedPointIndex(Constants.NOT_FOUND);
+            mDrawItems.setSelectedRing(Constants.NOT_FOUND);
         } else if (mode == MODE_EDIT_BY_WALK) {
             for (EditEventListener listener : mListeners) {
                 listener.onStartEditSession();

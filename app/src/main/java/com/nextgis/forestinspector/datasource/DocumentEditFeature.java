@@ -104,7 +104,7 @@ public class DocumentEditFeature extends DocumentFeature {
         if (null == where || TextUtils.isEmpty(where))
             return "";
 
-        String columns[] = {Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_PARCEL};
+        String columns[] = {FIELD_GEOM, Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_PARCEL};
         Cursor cursor = parcelsLayer.query(columns, " " + where, null, null, null);
         Map<String, Map<String, String>> data = new HashMap<>();
 
@@ -249,6 +249,7 @@ public class DocumentEditFeature extends DocumentFeature {
                     firstIteration = false;
                 result += entry_u.getKey();  //TODO when videl be set + " " + unit + " " + entry_u.getValue() + ", ";
             }
+            result += " ";
         }
 
         return result;
