@@ -95,7 +95,7 @@ public class DocumentEditFeature extends DocumentFeature {
             return "";
 
         VectorLayer parcelsLayer =
-                (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
+                (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_KV);
 
         GeoEnvelope env = mGeometry.getEnvelope();
 
@@ -173,7 +173,7 @@ public class DocumentEditFeature extends DocumentFeature {
             return "";
 
         VectorLayer parcelsLayer =
-                (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_CADASTRE);
+                (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_KV);
 
         String columns[] = {FIELD_GEOM, Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_PARCEL};
         Cursor cursor = parcelsLayer.query(null, " " + where, null, null, null);

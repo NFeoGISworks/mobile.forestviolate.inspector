@@ -205,4 +205,6 @@
     <string name="get_text_from_parcels">Get text from parcels</string>
     <string name="input_text">Type text</string>
     <string name="input_territory_text">Input territory text</string>
+    <string name="lv">forestry</string>
+    <string name="ulv">Subforestry</string>
 </resources>

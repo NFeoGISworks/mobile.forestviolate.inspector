@@ -246,7 +246,9 @@ public class InitService extends Service {
             keys.put(Constants.KEY_PRODUCTION, -1L);
             keys.put(Constants.KEY_NOTES, -1L);
             keys.put(Constants.KEY_VEHICLES, -1L);
-            keys.put(Constants.KEY_CADASTRE, -1L);
+            keys.put(Constants.KEY_KV, -1L);
+            keys.put(Constants.KEY_LV, -1L);
+            keys.put(Constants.KEY_ULV, -1L);
             keys.put(Constants.KEY_VIOLATE_TYPES, -1L);
             keys.put(Constants.KEY_SPECIES_TYPES, -1L);
             keys.put(Constants.KEY_FOREST_CAT_TYPES, -1L);
@@ -312,7 +314,7 @@ public class InitService extends Service {
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadForestCadastre(keys.get(Constants.KEY_CADASTRE), mAccount.name, map, this)){
+            if (!loadForestCadastre(keys.get(Constants.KEY_LV), keys.get(Constants.KEY_ULV), keys.get(Constants.KEY_KV), mAccount.name, map, this)){
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
@@ -745,34 +747,86 @@ public class InitService extends Service {
             }
         }
 
-        protected boolean loadForestCadastre(long resourceId, String accountName, MapBase map, IProgressor progressor){
+        protected boolean loadForestCadastre(long lvId, long ulvId, long kvId, String accountName, MapBase map, IProgressor progressor){
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
             float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
             float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
             float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
             float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
-            NGWVectorLayerUI ngwVectorLayer =
-                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_CADASTRE));
-            ngwVectorLayer.setName(getString(R.string.cadastre));
-            ngwVectorLayer.setRemoteId(resourceId);
-            ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
+            NGWVectorLayerUI ngwLVVectorLayer =
+                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_LV));
+            ngwLVVectorLayer.setName(getString(R.string.lv));
+            ngwLVVectorLayer.setRemoteId(lvId);
+            ngwLVVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
                     minX, minY, maxX, maxY));
-            ngwVectorLayer.setVisible(true);
-            ngwVectorLayer.setAccountName(accountName);
-            ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
-            ngwVectorLayer.setMinZoom(0);
-            ngwVectorLayer.setMaxZoom(25);
-            //TODO: add layer draw default style and quarter labels
-            SimpleTiledPolygonStyle style = new SimpleTiledPolygonStyle(getResources().getColor(R.color.primary_dark));
-            style.setFill(false);
-            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
-            ngwVectorLayer.setRenderer(renderer);
+            ngwLVVectorLayer.setVisible(true);
+            ngwLVVectorLayer.setAccountName(accountName);
+            ngwLVVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
+            ngwLVVectorLayer.setMinZoom(0);
+            ngwLVVectorLayer.setMaxZoom(9.5f);
+            //TODO: add layer draw default style and labels
+            SimpleTiledPolygonStyle lvStyle = new SimpleTiledPolygonStyle(getResources().getColor(R.color.primary_dark));
+            lvStyle.setFill(false);
+            SimpleFeatureRenderer lvRenderer = new SimpleFeatureRenderer(ngwLVVectorLayer, lvStyle);
+            ngwLVVectorLayer.setRenderer(lvRenderer);
 
-            map.addLayer(ngwVectorLayer);
+            map.addLayer(ngwLVVectorLayer);
 
             try {
-                ngwVectorLayer.createFromNGW(progressor);
+                ngwLVVectorLayer.createFromNGW(progressor);
+            } catch (NGException | IOException | JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            NGWVectorLayerUI ngwULVVectorLayer =
+                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_ULV));
+            ngwULVVectorLayer.setName(getString(R.string.ulv));
+            ngwULVVectorLayer.setRemoteId(ulvId);
+            ngwULVVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
+                    minX, minY, maxX, maxY));
+            ngwULVVectorLayer.setVisible(true);
+            ngwULVVectorLayer.setAccountName(accountName);
+            ngwULVVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
+            ngwULVVectorLayer.setMinZoom(9.5f);
+            ngwULVVectorLayer.setMaxZoom(14.5f);
+            //TODO: add layer draw default style and labels
+            SimpleTiledPolygonStyle ulvStyle = new SimpleTiledPolygonStyle(getResources().getColor(R.color.primary_dark));
+            ulvStyle.setFill(false);
+            SimpleFeatureRenderer ulvRenderer = new SimpleFeatureRenderer(ngwULVVectorLayer, ulvStyle);
+            ngwULVVectorLayer.setRenderer(ulvRenderer);
+
+            map.addLayer(ngwULVVectorLayer);
+
+            try {
+                ngwULVVectorLayer.createFromNGW(progressor);
+            } catch (NGException | IOException | JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            NGWVectorLayerUI ngwKVVectorLayer =
+                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_KV));
+            ngwKVVectorLayer.setName(getString(R.string.cadastre));
+            ngwKVVectorLayer.setRemoteId(kvId);
+            ngwKVVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
+                    minX, minY, maxX, maxY));
+            ngwKVVectorLayer.setVisible(true);
+            ngwKVVectorLayer.setAccountName(accountName);
+            ngwKVVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
+            ngwKVVectorLayer.setMinZoom(14.5f);
+            ngwKVVectorLayer.setMaxZoom(23);
+            //TODO: add layer draw default style and labels
+            SimpleTiledPolygonStyle style = new SimpleTiledPolygonStyle(getResources().getColor(R.color.primary_dark));
+            style.setFill(false);
+            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwKVVectorLayer, style);
+            ngwKVVectorLayer.setRenderer(renderer);
+
+            map.addLayer(ngwKVVectorLayer);
+
+            try {
+                ngwKVVectorLayer.createFromNGW(progressor);
             } catch (NGException | IOException | JSONException e) {
                 e.printStackTrace();
                 return false;

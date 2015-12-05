@@ -48,7 +48,9 @@ public interface Constants
     String KEY_PRODUCTION       = "production";
     String KEY_NOTES            = "notes";
     String KEY_VEHICLES         = "vehicles";
-    String KEY_CADASTRE         = "cadastre";
+    String KEY_KV = "kv";
+    String KEY_LV = "lv";
+    String KEY_ULV = "ulv";
     String KEY_VIOLATE_TYPES    = "violation_types";
     String KEY_FOREST_CAT_TYPES = "forest_cat_types";
     String KEY_SPECIES_TYPES    = "species_types";
@@ -61,7 +63,9 @@ public interface Constants
     String KEY_LAYER_PRODUCTION       = "production";
     String KEY_LAYER_NOTES            = "notes";
     String KEY_LAYER_VEHICLES         = "vehicles";
-    String KEY_LAYER_CADASTRE         = "cadastre";
+    String KEY_LAYER_KV = "kv";
+    String KEY_LAYER_LV = "lv";
+    String KEY_LAYER_ULV = "ulv";
     String KEY_LAYER_VIOLATE_TYPES    = "violation_types";
     String KEY_LAYER_FOREST_CAT_TYPES = "forest_cat_types";
     String KEY_LAYER_SPECIES_TYPES    = "species_types";

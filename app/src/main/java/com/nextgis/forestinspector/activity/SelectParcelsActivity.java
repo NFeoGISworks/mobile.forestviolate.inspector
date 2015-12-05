@@ -122,7 +122,7 @@ public class SelectParcelsActivity extends FIActivity implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = Uri.parse(
-                "content://" + SettingsConstants.AUTHORITY + "/" + Constants.KEY_LAYER_CADASTRE);
+                "content://" + SettingsConstants.AUTHORITY + "/" + Constants.KEY_LAYER_KV);
         if(args == null) {
             return new CursorLoader(this, uri, null, null, null, null);
         }
