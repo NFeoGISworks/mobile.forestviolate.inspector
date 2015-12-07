@@ -45,34 +45,47 @@ import com.nextgis.maplibui.api.MapViewEventListener;
 import com.nextgis.maplibui.mapui.MapViewOverlays;
 
 
-/**
- * Created by bishop on 01.08.15.
- */
-public class MapViewFragment  extends TabFragment
-        implements MapViewEventListener {
+public class MapViewFragment
+        extends TabFragment
+        implements MapViewEventListener
+{
 
-    protected MapViewOverlays mMap;
+    protected MapViewOverlays      mMap;
     protected FloatingActionButton mivZoomIn;
     protected FloatingActionButton mivZoomOut;
-    protected RelativeLayout mMapRelativeLayout;
+    protected RelativeLayout       mMapRelativeLayout;
 
     protected DocumentFeature mFeature;
 
-    public MapViewFragment() {
+    // http://stackoverflow.com/a/29621490
+    protected boolean mFragmentResume    = false;
+    protected boolean mFragmentVisible   = false;
+    protected boolean mFragmentOnCreated = false;
+
+
+    public MapViewFragment()
+    {
     }
 
+
     @SuppressLint("ValidFragment")
-    public MapViewFragment(String name) {
+    public MapViewFragment(String name)
+    {
         super(name);
     }
 
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
+    {
         final View view = inflater.inflate(R.layout.fragment_map_view, container, false);
 
         Activity activity = getActivity();
-        if(activity instanceof IDocumentFeatureSource) {
+        if (activity instanceof IDocumentFeatureSource) {
             IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
             mFeature = documentFeatureSource.getFeature();
         }
@@ -84,12 +97,12 @@ public class MapViewFragment  extends TabFragment
 
         //search relative view of map, if not found - add it
         mMapRelativeLayout = (RelativeLayout) view.findViewById(R.id.maprl);
-        if (mMapRelativeLayout != null) {
-            mMapRelativeLayout.addView(
-                    mMap, 0, new RelativeLayout.LayoutParams(
-                            RelativeLayout.LayoutParams.MATCH_PARENT,
-                            RelativeLayout.LayoutParams.MATCH_PARENT));
+
+        // http://stackoverflow.com/a/29621490
+        if (!mFragmentResume && mFragmentVisible) {   // only when first time fragment is created
+            addMapView();
         }
+
         mMap.invalidate();
 
         mivZoomIn = (FloatingActionButton) view.findViewById(R.id.action_zoom_in);
@@ -125,6 +138,51 @@ public class MapViewFragment  extends TabFragment
 
         return view;
     }
+
+
+    @Override
+    public void setUserVisibleHint(boolean visible)
+    {
+        super.setUserVisibleHint(visible);
+
+        // http://stackoverflow.com/a/29621490
+        if (visible && isResumed()) {               // only at fragment screen is resumed
+            mFragmentResume = true;
+            mFragmentVisible = false;
+            mFragmentOnCreated = true;
+            addMapView();
+
+        } else if (visible) {                       // only at fragment onCreated
+            mFragmentResume = false;
+            mFragmentVisible = true;
+            mFragmentOnCreated = true;
+
+        } else if (/* !visible && */ mFragmentOnCreated) { // only when you go out of fragment screen
+            mFragmentVisible = false;
+            mFragmentResume = false;
+            removeMapView();
+        }
+    }
+
+
+    public void addMapView()
+    {
+        if (null != mMapRelativeLayout && mMapRelativeLayout.indexOfChild(mMap) == -1) {
+            mMapRelativeLayout.addView(
+                    mMap, 0, new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.MATCH_PARENT,
+                            RelativeLayout.LayoutParams.MATCH_PARENT));
+        }
+    }
+
+
+    public void removeMapView()
+    {
+        if (null != mMapRelativeLayout && mMapRelativeLayout.indexOfChild(mMap) != -1) {
+            mMapRelativeLayout.removeView(mMap);
+        }
+    }
+
 
     @Override
     public void onDestroyView()
@@ -168,6 +226,7 @@ public class MapViewFragment  extends TabFragment
         rl.invalidate();
     }
 
+
     @Override
     public void onPause()
     {
@@ -187,7 +246,8 @@ public class MapViewFragment  extends TabFragment
         final SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        boolean showControls = prefs.getBoolean(SettingsConstants.KEY_PREF_SHOW_ZOOM_CONTROLS, false);
+        boolean showControls =
+                prefs.getBoolean(SettingsConstants.KEY_PREF_SHOW_ZOOM_CONTROLS, false);
         showMapButtons(showControls, mMapRelativeLayout);
 
         if (null != mMap) {
@@ -197,6 +257,7 @@ public class MapViewFragment  extends TabFragment
         }
     }
 
+
     public void refresh()
     {
         if (null != mMap) {
@@ -204,66 +265,95 @@ public class MapViewFragment  extends TabFragment
         }
     }
 
+
     @Override
-    public void onLongPress(MotionEvent event) {
+    public void onLongPress(MotionEvent event)
+    {
 
     }
 
+
     @Override
-    public void onSingleTapUp(MotionEvent event) {
+    public void onSingleTapUp(MotionEvent event)
+    {
 
     }
 
+
     @Override
-    public void panStart(MotionEvent e) {
+    public void panStart(MotionEvent e)
+    {
 
     }
 
+
     @Override
-    public void panMoveTo(MotionEvent e) {
+    public void panMoveTo(MotionEvent e)
+    {
 
     }
 
+
     @Override
-    public void panStop() {
+    public void panStop()
+    {
 
     }
 
+
     @Override
-    public void onLayerAdded(int id) {
+    public void onLayerAdded(int id)
+    {
 
     }
 
+
     @Override
-    public void onLayerDeleted(int id) {
+    public void onLayerDeleted(int id)
+    {
 
     }
 
+
     @Override
-    public void onLayerChanged(int id) {
+    public void onLayerChanged(int id)
+    {
 
     }
 
+
     @Override
-    public void onExtentChanged(float zoom, GeoPoint center) {
+    public void onExtentChanged(
+            float zoom,
+            GeoPoint center)
+    {
         setZoomInEnabled(mMap.canZoomIn());
         setZoomOutEnabled(mMap.canZoomOut());
     }
 
+
     @Override
-    public void onLayersReordered() {
+    public void onLayersReordered()
+    {
 
     }
 
+
     @Override
-    public void onLayerDrawFinished(int id, float percent) {
+    public void onLayerDrawFinished(
+            int id,
+            float percent)
+    {
 
     }
 
+
     @Override
-    public void onLayerDrawStarted() {
+    public void onLayerDrawStarted()
+    {
 
     }
+
 
     protected void setZoomInEnabled(boolean bEnabled)
     {
@@ -273,6 +363,7 @@ public class MapViewFragment  extends TabFragment
 
         mivZoomIn.setEnabled(bEnabled);
     }
+
 
     protected void setZoomOutEnabled(boolean bEnabled)
     {
