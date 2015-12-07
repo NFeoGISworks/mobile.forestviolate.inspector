@@ -150,7 +150,7 @@ public class MapViewFragment
             mFragmentResume = true;
             mFragmentVisible = false;
             mFragmentOnCreated = true;
-            addMapView();
+            visibleState();
 
         } else if (visible) {                       // only at fragment onCreated
             mFragmentResume = false;
@@ -160,8 +160,20 @@ public class MapViewFragment
         } else if (/* !visible && */ mFragmentOnCreated) { // only when you go out of fragment screen
             mFragmentVisible = false;
             mFragmentResume = false;
-            removeMapView();
+            invisibleState();
         }
+    }
+
+
+    public void visibleState()
+    {
+        addMapView();
+    }
+
+
+    public void invisibleState()
+    {
+        removeMapView();
     }
 
 

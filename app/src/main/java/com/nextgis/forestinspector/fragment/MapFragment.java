@@ -158,7 +158,7 @@ public class MapFragment
             mFragmentResume = true;
             mFragmentVisible = false;
             mFragmentOnCreated = true;
-            addMapView();
+            visibleState();
 
         } else if (visible) {                       // only at fragment onCreated
             mFragmentResume = false;
@@ -168,8 +168,37 @@ public class MapFragment
         } else if (/* !visible && */ mFragmentOnCreated) { // only when you go out of fragment screen
             mFragmentVisible = false;
             mFragmentResume = false;
-            removeMapView();
+            invisibleState();
         }
+    }
+
+
+    public void visibleState()
+    {
+        addMapView();
+
+        if (null != mCurrentLocationOverlay) {
+            mCurrentLocationOverlay.updateMode(
+                    PreferenceManager.getDefaultSharedPreferences(getActivity())
+                            .getString(SettingsConstantsUI.KEY_PREF_SHOW_CURRENT_LOC, "3"));
+            mCurrentLocationOverlay.startShowingCurrentLocation();
+        }
+        if (null != mGpsEventSource) {
+            mGpsEventSource.addListener(this);
+        }
+    }
+
+
+    public void invisibleState()
+    {
+        if (null != mCurrentLocationOverlay) {
+            mCurrentLocationOverlay.stopShowingCurrentLocation();
+        }
+        if (null != mGpsEventSource) {
+            mGpsEventSource.removeListener(this);
+        }
+
+        removeMapView();
     }
 
 
@@ -322,14 +351,16 @@ public class MapFragment
         mCoordinatesFormat = prefs.getInt(
                 SettingsConstants.KEY_PREF_COORD_FORMAT + "_int", Location.FORMAT_DEGREES);
 
-        if (null != mCurrentLocationOverlay) {
-            mCurrentLocationOverlay.updateMode(
-                    PreferenceManager.getDefaultSharedPreferences(getActivity())
-                            .getString(SettingsConstantsUI.KEY_PREF_SHOW_CURRENT_LOC, "3"));
-            mCurrentLocationOverlay.startShowingCurrentLocation();
-        }
-        if (null != mGpsEventSource) {
-            mGpsEventSource.addListener(this);
+        if (mFragmentResume) {
+            if (null != mCurrentLocationOverlay) {
+                mCurrentLocationOverlay.updateMode(
+                        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                .getString(SettingsConstantsUI.KEY_PREF_SHOW_CURRENT_LOC, "3"));
+                mCurrentLocationOverlay.startShowingCurrentLocation();
+            }
+            if (null != mGpsEventSource) {
+                mGpsEventSource.addListener(this);
+            }
         }
 
         mShowStatusPanel = prefs.getBoolean(SettingsConstantsUI.KEY_PREF_SHOW_STATUS_PANEL, true);
