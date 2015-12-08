@@ -32,6 +32,8 @@ import com.nextgis.maplib.datasource.Field;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoGeometryFactory;
+import com.nextgis.maplib.datasource.GeoLinearRing;
+import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoMultiPolygon;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.datasource.GeoPolygon;
@@ -39,6 +41,7 @@ import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.GeoConstants;
+import com.nextgis.maplib.util.GeoUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -260,14 +263,20 @@ public class DocumentEditFeature extends DocumentFeature {
         if(null == featureList)
             return;
 
-        // TODO: 04.08.15 Convex hull
+        // Convex hull
+        List<GeoPoint> points = new ArrayList<>();
 
-        GeoEnvelope env = new GeoEnvelope();
         for(Feature feature : featureList){
-            env.merge(feature.getGeometry().getEnvelope());
+            GeoMultiPoint pt = (GeoMultiPoint) feature.getGeometry();
+            for(int i = 0; i < pt.size(); ++i)
+                points.add(pt.get(i));
         }
 
-        setGeometryFromEnvelope(env);
+        GeoPolygon polygon = GeoUtil.convexHull(points);
+        GeoMultiPolygon multiPolygon = new GeoMultiPolygon();
+        multiPolygon.add(polygon);
+        mGeometry = multiPolygon;
+        //setGeometryFromEnvelope(env);
     }
 
     protected void setGeometryFromEnvelope(GeoEnvelope env){
