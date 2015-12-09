@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -22,31 +23,183 @@
 package com.nextgis.forestinspector.fragment;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-
+import android.widget.TextView;
+import android.widget.Toast;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.MainActivity;
 import com.nextgis.forestinspector.adapter.DocumentsListAdapter;
+import com.nextgis.forestinspector.adapter.SimpleDividerItemDecoration;
+
+import java.io.IOException;
+
+import static com.nextgis.maplib.util.Constants.TAG;
+
 
 /**
  * Documents and notes list fragment
  */
-public class DocumentsFragment extends Fragment {
+public class DocumentsFragment
+        extends Fragment
+        implements DocumentsListAdapter.OnSelectionChangedListener, ActionMode.Callback
+{
+    protected DocumentsListAdapter mAdapter;
+
+    protected ActionMode mActionMode;
+
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
+    {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        RecyclerView list = (RecyclerView) rootView.findViewById(R.id.list);
 
-        DocumentsListAdapter adapter = new DocumentsListAdapter(getActivity());
+        list.setLayoutManager(
+                new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        list.setHasFixedSize(true);
+        list.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
 
-        ListView list = (ListView) rootView.findViewById(R.id.documentsList);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(adapter);
+        mAdapter = new DocumentsListAdapter(getActivity());
+        mAdapter.addOnSelectionChangedListener(this);
+        list.setAdapter(mAdapter);
 
         return rootView;
+    }
+
+
+    @Override
+    public void onSelectionChanged(
+            int position,
+            boolean selection)
+    {
+        if (mActionMode == null) {
+            mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
+            mActionMode.setTitle("" + mAdapter.getSelectedItemCount());
+
+        } else if (!mAdapter.hasSelectedItems()) {
+            mActionMode.setTitle("");
+            mActionMode.finish();
+
+        } else {
+            mActionMode.setTitle("" + mAdapter.getSelectedItemCount());
+        }
+    }
+
+
+    @Override
+    public boolean onCreateActionMode(
+            ActionMode mode,
+            Menu menu)
+    {
+        mode.getMenuInflater().inflate(R.menu.list_actionmode, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onPrepareActionMode(
+            ActionMode mode,
+            Menu menu)
+    {
+        return false;
+    }
+
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode)
+    {
+        mAdapter.clearSelectionForAll();
+        mActionMode = null;
+    }
+
+
+    @Override
+    public boolean onActionItemClicked(
+            final ActionMode mode,
+            MenuItem menuItem)
+    {
+        switch (menuItem.getItemId()) {
+
+            case R.id.menu_delete:
+
+                Snackbar undoBar = Snackbar.make(
+                        getView(), R.string.sel_items_will_be_deleted, Snackbar.LENGTH_LONG)
+                        .setAction(
+                                R.string.cancel, new View.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(View v)
+                                    {
+                                        // cancel
+                                    }
+                                })
+                        .setCallback(
+                                new Snackbar.Callback()
+                                {
+                                    @Override
+                                    public void onDismissed(
+                                            Snackbar snackbar,
+                                            int event)
+                                    {
+                                        switch (event) {
+                                            case Snackbar.Callback.DISMISS_EVENT_ACTION:
+                                                break;
+
+                                            case Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE:
+                                            case Snackbar.Callback.DISMISS_EVENT_MANUAL:
+                                            case Snackbar.Callback.DISMISS_EVENT_SWIPE:
+                                            case Snackbar.Callback.DISMISS_EVENT_TIMEOUT:
+                                            default:
+                                                try {
+                                                    mAdapter.deleteAllSelected();
+                                                    mode.finish();
+                                                } catch (IOException e) {
+                                                    String error = e.getLocalizedMessage();
+                                                    Log.d(TAG, error);
+                                                    e.printStackTrace();
+                                                    Toast.makeText(
+                                                            getActivity(), error, Toast.LENGTH_LONG)
+                                                            .show();
+                                                }
+                                                break;
+
+                                        }
+
+                                        super.onDismissed(snackbar, event);
+                                    }
+                                })
+                        .setActionTextColor(
+                                getResources().getColor(R.color.color_undobar_action_text));
+
+                View undoBarView = undoBar.getView();
+                undoBarView.setBackgroundColor(
+                        getResources().getColor(R.color.color_undobar_background));
+                TextView tv = (TextView) undoBarView.findViewById(
+                        android.support.design.R.id.snackbar_text);
+                tv.setTextColor(getResources().getColor(R.color.color_undobar_text));
+
+                undoBar.show();
+                return true;
+
+            case R.id.menu_select_all:
+                mAdapter.toggleSelectionForAll();
+                return true;
+
+            default:
+                return false;
+        }
     }
 }

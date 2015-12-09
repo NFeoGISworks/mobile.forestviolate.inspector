@@ -167,8 +167,8 @@ public class NoteListFillerDialog
     public void saveData()
     {
         MapBase map = MapBase.getInstance();
-        VectorLayer noteLayer = (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_NOTES);
-        if (null == noteLayer) {
+        VectorLayer notesLayer = (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_NOTES);
+        if (null == notesLayer) {
             return;
         }
 
@@ -178,7 +178,7 @@ public class NoteListFillerDialog
             feature = mFeature;
         } else {
             feature = new Feature(
-                    com.nextgis.maplib.util.Constants.NOT_FOUND, noteLayer.getFields());
+                    com.nextgis.maplib.util.Constants.NOT_FOUND, notesLayer.getFields());
         }
 
 
@@ -191,11 +191,20 @@ public class NoteListFillerDialog
         feature.setGeometry(geometryValue);
         setFeatureFieldsValues(feature);
 
+        String pathName = notesLayer.getPath().getName();
+        if (null != mFeature) {
+            Uri uri = Uri.parse(
+                    "content://" + SettingsConstants.AUTHORITY + "/" + pathName + "/" +
+                    feature.getId());
+            if (notesLayer.update(uri, feature.getContentValues(false), null, null) <= 0) {
+                Log.d(Constants.FITAG, "update feature into " + pathName + " failed");
+            }
 
-        String pathName = noteLayer.getPath().getName();
-        Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + pathName);
-        if (noteLayer.insert(uri, feature.getContentValues(false)) == null) {
-            Log.d(Constants.FITAG, "insert feature into " + pathName + " failed");
+        } else {
+            Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + pathName);
+            if (notesLayer.insert(uri, feature.getContentValues(false)) == null) {
+                Log.d(Constants.FITAG, "insert feature into " + pathName + " failed");
+            }
         }
     }
 

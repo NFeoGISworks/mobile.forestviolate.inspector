@@ -98,7 +98,7 @@ public abstract class ListFillerFragment
         }
 
         if (null != mAdapter) {
-            mAdapter.addListener(this);
+            mAdapter.addOnSelectionChangedListener(this);
         }
 
         return view;

@@ -23,7 +23,6 @@
 package com.nextgis.forestinspector.adapter;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.maplib.datasource.Feature;
 
@@ -37,16 +36,8 @@ public abstract class ListFillerAdapter
     protected DocumentFeature mFeature;
     protected List<Feature>   mFeatures;
 
-    protected ListFillerAdapter.ViewHolder.OnItemClickListener mOnItemClickListener;
-
 
     protected abstract String getLayerName();
-
-
-    public void setOnItemClickListener(ListFillerAdapter.ViewHolder.OnItemClickListener listener)
-    {
-        mOnItemClickListener = listener;
-    }
 
 
     public ListFillerAdapter(DocumentFeature feature)
@@ -66,40 +57,6 @@ public abstract class ListFillerAdapter
         {
             super.onChanged();
             mFeatures = mFeature.getSubFeatures(getLayerName());
-        }
-    }
-
-
-    public static class ViewHolder
-            extends ListSelectorAdapter.ViewHolder
-            implements View.OnClickListener
-    {
-        public OnItemClickListener mListener;
-
-
-        public ViewHolder(View itemView, OnItemClickListener listener)
-        {
-            super(itemView);
-
-            if (null != listener) {
-                mListener = listener;
-                itemView.setOnClickListener(this);
-            }
-        }
-
-
-        @Override
-        public void onClick(View v)
-        {
-            if (null != mListener) {
-                mListener.onItemClick(getAdapterPosition());
-            }
-        }
-
-
-        public interface OnItemClickListener
-        {
-            void onItemClick(int position);
         }
     }
 

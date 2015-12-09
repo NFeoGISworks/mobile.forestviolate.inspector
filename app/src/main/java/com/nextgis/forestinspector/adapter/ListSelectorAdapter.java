@@ -44,7 +44,9 @@ public abstract class ListSelectorAdapter
     protected boolean mSelectState  = false;
     protected boolean mHideCheckBox = false;
 
-    protected Queue<OnSelectionChangedListener> mListeners;
+    protected Queue<OnSelectionChangedListener> mOnSelectionChangedListeners;
+
+    protected ListSelectorAdapter.ViewHolder.OnItemClickListener mOnItemClickListener;
 
 
     protected abstract int getItemViewResId();
@@ -52,9 +54,15 @@ public abstract class ListSelectorAdapter
     protected abstract ListSelectorAdapter.ViewHolder getViewHolder(View itemView);
 
 
+    public void setOnItemClickListener(ListSelectorAdapter.ViewHolder.OnItemClickListener listener)
+    {
+        mOnItemClickListener = listener;
+    }
+
+
     public ListSelectorAdapter()
     {
-        mListeners = new ConcurrentLinkedQueue<>();
+        mOnSelectionChangedListeners = new ConcurrentLinkedQueue<>();
         mSelectedItems = new SparseBooleanArray();
     }
 
@@ -98,7 +106,7 @@ public abstract class ListSelectorAdapter
             }
         }
 
-        addListener(holder);
+        addOnSelectionChangedListener(holder);
     }
 
 
@@ -112,16 +120,25 @@ public abstract class ListSelectorAdapter
 
     public static abstract class ViewHolder
             extends RecyclerView.ViewHolder
-            implements ListSelectorAdapter.OnSelectionChangedListener
+            implements ListSelectorAdapter.OnSelectionChangedListener, View.OnClickListener
     {
-        public int      mPosition;
-        public CheckBox mCheckBox;
+        public int                 mPosition;
+        public CheckBox            mCheckBox;
+        public OnItemClickListener mClickListener;
 
 
-        public ViewHolder(View itemView)
+        public ViewHolder(
+                View itemView,
+                OnItemClickListener clickListener)
         {
             super(itemView);
+
             mCheckBox = (CheckBox) itemView.findViewById(R.id.item_checkbox);
+
+            if (null != clickListener) {
+                mClickListener = clickListener;
+                itemView.setOnClickListener(this);
+            }
         }
 
 
@@ -133,6 +150,21 @@ public abstract class ListSelectorAdapter
             if (null != mCheckBox && position == getAdapterPosition()) {
                 mCheckBox.setChecked(selection);
             }
+        }
+
+
+        @Override
+        public void onClick(View v)
+        {
+            if (null != mClickListener) {
+                mClickListener.onItemClick(getAdapterPosition());
+            }
+        }
+
+
+        public interface OnItemClickListener
+        {
+            void onItemClick(int position);
         }
     }
 
@@ -215,7 +247,7 @@ public abstract class ListSelectorAdapter
             mSelectedItems.delete(position);
         }
 
-        for (OnSelectionChangedListener listener : mListeners) {
+        for (OnSelectionChangedListener listener : mOnSelectionChangedListeners) {
             listener.onSelectionChanged(position, selection);
         }
     }
@@ -267,18 +299,18 @@ public abstract class ListSelectorAdapter
     }
 
 
-    public void addListener(OnSelectionChangedListener listener)
+    public void addOnSelectionChangedListener(OnSelectionChangedListener listener)
     {
-        if (mListeners != null && !mListeners.contains(listener)) {
-            mListeners.add(listener);
+        if (mOnSelectionChangedListeners != null && !mOnSelectionChangedListeners.contains(listener)) {
+            mOnSelectionChangedListeners.add(listener);
         }
     }
 
 
     public void removeListener(OnSelectionChangedListener listener)
     {
-        if (mListeners != null) {
-            mListeners.remove(listener);
+        if (mOnSelectionChangedListeners != null) {
+            mOnSelectionChangedListeners.remove(listener);
         }
     }
 

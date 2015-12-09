@@ -30,6 +30,7 @@ public interface Constants
 
     String FITAG                        = "forest inspector";
     int    MAX_DOCUMENTS                = 100;
+    int    MAX_NOTES                    = 100;
     String TEMP_DOCUMENT_FEATURE_FOLDER = "temp_document";
     String SIGN_FILENAME                = "sign.png";
     String SIGN_DESCRIPTION             = "sign";

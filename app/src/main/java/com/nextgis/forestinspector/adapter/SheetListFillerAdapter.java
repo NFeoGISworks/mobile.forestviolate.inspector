@@ -104,7 +104,7 @@ public class SheetListFillerAdapter
 
         public ViewHolder(
                 View itemView,
-                ListFillerAdapter.ViewHolder.OnItemClickListener listener)
+                OnItemClickListener listener)
         {
             super(itemView, listener);
 

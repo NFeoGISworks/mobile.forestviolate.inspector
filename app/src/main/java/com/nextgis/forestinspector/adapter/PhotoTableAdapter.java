@@ -370,7 +370,7 @@ public abstract class PhotoTableAdapter
 
         public ViewHolder(View itemView)
         {
-            super(itemView);
+            super(itemView, null);
 
             mImageView = (ImageView) itemView.findViewById(R.id.photo_table_item);
             mPhotoDesc = (TextView) itemView.findViewById(R.id.photo_desc);

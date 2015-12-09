@@ -92,7 +92,7 @@ public class PhotoTableCursorAdapter
                         }
                     });
 
-            //addListener(viewHolder); // it is in super
+            //addOnSelectionChangedListener(viewHolder); // it is in super
         }
     }
 

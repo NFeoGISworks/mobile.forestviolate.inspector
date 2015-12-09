@@ -216,7 +216,7 @@ public class PhotoTableFragment
                 getActivity(), realPhotoCount, GridLayoutManager.VERTICAL, false);
 
         mPhotoTableAdapter.setImageSizePx(photoRealWidthPX);
-        mPhotoTableAdapter.addListener(this);
+        mPhotoTableAdapter.addOnSelectionChangedListener(this);
 
         mPhotoTable.setLayoutManager(layoutManager);
         mPhotoTable.setAdapter(mPhotoTableAdapter);

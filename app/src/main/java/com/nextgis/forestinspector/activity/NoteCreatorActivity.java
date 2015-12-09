@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,6 +31,12 @@ import android.view.MenuItem;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.dialog.NoteListFillerDialog;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.VectorLayer;
+
+import static com.nextgis.maplib.util.Constants.FIELD_ID;
 
 
 /**
@@ -46,6 +53,44 @@ public class NoteCreatorActivity
     {
         super.onCreate(savedInstanceState);
 
+        MapBase map = MapBase.getInstance();
+        VectorLayer notesLayer = null;
+
+        for (int i = 0; i < map.getLayerCount(); ++i) {
+            ILayer layer = map.getLayer(i);
+
+            if (layer.getName().equals(getString(R.string.notes))) {
+                notesLayer = (VectorLayer) layer;
+                break;
+            }
+        }
+
+        if (null == notesLayer) {
+            setContentView(R.layout.activity_document_noview);
+            setToolbar(R.id.main_toolbar);
+            return;
+        }
+
+        Feature feature = null;
+        Bundle extras = getIntent().getExtras();
+        if (null != extras) {
+            long featureId = extras.getLong(FIELD_ID);
+
+            Cursor cur = notesLayer.query(null, FIELD_ID + " = " + featureId, null, null, null);
+            if (null == cur) {
+                setContentView(R.layout.activity_document_noview);
+                setToolbar(R.id.main_toolbar);
+                return;
+            }
+            cur.moveToFirst();
+
+            feature = new Feature(featureId, notesLayer.getFields());
+            feature.fromCursor(cur);
+
+            cur.close();
+        }
+
+
         setContentView(R.layout.activity_note_creator);
 
         setToolbar(R.id.main_toolbar);
@@ -60,6 +105,7 @@ public class NoteCreatorActivity
         if (fragment == null) {
             fragment = new NoteListFillerDialog();
             fragment.setShowsDialog(false);
+            fragment.setFeature(feature);
             mOnCreateNoteListener = fragment;
         }
 
