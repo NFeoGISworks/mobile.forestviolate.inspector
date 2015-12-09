@@ -284,12 +284,14 @@ public class DocumentsListAdapter
         if (notes != null) {
             VectorLayer notesLayer = (VectorLayer) notes;
 
+            String selection = Constants.FIELD_NOTES_DATE_END + " >= " + System.currentTimeMillis();
+
             Cursor cursor = notesLayer.query(
                     new String[] {
                             com.nextgis.maplib.util.Constants.FIELD_ID,
                             Constants.FIELD_NOTES_DATE_BEG,
                             Constants.FIELD_NOTES_DATE_END,
-                            Constants.FIELD_NOTES_DESCRIPTION}, null, null,
+                            Constants.FIELD_NOTES_DESCRIPTION}, selection, null,
                     Constants.FIELD_NOTES_DATE_BEG + " DESC", " " + Constants.MAX_NOTES);
 
             if (null != cursor) {
