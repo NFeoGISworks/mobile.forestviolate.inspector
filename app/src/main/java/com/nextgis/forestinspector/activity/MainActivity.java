@@ -352,7 +352,8 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
     }
 
     public void addNote() {
-
+        Intent intentNote = new Intent(this, NoteCreatorActivity.class);
+        startActivity(intentNote);
     }
 
     /**
