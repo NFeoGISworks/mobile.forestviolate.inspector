@@ -94,7 +94,13 @@ public class NoteCreatorActivity
         setContentView(R.layout.activity_note_creator);
 
         setToolbar(R.id.main_toolbar);
-        setTitle(getText(R.string.note_title));
+
+        if (null == feature) {
+            setTitle(getText(R.string.note_title));
+        } else {
+            setTitle(getText(R.string.note_changing_title));
+        }
+
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();

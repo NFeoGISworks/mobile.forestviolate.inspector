@@ -77,6 +77,7 @@
     <string name="sheet_item_name">Ведомость перечета</string>
     <string name="notes">Заметки</string>
     <string name="note_title">Заметка</string>
+    <string name="note_changing_title">Изменение заметки</string>
     <string name="note_item_name">Заметка</string>
     <string name="note_start_date">Начальная дата</string>
     <string name="note_end_date">Конечная дата</string>
