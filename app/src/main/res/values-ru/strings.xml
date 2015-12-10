@@ -145,6 +145,7 @@
     <string name="owner_details">сведения о собственнике</string>
     <string name="species">Порода</string>
     <string name="thickness">Толщина</string>
+    <string name="stump_diameter">Диаметр пня</string>
     <string name="count">Кол-во</string>
     <string name="height_rank">Разряд высот</string>
     <string name="category">Категория хлыстов</string>

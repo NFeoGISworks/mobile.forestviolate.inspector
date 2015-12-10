@@ -93,7 +93,7 @@
         <!-- thickness -->
 
         <TextView
-            android:text="@string/thickness"
+            android:text="@string/stump_diameter"
             style="@style/dialog_desc_text"
             />
 

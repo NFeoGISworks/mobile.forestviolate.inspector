@@ -144,6 +144,7 @@
     <string name="owner_details">owner details</string>
     <string name="species">Species</string>
     <string name="thickness">Thickness</string>
+    <string name="stump_diameter">Stump diameter</string>
     <string name="count">Count</string>
     <string name="height_rank">Height rank</string>
     <string name="category">Category</string>
