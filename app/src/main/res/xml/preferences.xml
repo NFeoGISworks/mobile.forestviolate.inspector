@@ -43,6 +43,12 @@
         <Preference
             android:title="@string/click_to_change_account"
             android:key="change_account"/>
+        <ListPreference
+            android:title="@string/note_initial_term"
+            android:key="note_initial_term"
+            android:defaultValue="1"
+            android:entries="@array/note_initial_terms"
+            android:entryValues="@array/note_initial_terms_val"/>
 
     </PreferenceCategory>
     <PreferenceCategory

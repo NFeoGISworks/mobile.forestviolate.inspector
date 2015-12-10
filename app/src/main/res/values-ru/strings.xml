@@ -209,4 +209,5 @@
     <string name="input_territory_text">Input territory text</string>
     <string name="lv">forestry</string>
     <string name="ulv">Subforestry</string>
+    <string name="note_initial_term">Начальный срок заметки</string>
 </resources>

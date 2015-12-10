@@ -21,10 +21,19 @@
   -->
 
 <resources>
+
     <string-array name="sync_periods">
         <item>10 минут</item>
         <item>30 минут</item>
         <item>1 час</item>
         <item>2 часа</item>
     </string-array>
+
+    <string-array name="note_initial_terms">
+        <item>1 неделя</item>
+        <item>2 недели</item>
+        <item>4 недели</item>
+        <item>8 недель</item>
+    </string-array>
+
 </resources>

@@ -103,8 +103,34 @@ public class NoteListFillerDialog
         if (null != mEndDateTime) {
             mEndDateTimeView.setValue(mEndDateTime);
             mEndDateTime = null;
+
         } else {
-            mEndDateTimeView.setCurrentDate();
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String noteInitTerm =
+                    sharedPreferences.getString(SettingsConstants.KEY_PREF_NOTE_INITIAL_TERM, "1");
+
+            final long WEEK_MILLIS = 3600000 * 24 * 7;
+            long millis;
+
+            switch (noteInitTerm) {
+                case "1":
+                default:
+                    millis = WEEK_MILLIS;     // 1 week
+                    break;
+                case "2":
+                    millis = WEEK_MILLIS * 2; // 2 weeks
+                    break;
+                case "4":
+                    millis = WEEK_MILLIS * 4; // 4 weeks
+                    break;
+                case "8":
+                    millis = WEEK_MILLIS * 8; // 8 weeks
+                    break;
+            }
+
+            Long endTime = ((Long) mStartDateTimeView.getValue()) + millis;
+            mEndDateTimeView.setValue(endTime);
         }
 
         mNoteTextView = (EditText) parentView.findViewById(R.id.note_text);

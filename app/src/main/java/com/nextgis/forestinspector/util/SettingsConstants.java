@@ -23,23 +23,24 @@ package com.nextgis.forestinspector.util;
 
 public interface SettingsConstants
 {
-    String AUTHORITY             = "com.nextgis.forestinspector.provider";
-    String SITE_URL = "http://176.9.38.120/fv";
+    String AUTHORITY      = "com.nextgis.forestinspector.provider";
+    String SITE_URL       = "http://176.9.38.120/fv";
     String KOSOSNIMKI_URL = "http://{a,b,c}.tile.cart.kosmosnimki.ru/rs/{z}/{x}/{y}.png";
-    String VIOLATIONS_URL = "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=96BBFFE869E14CE8B739874798E39B60&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png";
+    String VIOLATIONS_URL =
+            "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=96BBFFE869E14CE8B739874798E39B60&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png";
     //String VIOLATIONS_URL = "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=8D71968D94F644B5BFD7123A2937ADFC&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png";
     //"http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=15CBBFB4151E48ECAE0F699FD4F9223A&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png&Map=1D116AC56D694C0B8CDCA87C06D1961A";
 
     /**
      * user account settings
      */
-    String KEY_PREF_USER = "user";
-    String KEY_PREF_USERDESC = "user_desc";
-    String KEY_PREF_USERID = "user_id";
-    String KEY_PREF_USERMINX = "user_minx";
-    String KEY_PREF_USERMINY = "user_miny";
-    String KEY_PREF_USERMAXX = "user_maxx";
-    String KEY_PREF_USERMAXY = "user_maxy";
+    String KEY_PREF_USER       = "user";
+    String KEY_PREF_USERDESC   = "user_desc";
+    String KEY_PREF_USERID     = "user_id";
+    String KEY_PREF_USERMINX   = "user_minx";
+    String KEY_PREF_USERMINY   = "user_miny";
+    String KEY_PREF_USERMAXX   = "user_maxx";
+    String KEY_PREF_USERMAXY   = "user_maxy";
     String KEY_PREF_USERPASSID = "user_passid";
 
     /**
@@ -50,13 +51,13 @@ public interface SettingsConstants
     /**
      * Preference key - not UI
      */
-    String KEY_PREF_SCROLL_X      = "map_scroll_x";
-    String KEY_PREF_SCROLL_Y      = "map_scroll_y";
-    String KEY_PREF_ZOOM_LEVEL    = "map_zoom_level";
+    String KEY_PREF_SCROLL_X       = "map_scroll_x";
+    String KEY_PREF_SCROLL_Y       = "map_scroll_y";
+    String KEY_PREF_ZOOM_LEVEL     = "map_zoom_level";
     String KEY_PREF_MAP_FIRST_VIEW = "map_first_view";
-    String KEY_PREF_SHOW_LOCATION = "map_show_loc";
-    String KEY_PREF_SHOW_COMPASS  = "map_show_compass";
-    String KEY_PREF_SHOW_INFO     = "map_show_info";
+    String KEY_PREF_SHOW_LOCATION  = "map_show_loc";
+    String KEY_PREF_SHOW_COMPASS   = "map_show_compass";
+    String KEY_PREF_SHOW_INFO      = "map_show_info";
 
     /**
      * Preference keys - in UI
@@ -79,4 +80,5 @@ public interface SettingsConstants
     String KEY_PREF_COMPASS_SHOW_MAGNET = "compass_show_magnetic";
     String KEY_PREF_COMPASS_WAKE_LOCK   = "compass_wake_lock";
     String KEY_PREF_SHOW_ZOOM_CONTROLS  = "show_zoom_controls";
+    String KEY_PREF_NOTE_INITIAL_TERM   = "note_initial_term";
 }
