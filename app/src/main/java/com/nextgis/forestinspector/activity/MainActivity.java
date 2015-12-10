@@ -372,7 +372,9 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
                 return new DocumentsFragment();
             }
             else{
-                return new MapFragment();
+                MapFragment mapFragment = new MapFragment();
+                mapFragment.setInViewPager(true);
+                return mapFragment;
             }
         }
 
