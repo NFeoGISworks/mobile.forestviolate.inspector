@@ -22,7 +22,10 @@
 package com.nextgis.forestinspector.overlay;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -38,6 +41,7 @@ import android.view.View;
 
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
+import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.GeoEnvelope;
@@ -50,6 +54,7 @@ import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoMultiPolygon;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.datasource.GeoPolygon;
+import com.nextgis.maplib.datasource.ngw.SyncAdapter;
 import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.Constants;
@@ -59,6 +64,7 @@ import com.nextgis.maplibui.api.MapViewEventListener;
 import com.nextgis.maplibui.api.Overlay;
 import com.nextgis.maplibui.fragment.BottomToolbar;
 import com.nextgis.maplibui.mapui.MapViewOverlays;
+import com.nextgis.maplibui.service.WalkEditService;
 import com.nextgis.maplibui.util.ConstantsUI;
 
 import java.util.ArrayList;
@@ -68,7 +74,7 @@ import java.util.List;
 /**
  * Created by bishop on 02.12.15.
  */
-public class EditTerritoryOverlay extends Overlay implements MapViewEventListener, GpsEventListener {
+public class EditTerritoryOverlay extends Overlay implements MapViewEventListener {
 
 
     /**
@@ -119,6 +125,8 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
 
     protected float mCanvasCenterX, mCanvasCenterY;
     protected List<EditEventListener> mListeners;
+
+    protected WalkEditReceiver mReceiver;
 
     public EditTerritoryOverlay(Context context, MapViewOverlays mapViewOverlays) {
         super(context, mapViewOverlays);
@@ -865,48 +873,48 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             mDocumentEditFeature.setGeometry(multiPolygon);
         }
 
-        Activity parent = (Activity) mContext;
-        GpsEventSource gpsEventSource =
-                ((IGISApplication) parent.getApplication()).getGpsEventSource();
-        gpsEventSource.addListener(this);
+        // register broadcast events
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WalkEditService.WALKEDIT_CHANGE);
+        mReceiver = new WalkEditReceiver();
+        mContext.registerReceiver(mReceiver, intentFilter);
+
+        // start service
+        Intent trackerService = new Intent(mContext, WalkEditService.class);
+        trackerService.setAction(WalkEditService.ACTION_START);
+        trackerService.putExtra(ConstantsUI.KEY_GEOMETRY_TYPE, GeoConstants.GTPolygon);
+        DocumentsLayer layer = mDocumentEditFeature.getDocumentsLayer();
+        if(null != layer)
+            trackerService.putExtra(ConstantsUI.KEY_LAYER_ID, layer.getId());
+        trackerService.putExtra(ConstantsUI.TARGET_CLASS, mContext.getClass().getName());
+        mContext.startService(trackerService);
     }
 
 
     public void stopGeometryByWalk()
     {
-        Activity parent = (Activity) mContext;
-        GpsEventSource gpsEventSource =
-                ((IGISApplication) parent.getApplication()).getGpsEventSource();
-        gpsEventSource.removeListener(this);
+        // stop service
+        Intent trackerService = new Intent(mContext, WalkEditService.class);
+        trackerService.setAction(WalkEditService.ACTION_STOP);
+        mContext.stopService(trackerService);
+
+        // unregister events
+        mContext.unregisterReceiver(mReceiver);
     }
 
-
-    @Override
-    public void onLocationChanged(Location location)
+    public class WalkEditReceiver
+            extends BroadcastReceiver
     {
-        if (mDocumentEditFeature != null && location != null) {
-            GeoPoint currentPoint = new GeoPoint(location.getLongitude(), location.getLatitude());
-            currentPoint.setCRS(GeoConstants.CRS_WGS84);
-            currentPoint.project(GeoConstants.CRS_WEB_MERCATOR);
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            GeoGeometry geometry = (GeoGeometry) intent.getSerializableExtra(ConstantsUI.KEY_GEOMETRY);
             GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mDocumentEditFeature.getGeometry();
-            GeoPolygon polygon = (GeoPolygon) multiPolygon.getGeometry(multiPolygon.size() - 1);
-            polygon.add(currentPoint);
-
-            GeoPoint screenPoint = mMapViewOverlays.getMap().mapToScreen(currentPoint);
-
-            //add point drawItem
-            mDrawItems.addNewPoint((float) screenPoint.getX(), (float) screenPoint.getY());
+            multiPolygon.set(0, geometry);
+            mDocumentEditFeature.setGeometry(multiPolygon);
+            mMapViewOverlays.postInvalidate();
         }
     }
-
-
-    @Override
-    public void onBestLocationChanged(Location location)
-    {
-
-    }
-
 
     protected int getMinPointCount()
     {
@@ -928,13 +936,6 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             }
         }
         return false;
-    }
-
-
-    @Override
-    public void onGpsStatusChanged(int event)
-    {
-
     }
 
     @Override

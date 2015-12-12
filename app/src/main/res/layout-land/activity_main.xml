@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 fab:fab_colorNormal="?attr/colorPrimary"
                 fab:fab_size="mini"
-                fab:fab_icon="@drawable/ic_action_image_edit"
+                fab:fab_icon="@drawable/ic_action_edit_light"
                 fab:fab_colorPressed="?attr/colorAccent"
                 />
 

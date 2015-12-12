@@ -197,9 +197,9 @@ public abstract class ListFillerDialog
         setFieldViews(view);
 
         if (isThemeDark()) {
-            setIcon(R.drawable.ic_action_image_edit);
+            setIcon(R.drawable.ic_action_edit_light);
         } else {
-            setIcon(R.drawable.ic_action_image_edit);
+            setIcon(R.drawable.ic_action_edit_light);
         }
 
         setView(view);

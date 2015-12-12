@@ -30,6 +30,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
 import com.nextgis.forestinspector.fragment.MapViewFragment;
@@ -62,16 +63,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
         super.onCreate(savedInstanceState);
 
         // get document from id
-        MapBase map = MapBase.getInstance();
-        DocumentsLayer docs = null;
-        for(int i = 0; i < map.getLayerCount(); i++) {
-            ILayer layer = map.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                docs = (DocumentsLayer) layer;
-                break;
-            }
-        }
-
+        DocumentsLayer docs = DocumentEditFeature.getDocumentsLayer();
         if(null == docs){
             setContentView(R.layout.activity_document_noview);
             setToolbar(R.id.main_toolbar);

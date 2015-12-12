@@ -75,6 +75,21 @@ public class DocumentEditFeature extends DocumentFeature {
         return mParcelIds;
     }
 
+    public static DocumentsLayer getDocumentsLayer(){
+        MapBase map = MapBase.getInstance();
+        DocumentsLayer docsLayer = (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
+        /*DocumentsLayer docsLayer = null;
+        for (int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                docsLayer = (DocumentsLayer) layer;
+                break;
+            }
+        }
+        */
+        return docsLayer;
+    }
+
     public String getTerritoryTextByGeom(
             String area,
             String district,
@@ -84,19 +99,11 @@ public class DocumentEditFeature extends DocumentFeature {
         if(null == mGeometry)
             return "";
 
-        MapBase map = MapBase.getInstance();
-        DocumentsLayer docsLayer = null;
-        for (int i = 0; i < map.getLayerCount(); i++) {
-            ILayer layer = map.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                docsLayer = (DocumentsLayer) layer;
-                break;
-            }
-        }
-
+        DocumentsLayer docsLayer = getDocumentsLayer();
         if (docsLayer == null)
             return "";
 
+        MapBase map = MapBase.getInstance();
         VectorLayer parcelsLayer =
                 (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_KV);
 
