@@ -145,6 +145,7 @@
     <string name="owner_details">сведения о собственнике</string>
     <string name="species">Порода</string>
     <string name="thickness">Толщина</string>
+    <string name="stump_diameter">Диаметр пня</string>
     <string name="count">Кол-во</string>
     <string name="height_rank">Разряд высот</string>
     <string name="category">Категория хлыстов</string>
@@ -209,4 +210,5 @@
     <string name="input_territory_text">Input territory text</string>
     <string name="lv">forestry</string>
     <string name="ulv">Subforestry</string>
+    <string name="note_initial_term">Начальный срок заметки</string>
 </resources>

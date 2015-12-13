@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -82,6 +83,14 @@ public class MapFragment
     protected boolean mFragmentVisible   = false;
     protected boolean mFragmentOnCreated = false;
 
+    protected boolean mIsInViewPager = false;
+
+
+    public void setInViewPager(boolean isInViewPager)
+    {
+        mIsInViewPager = isInViewPager;
+    }
+
 
     @Override
     public View onCreateView(
@@ -106,7 +115,7 @@ public class MapFragment
         mMapRelativeLayout = (RelativeLayout) view.findViewById(R.id.maprl);
 
         // http://stackoverflow.com/a/29621490
-        if (!mFragmentResume && mFragmentVisible) {   // only when first time fragment is created
+        if (!mIsInViewPager || !mFragmentResume && mFragmentVisible) { // only when first time fragment is created
             addMapView();
         }
 
@@ -153,22 +162,24 @@ public class MapFragment
     {
         super.setUserVisibleHint(visible);
 
-        // http://stackoverflow.com/a/29621490
-        if (visible && isResumed()) {               // only at fragment screen is resumed
-            mFragmentResume = true;
-            mFragmentVisible = false;
-            mFragmentOnCreated = true;
-            visibleState();
+        if (mIsInViewPager) {
+            // http://stackoverflow.com/a/29621490
+            if (visible && isResumed()) {               // only at fragment screen is resumed
+                mFragmentResume = true;
+                mFragmentVisible = false;
+                mFragmentOnCreated = true;
+                visibleState();
 
-        } else if (visible) {                       // only at fragment onCreated
-            mFragmentResume = false;
-            mFragmentVisible = true;
-            mFragmentOnCreated = true;
+            } else if (visible) {                       // only at fragment onCreated
+                mFragmentResume = false;
+                mFragmentVisible = true;
+                mFragmentOnCreated = true;
 
-        } else if (/* !visible && */ mFragmentOnCreated) { // only when you go out of fragment screen
-            mFragmentVisible = false;
-            mFragmentResume = false;
-            invisibleState();
+            } else if (/* !visible && */ mFragmentOnCreated) { // only when you go out of fragment screen
+                mFragmentVisible = false;
+                mFragmentResume = false;
+                invisibleState();
+            }
         }
     }
 
@@ -176,28 +187,13 @@ public class MapFragment
     public void visibleState()
     {
         addMapView();
-
-        if (null != mCurrentLocationOverlay) {
-            mCurrentLocationOverlay.updateMode(
-                    PreferenceManager.getDefaultSharedPreferences(getActivity())
-                            .getString(SettingsConstantsUI.KEY_PREF_SHOW_CURRENT_LOC, "3"));
-            mCurrentLocationOverlay.startShowingCurrentLocation();
-        }
-        if (null != mGpsEventSource) {
-            mGpsEventSource.addListener(this);
-        }
+        startGpsWork();
     }
 
 
     public void invisibleState()
     {
-        if (null != mCurrentLocationOverlay) {
-            mCurrentLocationOverlay.stopShowingCurrentLocation();
-        }
-        if (null != mGpsEventSource) {
-            mGpsEventSource.removeListener(this);
-        }
-
+        stopGpsWork();
         removeMapView();
     }
 
@@ -217,6 +213,31 @@ public class MapFragment
     {
         if (null != mMapRelativeLayout && mMapRelativeLayout.indexOfChild(mMap) != -1) {
             mMapRelativeLayout.removeView(mMap);
+        }
+    }
+
+
+    public void startGpsWork()
+    {
+        if (null != mCurrentLocationOverlay) {
+            mCurrentLocationOverlay.updateMode(
+                    PreferenceManager.getDefaultSharedPreferences(getActivity())
+                            .getString(SettingsConstantsUI.KEY_PREF_SHOW_CURRENT_LOC, "3"));
+            mCurrentLocationOverlay.startShowingCurrentLocation();
+        }
+        if (null != mGpsEventSource) {
+            mGpsEventSource.addListener(this);
+        }
+    }
+
+
+    public void stopGpsWork()
+    {
+        if (null != mCurrentLocationOverlay) {
+            mCurrentLocationOverlay.stopShowingCurrentLocation();
+        }
+        if (null != mGpsEventSource) {
+            mGpsEventSource.removeListener(this);
         }
     }
 
@@ -267,12 +288,7 @@ public class MapFragment
     @Override
     public void onPause()
     {
-        if (null != mCurrentLocationOverlay) {
-            mCurrentLocationOverlay.stopShowingCurrentLocation();
-        }
-        if (null != mGpsEventSource) {
-            mGpsEventSource.removeListener(this);
-        }
+        stopGpsWork();
 
         if (null != mMap) {
             storeMapSettings();
@@ -351,16 +367,8 @@ public class MapFragment
         mCoordinatesFormat = prefs.getInt(
                 SettingsConstants.KEY_PREF_COORD_FORMAT + "_int", Location.FORMAT_DEGREES);
 
-        if (mFragmentResume) {
-            if (null != mCurrentLocationOverlay) {
-                mCurrentLocationOverlay.updateMode(
-                        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                .getString(SettingsConstantsUI.KEY_PREF_SHOW_CURRENT_LOC, "3"));
-                mCurrentLocationOverlay.startShowingCurrentLocation();
-            }
-            if (null != mGpsEventSource) {
-                mGpsEventSource.addListener(this);
-            }
+        if (!mIsInViewPager || mFragmentResume) {
+            startGpsWork();
         }
 
         mShowStatusPanel = prefs.getBoolean(SettingsConstantsUI.KEY_PREF_SHOW_STATUS_PANEL, true);

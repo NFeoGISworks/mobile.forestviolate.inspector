@@ -21,6 +21,7 @@
   -->
 
 <resources>
+
     <string-array name="sync_periods">
         <item>10 minutes</item>
         <item>30 minutes</item>
@@ -33,4 +34,18 @@
         <item>3600</item>
         <item>7200</item>
     </string-array>
+
+    <string-array name="note_initial_terms">
+        <item>1 week</item>
+        <item>2 weeks</item>
+        <item>4 weeks</item>
+        <item>8 weeks</item>
+    </string-array>
+    <string-array name="note_initial_terms_val" translatable="false">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+    </string-array>
+
 </resources>

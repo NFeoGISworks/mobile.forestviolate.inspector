@@ -21,24 +21,13 @@
 
 package com.nextgis.forestinspector.activity;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
@@ -46,13 +35,9 @@ import com.nextgis.forestinspector.dialog.InputParcelTextDialog;
 import com.nextgis.forestinspector.fragment.MapEditFragment;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
-import com.nextgis.maplibui.dialog.SelectZoomLevelsDialog;
-import com.nextgis.maplibui.formcontrol.RadioGroup;
 import com.nextgis.maplibui.fragment.BottomToolbar;
 
-/**
- * Created by bishop on 03.08.15.
- */
+
 public class SelectTerritoryActivity extends FIActivity {
     protected DocumentEditFeature mDocumentFeature;
     protected TextView            mTerritoryText;

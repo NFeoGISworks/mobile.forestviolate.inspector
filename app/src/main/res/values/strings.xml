@@ -144,6 +144,7 @@
     <string name="owner_details">owner details</string>
     <string name="species">Species</string>
     <string name="thickness">Thickness</string>
+    <string name="stump_diameter">Stump diameter</string>
     <string name="count">Count</string>
     <string name="height_rank">Height rank</string>
     <string name="category">Category</string>
@@ -208,4 +209,5 @@
     <string name="input_territory_text">Input territory text</string>
     <string name="lv">forestry</string>
     <string name="ulv">Subforestry</string>
+    <string name="note_initial_term">Note initial term</string>
 </resources>

@@ -138,7 +138,7 @@
                     android:layout_marginStart="5dp"
                     android:textStyle="bold"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="@string/thickness"
+                    android:text="@string/stump_diameter"
                     />
 
                 <TextView

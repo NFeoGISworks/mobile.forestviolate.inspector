@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.SettingsConstants;
@@ -91,6 +90,33 @@ public class PreferencesActivity extends NGPreferenceActivity {
                     return true;
                 }
             });
+        }
+
+
+        final ListPreference noteInitTerm =
+                (ListPreference) findPreference(SettingsConstants.KEY_PREF_NOTE_INITIAL_TERM);
+
+        if (null != noteInitTerm) {
+            int id = noteInitTerm.findIndexOfValue(noteInitTerm.getValue());
+            CharSequence summary = noteInitTerm.getEntries()[id];
+            noteInitTerm.setSummary(summary);
+
+            noteInitTerm.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener()
+                    {
+                        @Override
+                        public boolean onPreferenceChange(
+                                Preference preference,
+                                Object newValue)
+                        {
+                            int id = ((ListPreference) preference).findIndexOfValue(
+                                    (String) newValue);
+                            CharSequence summary = ((ListPreference) preference).getEntries()[id];
+                            preference.setSummary(summary);
+
+                            return true;
+                        }
+                    });
         }
 
         final ListPreference appTheme = (ListPreference) findPreference( SettingsConstantsUI.KEY_PREF_THEME);
