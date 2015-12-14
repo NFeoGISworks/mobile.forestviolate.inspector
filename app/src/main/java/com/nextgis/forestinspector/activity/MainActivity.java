@@ -280,7 +280,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             final IGISApplication app = (IGISApplication) getApplication();
-            app.showSettings();
+            app.showSettings(null);
             return true;
         }
         else if (id == R.id.action_about) {
