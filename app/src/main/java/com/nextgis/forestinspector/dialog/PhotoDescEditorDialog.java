@@ -63,9 +63,9 @@ public class PhotoDescEditorDialog
         mEditor.setText(mPhotoDesc);
 
         if (isThemeDark()) {
-            setIcon(R.drawable.ic_action_image_edit);
+            setIcon(R.drawable.ic_action_edit_light);
         } else {
-            setIcon(R.drawable.ic_action_image_edit);
+            setIcon(R.drawable.ic_action_edit_light);
         }
 
         setTitle(R.string.photo_desc);

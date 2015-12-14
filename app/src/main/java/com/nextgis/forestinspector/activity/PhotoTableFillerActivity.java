@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.PhotoTableFragment;
 import com.nextgis.forestinspector.map.DocumentsLayer;
@@ -56,16 +57,7 @@ public class PhotoTableFillerActivity
 
             if (mIsPhotoViewer && -1 != featureId) {
                 // get document from id
-                MapBase map = MapBase.getInstance();
-                DocumentsLayer docs = null;
-                for (int i = 0; i < map.getLayerCount(); i++) {
-                    ILayer layer = map.getLayer(i);
-                    if (layer instanceof DocumentsLayer) {
-                        docs = (DocumentsLayer) layer;
-                        break;
-                    }
-                }
-
+                DocumentsLayer docs = DocumentEditFeature.getDocumentsLayer();
                 if (null == docs) {
                     setContentView(R.layout.activity_document_noview);
                     setToolbar(R.id.main_toolbar);
