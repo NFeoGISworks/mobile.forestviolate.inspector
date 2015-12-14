@@ -230,7 +230,7 @@ public class SelectTerritoryActivity extends FIActivity {
 
     private void showSettings() {
         IGISApplication app = (IGISApplication) getApplication();
-        app.showSettings();
+        app.showSettings(null);
     }
 
     public void showAskParcelTextDialog() {
