@@ -96,7 +96,7 @@
                 />
 
             <com.nextgis.maplibui.control.DateTime
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/create_datetime"
                 style="@style/DatePickSpinner"
@@ -173,6 +173,14 @@
 
             <TextView  style="@style/description_text"
                 android:text="@string/violation_found_by_desc"
+                />
+
+            <com.nextgis.maplibui.control.DateTime
+                android:id="@+id/date_pick"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                style="@style/DatePickSpinner"
                 />
 
             <EditText

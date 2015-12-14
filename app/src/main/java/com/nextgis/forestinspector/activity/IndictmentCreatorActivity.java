@@ -76,6 +76,7 @@ public class IndictmentCreatorActivity
     protected EditText mWho, mPlace, mCrime, mCrimeSay;
     protected EditText mDetectorSay, mAuthorSay, mDescription;
     protected DateTime mDateTime;
+    protected DateTime mDatePick;
     protected Spinner  mViolationTypeSpinner;
     protected Spinner  mForestCatTypeSpinner;
     protected TextView mTerritory;
@@ -151,6 +152,11 @@ public class IndictmentCreatorActivity
 
             mPlace = (EditText) findViewById(R.id.place);
             mLaw = (EditText) findViewById(R.id.code_num);
+
+            mDatePick = (DateTime) findViewById(R.id.date_pick);
+            mDatePick.init(null, null, null);
+            mDatePick.setCurrentDate();
+
             mWho = (EditText) findViewById(R.id.who);
             mWhen = (EditText) findViewById(R.id.when);
             mCrime = (EditText) findViewById(R.id.crime);
@@ -325,6 +331,8 @@ public class IndictmentCreatorActivity
             mNewFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_USER, mUserDesc);
             mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_DATE_PICK, mDatePick.getValue());
+            mNewFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
             mNewFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
@@ -387,6 +395,8 @@ public class IndictmentCreatorActivity
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
         mWhen.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
+        mDatePick.setValue(
+                mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_PICK));
         mWho.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
         mDetectorSay.setText(

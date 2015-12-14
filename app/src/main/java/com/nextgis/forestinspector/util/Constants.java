@@ -113,6 +113,7 @@ public interface Constants
     String FIELD_DOCUMENTS_PLACE           = "place";
     String FIELD_DOCUMENTS_VIOLATION_TYPE  = "violate";
     String FIELD_DOCUMENTS_LAW             = "law";
+    String FIELD_DOCUMENTS_DATE_PICK       = "date_pick";
     String FIELD_DOCUMENTS_USER_PICK       = "user_pick";
     String FIELD_DOCUMENTS_USER_TRANS      = "user_trans";
     String FIELD_DOCUMENTS_DATE_VIOLATE    = "date_violate";

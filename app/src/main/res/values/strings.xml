@@ -94,7 +94,7 @@
     <string name="forest_cat">Forest category</string>
     <string name="violation_found_by">3. When and where detect violation</string>
     <string name="violation_found_by_desc">name and details of organization, authority, municipal authority, position, name, if available - ID number, citizen address</string>
-    <string name="who_hint">Enter when and where violation was detected</string>
+    <string name="who_hint">Enter who violation was detected</string>
     <string name="violation_when">4. When the committed violations of forest</string>
     <string name="violation_when_desc">Date, time, when it is impossible to establish - presumably</string>
     <string name="when_hint">Enter date here</string>

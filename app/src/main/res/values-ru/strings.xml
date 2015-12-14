@@ -95,7 +95,7 @@
     <string name="forest_cat">Категория защитности лесов</string>
     <string name="violation_found_by">3. Когда и кем обнаружено лесонарушение</string>
     <string name="violation_found_by_desc">наименование и реквизиты организации, органа власти, муниципального органа, должности, ФИО, при наличии - номер удостоверения, адрес гражданина</string>
-    <string name="who_hint">Введите когда и кем обнаружено лесонарушение</string>
+    <string name="who_hint">Введите кем обнаружено лесонарушение</string>
     <string name="violation_when">4. Когда совершено лесонарушение</string>
     <string name="violation_when_desc">Дата, период, при невозможности установления - предположительно</string>
     <string name="when_hint">Введите предположительную дату лесонарушения</string>
