@@ -112,12 +112,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/place"
-                android:hint="@string/place_create_hint"/>
+                android:hint="@string/place_create_hint"
+                />
 
             <!-- 1. violation type -->
             <TextView style="@style/paragraph_text"
                 android:text="@string/violation_type"
-            />
+                />
 
             <Spinner
                 android:layout_width="match_parent"
@@ -135,7 +136,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/code_num"
-                android:text="@string/code_num_def"/>
+                />
 
             <!-- 2. place -->
             <TextView style="@style/paragraph_text"
