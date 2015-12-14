@@ -103,7 +103,7 @@
     <string name="create_sheet">Create sheet</string>
     <string name="create_production">Fill production form</string>
     <string name="create_note">Create note</string>
-    <string name="crime">5. A person who commits violations of forest</string>
+    <string name="crime">5. A supposed person who commits violations of forest</string>
     <string name="crime_desc">Name of the legal entity, name of the individual entrepreneur, legal and postal address, bank details, name the year of birth of citizens, data of identity document, current address, and other information allowing to identify the person - offender</string>
     <string name="crime_hint">Enter offender details</string>
     <string name="description">Description</string>
