@@ -158,9 +158,9 @@ public interface Constants
     /**
      * cadastre fields
      */
-    String FIELD_CADASTRE_LV     = "name_lv";
-    String FIELD_CADASTRE_ULV    = "name_ulv";
-    String FIELD_CADASTRE_PARCEL = "kv";
+    String FIELD_CADASTRE_LV     = "NAME_LV";
+    String FIELD_CADASTRE_ULV    = "NAME_ULV";
+    String FIELD_CADASTRE_PARCEL = "KV";
 
     /**
      * production fields

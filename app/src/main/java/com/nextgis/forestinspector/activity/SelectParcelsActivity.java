@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -31,22 +32,17 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.SearchView;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.adapter.ParcelCursorAdapter;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
@@ -70,17 +66,17 @@ public class SelectParcelsActivity
     {
         super.onCreate(savedInstanceState);
 
+        MainApplication app = (MainApplication) getApplication();
+        mDocumentFeature = app.getTempFeature();
+
         setContentView(R.layout.activity_select_territory_form_cadastre);
         setToolbar(R.id.main_toolbar);
 
         mListView = (ListView) findViewById(R.id.parcelsList);
-        mAdapter = new ParcelCursorAdapter(this, null, 0);
+        mAdapter = new ParcelCursorAdapter(this, null, 0, mDocumentFeature);
         mListView.setAdapter(mAdapter);
 
         handleIntent(getIntent());
-
-        MainApplication app = (MainApplication) getApplication();
-        mDocumentFeature = app.getTempFeature();
     }
 
 
@@ -209,82 +205,6 @@ public class SelectParcelsActivity
     private void apply()
     {
         finish();
-    }
-
-
-    protected class ParcelCursorAdapter
-            extends CursorAdapter
-    {
-        public ParcelCursorAdapter(
-                Context context,
-                Cursor cursor,
-                int flags)
-        {
-            super(context, cursor, 0);
-        }
-
-
-        // The newView method is used to inflate a new view and return it,
-        // you don't bind any data to the view at this point.
-        @Override
-        public View newView(
-                Context context,
-                Cursor cursor,
-                ViewGroup parent)
-        {
-            return LayoutInflater.from(context).inflate(R.layout.item_parcel, parent, false);
-        }
-
-
-        // The bindView method is used to bind all data to a given view
-        // such as setting the text on a TextView.
-        @Override
-        public void bindView(
-                View view,
-                Context context,
-                Cursor cursor)
-        {
-            // Find fields to populate in inflated template
-            TextView tvParcel = (TextView) view.findViewById(R.id.parcel_desc);
-
-            String sParcelDesc =
-                    cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV)) +
-                    " " + getString(R.string.forestry) + ", " +
-                    cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV)) +
-                    " " + getString(R.string.district_forestry) + ", " +
-                    getString(R.string.parcel) + " " +
-                    cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
-            long id = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(com.nextgis.maplib.util.Constants.FIELD_ID));
-            // Populate fields with extracted properties
-            tvParcel.setText(sParcelDesc);
-
-            CheckBox box = (CheckBox) view.findViewById(R.id.check);
-            box.setTag(id);
-            if (mDocumentFeature.getParcelIds().contains(id)) {
-                box.setChecked(true);
-            } else {
-                box.setChecked(false);
-            }
-            box.setOnCheckedChangeListener(
-                    new CompoundButton.OnCheckedChangeListener()
-                    {
-                        @Override
-                        public void onCheckedChanged(
-                                CompoundButton buttonView,
-                                boolean isChecked)
-                        {
-                            Long id = (Long) buttonView.getTag();
-                            if (isChecked) {
-                                if (!mDocumentFeature.getParcelIds().contains(id)) {
-                                    mDocumentFeature.getParcelIds().add(id);
-                                }
-                            } else {
-                                mDocumentFeature.getParcelIds().remove(id);
-                            }
-                        }
-                    });
-        }
     }
 
 
