@@ -91,8 +91,12 @@ public class IndictmentViewFragment extends TabFragment {
                 TextView forestCatType = (TextView) view.findViewById(R.id.forest_cat_type);
                 forestCatType.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE));
 
+                String datePick = feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE_PICK);
+                String userPick = feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_PICK);
+                String whoText = datePick + ", " + userPick;
+
                 TextView who = (TextView) view.findViewById(R.id.who);
-                who.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_PICK));
+                who.setText(whoText);
 
                 TextView when = (TextView) view.findViewById(R.id.when);
                 when.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
