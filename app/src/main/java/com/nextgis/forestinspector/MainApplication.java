@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
+
 import com.nextgis.forestinspector.activity.PreferencesActivity;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.map.FILayerFactory;
@@ -84,7 +85,7 @@ public class MainApplication extends GISApplication {
      * Show settings Activity
      */
     @Override
-    public void showSettings(String setting) {
+    public void showSettings(String settings) {
         Intent intentSet = new Intent(this, PreferencesActivity.class);
         intentSet.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentSet);

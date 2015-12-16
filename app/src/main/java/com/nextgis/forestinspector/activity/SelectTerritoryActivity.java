@@ -36,6 +36,7 @@ import com.nextgis.forestinspector.fragment.MapEditFragment;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplibui.fragment.BottomToolbar;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 
 public class SelectTerritoryActivity extends FIActivity {
@@ -230,7 +231,7 @@ public class SelectTerritoryActivity extends FIActivity {
 
     private void showSettings() {
         IGISApplication app = (IGISApplication) getApplication();
-        app.showSettings(null);
+        app.showSettings(SettingsConstantsUI.ACTION_PREFS_GENERAL);
     }
 
     public void showAskParcelTextDialog() {

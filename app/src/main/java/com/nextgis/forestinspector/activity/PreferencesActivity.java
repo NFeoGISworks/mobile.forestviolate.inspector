@@ -34,6 +34,7 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.util.Constants;
 import com.nextgis.maplibui.activity.NGPreferenceActivity;
+import com.nextgis.maplibui.util.ControlHelper;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import java.text.SimpleDateFormat;
@@ -55,8 +56,7 @@ public class PreferencesActivity extends NGPreferenceActivity {
                     Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
             long timeStamp = settings.getLong(com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LAST_SYNC_TIMESTAMP, 0);
             if (timeStamp > 0) {
-                syncSwitch.setSummary(getString(R.string.last_sync_time) + ": " +
-                        new SimpleDateFormat().format(new Date(timeStamp)));
+                syncSwitch.setSummary(ControlHelper.getSyncTime(this, timeStamp));
             }
         }
 

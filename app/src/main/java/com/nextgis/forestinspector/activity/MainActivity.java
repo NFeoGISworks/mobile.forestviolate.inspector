@@ -55,6 +55,7 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import java.util.Locale;
 
@@ -280,7 +281,7 @@ public class MainActivity extends FIActivity implements NGWLoginFragment.OnAddAc
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             final IGISApplication app = (IGISApplication) getApplication();
-            app.showSettings(null);
+            app.showSettings(SettingsConstantsUI.ACTION_PREFS_GENERAL);
             return true;
         }
         else if (id == R.id.action_about) {
