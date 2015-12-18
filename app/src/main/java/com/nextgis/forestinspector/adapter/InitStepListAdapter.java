@@ -81,6 +81,11 @@ public class InitStepListAdapter extends BaseAdapter {
                 context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
         mSteps.add(step7);
 
+        // 8. load targeting
+        InitStep step8 = new InitStep(context.getString(R.string.load_targeting),
+                context.getString(R.string.waiting), Constants.STEP_STATE_WAIT);
+        mSteps.add(step8);
+
         // 8. load other offline vector data (scanex points, etc.)
     }
 

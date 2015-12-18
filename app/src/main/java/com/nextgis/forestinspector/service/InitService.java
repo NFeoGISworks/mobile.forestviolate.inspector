@@ -30,7 +30,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.map.DocumentsLayer;
@@ -59,7 +58,6 @@ import com.nextgis.maplib.util.NetworkUtil;
 import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
 import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -255,6 +253,7 @@ public class InitService extends Service {
             keys.put(Constants.KEY_THICKNESS_TYPES, -1L);
             keys.put(Constants.KEY_TREES_TYPES, -1L);
             keys.put(Constants.KEY_HEIGHT_TYPES, -1L);
+            keys.put(Constants.KEY_FV, -1L);
 
             if(!checkServerLayers(connection, keys)){
                 publishProgress(getString(R.string.error_wrong_server), Constants.STEP_STATE_ERROR);
@@ -487,11 +486,25 @@ public class InitService extends Service {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
+            // step 8: load notes
+
+            mStep = 7;
+
+            publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
+
+            if (!loadTargeting(keys.get(Constants.KEY_FV), mAccount.name, map, this)){
+                publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
+                return false;
+            }
+            else {
+                publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
+            }
+
             //TODO: load additional tables
 
             map.save();
 
-            mStep = 7; // add extra step to finish view
+            mStep = 8; // add extra step to finish view
             publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
 
             return true;
@@ -876,7 +889,8 @@ public class InitService extends Service {
             if(null == docs)
                 return false;
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
+                    InitService.this);
             float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
             float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
             float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
@@ -887,8 +901,8 @@ public class InitService extends Service {
 
             ngwVectorLayer.setName(layerName);
             ngwVectorLayer.setRemoteId(resourceId);
-            ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
-                    minX, minY, maxX, maxY));
+            ngwVectorLayer.setServerWhere(
+                    String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
             ngwVectorLayer.setVisible(false);
             ngwVectorLayer.setAccountName(accountName);
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
@@ -937,6 +951,34 @@ public class InitService extends Service {
             NGWVectorLayerUI ngwVectorLayer =
                     new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_NOTES));
             ngwVectorLayer.setName(getString(R.string.notes));
+            ngwVectorLayer.setRemoteId(resourceId);
+            ngwVectorLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);
+            ngwVectorLayer.setVisible(true);
+            //TODO: add layer draw default style and quarter labels
+            ngwVectorLayer.setAccountName(accountName);
+            ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+            ngwVectorLayer.setMinZoom(0);
+            ngwVectorLayer.setMaxZoom(25);
+
+            map.addLayer(ngwVectorLayer);
+
+            try {
+                ngwVectorLayer.createFromNGW(progressor);
+            } catch (NGException | IOException | JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return true;
+        }
+
+        protected boolean loadTargeting(long resourceId, String accountName, MapBase map, IProgressor progressor) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
+            long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
+
+            NGWVectorLayerUI ngwVectorLayer =
+                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_FV));
+            ngwVectorLayer.setName(getString(R.string.targeting));
             ngwVectorLayer.setRemoteId(resourceId);
             ngwVectorLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);
             ngwVectorLayer.setVisible(true);

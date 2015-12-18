@@ -58,6 +58,7 @@ public interface Constants
     String KEY_THICKNESS_TYPES  = "thickness_types";
     String KEY_TREES_TYPES      = "trees_types";
     String KEY_HEIGHT_TYPES     = "height_types";
+    String KEY_FV               = "fv";
 
     String KEY_LAYER_DOCUMENTS        = "documents";
     String KEY_LAYER_SHEET            = "sheet";
@@ -73,6 +74,7 @@ public interface Constants
     String KEY_LAYER_THICKNESS_TYPES  = "thickness_types";
     String KEY_LAYER_TREES_TYPES      = "trees_types";
     String KEY_LAYER_HEIGHT_TYPES     = "height_types";
+    String KEY_LAYER_FV               = "fv";
 
     /**
      * inspectors keys

@@ -47,6 +47,7 @@
     <string name="load_documents">Загрузка документов</string>
     <string name="load_linked_layers">Загрузка связанных слоев</string>
     <string name="load_notes">Загрузка заметок</string>
+    <string name="load_targeting">Загрузка целеуказаний</string>
     <string name="connecting">подключение к серверу…</string>
     <string name="connected">Подключено</string>
     <string name="check_tables_exist">Проверка таблиц</string>
@@ -76,6 +77,7 @@
     <string name="sheet_link">См. вкладку \"Ведомость перечета\"</string>
     <string name="sheet_item_name">Ведомость перечета</string>
     <string name="notes">Заметки</string>
+    <string name="targeting">Целеуказание</string>
     <string name="note_title">Заметка</string>
     <string name="note_changing_title">Изменение заметки</string>
     <string name="note_item_name">Заметка</string>
