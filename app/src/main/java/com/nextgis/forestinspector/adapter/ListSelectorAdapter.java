@@ -27,7 +27,7 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import com.nextgis.forestinspector.R;
 
 import java.io.IOException;
@@ -41,8 +41,10 @@ public abstract class ListSelectorAdapter
         extends RecyclerView.Adapter<ListSelectorAdapter.ViewHolder>
 {
     protected SparseBooleanArray mSelectedItems;
-    protected boolean mSelectState  = false;
-    protected boolean mHideCheckBox = false;
+    protected boolean mSelectState      = false;
+    protected boolean mHideCheckBox     = false;
+    protected boolean mSingleSelectable = false;
+    protected int mCurrentSingleSelected;
 
     protected Queue<OnSelectionChangedListener> mOnSelectionChangedListeners;
 
@@ -98,7 +100,7 @@ public abstract class ListSelectorAdapter
                             @Override
                             public void onClick(View view)
                             {
-                                CheckBox checkBox = (CheckBox) view;
+                                CompoundButton checkBox = (CompoundButton) view;
                                 int clickedPos = (Integer) checkBox.getTag();
                                 setSelection(clickedPos, checkBox.isChecked());
                             }
@@ -123,7 +125,7 @@ public abstract class ListSelectorAdapter
             implements ListSelectorAdapter.OnSelectionChangedListener, View.OnClickListener
     {
         public int                 mPosition;
-        public CheckBox            mCheckBox;
+        public CompoundButton      mCheckBox;
         public OnItemClickListener mClickListener;
 
 
@@ -133,7 +135,7 @@ public abstract class ListSelectorAdapter
         {
             super(itemView);
 
-            mCheckBox = (CheckBox) itemView.findViewById(R.id.item_checkbox);
+            mCheckBox = (CompoundButton) itemView.findViewById(R.id.item_checkbox);
 
             if (null != clickListener) {
                 mClickListener = clickListener;
@@ -166,6 +168,18 @@ public abstract class ListSelectorAdapter
         {
             void onItemClick(int position);
         }
+    }
+
+
+    public void setSingleSelectable(boolean singleSelectable)
+    {
+        mSingleSelectable = singleSelectable;
+    }
+
+
+    public boolean isSingleSelectable()
+    {
+        return mSingleSelectable;
     }
 
 
@@ -250,11 +264,27 @@ public abstract class ListSelectorAdapter
         for (OnSelectionChangedListener listener : mOnSelectionChangedListeners) {
             listener.onSelectionChanged(position, selection);
         }
+
+        if (mSingleSelectable) {
+            if (position != mCurrentSingleSelected) {
+                mSelectedItems.delete(mCurrentSingleSelected);
+
+                for (OnSelectionChangedListener listener : mOnSelectionChangedListeners) {
+                    listener.onSelectionChanged(mCurrentSingleSelected, false);
+                }
+
+                mCurrentSingleSelected = position;
+            }
+        }
     }
 
 
     public void setSelectionForAll(boolean selection)
     {
+        if (selection && mSingleSelectable) {
+            throw new RuntimeException("ListSelectorAdapter is single selectable");
+        }
+
         for (int i = 0, size = getItemCount(); i < size; ++i) {
             if (selection != isSelected(i)) {
                 setSelection(i, selection);
@@ -275,6 +305,22 @@ public abstract class ListSelectorAdapter
             items.add(mSelectedItems.keyAt(i));
         }
         return items;
+    }
+
+
+    public Integer getCurrentSingleSelectedItem()
+    {
+        if (!mSingleSelectable) {
+            throw new RuntimeException("ListSelectorAdapter is not single selectable");
+        }
+
+        List<Integer> items = getSelectedItemsIds();
+
+        if (items.size() == 0) {
+            return null;
+        } else {
+            return items.get(0);
+        }
     }
 
 
@@ -301,7 +347,9 @@ public abstract class ListSelectorAdapter
 
     public void addOnSelectionChangedListener(OnSelectionChangedListener listener)
     {
-        if (mOnSelectionChangedListeners != null && !mOnSelectionChangedListeners.contains(listener)) {
+        if (mOnSelectionChangedListeners != null &&
+            !mOnSelectionChangedListeners.contains(listener)) {
+
             mOnSelectionChangedListeners.add(listener);
         }
     }
