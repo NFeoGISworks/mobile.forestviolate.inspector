@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.adapter;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
@@ -33,9 +34,11 @@ import com.nextgis.maplib.datasource.Feature;
 public class ProductionListFillerAdapter
         extends ListFillerAdapter
 {
-    public ProductionListFillerAdapter(DocumentFeature feature)
+    public ProductionListFillerAdapter(
+            Context context,
+            DocumentFeature feature)
     {
-        super(feature);
+        super(context, feature);
     }
 
 
@@ -49,7 +52,7 @@ public class ProductionListFillerAdapter
     @Override
     protected int getItemViewResId()
     {
-        return R.layout.item_production_item;
+        return R.layout.item_production;
     }
 
 
@@ -67,7 +70,8 @@ public class ProductionListFillerAdapter
     {
         super.onBindViewHolder(holder, position);
 
-        ProductionListFillerAdapter.ViewHolder viewHolder = (ProductionListFillerAdapter.ViewHolder) holder;
+        ProductionListFillerAdapter.ViewHolder viewHolder =
+                (ProductionListFillerAdapter.ViewHolder) holder;
 
         Feature item = mFeatures.get(position);
 

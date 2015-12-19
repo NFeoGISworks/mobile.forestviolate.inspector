@@ -22,15 +22,18 @@
 
 package com.nextgis.forestinspector.adapter;
 
+import android.content.Context;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 
 
 public class VehicleListViewerAdapter
         extends VehicleListFillerAdapter
 {
-    public VehicleListViewerAdapter(DocumentFeature feature)
+    public VehicleListViewerAdapter(
+            Context context,
+            DocumentFeature feature)
     {
-        super(feature);
+        super(context, feature);
         mHideCheckBox = true;
     }
 }

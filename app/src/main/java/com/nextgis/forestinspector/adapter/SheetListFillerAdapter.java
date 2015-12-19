@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.adapter;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
@@ -33,9 +34,11 @@ import com.nextgis.maplib.datasource.Feature;
 public class SheetListFillerAdapter
         extends ListFillerAdapter
 {
-    public SheetListFillerAdapter(DocumentFeature feature)
+    public SheetListFillerAdapter(
+            Context context,
+            DocumentFeature feature)
     {
-        super(feature);
+        super(context, feature);
     }
 
 
@@ -49,7 +52,7 @@ public class SheetListFillerAdapter
     @Override
     protected int getItemViewResId()
     {
-        return R.layout.item_sheet_item;
+        return R.layout.item_sheet;
     }
 
 

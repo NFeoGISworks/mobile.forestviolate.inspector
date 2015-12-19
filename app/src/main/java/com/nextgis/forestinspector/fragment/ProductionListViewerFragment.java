@@ -46,6 +46,6 @@ public class ProductionListViewerFragment
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        return new ProductionListViewerAdapter(feature);
+        return new ProductionListViewerAdapter(getActivity(), feature);
     }
 }

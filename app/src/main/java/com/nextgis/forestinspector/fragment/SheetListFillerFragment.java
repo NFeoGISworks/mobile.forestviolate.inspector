@@ -49,7 +49,7 @@ public class SheetListFillerFragment
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        return new SheetListFillerAdapter(feature);
+        return new SheetListFillerAdapter(getActivity(), feature);
     }
 
 

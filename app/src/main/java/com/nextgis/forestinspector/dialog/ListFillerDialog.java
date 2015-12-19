@@ -154,7 +154,7 @@ public abstract class ListFillerDialog
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    getActivity(), android.R.layout.simple_spinner_item, dataArray);
+                    mContextThemeWrapper, android.R.layout.simple_spinner_item, dataArray);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
             return adapter;
@@ -190,7 +190,7 @@ public abstract class ListFillerDialog
             ViewGroup container,
             Bundle savedInstanceState)
     {
-        View view = View.inflate(getActivity(), getDialogViewResId(), null);
+        View view = View.inflate(mContextThemeWrapper, getDialogViewResId(), null);
 
         createLocationPanelView(view);
 
@@ -202,7 +202,7 @@ public abstract class ListFillerDialog
             setIcon(R.drawable.ic_action_edit_light);
         }
 
-        setView(view);
+        setView(view, true);
 
         if (null != mFeature) {
             setTitle(R.string.change_data);

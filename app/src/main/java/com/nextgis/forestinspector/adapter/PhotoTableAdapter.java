@@ -84,7 +84,7 @@ public abstract class PhotoTableAdapter
             Map<String, AttachItem> attachItemMap,
             boolean isPhotoViewer)
     {
-        super();
+        super(activity);
 
         mActivity = activity;
         mIsPhotoViewer = isPhotoViewer;
@@ -195,7 +195,7 @@ public abstract class PhotoTableAdapter
             viewHolder.mPhotoDesc.setMaxLines(999);
 
             // http://stackoverflow.com/a/9409391
-            int[] attrs = new int[] { R.attr.photoDescBackgroundColor};
+            int[] attrs = new int[] {R.attr.photoDescBackgroundColor};
             TypedArray ta = mActivity.obtainStyledAttributes(attrs);
             int backgroundColor = ta.getColor(0, 0);
             ta.recycle();

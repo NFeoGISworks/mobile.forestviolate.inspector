@@ -52,13 +52,13 @@ public class SelectParcelsActivity
         extends FIActivity
         implements LoaderManager.LoaderCallbacks<Cursor>
 {
+    protected static String KEY_QUERY = "query";
+
     protected ListView            mListView;
     protected ParcelCursorAdapter mAdapter;
     protected DocumentEditFeature mDocumentFeature;
     protected boolean mFiltered     = false;
     protected boolean mLoaderIsInit = false;
-
-    protected static String KEY_QUERY = "query";
 
 
     @Override
@@ -138,10 +138,7 @@ public class SelectParcelsActivity
             Cursor data)
     {
         if (null != data) {
-            Cursor oldCursor = mAdapter.swapCursor(data);
-            if (null != oldCursor) {
-                oldCursor.close();
-            }
+            mAdapter.swapCursor(data);
         }
     }
 
@@ -149,7 +146,7 @@ public class SelectParcelsActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader)
     {
-
+        mAdapter.swapCursor(null);
     }
 
 

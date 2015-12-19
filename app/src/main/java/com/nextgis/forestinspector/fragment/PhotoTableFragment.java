@@ -251,7 +251,7 @@ public class PhotoTableFragment
     public void onDestroyView()
     {
         if (null != mPhotoTableAdapter) {
-            mPhotoTableAdapter.removeListener(this);
+            mPhotoTableAdapter.removeOnSelectionChangedListener(this);
         }
 
         super.onDestroyView();

@@ -69,7 +69,7 @@ public class PhotoDescEditorDialog
         }
 
         setTitle(R.string.photo_desc);
-        setView(view);
+        setView(view, true);
         setPositiveText(R.string.ok);
 
         return super.onCreateView(inflater, container, savedInstanceState);

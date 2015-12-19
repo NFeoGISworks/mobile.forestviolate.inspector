@@ -49,7 +49,7 @@ public class ProductionListFillerFragment
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        return new ProductionListFillerAdapter(feature);
+        return new ProductionListFillerAdapter(getActivity(), feature);
     }
 
 

@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.adapter;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
@@ -33,9 +34,11 @@ import com.nextgis.maplib.datasource.Feature;
 public class VehicleListFillerAdapter
         extends ListFillerAdapter
 {
-    public VehicleListFillerAdapter(DocumentFeature feature)
+    public VehicleListFillerAdapter(
+            Context context,
+            DocumentFeature feature)
     {
-        super(feature);
+        super(context, feature);
     }
 
 
@@ -49,7 +52,7 @@ public class VehicleListFillerAdapter
     @Override
     protected int getItemViewResId()
     {
-        return R.layout.item_vehicle_item;
+        return R.layout.item_vehicle;
     }
 
 
@@ -67,7 +70,8 @@ public class VehicleListFillerAdapter
     {
         super.onBindViewHolder(holder, position);
 
-        VehicleListFillerAdapter.ViewHolder viewHolder = (VehicleListFillerAdapter.ViewHolder) holder;
+        VehicleListFillerAdapter.ViewHolder viewHolder =
+                (VehicleListFillerAdapter.ViewHolder) holder;
 
         Feature item = mFeatures.get(position);
 

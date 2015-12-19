@@ -64,7 +64,6 @@ public class DocumentsListAdapter
 
     protected List<Document> mDocuments;
     protected MapEventSource mMap;
-    protected Context        mContext;
 
 
     @Override
@@ -171,9 +170,8 @@ public class DocumentsListAdapter
 
     public DocumentsListAdapter(Context context)
     {
-        super();
+        super(context);
 
-        mContext = context;
         mDocuments = new LinkedList<>();
         mMap = (MapEventSource) MapBase.getInstance();
         mDocsId = mNotesId = -10;

@@ -109,7 +109,7 @@ public abstract class ListFillerFragment
     public void onDestroyView()
     {
         if (null != mAdapter) {
-            mAdapter.removeListener(this);
+            mAdapter.removeOnSelectionChangedListener(this);
         }
 
         super.onDestroyView();
@@ -251,7 +251,8 @@ public abstract class ListFillerFragment
         ListFillerDialog dialog = getFillerDialog();
         dialog.setOnAddListener(this);
         dialog.setFeature(mAdapter.getFeature(position));
-        dialog.show(getActivity().getSupportFragmentManager(), Constants.FRAGMENT_LIST_FILLER_DIALOG);
+        dialog.show(
+                getActivity().getSupportFragmentManager(), Constants.FRAGMENT_LIST_FILLER_DIALOG);
     }
 
 
@@ -259,7 +260,8 @@ public abstract class ListFillerFragment
     {
         ListFillerDialog dialog = getFillerDialog();
         dialog.setOnAddListener(this);
-        dialog.show(getActivity().getSupportFragmentManager(), Constants.FRAGMENT_LIST_FILLER_DIALOG);
+        dialog.show(
+                getActivity().getSupportFragmentManager(), Constants.FRAGMENT_LIST_FILLER_DIALOG);
     }
 
 

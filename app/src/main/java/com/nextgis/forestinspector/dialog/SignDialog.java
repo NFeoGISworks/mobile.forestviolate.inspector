@@ -76,7 +76,7 @@ public class SignDialog
         }
 
         setTitle(R.string.sign_and_save);
-        setView(view);
+        setView(view, false);
         setNegativeText(R.string.fix);
         setPositiveText(R.string.save);
 
