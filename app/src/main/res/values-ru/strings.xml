@@ -78,6 +78,7 @@
     <string name="sheet_item_name">Ведомость перечета</string>
     <string name="notes">Заметки</string>
     <string name="targeting">Целеуказание</string>
+    <string name="targeting_selection">Выбор целеуказания</string>
     <string name="note_title">Заметка</string>
     <string name="note_changing_title">Изменение заметки</string>
     <string name="note_item_name">Заметка</string>

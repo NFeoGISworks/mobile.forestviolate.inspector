@@ -140,6 +140,16 @@ public interface Constants
     String FIELD_NOTES_USER_ID     = "user_id";
 
     /**
+     * fv fields
+     */
+    String FIELD_FV_OBJECTID  = "objectID";
+    String FIELD_FV_DATE      = "date";
+    String FIELD_FV_FORESTRY  = "forestery";
+    String FIELD_FV_PRECINCT  = "precinct";
+    String FIELD_FV_REGION    = "region";
+    String FIELD_FV_TERRITORY = "territory";
+
+    /**
      * vehicle fields
      */
     String FIELD_VEHICLE_NAME        = "name";
@@ -194,4 +204,5 @@ public interface Constants
     String FRAGMENT_SIGN_DIALOG              = "sign_dialog";
     String FRAGMENT_PHOTO_TABLE              = "photo_table";
     String FRAGMENT_PHOTO_DESC_EDITOR_DIALOG = "photo_desc_editor_dialog";
+    String FRAGMENT_TARGETING_DIALOG         = "targeting_dialog";
 }

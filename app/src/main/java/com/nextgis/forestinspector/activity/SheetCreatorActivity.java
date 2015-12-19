@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,7 @@ import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.dialog.SignDialog;
+import com.nextgis.forestinspector.dialog.TargetingDialog;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
@@ -53,6 +55,7 @@ import java.util.Calendar;
  */
 public class SheetCreatorActivity
         extends FIActivity
+        implements TargetingDialog.OnSelectListener
 {
     protected static final int SHEET_ACTIVITY = 1102;
 
@@ -98,9 +101,6 @@ public class SheetCreatorActivity
                         com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
                 app.setTempFeature(mNewFeature);
 
-                // TODO: 17.08.15 Ask inspector about vector
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_VECTOR, "-1");
                 mNewFeature.setFieldValue(
                         Constants.FIELD_DOCUMENTS_TYPE, Constants.DOC_TYPE_SHEET);
                 mNewFeature.setFieldValue(
@@ -172,6 +172,17 @@ public class SheetCreatorActivity
 
 
     @Override
+    public void onBackPressed()
+    {
+        MainApplication app = (MainApplication) getApplication();
+        app.setTempFeature(null);
+        mNewFeature = null;
+
+        super.onBackPressed();
+    }
+
+
+    @Override
     protected void onPause()
     {
         super.onPause();
@@ -186,6 +197,23 @@ public class SheetCreatorActivity
         super.onResume();
 
         restoreControlsFromFeature();
+
+        // TODO: not show dialog if 0 records
+
+        String vector = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VECTOR);
+
+        if (null == vector) {
+            FragmentManager fm = getSupportFragmentManager();
+
+            TargetingDialog fragment =
+                    (TargetingDialog) fm.findFragmentByTag(Constants.FRAGMENT_TARGETING_DIALOG);
+
+            if (fragment == null) {
+                TargetingDialog dialog = new TargetingDialog();
+                dialog.setOnSelectListener(this);
+                dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_TARGETING_DIALOG);
+            }
+        }
     }
 
 
@@ -326,5 +354,13 @@ public class SheetCreatorActivity
         //show dialog with sign and save / edit buttons
         SignDialog signDialog = new SignDialog();
         signDialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SIGN_DIALOG);
+    }
+
+
+    @Override
+    public void onSelect(String objectId)
+    {
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_VECTOR, objectId);
     }
 }

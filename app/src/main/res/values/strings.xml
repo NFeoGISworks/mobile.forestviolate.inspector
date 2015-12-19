@@ -76,7 +76,8 @@
     <string name="sheet_link">See tab \"Sheet\"</string>
     <string name="sheet_item_name">Sheet</string>
     <string name="notes">Notes</string>
-    <string name="targeting">Еargeting</string>
+    <string name="targeting">Targeting</string>
+    <string name="targeting_selection">Targeting selection</string>
     <string name="note_title">Note</string>
     <string name="note_changing_title">Note changing</string>
     <string name="note_item_name">Note</string>

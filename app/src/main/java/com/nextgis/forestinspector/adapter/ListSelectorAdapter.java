@@ -312,7 +312,7 @@ public abstract class ListSelectorAdapter
     }
 
 
-    public Integer getCurrentSingleSelectedItem()
+    public Integer getCurrentSingleSelectedItemId()
     {
         if (!mSingleSelectable) {
             throw new RuntimeException("ListSelectorAdapter is not single selectable");
