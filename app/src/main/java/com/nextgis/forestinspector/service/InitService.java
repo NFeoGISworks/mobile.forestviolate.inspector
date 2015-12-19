@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -972,15 +973,26 @@ public class InitService extends Service {
             return true;
         }
 
-        protected boolean loadTargeting(long resourceId, String accountName, MapBase map, IProgressor progressor) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
-            long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
 
-            NGWVectorLayerUI ngwVectorLayer =
-                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_FV));
+        protected boolean loadTargeting(
+                long resourceId,
+                String accountName,
+                MapBase map,
+                IProgressor progressor)
+        {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
+                    InitService.this);
+            float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+            float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+            float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+            float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
+
+            NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(
+                    getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_FV));
             ngwVectorLayer.setName(getString(R.string.targeting));
             ngwVectorLayer.setRemoteId(resourceId);
-            ngwVectorLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);
+            ngwVectorLayer.setServerWhere(
+                    String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
             ngwVectorLayer.setVisible(true);
             //TODO: add layer draw default style and quarter labels
             ngwVectorLayer.setAccountName(accountName);
