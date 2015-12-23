@@ -84,7 +84,7 @@ public class TargetingDialog
 
     protected SwitchCompat mSwitchFilter;
     protected boolean mShowAllTargets = false;
-    protected boolean mIsInitialView = true;
+    protected boolean mIsInitialView  = true;
 
 
     @Override
@@ -390,6 +390,7 @@ public class TargetingDialog
         String[] projection = {
                 com.nextgis.maplib.util.Constants.FIELD_ID,
                 Constants.FIELD_FV_OBJECTID,
+                Constants.FIELD_FV_STATUS,
                 Constants.FIELD_FV_DATE,
                 Constants.FIELD_FV_FORESTRY,
                 Constants.FIELD_FV_PRECINCT,
@@ -398,12 +399,10 @@ public class TargetingDialog
 
         String sortOrder = Constants.FIELD_FV_DATE + " DESC";
 
-        String selection;
+        String selection =
+                Constants.FIELD_FV_STATUS + " = " + Constants.FV_STATUS_NEW_FOREST_CHANGE;
 
-        if (mShowAllTargets || mLocation == null) {
-            selection = null;
-
-        } else {
+        if (!mShowAllTargets && mLocation != null) {
             GeoPoint pt = new GeoPoint(mLocation.getLongitude(), mLocation.getLatitude());
             pt.setCRS(GeoConstants.CRS_WGS84);
             pt.project(GeoConstants.CRS_WEB_MERCATOR);
@@ -413,7 +412,8 @@ public class TargetingDialog
             double maxX = pt.getX() + Constants.DOCS_VECTOR_SCOPE;
             double maxY = pt.getY() + Constants.DOCS_VECTOR_SCOPE;
 
-            selection = String.format(Locale.US, "bbox=[%f,%f,%f,%f]", minX, minY, maxX, maxY);
+            selection += " AND " + String.format(
+                    Locale.US, "bbox=[%f,%f,%f,%f]", minX, minY, maxX, maxY);
         }
 
         return new CursorLoader(getActivity(), uri, projection, selection, null, sortOrder);

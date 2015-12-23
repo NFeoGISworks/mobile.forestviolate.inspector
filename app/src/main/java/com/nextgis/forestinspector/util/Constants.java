@@ -143,11 +143,15 @@ public interface Constants
      * fv fields
      */
     String FIELD_FV_OBJECTID  = "objectID";
+    String FIELD_FV_STATUS    = "status";
     String FIELD_FV_DATE      = "date";
     String FIELD_FV_FORESTRY  = "forestery";
     String FIELD_FV_PRECINCT  = "precinct";
     String FIELD_FV_REGION    = "region";
     String FIELD_FV_TERRITORY = "territory";
+
+
+    String FV_STATUS_NEW_FOREST_CHANGE = "'Новое лесоизменение'";
 
     /**
      * vehicle fields
