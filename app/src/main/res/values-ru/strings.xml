@@ -214,4 +214,7 @@
     <string name="lv">forestry</string>
     <string name="ulv">Subforestry</string>
     <string name="note_initial_term">Начальный срок заметки</string>
+    <string name="skip">Пропустить</string>
+    <string name="show_all_targets">Показать все целеуказания</string>
+    <string name="show_nearest_targets">Показать ближайшие целеуказания</string>
 </resources>

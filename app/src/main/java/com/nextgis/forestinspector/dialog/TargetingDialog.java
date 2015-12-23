@@ -22,8 +22,9 @@
 
 package com.nextgis.forestinspector.dialog;
 
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -33,31 +34,56 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.CompoundButton;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.SimpleDividerItemDecoration;
 import com.nextgis.forestinspector.adapter.TargetingListAdapter;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
+import com.nextgis.maplib.api.GpsEventListener;
+import com.nextgis.maplib.api.IGISApplication;
+import com.nextgis.maplib.datasource.GeoPoint;
+import com.nextgis.maplib.location.GpsEventSource;
+import com.nextgis.maplib.util.GeoConstants;
+import com.nextgis.maplib.util.LocationUtil;
 import com.nextgis.maplibui.dialog.StyledDialogFragment;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
+
+import java.text.DecimalFormat;
+import java.util.Locale;
 
 
 public class TargetingDialog
         extends StyledDialogFragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
-                   TargetingListAdapter.OnSelectionChangedListener
+                   TargetingListAdapter.OnSelectionChangedListener,
+                   GpsEventListener
 {
-    protected static String KEY_QUERY    = "query";
     protected static String NOT_SELECTED = "-1";
+
+    protected TextView mLatView;
+    protected TextView mLongView;
+    protected TextView mAltView;
+    protected TextView mAccView;
+
+    protected GpsEventSource mGpsEventSource;
+    protected Location       mLocation;
 
     protected RecyclerView         mListView;
     protected TargetingListAdapter mAdapter;
     protected OnSelectListener     mOnSelectListener;
 
-    protected boolean mLoaderIsInit = false;
+    protected SwitchCompat mSwitchFilter;
+    protected boolean mShowAllTargets = false;
 
 
     @Override
@@ -69,11 +95,16 @@ public class TargetingDialog
 
         super.onCreate(savedInstanceState);
 
-        mAdapter = new TargetingListAdapter(mContextThemeWrapper, null);
+        IGISApplication app = (IGISApplication) getActivity().getApplication();
+        mGpsEventSource = app.getGpsEventSource();
+        mLocation = mGpsEventSource.getLastKnownLocation();
+
+        mAdapter = new TargetingListAdapter(mContext, null);
         mAdapter.setSingleSelectable(true);
         mAdapter.addOnSelectionChangedListener(this);
 
-        handleIntent(getActivity().getIntent());
+        mShowAllTargets = (null == mLocation);
+        runLoader();
     }
 
 
@@ -84,7 +115,10 @@ public class TargetingDialog
             ViewGroup container,
             Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.fragment_list, null);
+        View view = inflateThemedLayout(R.layout.dialog_targeting);
+
+        createLocationPanelView(view);
+
         mListView = (RecyclerView) view.findViewById(R.id.list);
         mListView.setLayoutManager(
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -92,6 +126,29 @@ public class TargetingDialog
         mListView.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
         mListView.setAdapter(mAdapter);
 
+        mSwitchFilter = (SwitchCompat) view.findViewById(R.id.switch_filter);
+        mSwitchFilter.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener()
+                {
+                    @Override
+                    public void onCheckedChanged(
+                            CompoundButton buttonView,
+                            boolean isChecked)
+                    {
+                        setSwitchFilterText(!isChecked);
+                        setShowAllTargets(!isChecked);
+                    }
+                });
+
+        if (null == mLocation) {
+            mSwitchFilter.setEnabled(false);
+            setShowAllTargets(true);
+        }
+
+        setSwitchFilterState(!mShowAllTargets);
+
+
+        // TODO: change icon
         if (isThemeDark()) {
             setIcon(R.drawable.ic_action_action_bookmark_outline);
         } else {
@@ -101,7 +158,7 @@ public class TargetingDialog
         setTitle(R.string.targeting_selection);
         setView(view, false);
         setPositiveText(R.string.ok);
-        setNegativeText(R.string.cancel);
+        setNegativeText(R.string.skip);
 
         setOnPositiveClickedListener(
                 new OnPositiveClickedListener()
@@ -126,9 +183,25 @@ public class TargetingDialog
 
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
-        mButtonPositive.setEnabled(false);
+        mButtonPositive.setEnabled(mAdapter.hasSelectedItems());
 
         return rootView;
+    }
+
+
+    @Override
+    public void onPause()
+    {
+        mGpsEventSource.removeListener(this);
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        mGpsEventSource.addListener(this);
     }
 
 
@@ -141,34 +214,167 @@ public class TargetingDialog
     }
 
 
-    private void handleIntent(Intent intent)
+    protected void createLocationPanelView(View view)
     {
-//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-//            String query = intent.getStringExtra(SearchManager.QUERY);
-//            //use the query to search your data
-//            // TODO: change query
-//            String fullQuery = Constants.FIELD_CADASTRE_LV + " LIKE '%" + query + "%' OR " +
-//                               Constants.FIELD_CADASTRE_ULV + " LIKE '%" + query + "%' OR " +
-//                               Constants.FIELD_CADASTRE_PARCEL + " LIKE '%" + query + "%'";
-//
-//            Bundle bundle = new Bundle();
-//            bundle.putString(KEY_QUERY, fullQuery);
-//
-//            if (mLoaderIsInit) {
-//                getLoaderManager().restartLoader(0, bundle, this);
-//            } else {
-//                getLoaderManager().initLoader(0, bundle, this);
-//                mLoaderIsInit = true;
-//            }
-//
-//        } else {
-            if (mLoaderIsInit) {
-                getLoaderManager().restartLoader(0, null, this);
-            } else {
-                getLoaderManager().initLoader(0, null, this);
-                mLoaderIsInit = true;
-            }
-//        }
+        mLatView = (TextView) view.findViewById(com.nextgis.maplibui.R.id.latitude_view);
+        mLongView = (TextView) view.findViewById(com.nextgis.maplibui.R.id.longitude_view);
+        mAltView = (TextView) view.findViewById(com.nextgis.maplibui.R.id.altitude_view);
+        mAccView = (TextView) view.findViewById(com.nextgis.maplibui.R.id.accuracy_view);
+
+        FrameLayout accLocPanel =
+                (FrameLayout) view.findViewById(com.nextgis.maplibui.R.id.accurate_location_panel);
+        accLocPanel.setVisibility(View.GONE);
+
+        final ImageButton refreshLocation =
+                (ImageButton) view.findViewById(com.nextgis.maplibui.R.id.refresh);
+
+        refreshLocation.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        RotateAnimation rotateAnimation = new RotateAnimation(
+                                0, 360, Animation.RELATIVE_TO_SELF, 0.5f,
+                                Animation.RELATIVE_TO_SELF, 0.5f);
+                        rotateAnimation.setDuration(700);
+                        rotateAnimation.setRepeatCount(0);
+                        refreshLocation.startAnimation(rotateAnimation);
+
+                        boolean locationWasUnknown = (null == mLocation);
+
+                        mLocation = mGpsEventSource.getLastKnownLocation();
+                        setLocationText(mLocation);
+
+
+                        if (null == mLocation) {
+                            mSwitchFilter.setEnabled(false);
+                            setShowAllTargets(true);
+                        } else {
+                            mSwitchFilter.setEnabled(true);
+                            if (locationWasUnknown) {
+                                setShowAllTargets(false);
+                            }
+                        }
+
+                        setSwitchFilterState(!mShowAllTargets);
+                    }
+                });
+
+
+        setLocationText(mLocation);
+    }
+
+
+    protected void setLocationText(Location location)
+    {
+        if (null == mLatView || null == mLongView || null == mAccView || null == mAltView) {
+            return;
+        }
+
+        if (null == location) {
+
+            mLatView.setText(
+                    getString(com.nextgis.maplibui.R.string.latitude_caption_short) + ": " +
+                            getString(com.nextgis.maplibui.R.string.n_a));
+            mLongView.setText(
+                    getString(com.nextgis.maplibui.R.string.longitude_caption_short) + ": " +
+                            getString(com.nextgis.maplibui.R.string.n_a));
+            mAltView.setText(
+                    getString(com.nextgis.maplibui.R.string.altitude_caption_short) + ": " +
+                            getString(com.nextgis.maplibui.R.string.n_a));
+            mAccView.setText(
+                    getString(com.nextgis.maplibui.R.string.accuracy_caption_short) + ": " +
+                            getString(com.nextgis.maplibui.R.string.n_a));
+
+            return;
+        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        int nFormat = prefs.getInt(
+                SettingsConstantsUI.KEY_PREF_COORD_FORMAT + "_int", Location.FORMAT_SECONDS);
+        DecimalFormat df = new DecimalFormat("0.0");
+
+        mLatView.setText(
+                getString(com.nextgis.maplibui.R.string.latitude_caption_short) + ": " +
+                        LocationUtil.formatLatitude(
+                                location.getLatitude(), nFormat, getResources()));
+
+        mLongView.setText(
+                getString(com.nextgis.maplibui.R.string.longitude_caption_short) + ": " +
+                        LocationUtil.formatLongitude(
+                                location.getLongitude(), nFormat, getResources()));
+
+        double altitude = location.getAltitude();
+        mAltView.setText(
+                getString(com.nextgis.maplibui.R.string.altitude_caption_short) + ": " +
+                        df.format(altitude) + " " +
+                        getString(com.nextgis.maplibui.R.string.unit_meter));
+
+        float accuracy = location.getAccuracy();
+        mAccView.setText(
+                getString(com.nextgis.maplibui.R.string.accuracy_caption_short) + ": " +
+                        df.format(accuracy) + " " +
+                        getString(com.nextgis.maplibui.R.string.unit_meter));
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location)
+    {
+
+    }
+
+
+    @Override
+    public void onBestLocationChanged(Location location)
+    {
+
+    }
+
+
+    @Override
+    public void onGpsStatusChanged(int event)
+    {
+
+    }
+
+
+    protected void setShowAllTargets(boolean showAllTargets)
+    {
+        if (mShowAllTargets != showAllTargets) {
+            mShowAllTargets = showAllTargets;
+            runLoader();
+        }
+    }
+
+
+    protected void setSwitchFilterText(boolean showNearestTargetsText)
+    {
+        if (showNearestTargetsText) {
+            mSwitchFilter.setText(mContext.getText(R.string.show_nearest_targets));
+        } else {
+            mSwitchFilter.setText(mContext.getText(R.string.show_all_targets));
+        }
+    }
+
+
+    protected void setSwitchFilterState(boolean isChecked)
+    {
+        setSwitchFilterText(!isChecked);
+        mSwitchFilter.setChecked(isChecked);
+    }
+
+
+    private void runLoader()
+    {
+        Loader loader = getLoaderManager().getLoader(0);
+        if (null != loader && loader.isStarted()) {
+            getLoaderManager().restartLoader(0, null, this);
+        } else {
+            getLoaderManager().initLoader(0, null, this);
+        }
     }
 
 
@@ -182,22 +388,34 @@ public class TargetingDialog
 
         String[] projection = {
                 com.nextgis.maplib.util.Constants.FIELD_ID,
+                Constants.FIELD_FV_OBJECTID,
                 Constants.FIELD_FV_DATE,
                 Constants.FIELD_FV_FORESTRY,
                 Constants.FIELD_FV_PRECINCT,
                 Constants.FIELD_FV_REGION,
-                Constants.FIELD_FV_TERRITORY,
-                Constants.FIELD_FV_OBJECTID};
+                Constants.FIELD_FV_TERRITORY};
 
         String sortOrder = Constants.FIELD_FV_DATE + " DESC";
 
-        if (args == null) {
-            return new CursorLoader(getActivity(), uri, projection, null, null, sortOrder);
+        String selection;
+
+        if (mShowAllTargets || mLocation == null) {
+            selection = null;
+
         } else {
-            return new CursorLoader(
-                    getActivity(), uri, projection, " " + args.getString(KEY_QUERY), null,
-                    sortOrder);
+            GeoPoint pt = new GeoPoint(mLocation.getLongitude(), mLocation.getLatitude());
+            pt.setCRS(GeoConstants.CRS_WGS84);
+            pt.project(GeoConstants.CRS_WEB_MERCATOR);
+
+            double minX = pt.getX() - Constants.DOCS_VECTOR_SCOPE;
+            double minY = pt.getY() - Constants.DOCS_VECTOR_SCOPE;
+            double maxX = pt.getX() + Constants.DOCS_VECTOR_SCOPE;
+            double maxY = pt.getY() + Constants.DOCS_VECTOR_SCOPE;
+
+            selection = String.format(Locale.US, "bbox=[%f,%f,%f,%f]", minX, minY, maxX, maxY);
         }
+
+        return new CursorLoader(getActivity(), uri, projection, selection, null, sortOrder);
     }
 
 
@@ -206,9 +424,7 @@ public class TargetingDialog
             Loader<Cursor> loader,
             Cursor data)
     {
-        if (null != data) {
-            mAdapter.swapCursor(data);
-        }
+        mAdapter.swapCursor(data);
     }
 
 
@@ -254,9 +470,7 @@ public class TargetingDialog
             int position,
             boolean selection)
     {
-        if (!mButtonPositive.isEnabled()) {
-            mButtonPositive.setEnabled(true);
-        }
+        mButtonPositive.setEnabled(mAdapter.hasSelectedItems());
     }
 
 

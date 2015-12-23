@@ -213,4 +213,7 @@
     <string name="lv">forestry</string>
     <string name="ulv">Subforestry</string>
     <string name="note_initial_term">Note initial term</string>
+    <string name="skip">Skip</string>
+    <string name="show_all_targets">Show all targeting</string>
+    <string name="show_nearest_targets">Show nearest targeting</string>
 </resources>

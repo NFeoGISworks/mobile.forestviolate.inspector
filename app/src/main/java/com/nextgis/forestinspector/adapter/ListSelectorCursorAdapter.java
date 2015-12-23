@@ -80,6 +80,8 @@ public abstract class ListSelectorCursorAdapter
             return null;
         }
 
+        clearSelectionForAll();
+
         Cursor oldCursor = mCursor;
         if (oldCursor != null) {
             if (mDataSetObserver != null) {
@@ -193,6 +195,7 @@ public abstract class ListSelectorCursorAdapter
         public void onChanged()
         {
             mDataValid = true;
+            clearSelectionForAll();
             notifyDataSetChanged();
         }
 
@@ -201,6 +204,7 @@ public abstract class ListSelectorCursorAdapter
         public void onInvalidated()
         {
             mDataValid = false;
+            clearSelectionForAll();
             notifyDataSetChanged();
             // There is not notifyDataSetInvalidated() method in RecyclerView.Adapter
         }

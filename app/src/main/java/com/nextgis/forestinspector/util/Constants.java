@@ -205,4 +205,6 @@ public interface Constants
     String FRAGMENT_PHOTO_TABLE              = "photo_table";
     String FRAGMENT_PHOTO_DESC_EDITOR_DIALOG = "photo_desc_editor_dialog";
     String FRAGMENT_TARGETING_DIALOG         = "targeting_dialog";
+
+    int DOCS_VECTOR_SCOPE = 10000;
 }
