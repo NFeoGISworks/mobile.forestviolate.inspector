@@ -58,7 +58,7 @@ public class PhotoDescEditorDialog
             ViewGroup container,
             Bundle savedInstanceState)
     {
-        View view = View.inflate(getActivity(), R.layout.dialog_photo_desc_editor, null);
+        View view = inflateThemedLayout(R.layout.dialog_photo_desc_editor);
         mEditor = (EditText) view.findViewById(R.id.photo_desc_editor);
         mEditor.setText(mPhotoDesc);
 

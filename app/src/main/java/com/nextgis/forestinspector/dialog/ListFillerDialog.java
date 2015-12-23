@@ -82,7 +82,7 @@ public abstract class ListFillerDialog
     protected TextView mAltView;
     protected TextView mAccView;
 
-    protected GpsEventSource gpsEventSource;
+    protected GpsEventSource mGpsEventSource;
     protected Location       mLocation;
 
     protected OnAddListener mOnAddListener;
@@ -107,7 +107,7 @@ public abstract class ListFillerDialog
 
 
         IGISApplication app = (IGISApplication) getActivity().getApplication();
-        gpsEventSource = app.getGpsEventSource();
+        mGpsEventSource = app.getGpsEventSource();
 
         if (null != mFeature) {
             // TODO: make for another types
@@ -154,7 +154,7 @@ public abstract class ListFillerDialog
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    mContextThemeWrapper, android.R.layout.simple_spinner_item, dataArray);
+                    mContext, android.R.layout.simple_spinner_item, dataArray);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
             return adapter;
@@ -190,7 +190,7 @@ public abstract class ListFillerDialog
             ViewGroup container,
             Bundle savedInstanceState)
     {
-        View view = View.inflate(mContextThemeWrapper, getDialogViewResId(), null);
+        View view = inflateThemedLayout(getDialogViewResId());
 
         createLocationPanelView(view);
 
@@ -241,7 +241,7 @@ public abstract class ListFillerDialog
     @Override
     public void onPause()
     {
-        gpsEventSource.removeListener(this);
+        mGpsEventSource.removeListener(this);
         super.onPause();
     }
 
@@ -250,7 +250,7 @@ public abstract class ListFillerDialog
     public void onResume()
     {
         super.onResume();
-        gpsEventSource.addListener(this);
+        mGpsEventSource.addListener(this);
     }
 
 
@@ -290,7 +290,7 @@ public abstract class ListFillerDialog
                         rotateAnimation.setRepeatCount(0);
                         refreshLocation.startAnimation(rotateAnimation);
 
-                        mFeatureLocation = gpsEventSource.getLastKnownLocation();
+                        mFeatureLocation = mGpsEventSource.getLastKnownLocation();
                         setLocationText(mFeatureLocation);
                     }
                 });
@@ -304,7 +304,7 @@ public abstract class ListFillerDialog
             }
 
         } else {
-            mFeatureLocation = gpsEventSource.getLastKnownLocation();
+            mFeatureLocation = mGpsEventSource.getLastKnownLocation();
             setLocationText(mFeatureLocation);
         }
     }

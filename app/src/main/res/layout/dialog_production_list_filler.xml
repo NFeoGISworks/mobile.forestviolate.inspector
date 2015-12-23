@@ -48,7 +48,8 @@
             />
 
         <include
-            layout="@layout/fragment_location_panel"/>
+            layout="@layout/fragment_location_panel"
+            />
 
         <!-- species -->
 

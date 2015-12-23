@@ -47,7 +47,8 @@
             />
 
         <include
-            layout="@layout/fragment_location_panel"/>
+            layout="@layout/fragment_location_panel"
+            />
 
         <TextView
             android:text="@string/vehicle_name"

@@ -58,7 +58,6 @@ public class SelectParcelsActivity
     protected ParcelCursorAdapter mAdapter;
     protected DocumentEditFeature mDocumentFeature;
     protected boolean mFiltered     = false;
-    protected boolean mLoaderIsInit = false;
 
 
     @Override
@@ -91,6 +90,9 @@ public class SelectParcelsActivity
 
     private void handleIntent(Intent intent)
     {
+        Bundle bundle = null;
+        Loader loader = getSupportLoaderManager().getLoader(0);
+
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //use the query to search your data
@@ -98,21 +100,14 @@ public class SelectParcelsActivity
                                Constants.FIELD_CADASTRE_ULV + " LIKE '%" + query + "%' OR " +
                                Constants.FIELD_CADASTRE_PARCEL + " LIKE '%" + query + "%'";
 
-            Bundle bundle = new Bundle();
+            bundle = new Bundle();
             bundle.putString(KEY_QUERY, fullQuery);
-            if (mLoaderIsInit) {
-                getSupportLoaderManager().restartLoader(0, bundle, this);
-            } else {
-                getSupportLoaderManager().initLoader(0, bundle, this);
-                mLoaderIsInit = true;
-            }
+        }
+
+        if (null != loader && loader.isStarted()) {
+            getSupportLoaderManager().restartLoader(0, bundle, this);
         } else {
-            if (mLoaderIsInit) {
-                getSupportLoaderManager().restartLoader(0, null, this);
-            } else {
-                getSupportLoaderManager().initLoader(0, null, this);
-                mLoaderIsInit = true;
-            }
+            getSupportLoaderManager().initLoader(0, bundle, this);
         }
     }
 

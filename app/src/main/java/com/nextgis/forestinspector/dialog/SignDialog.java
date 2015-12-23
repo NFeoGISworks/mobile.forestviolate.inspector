@@ -66,7 +66,7 @@ public class SignDialog
             ViewGroup container,
             Bundle savedInstanceState)
     {
-        View view = View.inflate(getActivity(), R.layout.dialog_sign, null);
+        View view = inflateThemedLayout(R.layout.dialog_sign);
         final Sign sign = (Sign) view.findViewById(R.id.sign);
 
         if (isThemeDark()) {
