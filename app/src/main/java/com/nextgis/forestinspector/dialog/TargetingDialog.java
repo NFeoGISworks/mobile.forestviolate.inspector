@@ -84,6 +84,7 @@ public class TargetingDialog
 
     protected SwitchCompat mSwitchFilter;
     protected boolean mShowAllTargets = false;
+    protected boolean mIsInitialView = true;
 
 
     @Override
@@ -425,6 +426,14 @@ public class TargetingDialog
             Cursor data)
     {
         mAdapter.swapCursor(data);
+
+        if (mIsInitialView) {
+            if (mAdapter.getItemCount() == 0) {
+                setShowAllTargets(true);
+                setSwitchFilterState(false);
+            }
+            mIsInitialView = false;
+        }
     }
 
 
