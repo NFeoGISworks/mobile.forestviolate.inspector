@@ -27,6 +27,8 @@ import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -70,6 +72,8 @@ public class TargetingDialog
 {
     protected static String NOT_SELECTED = "-1";
 
+    protected static int MSG_PRESS_SKIP = 1;
+
     protected TextView mLatView;
     protected TextView mLongView;
     protected TextView mAltView;
@@ -85,6 +89,8 @@ public class TargetingDialog
     protected SwitchCompat mSwitchFilter;
     protected boolean mShowAllTargets = false;
     protected boolean mIsInitialView  = true;
+
+    protected Handler mHandler;
 
 
     @Override
@@ -103,6 +109,18 @@ public class TargetingDialog
         mAdapter = new TargetingListAdapter(mContext, null);
         mAdapter.setSingleSelectable(true);
         mAdapter.addOnSelectionChangedListener(this);
+
+        // handler for commit a fragment after data is loaded
+        mHandler = new Handler()
+        {
+            @Override
+            public void handleMessage(Message msg)
+            {
+                if (msg.what == MSG_PRESS_SKIP) {
+                    mButtonNegative.performClick();
+                }
+            }
+        };
 
         mShowAllTargets = (null == mLocation);
         runLoader();
@@ -433,6 +451,9 @@ public class TargetingDialog
                 setSwitchFilterState(false);
             }
             mIsInitialView = false;
+
+        } else if (mShowAllTargets && mAdapter.getItemCount() == 0) {
+            mHandler.sendEmptyMessage(MSG_PRESS_SKIP);
         }
     }
 
