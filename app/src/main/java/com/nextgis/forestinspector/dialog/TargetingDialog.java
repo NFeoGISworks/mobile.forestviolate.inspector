@@ -167,11 +167,10 @@ public class TargetingDialog
         setSwitchFilterState(!mShowAllTargets);
 
 
-        // TODO: change icon
         if (isThemeDark()) {
-            setIcon(R.drawable.ic_action_action_bookmark_outline);
+            setIcon(R.drawable.ic_track_changes);
         } else {
-            setIcon(R.drawable.ic_action_action_bookmark_outline);
+            setIcon(R.drawable.ic_track_changes);
         }
 
         setTitle(R.string.targeting_selection);
