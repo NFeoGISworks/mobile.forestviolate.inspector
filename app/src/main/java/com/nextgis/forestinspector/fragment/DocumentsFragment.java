@@ -25,6 +25,8 @@ package com.nextgis.forestinspector.fragment;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,9 +41,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.DocumentsListAdapter;
+import com.nextgis.forestinspector.adapter.DocumentsListItem;
+import com.nextgis.forestinspector.adapter.DocumentsListLoader;
 import com.nextgis.forestinspector.adapter.SimpleDividerItemDecoration;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.nextgis.maplib.util.Constants.TAG;
 
@@ -51,11 +56,22 @@ import static com.nextgis.maplib.util.Constants.TAG;
  */
 public class DocumentsFragment
         extends Fragment
-        implements DocumentsListAdapter.OnSelectionChangedListener, ActionMode.Callback
+        implements DocumentsListAdapter.OnSelectionChangedListener,
+                   ActionMode.Callback,
+                   LoaderManager.LoaderCallbacks<List<DocumentsListItem>>
 {
     protected DocumentsListAdapter mAdapter;
 
     protected ActionMode mActionMode;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        runLoader();
+    }
 
 
     @Override
@@ -201,5 +217,41 @@ public class DocumentsFragment
             default:
                 return false;
         }
+    }
+
+
+    private void runLoader()
+    {
+        Loader loader = getLoaderManager().getLoader(0);
+        if (null != loader && loader.isStarted()) {
+            getLoaderManager().restartLoader(0, null, this);
+        } else {
+            getLoaderManager().initLoader(0, null, this);
+        }
+    }
+
+
+    @Override
+    public Loader<List<DocumentsListItem>> onCreateLoader(
+            int id,
+            Bundle args)
+    {
+        return new DocumentsListLoader(getActivity());
+    }
+
+
+    @Override
+    public void onLoadFinished(
+            Loader<List<DocumentsListItem>> loader,
+            List<DocumentsListItem> documents)
+    {
+        mAdapter.setDocuments(documents);
+    }
+
+
+    @Override
+    public void onLoaderReset(Loader<List<DocumentsListItem>> loader)
+    {
+        mAdapter.setDocuments(null);
     }
 }
