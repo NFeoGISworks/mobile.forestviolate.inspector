@@ -108,6 +108,27 @@ public class DocumentsListAdapter
 
 
     @Override
+    public void setSelection(
+            int position,
+            boolean selection)
+    {
+        DocumentsListItem item = mDocuments.get(position);
+
+        switch (item.mType) {
+            case Constants.DOC_TYPE_INDICTMENT:
+            case Constants.DOC_TYPE_SHEET:
+                selection = false;
+                break;
+            case Constants.DOC_TYPE_NOTE:
+            default:
+                break;
+        }
+
+        super.setSelection(position, selection);
+    }
+
+
+    @Override
     public void onBindViewHolder(
             ListSelectorAdapter.ViewHolder holder,
             int position)
