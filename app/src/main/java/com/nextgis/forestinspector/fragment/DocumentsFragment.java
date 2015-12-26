@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.MainActivity;
 import com.nextgis.forestinspector.adapter.DocumentsListAdapter;
 import com.nextgis.forestinspector.adapter.DocumentsListItem;
 import com.nextgis.forestinspector.adapter.DocumentsListLoader;
@@ -58,11 +59,22 @@ public class DocumentsFragment
         extends Fragment
         implements DocumentsListAdapter.OnSelectionChangedListener,
                    ActionMode.Callback,
-                   LoaderManager.LoaderCallbacks<List<DocumentsListItem>>
+                   LoaderManager.LoaderCallbacks<List<DocumentsListItem>>,
+                   MainActivity.OnShowIndictmentsListener,
+                   MainActivity.OnShowSheetsListener,
+                   MainActivity.OnShowNotesListener
 {
+    protected static String KEY_SHOW_INDICTMENTS = "show_indictments";
+    protected static String KEY_SHOW_SHEETS      = "show_sheets";
+    protected static String KEY_SHOW_NOTES       = "show_notes";
+
     protected DocumentsListAdapter mAdapter;
 
     protected ActionMode mActionMode;
+
+    protected boolean mShowIndictments = false;
+    protected boolean mShowSheets      = false;
+    protected boolean mShowNotes       = false;
 
 
     @Override
@@ -220,13 +232,46 @@ public class DocumentsFragment
     }
 
 
+    @Override
+    public void onShowIndictments(boolean show)
+    {
+        mShowIndictments = show;
+        runLoader();
+    }
+
+
+    @Override
+    public void onShowSheets(boolean show)
+    {
+        mShowSheets = show;
+        runLoader();
+    }
+
+
+    @Override
+    public void onShowNotes(boolean show)
+    {
+        mShowNotes = show;
+        runLoader();
+    }
+
+
     private void runLoader()
     {
+        Bundle args = null;
+
+        if (mShowIndictments || mShowSheets || mShowNotes) {
+            args = new Bundle();
+            args.putBoolean(KEY_SHOW_INDICTMENTS, mShowIndictments);
+            args.putBoolean(KEY_SHOW_SHEETS, mShowSheets);
+            args.putBoolean(KEY_SHOW_NOTES, mShowNotes);
+        }
+
         Loader loader = getLoaderManager().getLoader(0);
         if (null != loader && loader.isStarted()) {
-            getLoaderManager().restartLoader(0, null, this);
+            getLoaderManager().restartLoader(0, args, this);
         } else {
-            getLoaderManager().initLoader(0, null, this);
+            getLoaderManager().initLoader(0, args, this);
         }
     }
 
@@ -236,7 +281,17 @@ public class DocumentsFragment
             int id,
             Bundle args)
     {
-        return new DocumentsListLoader(getActivity());
+        Boolean showIndictments = null;
+        Boolean showSheets = null;
+        Boolean showNotes = null;
+
+        if (null != args) {
+            showIndictments = args.getBoolean(KEY_SHOW_INDICTMENTS);
+            showSheets = args.getBoolean(KEY_SHOW_SHEETS);
+            showNotes = args.getBoolean(KEY_SHOW_NOTES);
+        }
+
+        return new DocumentsListLoader(getActivity(), showIndictments, showSheets, showNotes);
     }
 
 

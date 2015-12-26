@@ -216,4 +216,8 @@
     <string name="skip">Skip</string>
     <string name="show_all_targets">Show all targeting</string>
     <string name="show_nearest_targets">Show nearest targeting</string>
+    <string name="docs_filter">Document filter</string>
+    <string name="show_indictments">Show indictments</string>
+    <string name="show_sheets">Show sheets</string>
+    <string name="show_notes">Show notes</string>
 </resources>

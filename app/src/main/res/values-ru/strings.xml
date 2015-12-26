@@ -217,4 +217,8 @@
     <string name="skip">Пропустить</string>
     <string name="show_all_targets">Показать все целеуказания</string>
     <string name="show_nearest_targets">Показать ближайшие целеуказания</string>
+    <string name="docs_filter">Фильтр документов</string>
+    <string name="show_indictments">Показывать акты</string>
+    <string name="show_sheets">Показывать ведомости перечета</string>
+    <string name="show_notes">Показывать заметки</string>
 </resources>

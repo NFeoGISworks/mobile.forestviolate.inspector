@@ -54,12 +54,29 @@ public class DocumentsListLoader
 
     protected int mDocsId, mNotesId;
 
+    protected boolean mShowIndictments = false;
+    protected boolean mShowSheets      = false;
+    protected boolean mShowNotes       = false;
 
-    public DocumentsListLoader(Context context)
+
+    public DocumentsListLoader(
+            Context context,
+            Boolean showIndictments,
+            Boolean showSheets,
+            Boolean showNotes)
     {
         super(context);
 
-        mContext = getContext();
+        mContext = context;
+
+        if (null == showIndictments && null == showSheets && null == showNotes) {
+            mShowIndictments = mShowSheets = mShowNotes = true;
+        } else {
+            mShowIndictments = null == showIndictments ? false : showIndictments;
+            mShowSheets = null == showSheets ? false : showSheets;
+            mShowNotes = null == showNotes ? false : showNotes;
+        }
+
         mMap = (MapEventSource) MapBase.getInstance();
     }
 
@@ -94,112 +111,124 @@ public class DocumentsListLoader
         }
 
 
-        ILayer docsLayer = mMap.getLayerById(mDocsId);
-        if (docsLayer != null) {
-            VectorLayer docs = (VectorLayer) docsLayer;
+        if (mShowIndictments || mShowSheets) {
+            ILayer docsLayer = mMap.getLayerById(mDocsId);
+            if (docsLayer != null) {
+                VectorLayer docs = (VectorLayer) docsLayer;
 
-            //order by datetime(datetimeColumn) DESC LIMIT 100
-            Cursor cursor = docs.query(
-                    new String[] {
-                            com.nextgis.maplib.util.Constants.FIELD_ID,
-                            Constants.FIELD_DOCUMENTS_TYPE,
-                            Constants.FIELD_DOC_ID,
-                            Constants.FIELD_DOCUMENTS_DATE,
-                            Constants.FIELD_DOCUMENTS_NUMBER,
-                            Constants.FIELD_DOCUMENTS_STATUS,
-                            Constants.FIELD_DOCUMENTS_VIOLATION_TYPE}, null, null,
-                    Constants.FIELD_DOCUMENTS_DATE + " DESC", " " + Constants.MAX_DOCUMENTS);
+                //order by datetime(datetimeColumn) DESC LIMIT 100
+                Cursor cursor = docs.query(
+                        new String[] {
+                                com.nextgis.maplib.util.Constants.FIELD_ID,
+                                Constants.FIELD_DOCUMENTS_TYPE,
+                                Constants.FIELD_DOC_ID,
+                                Constants.FIELD_DOCUMENTS_DATE,
+                                Constants.FIELD_DOCUMENTS_NUMBER,
+                                Constants.FIELD_DOCUMENTS_STATUS,
+                                Constants.FIELD_DOCUMENTS_VIOLATION_TYPE}, null, null,
+                        Constants.FIELD_DOCUMENTS_DATE + " DESC", " " + Constants.MAX_DOCUMENTS);
 
-            if (null != cursor) {
-                int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
-                int typePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_TYPE);
-                int docIdPos = cursor.getColumnIndex(Constants.FIELD_DOC_ID);
-                int datePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DATE);
-                int numberPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_NUMBER);
-                int statusPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_STATUS);
-                int violatePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
+                if (null != cursor) {
+                    int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
+                    int typePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_TYPE);
+                    int docIdPos = cursor.getColumnIndex(Constants.FIELD_DOC_ID);
+                    int datePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DATE);
+                    int numberPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_NUMBER);
+                    int statusPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_STATUS);
+                    int violatePos =
+                            cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
 
-                if (cursor.moveToFirst()) {
-                    do {
-                        int nParentDocId = cursor.getInt(docIdPos);
-                        if (nParentDocId > 0) //don't show connected documents
-                        {
-                            continue;
-                        }
-
-                        DocumentsListItem doc = new DocumentsListItem();
-                        doc.mType = cursor.getInt(typePos);
-                        switch (doc.mType) {
-                            case Constants.DOC_TYPE_INDICTMENT:
-                                doc.mName = mContext.getString(R.string.indictment);
-                                break;
-                            case Constants.DOC_TYPE_SHEET:
-                                doc.mName = mContext.getString(R.string.sheet_item_name);
-                                break;
-                            default:
+                    if (cursor.moveToFirst()) {
+                        do {
+                            int nParentDocId = cursor.getInt(docIdPos);
+                            if (nParentDocId > 0) //don't show connected documents
+                            {
                                 continue;
-                        }
+                            }
 
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTimeInMillis(cursor.getLong(datePos));
-                        doc.mDate = calendar.getTime();
+                            int docType = cursor.getInt(typePos);
+                            if (!mShowIndictments && Constants.DOC_TYPE_INDICTMENT == docType
+                                    || !mShowSheets && Constants.DOC_TYPE_SHEET == docType) {
+                                continue;
+                            }
 
-                        doc.mName += " " + cursor.getString(numberPos);
-                        doc.mStatus = cursor.getInt(statusPos);
-                        doc.mDesc = cursor.getString(violatePos);
+                            DocumentsListItem doc = new DocumentsListItem();
+                            doc.mType = docType;
+                            switch (docType) {
+                                case Constants.DOC_TYPE_INDICTMENT:
+                                    doc.mName = mContext.getString(R.string.indictment);
+                                    break;
+                                case Constants.DOC_TYPE_SHEET:
+                                    doc.mName = mContext.getString(R.string.sheet_item_name);
+                                    break;
+                                default:
+                                    continue;
+                            }
 
-                        doc.mId = cursor.getLong(idPos);
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTimeInMillis(cursor.getLong(datePos));
+                            doc.mDate = calendar.getTime();
 
-                        documents.add(doc);
+                            doc.mName += " " + cursor.getString(numberPos);
+                            doc.mStatus = cursor.getInt(statusPos);
+                            doc.mDesc = cursor.getString(violatePos);
 
-                    } while (cursor.moveToNext());
+                            doc.mId = cursor.getLong(idPos);
+
+                            documents.add(doc);
+
+                        } while (cursor.moveToNext());
+                    }
+                    cursor.close();
                 }
-                cursor.close();
             }
         }
 
 
-        ILayer notesLayer = mMap.getLayerById(mNotesId);
-        if (notesLayer != null) {
-            VectorLayer notes = (VectorLayer) notesLayer;
+        if (mShowNotes) {
+            ILayer notesLayer = mMap.getLayerById(mNotesId);
+            if (notesLayer != null) {
+                VectorLayer notes = (VectorLayer) notesLayer;
 
-            String selection = Constants.FIELD_NOTES_DATE_END + " >= " + System.currentTimeMillis();
+                String selection =
+                        Constants.FIELD_NOTES_DATE_END + " >= " + System.currentTimeMillis();
 
-            Cursor cursor = notes.query(
-                    new String[] {
-                            com.nextgis.maplib.util.Constants.FIELD_ID,
-                            Constants.FIELD_NOTES_DATE_BEG,
-                            Constants.FIELD_NOTES_DATE_END,
-                            Constants.FIELD_NOTES_DESCRIPTION}, selection, null,
-                    Constants.FIELD_NOTES_DATE_BEG + " DESC", " " + Constants.MAX_NOTES);
+                Cursor cursor = notes.query(
+                        new String[] {
+                                com.nextgis.maplib.util.Constants.FIELD_ID,
+                                Constants.FIELD_NOTES_DATE_BEG,
+                                Constants.FIELD_NOTES_DATE_END,
+                                Constants.FIELD_NOTES_DESCRIPTION}, selection, null,
+                        Constants.FIELD_NOTES_DATE_BEG + " DESC", " " + Constants.MAX_NOTES);
 
-            if (null != cursor) {
-                int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
-                int dateBegPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DATE_BEG);
-                int dateEndPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DATE_END);
-                int descPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DESCRIPTION);
+                if (null != cursor) {
+                    int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
+                    int dateBegPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DATE_BEG);
+                    int dateEndPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DATE_END);
+                    int descPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DESCRIPTION);
 
-                if (cursor.moveToFirst()) {
-                    do {
-                        DocumentsListItem doc = new DocumentsListItem();
-                        doc.mType = Constants.DOC_TYPE_NOTE;
+                    if (cursor.moveToFirst()) {
+                        do {
+                            DocumentsListItem doc = new DocumentsListItem();
+                            doc.mType = Constants.DOC_TYPE_NOTE;
 
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTimeInMillis(cursor.getLong(dateBegPos));
-                        doc.mDate = calendar.getTime();
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTimeInMillis(cursor.getLong(dateBegPos));
+                            doc.mDate = calendar.getTime();
 
-                        doc.mName = mContext.getString(R.string.note_item_name);
+                            doc.mName = mContext.getString(R.string.note_item_name);
 
-                        doc.mStatus = -1; //note status
-                        doc.mDesc = cursor.getString(descPos);
+                            doc.mStatus = -1; //note status
+                            doc.mDesc = cursor.getString(descPos);
 
-                        doc.mId = cursor.getLong(idPos);
+                            doc.mId = cursor.getLong(idPos);
 
-                        documents.add(doc);
+                            documents.add(doc);
 
-                    } while (cursor.moveToNext());
+                        } while (cursor.moveToNext());
+                    }
+                    cursor.close();
                 }
-                cursor.close();
             }
         }
 
