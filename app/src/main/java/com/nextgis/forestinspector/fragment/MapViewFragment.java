@@ -75,6 +75,17 @@ public class MapViewFragment
     }
 
 
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        if (null == getParentFragment()) {
+            setRetainInstance(true);
+        }
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(

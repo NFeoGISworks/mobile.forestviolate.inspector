@@ -59,7 +59,8 @@ import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 public class MapFragment
         extends Fragment
-        implements MapViewEventListener, GpsEventListener
+        implements MapViewEventListener,
+                   GpsEventListener
 {
 
     protected MapViewOverlays      mMap;
@@ -93,6 +94,17 @@ public class MapFragment
 
 
     @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        if (null == getParentFragment()) {
+            setRetainInstance(true);
+        }
+    }
+
+
+    @Override
     public View onCreateView(
             LayoutInflater inflater,
             ViewGroup container,
@@ -115,7 +127,8 @@ public class MapFragment
         mMapRelativeLayout = (RelativeLayout) view.findViewById(R.id.maprl);
 
         // http://stackoverflow.com/a/29621490
-        if (!mIsInViewPager || !mFragmentResume && mFragmentVisible) { // only when first time fragment is created
+        if (!mIsInViewPager || !mFragmentResume
+                && mFragmentVisible) { // only when first time fragment is created
             addMapView();
         }
 
@@ -610,12 +623,12 @@ public class MapFragment
                             getString(R.string.unit_kilometer), getString(R.string.unit_hour)));
             mStatusLatitude.setText(
                     LocationUtil.formatCoordinate(location.getLatitude(), mCoordinatesFormat) +
-                    " " +
-                    getString(R.string.latitude_caption_short));
+                            " " +
+                            getString(R.string.latitude_caption_short));
             mStatusLongitude.setText(
                     LocationUtil.formatCoordinate(location.getLongitude(), mCoordinatesFormat) +
-                    " " +
-                    getString(R.string.longitude_caption_short));
+                            " " +
+                            getString(R.string.longitude_caption_short));
         }
     }
 
@@ -642,8 +655,8 @@ public class MapFragment
         mStatusSource.measure(0, 0);
 
         int totalWidth = mStatusSource.getMeasuredWidth() + mStatusLongitude.getMeasuredWidth() +
-                         mStatusLatitude.getMeasuredWidth() + mStatusAccuracy.getMeasuredWidth() +
-                         mStatusSpeed.getMeasuredWidth() + mStatusAltitude.getMeasuredWidth();
+                mStatusLatitude.getMeasuredWidth() + mStatusAccuracy.getMeasuredWidth() +
+                mStatusSpeed.getMeasuredWidth() + mStatusAltitude.getMeasuredWidth();
 
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
