@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -95,17 +94,8 @@ public class PhotoTableFragment
     protected String mDocumentsLayerPathName;
 
 
-    public PhotoTableFragment()
+    public void setDocumentsLayerPathName(String documentsLayerPathName)
     {
-    }
-
-
-    @SuppressLint("ValidFragment")
-    public PhotoTableFragment(
-            String name,
-            String documentsLayerPathName)
-    {
-        super(name);
         mDocumentsLayerPathName = documentsLayerPathName;
     }
 

@@ -38,6 +38,8 @@ public class SheetFillerActivity
 
     protected ListFillerFragment getListFillerFragment()
     {
-        return new SheetListFillerFragment("");
+        SheetListFillerFragment fragment = new SheetListFillerFragment();
+        fragment.setName("");
+        return fragment;
     }
 }

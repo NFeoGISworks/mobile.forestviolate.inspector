@@ -38,6 +38,8 @@ public class VehicleFillerActivity
 
     protected ListFillerFragment getListFillerFragment()
     {
-        return new VehicleListFillerFragment("");
+        VehicleListFillerFragment fragment = new VehicleListFillerFragment();
+        fragment.setName("");
+        return fragment;
     }
 }

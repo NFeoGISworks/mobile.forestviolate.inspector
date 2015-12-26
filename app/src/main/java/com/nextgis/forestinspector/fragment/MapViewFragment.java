@@ -21,7 +21,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -61,18 +60,6 @@ public class MapViewFragment
     protected boolean mFragmentResume    = false;
     protected boolean mFragmentVisible   = false;
     protected boolean mFragmentOnCreated = false;
-
-
-    public MapViewFragment()
-    {
-    }
-
-
-    @SuppressLint("ValidFragment")
-    public MapViewFragment(String name)
-    {
-        super(name);
-    }
 
 
     @Override

@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -52,18 +51,6 @@ import java.util.Map;
 public class SheetViewFragment
         extends TabFragment
 {
-    public SheetViewFragment()
-    {
-    }
-
-
-    @SuppressLint("ValidFragment")
-    public SheetViewFragment(String name)
-    {
-        super(name);
-    }
-
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {

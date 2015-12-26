@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,19 +44,6 @@ import java.util.List;
 public class VehicleViewFragment
         extends TabFragment
 {
-
-    public VehicleViewFragment()
-    {
-    }
-
-
-    @SuppressLint("ValidFragment")
-    public VehicleViewFragment(String name)
-    {
-        super(name);
-    }
-
-
     @Nullable
     @Override
     public View onCreateView(

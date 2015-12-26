@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import com.nextgis.forestinspector.adapter.ListFillerAdapter;
 import com.nextgis.forestinspector.adapter.SheetListFillerAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
@@ -34,18 +33,6 @@ public class SheetListFillerFragment
         extends ListFillerFragment
         implements ListFillerDialog.OnAddListener
 {
-    public SheetListFillerFragment()
-    {
-    }
-
-
-    @SuppressLint("ValidFragment")
-    public SheetListFillerFragment(String name)
-    {
-        super(name);
-    }
-
-
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {

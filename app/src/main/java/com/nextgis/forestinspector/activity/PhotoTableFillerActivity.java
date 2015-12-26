@@ -31,8 +31,6 @@ import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.PhotoTableFragment;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.maplib.api.ILayer;
-import com.nextgis.maplib.map.MapBase;
 
 
 public class PhotoTableFillerActivity
@@ -84,7 +82,9 @@ public class PhotoTableFillerActivity
                 (PhotoTableFragment) fm.findFragmentByTag(Constants.FRAGMENT_PHOTO_TABLE);
 
         if (photoTableFragment == null) {
-            photoTableFragment = new PhotoTableFragment("", mDocumentsLayerPathName);
+            photoTableFragment = new PhotoTableFragment();
+            photoTableFragment.setName("");
+            photoTableFragment.setDocumentsLayerPathName(mDocumentsLayerPathName);
         }
 
         ft.replace(R.id.photo_table_fragment, photoTableFragment, Constants.FRAGMENT_PHOTO_TABLE);

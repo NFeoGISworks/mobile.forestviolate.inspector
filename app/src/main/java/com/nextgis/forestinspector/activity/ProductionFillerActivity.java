@@ -38,6 +38,8 @@ public class ProductionFillerActivity
 
     protected ListFillerFragment getListFillerFragment()
     {
-        return new ProductionListFillerFragment("");
+        ProductionListFillerFragment fragment = new ProductionListFillerFragment();
+        fragment.setName("");
+        return fragment;
     }
 }

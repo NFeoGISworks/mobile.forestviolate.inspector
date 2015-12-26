@@ -42,8 +42,6 @@ import com.nextgis.forestinspector.fragment.TabFragment;
 import com.nextgis.forestinspector.fragment.VehicleViewFragment;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.maplib.api.ILayer;
-import com.nextgis.maplib.map.MapBase;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -147,53 +145,65 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
             switch (nType) {
                 case Constants.DOC_TYPE_INDICTMENT: {
                     // indictment
-                    mTabFragmentList.add(
-                            new IndictmentViewFragment(getString(R.string.indictment_tab_name)));
+                    IndictmentViewFragment indictmentViewFragment = new IndictmentViewFragment();
+                    indictmentViewFragment.setName(getString(R.string.indictment_tab_name));
+                    mTabFragmentList.add(indictmentViewFragment);
 
                     // sheet
                     if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0) {
-                        mTabFragmentList.add(
-                                new SheetListViewerFragment(getString(R.string.sheet_tab_name)));
+                        SheetListViewerFragment sheetListViewerFragment =
+                                new SheetListViewerFragment();
+                        sheetListViewerFragment.setName(getString(R.string.sheet_tab_name));
+                        mTabFragmentList.add(sheetListViewerFragment);
                     }
 
                     // production
                     if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_PRODUCTION) > 0) {
-                        mTabFragmentList.add(
-                                new ProductionListViewerFragment(
-                                        getString(R.string.production_tab_name)));
+                        ProductionListViewerFragment productionListViewerFragment =
+                                new ProductionListViewerFragment();
+                        productionListViewerFragment.setName(
+                                getString(R.string.production_tab_name));
+                        mTabFragmentList.add(productionListViewerFragment);
                     }
 
                     // vehicle
                     if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_VEHICLES) > 0) {
-                        mTabFragmentList.add(
-                                new VehicleViewFragment(getString(R.string.vehicle_tab_name)));
+                        VehicleViewFragment vehicleViewFragment = new VehicleViewFragment();
+                        vehicleViewFragment.setName(getString(R.string.vehicle_tab_name));
+                        mTabFragmentList.add(vehicleViewFragment);
                     }
 
                     // photo table
                     if (mFeature.getAttachments() != null && mFeature.getAttachments().size() > 0) {
-                        mTabFragmentList.add(
-                                new PhotoTableFragment(
-                                        getString(R.string.photo_table_tab_name),
-                                        docs.getPath().getName()));
+                        PhotoTableFragment photoTableFragment = new PhotoTableFragment();
+                        photoTableFragment.setName(getString(R.string.photo_table_tab_name));
+                        photoTableFragment.setDocumentsLayerPathName(docs.getPath().getName());
+                        mTabFragmentList.add(photoTableFragment);
                     }
 
                     break;
                 }
 
-                case Constants.DOC_TYPE_SHEET:{
-                    mTabFragmentList.add(new SheetViewFragment(getString(R.string.sheet_head)));
+                case Constants.DOC_TYPE_SHEET: {
+                    SheetViewFragment sheetViewFragment = new SheetViewFragment();
+                    sheetViewFragment.setName(getString(R.string.sheet_head));
+                    mTabFragmentList.add(sheetViewFragment);
 
                     // sheet
                     if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0) {
-                        mTabFragmentList.add(
-                                new SheetListViewerFragment(getString(R.string.sheet_tab_name)));
+                        SheetListViewerFragment sheetListViewerFragment =
+                                new SheetListViewerFragment();
+                        sheetListViewerFragment.setName(getString(R.string.sheet_tab_name));
+                        mTabFragmentList.add(sheetListViewerFragment);
                     }
 
                     break;
                 }
             }
 
-            mTabFragmentList.add(new MapViewFragment(getString(R.string.title_map)));
+            MapViewFragment mapViewFragment = new MapViewFragment();
+            mapViewFragment.setName(getString(R.string.title_map));
+            mTabFragmentList.add(mapViewFragment);
         }
 
         @Override

@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -49,15 +48,6 @@ import java.util.Map;
  * Read only view of Indictment
  */
 public class IndictmentViewFragment extends TabFragment {
-
-    public IndictmentViewFragment() {
-    }
-
-    @SuppressLint("ValidFragment")
-    public IndictmentViewFragment(String name) {
-        super(name);
-
-    }
 
     @Nullable
     @Override

@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -53,18 +52,6 @@ public abstract class ListViewerFragment
     protected RecyclerView.LayoutManager getListLayoutManager()
     {
         return new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-    }
-
-
-    public ListViewerFragment()
-    {
-    }
-
-
-    @SuppressLint("ValidFragment")
-    public ListViewerFragment(String name)
-    {
-        super(name);
     }
 
 

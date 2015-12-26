@@ -21,27 +21,29 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.support.v4.app.Fragment;
 
 import java.util.Locale;
 
+
 /**
  * Tab
  */
-public class TabFragment extends Fragment {
+public class TabFragment
+        extends Fragment
+{
     protected String mFragmentName;
 
-    public TabFragment() {
+
+    public String getName()
+    {
+        return mFragmentName;
     }
 
-    @SuppressLint("ValidFragment")
-    public TabFragment(String fragmentName) {
+
+    public void setName(String fragmentName)
+    {
         Locale l = Locale.getDefault();
         mFragmentName = fragmentName.toUpperCase(l);
-    }
-
-    public String getName(){
-        return mFragmentName;
     }
 }

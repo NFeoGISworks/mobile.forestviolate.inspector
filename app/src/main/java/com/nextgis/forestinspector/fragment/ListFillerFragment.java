@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -55,16 +54,11 @@ public abstract class ListFillerFragment
     protected ActionMode mActionMode;
 
 
-    public ListFillerFragment()
+    @Override
+    public void onCreate(Bundle savedInstanceState)
     {
-        mIsListViewer = false;
-    }
+        super.onCreate(savedInstanceState);
 
-
-    @SuppressLint("ValidFragment")
-    public ListFillerFragment(String name)
-    {
-        super(name);
         mIsListViewer = false;
     }
 
