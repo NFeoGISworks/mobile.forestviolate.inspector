@@ -300,8 +300,6 @@ public class IndictmentCreatorActivity
 
         restoreControlsFromFeature();
 
-        // TODO: not show dialog if 0 records
-
         String vector = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VECTOR);
 
         if (null == vector) {

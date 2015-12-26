@@ -42,11 +42,14 @@ import com.nextgis.forestinspector.fragment.TabFragment;
 import com.nextgis.forestinspector.fragment.VehicleViewFragment;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.util.AttachItem;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
 
 /**
  * The tabbed view with document contents. The tab list consist of document type.
@@ -175,10 +178,23 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
 
                     // photo table
                     if (mFeature.getAttachments() != null && mFeature.getAttachments().size() > 0) {
-                        PhotoTableFragment photoTableFragment = new PhotoTableFragment();
-                        photoTableFragment.setName(getString(R.string.photo_table_tab_name));
-                        photoTableFragment.setDocumentsLayerPathName(docs.getPath().getName());
-                        mTabFragmentList.add(photoTableFragment);
+                        // filter of a signature
+                        int photosCount = 0;
+                        for (Map.Entry<String, AttachItem> entry : mFeature.getAttachments()
+                                .entrySet()) {
+                            AttachItem attachItem = entry.getValue();
+                            if (attachItem.getDisplayName().equals(Constants.SIGN_FILENAME)) {
+                                continue;
+                            }
+                            ++photosCount;
+                        }
+
+                        if (photosCount > 0) {
+                            PhotoTableFragment photoTableFragment = new PhotoTableFragment();
+                            photoTableFragment.setName(getString(R.string.photo_table_tab_name));
+                            photoTableFragment.setDocumentsLayerPathName(docs.getPath().getName());
+                            mTabFragmentList.add(photoTableFragment);
+                        }
                     }
 
                     break;
