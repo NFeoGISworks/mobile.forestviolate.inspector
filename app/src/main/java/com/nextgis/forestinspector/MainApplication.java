@@ -26,7 +26,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
-
 import com.nextgis.forestinspector.activity.PreferencesActivity;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.map.FILayerFactory;
@@ -43,12 +42,17 @@ import java.io.File;
 import static com.nextgis.maplib.util.Constants.MAP_EXT;
 import static com.nextgis.maplib.util.SettingsConstants.KEY_PREF_MAP;
 
-public class MainApplication extends GISApplication {
+
+public class MainApplication
+        extends GISApplication
+{
     protected DocumentEditFeature mTempFeature;
-    protected File mDocFeatureFolder;
+    protected File                mDocFeatureFolder;
+
 
     @Override
-    public MapBase getMap() {
+    public MapBase getMap()
+    {
         if (null != mMap) {
             return mMap;
         }
@@ -59,8 +63,10 @@ public class MainApplication extends GISApplication {
             defaultPath = new File(getFilesDir(), KEY_PREF_MAP);
         }
 
-        String mapPath = sharedPreferences.getString(SettingsConstants.KEY_PREF_MAP_PATH, defaultPath.getPath());
-        String mapName = sharedPreferences.getString(SettingsConstantsUI.KEY_PREF_MAP_NAME, "default");
+        String mapPath = sharedPreferences.getString(
+                SettingsConstants.KEY_PREF_MAP_PATH, defaultPath.getPath());
+        String mapName =
+                sharedPreferences.getString(SettingsConstantsUI.KEY_PREF_MAP_NAME, "default");
 
         File mapFullPath = new File(mapPath, mapName + MAP_EXT);
         mDocFeatureFolder = new File(mapPath, Constants.TEMP_DOCUMENT_FEATURE_FOLDER);
@@ -73,31 +79,39 @@ public class MainApplication extends GISApplication {
         return mMap;
     }
 
+
     /**
      * @return A authority for sync purposes or empty string if not sync anything
      */
     @Override
-    public String getAuthority() {
+    public String getAuthority()
+    {
         return com.nextgis.forestinspector.util.SettingsConstants.AUTHORITY;
     }
+
 
     /**
      * Show settings Activity
      */
     @Override
-    public void showSettings(String settings) {
+    public void showSettings(String settings)
+    {
         Intent intentSet = new Intent(this, PreferencesActivity.class);
         intentSet.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentSet);
     }
 
+
     @Override
-    protected int getThemeId(boolean isDark) {
-        if(isDark)
+    protected int getThemeId(boolean isDark)
+    {
+        if (isDark) {
             return R.style.AppTheme_Dark;
-        else
+        } else {
             return R.style.AppTheme_Light;
+        }
     }
+
 
     public File getDocFeatureFolder()
     {
@@ -107,14 +121,70 @@ public class MainApplication extends GISApplication {
         return mDocFeatureFolder;
     }
 
-    public DocumentEditFeature getTempFeature() {
+
+    public DocumentEditFeature getTempFeature()
+    {
         return mTempFeature;
     }
 
-    public void setTempFeature(DocumentEditFeature tempFeature) {
+
+    public void setTempFeature(DocumentEditFeature tempFeature)
+    {
         mTempFeature = tempFeature;
         //delete photos of previous feature
-        if (null == tempFeature && FileUtil.renameAndDelete(mDocFeatureFolder))
+        if (null == tempFeature && FileUtil.renameAndDelete(mDocFeatureFolder)) {
             FileUtil.createDir(mDocFeatureFolder);
+        }
     }
+
+
+/*
+    // for debug
+    protected NetworkUtil mNet;
+
+
+    @Override
+    public void onCreate()
+    {
+        // For service debug
+//        android.os.Debug.waitForDebugger();
+
+        super.onCreate();
+
+        mNet = new NetworkUtil(this);
+    }
+
+
+    public boolean isNetworkAvailable()
+    {
+        return mNet.isNetworkAvailable();
+    }
+
+
+    public Account getAccount()
+    {
+        return getAccount(getString(R.string.account_name));
+    }
+
+
+    public boolean runSync()
+    {
+        if (!isNetworkAvailable()) {
+            return false;
+        }
+
+        Account account = getAccount();
+
+        if (null == account) {
+            return false;
+        }
+
+        Bundle settingsBundle = new Bundle();
+        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+        ContentResolver.requestSync(account, getAuthority(), settingsBundle);
+        return true;
+    }
+*/
 }

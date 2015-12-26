@@ -77,8 +77,8 @@ public class MainActivity
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    protected ViewPager           mViewPager;
-    protected boolean             mFirsRun;
+    protected ViewPager mViewPager;
+    protected boolean mFirsRun;
     protected InitStepListAdapter mAdapter;
 
     protected OnShowIndictmentsListener mOnShowIndictmentsListener;
@@ -292,6 +292,14 @@ public class MainActivity
     }
 
 
+    private static String makeFragmentName(
+            int viewId,
+            int index)
+    {
+        return "android:switcher:" + viewId + ":" + index;
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -299,6 +307,25 @@ public class MainActivity
         if (!mFirsRun) {
             getMenuInflater().inflate(R.menu.main, menu);
         }
+
+        FragmentManager fm = getSupportFragmentManager();
+        DocumentsFragment documentsFragment =
+                (DocumentsFragment) fm.findFragmentByTag(makeFragmentName(R.id.pager, 0));
+
+        if (null != documentsFragment) {
+            setOnShowIndictmentsListener(documentsFragment);
+            setOnShowSheetsListener(documentsFragment);
+            setOnShowNotesListener(documentsFragment);
+        }
+
+        MenuItem itemShowIndictments = menu.findItem(R.id.show_indictments);
+        MenuItem itemShowSheets = menu.findItem(R.id.show_sheets);
+        MenuItem itemShowNotes = menu.findItem(R.id.show_notes);
+
+        itemShowIndictments.setChecked(documentsFragment.isShowIndictments());
+        itemShowSheets.setChecked(documentsFragment.isShowSheets());
+        itemShowNotes.setChecked(documentsFragment.isShowNotes());
+
         return true;
     }
 

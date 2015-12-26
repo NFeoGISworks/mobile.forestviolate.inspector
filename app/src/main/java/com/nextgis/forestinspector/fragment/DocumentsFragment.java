@@ -82,6 +82,13 @@ public class DocumentsFragment
     {
         super.onCreate(savedInstanceState);
 
+        if (null == getParentFragment()) {
+            setRetainInstance(true);
+        }
+
+        mAdapter = new DocumentsListAdapter(getActivity());
+        mAdapter.addOnSelectionChangedListener(this);
+
         runLoader();
     }
 
@@ -99,9 +106,6 @@ public class DocumentsFragment
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         list.setHasFixedSize(true);
         list.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
-
-        mAdapter = new DocumentsListAdapter(getActivity());
-        mAdapter.addOnSelectionChangedListener(this);
         list.setAdapter(mAdapter);
 
         return rootView;
@@ -229,6 +233,24 @@ public class DocumentsFragment
             default:
                 return false;
         }
+    }
+
+
+    public boolean isShowIndictments()
+    {
+        return mShowIndictments;
+    }
+
+
+    public boolean isShowSheets()
+    {
+        return mShowSheets;
+    }
+
+
+    public boolean isShowNotes()
+    {
+        return mShowNotes;
     }
 
 
