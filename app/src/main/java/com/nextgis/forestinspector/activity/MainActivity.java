@@ -316,15 +316,15 @@ public class MainActivity
             setOnShowIndictmentsListener(documentsFragment);
             setOnShowSheetsListener(documentsFragment);
             setOnShowNotesListener(documentsFragment);
+
+            MenuItem itemShowIndictments = menu.findItem(R.id.show_indictments);
+            MenuItem itemShowSheets = menu.findItem(R.id.show_sheets);
+            MenuItem itemShowNotes = menu.findItem(R.id.show_notes);
+
+            itemShowIndictments.setChecked(documentsFragment.isShowIndictments());
+            itemShowSheets.setChecked(documentsFragment.isShowSheets());
+            itemShowNotes.setChecked(documentsFragment.isShowNotes());
         }
-
-        MenuItem itemShowIndictments = menu.findItem(R.id.show_indictments);
-        MenuItem itemShowSheets = menu.findItem(R.id.show_sheets);
-        MenuItem itemShowNotes = menu.findItem(R.id.show_notes);
-
-        itemShowIndictments.setChecked(documentsFragment.isShowIndictments());
-        itemShowSheets.setChecked(documentsFragment.isShowSheets());
-        itemShowNotes.setChecked(documentsFragment.isShowNotes());
 
         return true;
     }
