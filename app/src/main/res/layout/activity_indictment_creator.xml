@@ -92,20 +92,20 @@
 
             <!-- date & time -->
             <TextView style="@style/description_text"
-                android:text="@string/date_time_create"
+                android:text="@string/date_time_create_desc"
                 />
 
             <com.nextgis.maplibui.control.DateTime
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/create_datetime"
+                android:id="@+id/creation_datetime"
                 style="@style/DatePickSpinner"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 />
 
             <!-- place -->
             <TextView  style="@style/description_text"
-                android:text="@string/place_create"
+                android:text="@string/creation_place_desc"
                 />
 
             <EditText

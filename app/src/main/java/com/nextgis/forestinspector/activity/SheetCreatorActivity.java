@@ -127,7 +127,7 @@ public class SheetCreatorActivity
             mAuthor = (EditText) findViewById(R.id.author);
             mAuthor.setText(mUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
 
-            mDateTime = (DateTime) findViewById(R.id.create_datetime);
+            mDateTime = (DateTime) findViewById(R.id.creation_datetime);
             mDateTime.init(null, null, null);
             mDateTime.setCurrentDate();
 

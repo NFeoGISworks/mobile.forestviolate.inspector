@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Project: Forest violations
+  ~ Purpose: Mobile application for registering facts of the forest violations.
+  ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
+  ~ ******************************************************************************
+  ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <include
+        layout="@layout/actionbar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:orientation="vertical"
+            >
+
+            <!--http://stackoverflow.com/a/1662088/4727406-->
+
+            <View
+                android:layout_width="0px"
+                android:layout_height="0px"
+                android:focusableInTouchMode="true"
+                />
+
+            <!-- title -->
+
+            <TextView
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="@string/field_works_item_title"
+                style="@style/doc_item_text"
+                />
+
+            <!-- date & time -->
+
+            <TextView
+                android:text="@string/date_time_create_desc"
+                android:layout_marginTop="5dp"
+                style="@style/description_text"
+                />
+
+            <com.nextgis.maplibui.control.DateTime
+                android:id="@+id/creation_datetime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                style="@style/DatePickSpinner"
+                />
+
+            <!-- place creation -->
+
+            <TextView
+                android:text="@string/creation_place_desc"
+                style="@style/description_text"
+                />
+
+            <EditText
+                android:id="@+id/creation_place"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/place_create_hint"
+                />
+
+            <!-- law base -->
+
+            <TextView
+                android:text="@string/field_works_item_law_base"
+                style="@style/doc_item_text"
+                />
+
+            <!-- author -->
+
+            <TextView
+                android:text="@string/field_works_item_i_we"
+                style="@style/doc_item_text"
+                />
+
+            <TextView
+                android:text="@string/field_works_author_desc"
+                style="@style/description_text"
+                />
+
+            <EditText
+                android:id="@+id/author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- inspecting organisation representative -->
+
+            <TextView
+                android:text="@string/field_works_item_in_presence"
+                style="@style/doc_item_text"
+                />
+
+            <TextView
+                android:text="@string/field_works_representative_desc"
+                style="@style/description_text"
+                />
+
+            <EditText
+                android:id="@+id/representative"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- territory -->
+
+            <TextView
+                android:text="@string/field_works_item_made_inspections"
+                style="@style/doc_item_text"
+                />
+
+            <TextView
+                android:text="@string/field_works_item_territory"
+                style="@style/doc_item_text"
+                />
+
+            <TextView
+                android:id="@+id/territory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/click_to_set_value"
+                style="@style/CoordinatesPicker"
+                />
+
+            <!-- in relation -->
+
+            <TextView
+                android:text="@string/field_works_item_in_relation"
+                style="@style/doc_item_text"
+                />
+
+            <TextView
+                android:text="@string/field_works_contract_desc"
+                style="@style/description_text"
+                />
+
+            <EditText
+                android:id="@+id/contract"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- from date -->
+
+            <TextView
+                android:text="@string/field_works_item_from"
+                style="@style/doc_item_text"
+                />
+
+            <EditText
+                android:id="@+id/from_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- number -->
+
+            <TextView
+                android:text="@string/field_works_item_number"
+                style="@style/doc_item_text"
+                />
+
+            <EditText
+                android:id="@+id/number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- set following -->
+
+            <TextView
+                android:text="@string/field_works_item_set_following"
+                style="@style/doc_item_text"
+                />
+
+            <!-- 1. cutting area clean quality -->
+
+            <TextView
+                android:text="@string/field_works_item_cutting_area_clean_quality"
+                style="@style/doc_item_text"
+                />
+
+            <EditText
+                android:id="@+id/cutting_area_clean_quality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- 2. cutting area cultivation quality -->
+
+            <TextView
+                android:text="@string/field_works_item_cutting_area_cultivation_quality"
+                style="@style/doc_item_text"
+                />
+
+            <EditText
+                android:id="@+id/cutting_area_cultivation_quality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- 3. violation -->
+
+            <TextView
+                android:text="@string/field_works_item_violation"
+                style="@style/doc_item_text"
+                />
+
+            <EditText
+                android:id="@+id/violation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- attachments -->
+
+            <TextView
+                android:text="@string/field_works_item_attachments"
+                style="@style/doc_item_text"
+                />
+
+            <!-- attachments table -->
+
+            <Button
+                android:id="@+id/create_attachments_table"
+                android:text="@string/field_works_create_attachments_table"
+                style="@style/doc_button"
+                />
+
+            <!-- photo table -->
+
+            <Button
+                android:id="@+id/create_photo_table"
+                android:text="@string/field_works_create_photo_table"
+                style="@style/doc_button"
+                />
+
+            <!-- inspectors signatures -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="?android:attr/textColorSecondary"
+                />
+
+            <TextView
+                android:text="@string/field_works_item_inspectors_signatures"
+                style="@style/doc_item_text"
+                />
+
+            <Button
+                android:text="@string/field_works_add_signature"
+                style="@style/doc_button"
+                />
+
+            <!-- participants signatures -->
+
+            <TextView
+                android:text="@string/field_works_item_participants_signatures"
+                style="@style/doc_item_text"
+                />
+
+            <Button
+                android:text="@string/field_works_add_signature"
+                style="@style/doc_button"
+                />
+
+            <!-- alleged infringer data -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="?android:attr/textColorSecondary"
+                />
+
+            <TextView
+                android:text="@string/field_works_item_alleged_infringer_data"
+                style="@style/doc_item_text"
+                />
+
+            <!-- infringer organisation name -->
+
+            <TextView
+                android:text="@string/field_works_item_infringer_organisation_name"
+                style="@style/doc_item_text"
+                />
+
+            <EditText
+                android:id="@+id/infringer_organisation_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- infringer full name -->
+
+            <TextView
+                android:text="@string/field_works_item_infringer_full_name"
+                style="@style/doc_item_text"
+                />
+
+            <EditText
+                android:id="@+id/infringer_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- infringer signature -->
+
+            <Button
+                android:text="@string/field_works_sign"
+                style="@style/doc_button"
+                />
+
+            <!-- infringer living place -->
+
+            <TextView
+                android:text="@string/field_works_item_infringer_living_place"
+                style="@style/doc_item_text"
+                />
+
+            <EditText
+                android:id="@+id/infringer_living_place"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <!-- infringers signatures -->
+
+            <TextView
+                android:text="@string/field_works_item_infringers_signatures"
+                style="@style/doc_item_text"
+                />
+
+            <Button
+                android:text="@string/field_works_add_signature"
+                style="@style/doc_button"
+                />
+
+            <!-- save -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="?android:attr/textColorSecondary"
+                />
+
+            <Button
+                android:text="@string/field_works_save"
+                style="@style/doc_button"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

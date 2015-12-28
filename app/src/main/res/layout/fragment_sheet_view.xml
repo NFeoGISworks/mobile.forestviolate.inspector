@@ -49,12 +49,12 @@
         <!-- date & time -->
 
         <TextView
-            android:text="@string/date_time_create"
+            android:text="@string/date_time_create_desc"
             style="@style/description_text"
             />
 
         <TextView
-            android:id="@+id/create_datetime"
+            android:id="@+id/creation_datetime"
             style="@style/normal_text"
             />
 

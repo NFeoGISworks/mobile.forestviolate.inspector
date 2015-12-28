@@ -92,7 +92,18 @@
                 />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/add_bookmark"
+                android:id="@+id/add_field_work"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="?attr/colorPrimary"
+                fab:fab_size="mini"
+                fab:fab_icon="@drawable/ic_action_edit_light"
+                fab:fab_colorPressed="?attr/colorAccent"
+                fab:fab_title="@string/action_field_works"
+                />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 fab:fab_colorNormal="?attr/colorPrimary"

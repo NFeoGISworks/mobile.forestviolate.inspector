@@ -277,9 +277,22 @@ public class MainActivity
                     });
         }
 
-        final View addBookmark = findViewById(R.id.add_bookmark);
-        if (null != addBookmark) {
-            addBookmark.setOnClickListener(
+        final View addFieldWorks = findViewById(R.id.add_field_work);
+        if (null != addFieldWorks) {
+            addFieldWorks.setOnClickListener(
+                    new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            addFieldWorks();
+                        }
+                    });
+        }
+
+        final View addNote = findViewById(R.id.add_note);
+        if (null != addNote) {
+            addNote.setOnClickListener(
                     new View.OnClickListener()
                     {
                         @Override
@@ -356,6 +369,22 @@ public class MainActivity
             case R.id.show_notes:
                 if (item.isChecked()) { item.setChecked(false); } else { item.setChecked(true); }
                 showNotes(item.isChecked());
+                return true;
+
+            case R.id.action_add_indictment:
+                addIndictment();
+                return true;
+
+            case R.id.action_add_sheet:
+                addSheet();
+                return true;
+
+            case R.id.action_add_field_work:
+                addFieldWorks();
+                return true;
+
+            case R.id.action_add_note:
+                addNote();
                 return true;
 
 //            case R.id.action_sync:
@@ -442,6 +471,13 @@ public class MainActivity
     {
         Intent intentIndictment = new Intent(this, IndictmentCreatorActivity.class);
         startActivity(intentIndictment);
+    }
+
+
+    public void addFieldWorks()
+    {
+        Intent intentFieldWorks = new Intent(this, FieldWorksCreatorActivity.class);
+        startActivity(intentFieldWorks);
     }
 
 

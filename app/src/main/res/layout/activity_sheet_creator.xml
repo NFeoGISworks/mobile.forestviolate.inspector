@@ -101,12 +101,12 @@
             <!-- date & time -->
 
             <TextView
-                android:text="@string/date_time_create"
+                android:text="@string/date_time_create_desc"
                 style="@style/description_text"
                 />
 
             <com.nextgis.maplibui.control.DateTime
-                android:id="@+id/create_datetime"
+                android:id="@+id/creation_datetime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"

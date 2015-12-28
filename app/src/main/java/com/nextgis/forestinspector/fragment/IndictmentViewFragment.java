@@ -63,7 +63,7 @@ public class IndictmentViewFragment extends TabFragment {
                 TextView author = (TextView) view.findViewById(R.id.author);
                 author.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER));
 
-                TextView createDateTime = (TextView) view.findViewById(R.id.create_datetime);
+                TextView createDateTime = (TextView) view.findViewById(R.id.creation_datetime);
                 createDateTime.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE));
 
                 TextView place = (TextView) view.findViewById(R.id.place);

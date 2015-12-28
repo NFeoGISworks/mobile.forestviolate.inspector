@@ -64,7 +64,7 @@ public class VehicleViewFragment
                 author.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER));
 
                 //create_datetime
-                TextView createDateTime = (TextView) view.findViewById(R.id.create_datetime);
+                TextView createDateTime = (TextView) view.findViewById(R.id.creation_datetime);
                 createDateTime.setText(
                         feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE));
 

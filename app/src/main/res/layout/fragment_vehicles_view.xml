@@ -49,19 +49,19 @@
 
         <TextView
             style="@style/description_text"
-            android:text="@string/date_time_create"
+            android:text="@string/date_time_create_desc"
             />
 
         <TextView
             style="@style/normal_text"
-            android:id="@+id/create_datetime"
+            android:id="@+id/creation_datetime"
             />
 
         <!-- place -->
 
         <TextView
             style="@style/description_text"
-            android:text="@string/place_create"
+            android:text="@string/creation_place_desc"
             />
 
         <TextView

@@ -29,11 +29,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -48,16 +43,12 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.map.MapBase;
-import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplibui.control.DateTime;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
 
 import static com.nextgis.maplib.util.Constants.TAG;
 
@@ -65,11 +56,11 @@ import static com.nextgis.maplib.util.Constants.TAG;
 /**
  * Form of indictment
  */
-public class IndictmentCreatorActivity
+public class FieldWorksCreatorActivity
         extends FIActivity
         implements TargetingDialog.OnSelectListener
 {
-    protected static final int INDICTMENT_ACTIVITY = 1101;
+    protected static final int FIELD_WORKS_ACTIVITY = 1104;
 
     protected DocumentEditFeature mNewFeature;
     protected DocumentsLayer      mDocsLayer;
@@ -107,8 +98,8 @@ public class IndictmentCreatorActivity
         if (null != mDocsLayer) {
             mNewFeature = app.getTempFeature();
 
-            if (null != mNewFeature && Constants.DOC_TYPE_INDICTMENT !=
-                                       mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TYPE)) {
+            if (null != mNewFeature && Constants.DOC_TYPE_INDICTMENT != mNewFeature.getFieldValue(
+                    Constants.FIELD_DOCUMENTS_TYPE)) {
                 app.setTempFeature(null);
                 mNewFeature = null;
             }
@@ -131,15 +122,16 @@ public class IndictmentCreatorActivity
 
         if (null != mNewFeature) {
 
-            setContentView(R.layout.activity_indictment_creator);
+            setContentView(R.layout.activity_field_works_creator);
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
             String sUserPassId = prefs.getString(SettingsConstants.KEY_PREF_USERPASSID, "");
 
             setToolbar(R.id.main_toolbar);
-            setTitle(getText(R.string.indictment));
+            setTitle(getText(R.string.field_works_title));
 
+/*
             mIndictmentNumber = (EditText) findViewById(R.id.doc_num);
             mIndictmentNumber.setText(getNewNumber(sUserPassId));
 
@@ -269,6 +261,7 @@ public class IndictmentCreatorActivity
                     });
 
             saveControlsToFeature();
+*/
         }
     }
 
@@ -319,6 +312,7 @@ public class IndictmentCreatorActivity
 
     protected void saveControlsToFeature()
     {
+/*
         if (null != mNewFeature) {
             mNewFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
@@ -367,11 +361,13 @@ public class IndictmentCreatorActivity
             mNewFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
         }
+*/
     }
 
 
     protected void restoreControlsFromFeature()
     {
+/*
         if (null == mNewFeature) {
             return;
         }
@@ -431,6 +427,7 @@ public class IndictmentCreatorActivity
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
         mTerritory.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
+*/
     }
 
 
@@ -483,14 +480,17 @@ public class IndictmentCreatorActivity
     }
 
 
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.indictment_creator, menu);
         return true;
     }
+*/
 
 
+/*
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -525,6 +525,7 @@ public class IndictmentCreatorActivity
 
         return super.onOptionsItemSelected(item);
     }
+*/
 
 
     @Override
@@ -533,7 +534,7 @@ public class IndictmentCreatorActivity
             int resultCode,
             Intent data)
     {
-        if (requestCode == INDICTMENT_ACTIVITY) {
+        if (requestCode == FIELD_WORKS_ACTIVITY) {
             mTerritory.setText(
                     mNewFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
         }
@@ -543,7 +544,7 @@ public class IndictmentCreatorActivity
     private void onAddTerritory()
     {
         Intent intent = new Intent(this, SelectTerritoryActivity.class);
-        startActivityForResult(intent, INDICTMENT_ACTIVITY);
+        startActivityForResult(intent, FIELD_WORKS_ACTIVITY);
     }
 
 

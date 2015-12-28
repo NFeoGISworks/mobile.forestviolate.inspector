@@ -132,7 +132,7 @@ public class NoteCreatorActivity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId()) {
-            case R.id.action_create_note:
+            case R.id.action_add_note:
                 createNote();
                 return true;
             case R.id.action_cancel:
