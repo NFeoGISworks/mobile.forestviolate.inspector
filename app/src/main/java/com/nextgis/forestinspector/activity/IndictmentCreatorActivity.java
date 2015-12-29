@@ -23,134 +23,84 @@
 package com.nextgis.forestinspector.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.datasource.DocumentEditFeature;
-import com.nextgis.forestinspector.dialog.SignDialog;
-import com.nextgis.forestinspector.dialog.TargetingDialog;
-import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.forestinspector.util.SettingsConstants;
-import com.nextgis.maplib.api.ILayer;
-import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
-import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplibui.control.DateTime;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-
-import static com.nextgis.maplib.util.Constants.TAG;
 
 
 /**
  * Form of indictment
  */
 public class IndictmentCreatorActivity
-        extends FIActivity
-        implements TargetingDialog.OnSelectListener
+        extends DocumentCreatorActivity
 {
-    protected static final int INDICTMENT_ACTIVITY = 1101;
-
-    protected DocumentEditFeature mNewFeature;
-    protected DocumentsLayer      mDocsLayer;
-
-    protected EditText mIndictmentNumber;
-    protected EditText mAuthor, mWhen, mLaw;
-    protected EditText mWho, mPlace, mCrime, mCrimeSay;
-    protected EditText mDetectorSay, mAuthorSay, mDescription;
-    protected DateTime mDateTime;
+    protected EditText mWhen;
+    protected EditText mLaw;
+    protected EditText mWho;
+    protected EditText mCreationPlace;
+    protected EditText mCrime;
+    protected EditText mCrimeSay;
+    protected EditText mDetectorSay;
+    protected EditText mAuthorSay;
+    protected EditText mDescription;
     protected DateTime mDatePick;
     protected Spinner  mViolationTypeSpinner;
     protected Spinner  mForestCatTypeSpinner;
-    protected TextView mTerritory;
-    protected String   mUserDesc;
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
+    protected int getActivityCode()
     {
-        super.onCreate(savedInstanceState);
+        return Constants.INDICTMENT_ACTIVITY;
+    }
 
-        MainApplication app = (MainApplication) getApplication();
-        MapBase map = app.getMap();
-        mDocsLayer = null;
-        for (int i = 0; i < map.getLayerCount(); i++) {
-            ILayer layer = map.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                mDocsLayer = (DocumentsLayer) layer;
-                break;
-            }
-        }
 
-        // TODO: 04.08.15 save restore bundle new feature id to fill values, previous added
+    @Override
+    protected int getDocType()
+    {
+        return Constants.DOC_TYPE_INDICTMENT;
+    }
 
-        if (null != mDocsLayer) {
-            mNewFeature = app.getTempFeature();
 
-            if (null != mNewFeature && Constants.DOC_TYPE_INDICTMENT !=
-                                       mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TYPE)) {
-                app.setTempFeature(null);
-                mNewFeature = null;
-            }
+    @Override
+    protected int getContentViewRes()
+    {
+        return R.layout.activity_indictment_creator;
+    }
 
-            if (mNewFeature == null) {
-                mNewFeature = new DocumentEditFeature(
-                        com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
-                app.setTempFeature(mNewFeature);
 
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_TYPE, Constants.DOC_TYPE_INDICTMENT);
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+    @Override
+    protected CharSequence getTitleString()
+    {
+        return getText(R.string.indictment);
+    }
 
-                loadPhotoAttaches(mNewFeature);
-            }
-        }
 
+    @Override
+    protected int getMenuRes()
+    {
+        return R.menu.indictment_creator;
+    }
+
+
+    @Override
+    protected void setControlViews()
+    {
         if (null != mNewFeature) {
 
-            setContentView(R.layout.activity_indictment_creator);
-
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
-            String sUserPassId = prefs.getString(SettingsConstants.KEY_PREF_USERPASSID, "");
-
-            setToolbar(R.id.main_toolbar);
-            setTitle(getText(R.string.indictment));
-
-            mIndictmentNumber = (EditText) findViewById(R.id.doc_num);
-            mIndictmentNumber.setText(getNewNumber(sUserPassId));
-
-            mAuthor = (EditText) findViewById(R.id.author);
-            mAuthor.setText(mUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
-
-            mDateTime = (DateTime) findViewById(R.id.creation_datetime);
-            mDateTime.init(null, null, null);
-            mDateTime.setCurrentDate();
-
-            mPlace = (EditText) findViewById(R.id.place);
+            mCreationPlace = (EditText) findViewById(R.id.creation_place);
             mLaw = (EditText) findViewById(R.id.code_num);
 
             mDatePick = (DateTime) findViewById(R.id.date_pick);
@@ -201,20 +151,8 @@ public class IndictmentCreatorActivity
                 mForestCatTypeSpinner.setAdapter(adapter);
             }
 
-            mTerritory = (TextView) findViewById(R.id.territory);
-            mTerritory.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            onAddTerritory();
-                        }
-                    });
-
-            // setup buttons
-            Button createSheetBtn = (Button) findViewById(R.id.create_sheet);
-            createSheetBtn.setOnClickListener(
+            Button createSheet = (Button) findViewById(R.id.create_sheet);
+            createSheet.setOnClickListener(
                     new View.OnClickListener()
                     {
                         @Override
@@ -256,117 +194,63 @@ public class IndictmentCreatorActivity
                             onFillPhoto();
                         }
                     });
-
-            Button saveAndSign = (Button) findViewById(R.id.sign_and_save);
-            saveAndSign.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            onSign();
-                        }
-                    });
-
-            saveControlsToFeature();
         }
     }
 
 
     @Override
-    public void onBackPressed()
+    public void onCreate(Bundle savedInstanceState)
     {
-        MainApplication app = (MainApplication) getApplication();
-        app.setTempFeature(null);
-        mNewFeature = null;
+        super.onCreate(savedInstanceState);
 
-        super.onBackPressed();
-    }
-
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-
-        saveControlsToFeature();
-    }
-
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-
-        restoreControlsFromFeature();
-
-        String vector = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VECTOR);
-
-        if (null == vector) {
-            FragmentManager fm = getSupportFragmentManager();
-
-            TargetingDialog fragment =
-                    (TargetingDialog) fm.findFragmentByTag(Constants.FRAGMENT_TARGETING_DIALOG);
-
-            if (fragment == null) {
-                TargetingDialog dialog = new TargetingDialog();
-                dialog.setOnSelectListener(this);
-                dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_TARGETING_DIALOG);
-            }
-        }
+        loadPhotoAttaches(mNewFeature);
     }
 
 
     protected void saveControlsToFeature()
     {
-        if (null != mNewFeature) {
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_NUMBER, mIndictmentNumber.getText().toString());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_DATE, mDateTime.getValue());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_PLACE, mPlace.getText().toString());
-
-            if (null != mViolationTypeSpinner) {
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_VIOLATION_TYPE,
-                        mViolationTypeSpinner.getSelectedItem().toString());
-            }
-
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
-
-            if (null != mForestCatTypeSpinner) {
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE,
-                        mForestCatTypeSpinner.getSelectedItem().toString());
-            }
-
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_DATE_VIOLATE, mWhen.getText().toString());
-            //mNewFeature.setFieldValue(
-            //        Constants.FIELD_DOCUMENTS_USER_TRANS, );
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_USER, mUserDesc);
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_DATE_PICK, mDatePick.getValue());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
-            mNewFeature.setFieldValue(
-                    Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
+        if (null == mNewFeature) {
+            return;
         }
+
+        super.saveControlsToFeature();
+
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_PLACE, mCreationPlace.getText().toString());
+
+        if (null != mViolationTypeSpinner) {
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_VIOLATION_TYPE,
+                    mViolationTypeSpinner.getSelectedItem().toString());
+        }
+
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
+
+        if (null != mForestCatTypeSpinner) {
+            mNewFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE,
+                    mForestCatTypeSpinner.getSelectedItem().toString());
+        }
+
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_DATE_VIOLATE, mWhen.getText().toString());
+        //mNewFeature.setFieldValue(
+        //        Constants.FIELD_DOCUMENTS_USER_TRANS, );
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_DATE_PICK, mDatePick.getValue());
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
     }
 
 
@@ -376,13 +260,9 @@ public class IndictmentCreatorActivity
             return;
         }
 
-        mIndictmentNumber.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_NUMBER));
-        mDateTime.setValue(
-                mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
-        mAuthor.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
-        mPlace.setText(
+        super.restoreControlsFromFeature();
+
+        mCreationPlace.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
 
         ArrayAdapter<String> adapter;
@@ -399,8 +279,10 @@ public class IndictmentCreatorActivity
             }
         }
 
-        mLaw.setText((String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
-        if (null != mViolationTypeSpinner) {
+        mLaw.setText(
+                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
+
+        if (null != mForestCatTypeSpinner) {
             String forestCat =
                     (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
             adapter = (ArrayAdapter<String>) mForestCatTypeSpinner.getAdapter();
@@ -429,121 +311,31 @@ public class IndictmentCreatorActivity
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
         mCrimeSay.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
-        mTerritory.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
-    }
-
-
-    protected void loadPhotoAttaches(DocumentEditFeature feature)
-    {
-        MainApplication app = (MainApplication) getApplicationContext();
-        File photoDir = app.getDocFeatureFolder();
-
-        if (!photoDir.isDirectory()) {
-            throw new IllegalArgumentException("photoDir is not directory");
-        }
-
-        File[] photoFiles = photoDir.listFiles(
-                new FilenameFilter()
-                {
-                    @Override
-                    public boolean accept(
-                            final File dir,
-                            final String name)
-                    {
-                        Log.d(
-                                TAG, "loadPhotoAttaches(), FilenameFilter, dir: " +
-                                     dir.getAbsolutePath() + ", name: " + name);
-
-                        if (name.matches(".*\\.jpg")) {
-                            Log.d(
-                                    TAG,
-                                    "loadPhotoAttaches(), FilenameFilter, name.matches: " + true);
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                });
-
-        for (File photoFile : photoFiles) {
-            AttachItem photoAttach = new AttachItem("-1", photoFile.getName(), "image/jpeg", "");
-            feature.addAttachment(photoAttach);
-        }
-    }
-
-
-    protected String getNewNumber(String passId)
-    {
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH) + 1;
-
-        return passId + "/" + month + "-" + year;
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getMenuInflater().inflate(R.menu.indictment_creator, menu);
-        return true;
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.action_sheet:
+                onFillSheet();
+                return true;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_sheet) {
-            onFillSheet();
-            return true;
-        } else if (id == R.id.action_vehicle) {
-            onFillVehicle();
-            return true;
-        } else if (id == R.id.action_production) {
-            onFillProduction();
-            return true;
-        } else if (id == R.id.action_photo) {
-            onFillPhoto();
-            return true;
-        } else if (id == R.id.action_territory) {
-            onAddTerritory();
-            return true;
-        } else if (id == R.id.action_sign) {
-            onSign();
-            return true;
-        } else if (id == R.id.action_cancel) {
-            finish();
-            return true;
+            case R.id.action_vehicle:
+                onFillVehicle();
+                return true;
+
+            case R.id.action_production:
+                onFillProduction();
+                return true;
+
+            case R.id.action_photo:
+                onFillPhoto();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    protected void onActivityResult(
-            int requestCode,
-            int resultCode,
-            Intent data)
-    {
-        if (requestCode == INDICTMENT_ACTIVITY) {
-            mTerritory.setText(
-                    mNewFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
-        }
-    }
-
-
-    private void onAddTerritory()
-    {
-        Intent intent = new Intent(this, SelectTerritoryActivity.class);
-        startActivityForResult(intent, INDICTMENT_ACTIVITY);
     }
 
 
@@ -572,45 +364,5 @@ public class IndictmentCreatorActivity
     {
         Intent intent = new Intent(this, PhotoTableFillerActivity.class);
         startActivity(intent);
-    }
-
-
-    private void onSign()
-    {
-        //check required field
-        if (mNewFeature.getGeometry() == null ||
-            TextUtils.isEmpty(mTerritory.getText().toString())) {
-            Toast.makeText(this, getString(R.string.error_territory_must_be_set), Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        //number
-        if (TextUtils.isEmpty(mIndictmentNumber.getText().toString())) {
-            Toast.makeText(this, getString(R.string.error_number_mast_be_set), Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        //user
-        if (TextUtils.isEmpty(mAuthor.getText().toString())) {
-            Toast.makeText(this, getString(R.string.error_author_must_be_set), Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        saveControlsToFeature();
-
-        //show dialog with sign and save / edit buttons
-        SignDialog signDialog = new SignDialog();
-        signDialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SIGN_DIALOG);
-    }
-
-
-    @Override
-    public void onSelect(String objectId)
-    {
-        mNewFeature.setFieldValue(
-                Constants.FIELD_DOCUMENTS_VECTOR, objectId);
     }
 }

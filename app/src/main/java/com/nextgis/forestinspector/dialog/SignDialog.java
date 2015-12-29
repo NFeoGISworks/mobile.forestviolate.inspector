@@ -75,7 +75,7 @@ public class SignDialog
             setIcon(R.drawable.ic_action_edit_light);
         }
 
-        setTitle(R.string.sign_and_save);
+        setTitle(R.string.sign_and_send);
         setView(view, false);
         setNegativeText(R.string.fix);
         setPositiveText(R.string.save);

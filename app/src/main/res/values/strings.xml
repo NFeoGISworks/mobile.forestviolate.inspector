@@ -102,7 +102,7 @@
     <string name="violation_when_desc">Date, time, when it is impossible to establish - presumably</string>
     <string name="when_hint">Enter date here</string>
     <string name="territory">Name of forestry, forest district, forest area, room blocks, allocating, sharing</string>
-    <string name="sign_and_save">Sign and save</string>
+    <string name="sign_and_send">Sign and send</string>
     <string name="create_sheet">Create sheet</string>
     <string name="create_production">Fill production form</string>
     <string name="create_note">Create note</string>

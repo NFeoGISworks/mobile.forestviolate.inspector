@@ -58,6 +58,8 @@ public interface Constants
     String KEY_THICKNESS_TYPES  = "thickness_types";
     String KEY_TREES_TYPES      = "trees_types";
     String KEY_HEIGHT_TYPES     = "height_types";
+    String KEY_FIELDWORK_TYPES  = "fieldwork_types";
+    String KEY_CONTRACT_TYPES   = "contract_types";
     String KEY_FV               = "fv";
 
     String KEY_LAYER_DOCUMENTS        = "documents";
@@ -74,6 +76,8 @@ public interface Constants
     String KEY_LAYER_THICKNESS_TYPES  = "thickness_types";
     String KEY_LAYER_TREES_TYPES      = "trees_types";
     String KEY_LAYER_HEIGHT_TYPES     = "height_types";
+    String KEY_LAYER_FIELDWORK_TYPES  = "fieldwork_types";
+    String KEY_LAYER_CONTRACT_TYPES   = "contract_types";
     String KEY_LAYER_FV               = "fv";
 
     /**
@@ -91,11 +95,11 @@ public interface Constants
     /**
      * document types
      */
-    int DOC_TYPE_NOTE       = 0;
-    int DOC_TYPE_CHECK      = 1;
-    int DOC_TYPE_INDICTMENT = 2;
-    int DOC_TYPE_SHEET      = 3;
-    int DOC_TYPE_VEHICLE    = 4;
+    int DOC_TYPE_NOTE        = 0;
+    int DOC_TYPE_FIELD_WORKS = 1;
+    int DOC_TYPE_INDICTMENT  = 2;
+    int DOC_TYPE_SHEET       = 3;
+    int DOC_TYPE_VEHICLE     = 4;
 
     int STEP_STATE_WAIT  = 0;
     int STEP_STATE_WORK  = 1;
@@ -211,4 +215,8 @@ public interface Constants
     String FRAGMENT_TARGETING_DIALOG         = "targeting_dialog";
 
     int DOCS_VECTOR_SCOPE = 10000;
+
+    int INDICTMENT_ACTIVITY  = 1101;
+    int SHEET_ACTIVITY       = 1102;
+    int FIELD_WORKS_ACTIVITY = 1103;
 }

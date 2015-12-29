@@ -23,9 +23,9 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     >
 
     <include
@@ -37,50 +37,45 @@
         >
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:orientation="vertical"
             >
 
             <!--http://stackoverflow.com/a/1662088/4727406-->
+
             <View
                 android:focusableInTouchMode="true"
                 android:layout_width="0px"
                 android:layout_height="0px"
                 />
 
-            <!-- doc number -->
-
             <RelativeLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 >
 
+                <!-- title -->
+
                 <TextView
-                    android:id="@+id/doc_num_desc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@+id/doc_num"
                     android:layout_toStartOf="@id/doc_num"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textStyle="bold"
                     android:text="@string/sheet_title"
+                    style="@style/title_text"
                     />
+
+                <!-- doc number -->
 
                 <EditText
                     android:id="@+id/doc_num"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:minWidth="80dp"
+                    style="@style/doc_num_text"
                     />
 
             </RelativeLayout>
@@ -132,24 +127,30 @@
 
             <Button
                 android:id="@+id/create_sheet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="0"
-                android:layout_gravity="center_horizontal"
                 android:text="@string/create_sheet"
+                style="@style/doc_button"
                 />
 
-            <!-- sign -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/textColorSecondary"
+                />
+
+            <!-- save -->
 
             <Button
-                android:id="@+id/sign_and_save"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="0"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/sign_and_save"
+                android:id="@+id/save"
+                android:text="@string/field_works_save"
+                style="@style/doc_button"
+                />
+
+            <!-- sign and save -->
+
+            <Button
+                android:id="@+id/sign_and_send"
+                android:text="@string/sign_and_send"
+                style="@style/doc_button"
                 />
 
         </LinearLayout>

@@ -35,27 +35,6 @@
         app:showAsAction="ifRoom"
         />
     <item
-        android:id="@+id/action_sheet"
-        android:title="@string/create_sheet"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_action_image_nature_people"
-        app:showAsAction="never"
-        />
-    <item
-        android:id="@+id/action_vehicle"
-        android:title="@string/create_vehicles"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_vehicle"
-        app:showAsAction="never"
-        />
-    <item
-        android:id="@+id/action_production"
-        android:title="@string/create_production"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_production"
-        app:showAsAction="never"
-        />
-    <item
         android:id="@+id/action_photo"
         android:title="@string/create_photo_table"
         android:orderInCategory="100"

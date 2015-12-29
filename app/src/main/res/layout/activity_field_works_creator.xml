@@ -75,7 +75,6 @@
                     android:id="@+id/doc_num"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:text="20123 б/н 23344"
                     style="@style/doc_num_text"
                     />
 
@@ -96,7 +95,7 @@
                 style="@style/DatePickSpinner"
                 />
 
-            <!-- place creation -->
+            <!-- creation place -->
 
             <TextView
                 android:text="@string/creation_place_desc"
@@ -211,7 +210,7 @@
                 />
 
             <com.nextgis.maplibui.control.DateTime
-                android:id="@+id/from_date"
+                android:id="@+id/contract_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -226,7 +225,7 @@
                 />
 
             <EditText
-                android:id="@+id/number"
+                android:id="@+id/contract_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
@@ -348,6 +347,7 @@
             <!-- save -->
 
             <Button
+                android:id="@+id/save"
                 android:text="@string/field_works_save"
                 style="@style/doc_button"
                 />
@@ -355,7 +355,8 @@
             <!-- sign and save -->
 
             <Button
-                android:text="@string/sign_and_save"
+                android:id="@+id/sign_and_send"
+                android:text="@string/sign_and_send"
                 style="@style/doc_button"
                 />
 

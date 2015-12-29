@@ -254,6 +254,8 @@ public class InitService extends Service {
             keys.put(Constants.KEY_THICKNESS_TYPES, -1L);
             keys.put(Constants.KEY_TREES_TYPES, -1L);
             keys.put(Constants.KEY_HEIGHT_TYPES, -1L);
+            keys.put(Constants.KEY_FIELDWORK_TYPES, -1L);
+            keys.put(Constants.KEY_CONTRACT_TYPES, -1L);
             keys.put(Constants.KEY_FV, -1L);
 
             if(!checkServerLayers(connection, keys)){
@@ -468,6 +470,32 @@ public class InitService extends Service {
             }
             else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
+            }
+
+            if(isCanceled())
+                return false;
+
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            nSubStep++;
+
+            if (!loadLookupTables(
+                    keys.get(Constants.KEY_FIELDWORK_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_FIELDWORK_TYPES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
+                return false;
+            }
+
+            if(isCanceled())
+                return false;
+
+            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            nSubStep++;
+
+            if (!loadLookupTables(
+                    keys.get(Constants.KEY_CONTRACT_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_CONTRACT_TYPES, documentsLayer, this)){
+                publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
+                return false;
             }
 
             if(isCanceled())
