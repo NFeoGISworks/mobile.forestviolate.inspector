@@ -221,15 +221,17 @@
     <string name="show_indictments">Показывать акты</string>
     <string name="show_sheets">Показывать ведомости перечета</string>
     <string name="show_notes">Показывать заметки</string>
-    <string name="action_field_works">Акт полевых мероприятий</string>
-    <string name="field_works_title">Акт полевых мероприятий</string>
-    <string name="field_works_item_title">АКТ\nпроведения полевых мероприятий\nпо государственному лесному контролю и надзору, (охране лесов от нарушений лесного законодательства), государственному пожарному надзору в лесах</string>
-    <string name="field_works_item_law_base">На основании  Положения об осуществлении государственного лесного контроля и надзора, утвержденного постановлением Правительства РФ от 22.06.2007 № 394 (внесены  изменения  в Положение об осуществлении государственного лесного контроля и надзора  постановлением Правительства РФ №183 от 25.03.2010 года); Положения об осуществлении государственного пожарного надзора в лесах, утвержденного постановлением Правительства РФ от 03.08.2010 №595</string>
+
+    <string name="action_field_works">Акт о полевых мероприятиях</string>
+
+    <string name="field_works_title">Акт о полевых мероприятиях</string>
+    <string name="field_works_item_title">Акт о полевых мероприятиях</string>
+    <string name="field_works_item_law_base">На основании Положений об осуществлении государственного лесного контроля и надзора, пожарного надзора в лесах,</string>
     <string name="field_works_item_i_we">мною (нами)</string>
     <string name="field_works_author_desc">ФИО, должность(и), № удостоверения и когда выдано составителя(ей) акта</string>
     <string name="field_works_item_in_presence">в присутствии</string>
     <string name="field_works_representative_desc">ФИО, должность представителя проверяемой организации</string>
-    <string name="field_works_item_made_inspections">проведены полевые мероприятия по государственному лесному контролю и надзору, государственному пожарному надзору</string>
+    <string name="field_works_item_made_inspections_for">проведены полевые мероприятия по</string>
     <string name="field_works_item_territory">в лесах</string>
     <string name="field_works_item_in_relation">в отношении</string>
     <string name="field_works_contract_desc">(договор аренды лесного участка, договор купли-продажи лесных насаждений, лесная декларация, акт приема-передачи лесных насаждений и др.)</string>
@@ -240,7 +242,7 @@
     <string name="field_works_item_cutting_area_cultivation_quality">2. Качество разработки лесосеки, соблюдение требований Правил заготовки древесины, Правил ухода за лесом, Правил пожарной безопасности в лесах, Санитарных правил в лесах:</string>
     <string name="field_works_item_violation">3. В ходе проведения полевых мероприятий по контролю охраны, защиты и воспроизводства лесов выявлены следующие нарушения лесного и земельного законодательства:</string>
     <string name="field_works_item_attachments">Список приложений, обосновывающих выводы по итогам проведенных полевых мероприятий по контролю:</string>
-    <string name="field_works_create_attachments_table">Заполнить таблицу приложений</string>
+
     <string name="field_works_create_photo_table">Заполнить фототаблицу</string>
     <string name="field_works_item_inspectors_signatures">Подписи государственного(ых) инспектора(ов):</string>
     <string name="field_works_item_participants_signatures">Подписи лиц, участвовавших в полевых мероприятиях:</string>

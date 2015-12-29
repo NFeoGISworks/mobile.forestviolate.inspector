@@ -229,7 +229,7 @@
     <string name="field_works_author_desc">Full name(s), rank(s) of the author(s)</string>
     <string name="field_works_item_in_presence">In presence</string>
     <string name="field_works_representative_desc">field_works_representative_desc</string>
-    <string name="field_works_item_made_inspections">field_works_item_made_inspections</string>
+    <string name="field_works_item_made_inspections_for">field_works_item_made_inspections</string>
     <string name="field_works_item_territory">field_works_item_territory</string>
     <string name="field_works_item_in_relation">In relation</string>
     <string name="field_works_contract_desc">field_works_contract_desc</string>

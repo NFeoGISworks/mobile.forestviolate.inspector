@@ -51,20 +51,40 @@
                 android:focusableInTouchMode="true"
                 />
 
-            <!-- title -->
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
 
-            <TextView
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
-                android:text="@string/field_works_item_title"
-                style="@style/doc_item_text"
-                />
+                <!-- title -->
+
+                <TextView
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/doc_num"
+                    android:layout_toStartOf="@id/doc_num"
+                    android:text="@string/field_works_item_title"
+                    style="@style/title_text"
+                    />
+
+                <!-- doc number -->
+
+                <EditText
+                    android:id="@+id/doc_num"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:text="20123 б/н 23344"
+                    style="@style/doc_num_text"
+                    />
+
+            </RelativeLayout>
 
             <!-- date & time -->
 
             <TextView
                 android:text="@string/date_time_create_desc"
-                android:layout_marginTop="5dp"
                 style="@style/description_text"
                 />
 
@@ -94,14 +114,15 @@
 
             <TextView
                 android:text="@string/field_works_item_law_base"
-                style="@style/doc_item_text"
+                style="@style/paragraph_text"
                 />
 
             <!-- author -->
 
             <TextView
                 android:text="@string/field_works_item_i_we"
-                style="@style/doc_item_text"
+                android:layout_marginTop="0dp"
+                style="@style/paragraph_text"
                 />
 
             <TextView
@@ -119,7 +140,7 @@
 
             <TextView
                 android:text="@string/field_works_item_in_presence"
-                style="@style/doc_item_text"
+                style="@style/paragraph_text"
                 />
 
             <TextView
@@ -133,16 +154,25 @@
                 android:layout_height="wrap_content"
                 />
 
+            <!-- made inspections for -->
+
+            <TextView
+                android:text="@string/field_works_item_made_inspections_for"
+                style="@style/paragraph_text"
+                />
+
+            <Spinner
+                android:id="@+id/field_work_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                />
+
             <!-- territory -->
 
             <TextView
-                android:text="@string/field_works_item_made_inspections"
-                style="@style/doc_item_text"
-                />
-
-            <TextView
                 android:text="@string/field_works_item_territory"
-                style="@style/doc_item_text"
+                style="@style/paragraph_text"
                 />
 
             <TextView
@@ -157,12 +187,7 @@
 
             <TextView
                 android:text="@string/field_works_item_in_relation"
-                style="@style/doc_item_text"
-                />
-
-            <TextView
-                android:text="@string/field_works_contract_desc"
-                style="@style/description_text"
+                style="@style/paragraph_text"
                 />
 
             <EditText
@@ -171,24 +196,33 @@
                 android:layout_height="wrap_content"
                 />
 
+            <Spinner
+                android:id="@+id/contract_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                />
+
             <!-- from date -->
 
             <TextView
                 android:text="@string/field_works_item_from"
-                style="@style/doc_item_text"
+                style="@style/paragraph_text"
                 />
 
-            <EditText
+            <com.nextgis.maplibui.control.DateTime
                 android:id="@+id/from_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                style="@style/DatePickSpinner"
                 />
 
             <!-- number -->
 
             <TextView
                 android:text="@string/field_works_item_number"
-                style="@style/doc_item_text"
+                style="@style/paragraph_text"
                 />
 
             <EditText
@@ -201,14 +235,15 @@
 
             <TextView
                 android:text="@string/field_works_item_set_following"
-                style="@style/doc_item_text"
+                style="@style/paragraph_text"
                 />
 
             <!-- 1. cutting area clean quality -->
 
             <TextView
                 android:text="@string/field_works_item_cutting_area_clean_quality"
-                style="@style/doc_item_text"
+                android:textStyle="normal"
+                style="@style/paragraph_text"
                 />
 
             <EditText
@@ -221,7 +256,8 @@
 
             <TextView
                 android:text="@string/field_works_item_cutting_area_cultivation_quality"
-                style="@style/doc_item_text"
+                android:textStyle="normal"
+                style="@style/paragraph_text"
                 />
 
             <EditText
@@ -234,7 +270,8 @@
 
             <TextView
                 android:text="@string/field_works_item_violation"
-                style="@style/doc_item_text"
+                android:textStyle="normal"
+                style="@style/paragraph_text"
                 />
 
             <EditText
@@ -243,58 +280,11 @@
                 android:layout_height="wrap_content"
                 />
 
-            <!-- attachments -->
-
-            <TextView
-                android:text="@string/field_works_item_attachments"
-                style="@style/doc_item_text"
-                />
-
-            <!-- attachments table -->
-
-            <Button
-                android:id="@+id/create_attachments_table"
-                android:text="@string/field_works_create_attachments_table"
-                style="@style/doc_button"
-                />
-
             <!-- photo table -->
 
             <Button
                 android:id="@+id/create_photo_table"
                 android:text="@string/field_works_create_photo_table"
-                style="@style/doc_button"
-                />
-
-            <!-- inspectors signatures -->
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="?android:attr/textColorSecondary"
-                />
-
-            <TextView
-                android:text="@string/field_works_item_inspectors_signatures"
-                style="@style/doc_item_text"
-                />
-
-            <Button
-                android:text="@string/field_works_add_signature"
-                style="@style/doc_button"
-                />
-
-            <!-- participants signatures -->
-
-            <TextView
-                android:text="@string/field_works_item_participants_signatures"
-                style="@style/doc_item_text"
-                />
-
-            <Button
-                android:text="@string/field_works_add_signature"
                 style="@style/doc_button"
                 />
 
@@ -310,14 +300,15 @@
 
             <TextView
                 android:text="@string/field_works_item_alleged_infringer_data"
-                style="@style/doc_item_text"
+                style="@style/paragraph_text"
                 />
 
             <!-- infringer organisation name -->
 
             <TextView
                 android:text="@string/field_works_item_infringer_organisation_name"
-                style="@style/doc_item_text"
+                android:textStyle="normal"
+                style="@style/paragraph_text"
                 />
 
             <EditText
@@ -330,7 +321,8 @@
 
             <TextView
                 android:text="@string/field_works_item_infringer_full_name"
-                style="@style/doc_item_text"
+                android:textStyle="normal"
+                style="@style/paragraph_text"
                 />
 
             <EditText
@@ -339,18 +331,12 @@
                 android:layout_height="wrap_content"
                 />
 
-            <!-- infringer signature -->
-
-            <Button
-                android:text="@string/field_works_sign"
-                style="@style/doc_button"
-                />
-
             <!-- infringer living place -->
 
             <TextView
                 android:text="@string/field_works_item_infringer_living_place"
-                style="@style/doc_item_text"
+                android:textStyle="normal"
+                style="@style/paragraph_text"
                 />
 
             <EditText
@@ -359,30 +345,17 @@
                 android:layout_height="wrap_content"
                 />
 
-            <!-- infringers signatures -->
-
-            <TextView
-                android:text="@string/field_works_item_infringers_signatures"
-                style="@style/doc_item_text"
-                />
-
-            <Button
-                android:text="@string/field_works_add_signature"
-                style="@style/doc_button"
-                />
-
             <!-- save -->
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="?android:attr/textColorSecondary"
-                />
 
             <Button
                 android:text="@string/field_works_save"
+                style="@style/doc_button"
+                />
+
+            <!-- sign and save -->
+
+            <Button
+                android:text="@string/sign_and_save"
                 style="@style/doc_button"
                 />
 
