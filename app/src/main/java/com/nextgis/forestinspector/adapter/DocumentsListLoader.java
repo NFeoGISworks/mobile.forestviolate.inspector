@@ -56,6 +56,7 @@ public class DocumentsListLoader
 
     protected boolean mShowIndictments = false;
     protected boolean mShowSheets      = false;
+    protected boolean mShowFieldWorks  = false;
     protected boolean mShowNotes       = false;
 
 
@@ -63,6 +64,7 @@ public class DocumentsListLoader
             Context context,
             Boolean showIndictments,
             Boolean showSheets,
+            Boolean showFieldWorks,
             Boolean showNotes)
     {
         super(context);
@@ -70,10 +72,11 @@ public class DocumentsListLoader
         mContext = context;
 
         if (null == showIndictments && null == showSheets && null == showNotes) {
-            mShowIndictments = mShowSheets = mShowNotes = true;
+            mShowIndictments = mShowSheets = mShowFieldWorks = mShowNotes = true;
         } else {
             mShowIndictments = null == showIndictments ? false : showIndictments;
             mShowSheets = null == showSheets ? false : showSheets;
+            mShowFieldWorks = null == showFieldWorks ? false : showFieldWorks;
             mShowNotes = null == showNotes ? false : showNotes;
         }
 
@@ -111,7 +114,7 @@ public class DocumentsListLoader
         }
 
 
-        if (mShowIndictments || mShowSheets) {
+        if (mShowIndictments || mShowSheets || mShowFieldWorks) {
             ILayer docsLayer = mMap.getLayerById(mDocsId);
             if (docsLayer != null) {
                 VectorLayer docs = (VectorLayer) docsLayer;
@@ -148,7 +151,8 @@ public class DocumentsListLoader
 
                             int docType = cursor.getInt(typePos);
                             if (!mShowIndictments && Constants.DOC_TYPE_INDICTMENT == docType
-                                    || !mShowSheets && Constants.DOC_TYPE_SHEET == docType) {
+                                    || !mShowSheets && Constants.DOC_TYPE_SHEET == docType
+                                    || !mShowFieldWorks && Constants.DOC_TYPE_FIELD_WORKS == docType) {
                                 continue;
                             }
 
@@ -160,6 +164,9 @@ public class DocumentsListLoader
                                     break;
                                 case Constants.DOC_TYPE_SHEET:
                                     doc.mName = mContext.getString(R.string.sheet_item_name);
+                                    break;
+                                case Constants.DOC_TYPE_FIELD_WORKS:
+                                    doc.mName = mContext.getString(R.string.field_works_item_name);
                                     break;
                                 default:
                                     continue;

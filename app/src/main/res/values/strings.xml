@@ -75,6 +75,7 @@
     <string name="sheet_head">Head</string>
     <string name="sheet_link">See tab \"Sheet\"</string>
     <string name="sheet_item_name">Sheet</string>
+    <string name="field_works_item_name">Field works</string>
     <string name="notes">Notes</string>
     <string name="targeting">Targeting</string>
     <string name="targeting_selection">Targeting selection</string>
@@ -219,6 +220,7 @@
     <string name="docs_filter">Document filter</string>
     <string name="show_indictments">Show indictments</string>
     <string name="show_sheets">Show sheets</string>
+    <string name="show_field_works">Show field works</string>
     <string name="show_notes">Show notes</string>
     <!-- TODO: make strings-->
     <string name="action_field_works">Field works indictment</string>

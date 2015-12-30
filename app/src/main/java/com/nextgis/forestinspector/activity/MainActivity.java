@@ -77,12 +77,13 @@ public class MainActivity
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    protected ViewPager mViewPager;
-    protected boolean mFirsRun;
+    protected ViewPager           mViewPager;
+    protected boolean             mFirsRun;
     protected InitStepListAdapter mAdapter;
 
     protected OnShowIndictmentsListener mOnShowIndictmentsListener;
     protected OnShowSheetsListener      mOnShowSheetsListener;
+    protected OnShowFieldWorksListener  mOnShowFieldWorksListener;
     protected OnShowNotesListener       mOnShowNotesListener;
 
 
@@ -328,14 +329,17 @@ public class MainActivity
         if (null != documentsFragment) {
             setOnShowIndictmentsListener(documentsFragment);
             setOnShowSheetsListener(documentsFragment);
+            setOnShowFieldWorksListener(documentsFragment);
             setOnShowNotesListener(documentsFragment);
 
             MenuItem itemShowIndictments = menu.findItem(R.id.show_indictments);
             MenuItem itemShowSheets = menu.findItem(R.id.show_sheets);
+            MenuItem itemShowFieldWorks = menu.findItem(R.id.show_field_works);
             MenuItem itemShowNotes = menu.findItem(R.id.show_notes);
 
             itemShowIndictments.setChecked(documentsFragment.isShowIndictments());
             itemShowSheets.setChecked(documentsFragment.isShowSheets());
+            itemShowFieldWorks.setChecked(documentsFragment.isShowFieldWorks());
             itemShowNotes.setChecked(documentsFragment.isShowNotes());
         }
 
@@ -366,6 +370,11 @@ public class MainActivity
                 showSheets(item.isChecked());
                 return true;
 
+            case R.id.show_field_works:
+                if (item.isChecked()) { item.setChecked(false); } else { item.setChecked(true); }
+                showFieldWorks(item.isChecked());
+                return true;
+
             case R.id.show_notes:
                 if (item.isChecked()) { item.setChecked(false); } else { item.setChecked(true); }
                 showNotes(item.isChecked());
@@ -386,7 +395,7 @@ public class MainActivity
             case R.id.action_add_note:
                 addNote();
                 return true;
-
+// for debug
 //            case R.id.action_sync:
 //                ((MainApplication) app).runSync();
 //                return true;
@@ -511,6 +520,14 @@ public class MainActivity
     }
 
 
+    protected void showFieldWorks(boolean show)
+    {
+        if (null != mOnShowFieldWorksListener) {
+            mOnShowFieldWorksListener.onShowFieldWorks(show);
+        }
+    }
+
+
     protected void showNotes(boolean show)
     {
         if (null != mOnShowNotesListener) {
@@ -531,6 +548,12 @@ public class MainActivity
     }
 
 
+    public void setOnShowFieldWorksListener(OnShowFieldWorksListener onShowFieldWorksListener)
+    {
+        mOnShowFieldWorksListener = onShowFieldWorksListener;
+    }
+
+
     public void setOnShowNotesListener(OnShowNotesListener onShowNotesListener)
     {
         mOnShowNotesListener = onShowNotesListener;
@@ -546,6 +569,12 @@ public class MainActivity
     public interface OnShowSheetsListener
     {
         void onShowSheets(boolean show);
+    }
+
+
+    public interface OnShowFieldWorksListener
+    {
+        void onShowFieldWorks(boolean show);
     }
 
 

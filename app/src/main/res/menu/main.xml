@@ -47,6 +47,13 @@
                 app:showAsAction="never"
                 />
             <item
+                android:id="@+id/show_field_works"
+                android:title="@string/show_field_works"
+                android:checkable="true"
+                android:checked="false"
+                app:showAsAction="never"
+                />
+            <item
                 android:id="@+id/show_notes"
                 android:title="@string/show_notes"
                 android:checkable="true"
@@ -79,24 +86,26 @@
         android:orderInCategory="100"
         app:showAsAction="never"
         />
+
+    <!-- for debug -->
 <!--
-    <item
-        android:id="@+id/action_sync"
-        android:title="@string/action_sync"
-        android:orderInCategory="100"
-        app:showAsAction="never"
-        />
+        <item
+            android:id="@+id/action_sync"
+            android:title="@string/action_sync"
+            android:orderInCategory="100"
+            app:showAsAction="never"
+            />
 -->
-    <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never"
-        />
-    <item
-        android:id="@+id/action_about"
-        android:title="@string/action_about"
-        android:orderInCategory="100"
-        app:showAsAction="never"
-        />
-</menu>
+        <item
+            android:id="@+id/action_settings"
+            android:title="@string/action_settings"
+            android:orderInCategory="100"
+            app:showAsAction="never"
+            />
+        <item
+            android:id="@+id/action_about"
+            android:title="@string/action_about"
+            android:orderInCategory="100"
+            app:showAsAction="never"
+            />
+    </menu>

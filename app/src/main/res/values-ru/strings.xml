@@ -76,6 +76,7 @@
     <string name="sheet_head">Шапка</string>
     <string name="sheet_link">См. вкладку \"Ведомость перечета\"</string>
     <string name="sheet_item_name">Ведомость перечета</string>
+    <string name="field_works_item_name">Акт о полевых работах</string>
     <string name="notes">Заметки</string>
     <string name="targeting">Целеуказание</string>
     <string name="targeting_selection">Выбор целеуказания</string>
@@ -218,8 +219,9 @@
     <string name="show_all_targets">Показать все целеуказания</string>
     <string name="show_nearest_targets">Показать ближайшие целеуказания</string>
     <string name="docs_filter">Фильтр документов</string>
-    <string name="show_indictments">Показывать акты</string>
+    <string name="show_indictments">Показывать акты о лесонарушении</string>
     <string name="show_sheets">Показывать ведомости перечета</string>
+    <string name="show_field_works">Показывать акты о полевых работах</string>
     <string name="show_notes">Показывать заметки</string>
 
     <string name="action_field_works">Акт о полевых мероприятиях</string>

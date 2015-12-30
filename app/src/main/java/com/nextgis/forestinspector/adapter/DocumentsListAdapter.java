@@ -117,10 +117,11 @@ public class DocumentsListAdapter
         switch (item.mType) {
             case Constants.DOC_TYPE_INDICTMENT:
             case Constants.DOC_TYPE_SHEET:
+            case Constants.DOC_TYPE_FIELD_WORKS:
+            default:
                 selection = false;
                 break;
             case Constants.DOC_TYPE_NOTE:
-            default:
                 break;
         }
 
@@ -144,15 +145,20 @@ public class DocumentsListAdapter
                 viewHolder.mTypeIcon.setImageDrawable(
                         mContext.getResources().getDrawable(R.mipmap.ic_indicment));
                 break;
-            case Constants.DOC_TYPE_NOTE:
-                viewHolder.mCheckBox.setEnabled(true);
-                viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_bookmark));
-                break;
             case Constants.DOC_TYPE_SHEET:
                 viewHolder.mCheckBox.setEnabled(false);
                 viewHolder.mTypeIcon.setImageDrawable(
                         mContext.getResources().getDrawable(R.mipmap.ic_sheet));
+                break;
+            case Constants.DOC_TYPE_FIELD_WORKS:
+                viewHolder.mCheckBox.setEnabled(false);
+                viewHolder.mTypeIcon.setImageDrawable(
+                        mContext.getResources().getDrawable(R.mipmap.ic_indicment));
+                break;
+            case Constants.DOC_TYPE_NOTE:
+                viewHolder.mCheckBox.setEnabled(true);
+                viewHolder.mTypeIcon.setImageDrawable(
+                        mContext.getResources().getDrawable(R.mipmap.ic_bookmark));
                 break;
         }
 

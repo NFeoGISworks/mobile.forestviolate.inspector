@@ -61,11 +61,13 @@ public class DocumentsFragment
                    ActionMode.Callback,
                    LoaderManager.LoaderCallbacks<List<DocumentsListItem>>,
                    MainActivity.OnShowIndictmentsListener,
+                   MainActivity.OnShowFieldWorksListener,
                    MainActivity.OnShowSheetsListener,
                    MainActivity.OnShowNotesListener
 {
     protected static String KEY_SHOW_INDICTMENTS = "show_indictments";
     protected static String KEY_SHOW_SHEETS      = "show_sheets";
+    protected static String KEY_SHOW_FIELD_WORKS = "field_works";
     protected static String KEY_SHOW_NOTES       = "show_notes";
 
     protected DocumentsListAdapter mAdapter;
@@ -74,6 +76,7 @@ public class DocumentsFragment
 
     protected boolean mShowIndictments = false;
     protected boolean mShowSheets      = false;
+    protected boolean mShowFieldWorks  = false;
     protected boolean mShowNotes       = false;
 
 
@@ -248,6 +251,12 @@ public class DocumentsFragment
     }
 
 
+    public boolean isShowFieldWorks()
+    {
+        return mShowFieldWorks;
+    }
+
+
     public boolean isShowNotes()
     {
         return mShowNotes;
@@ -271,6 +280,14 @@ public class DocumentsFragment
 
 
     @Override
+    public void onShowFieldWorks(boolean show)
+    {
+        mShowFieldWorks = show;
+        runLoader();
+    }
+
+
+    @Override
     public void onShowNotes(boolean show)
     {
         mShowNotes = show;
@@ -282,10 +299,11 @@ public class DocumentsFragment
     {
         Bundle args = null;
 
-        if (mShowIndictments || mShowSheets || mShowNotes) {
+        if (mShowIndictments || mShowSheets || mShowFieldWorks || mShowNotes) {
             args = new Bundle();
             args.putBoolean(KEY_SHOW_INDICTMENTS, mShowIndictments);
             args.putBoolean(KEY_SHOW_SHEETS, mShowSheets);
+            args.putBoolean(KEY_SHOW_FIELD_WORKS, mShowFieldWorks);
             args.putBoolean(KEY_SHOW_NOTES, mShowNotes);
         }
 
@@ -305,15 +323,18 @@ public class DocumentsFragment
     {
         Boolean showIndictments = null;
         Boolean showSheets = null;
+        Boolean showFieldWorks = null;
         Boolean showNotes = null;
 
         if (null != args) {
             showIndictments = args.getBoolean(KEY_SHOW_INDICTMENTS);
             showSheets = args.getBoolean(KEY_SHOW_SHEETS);
+            showFieldWorks = args.getBoolean(KEY_SHOW_FIELD_WORKS);
             showNotes = args.getBoolean(KEY_SHOW_NOTES);
         }
 
-        return new DocumentsListLoader(getActivity(), showIndictments, showSheets, showNotes);
+        return new DocumentsListLoader(
+                getActivity(), showIndictments, showSheets, showFieldWorks, showNotes);
     }
 
 
