@@ -117,7 +117,7 @@ public abstract class DocumentCreatorActivity
                         com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
                 app.setTempFeature(mNewFeature);
 
-                int userId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
+                long userId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
                 mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
 
                 mNewFeature.setFieldValue(

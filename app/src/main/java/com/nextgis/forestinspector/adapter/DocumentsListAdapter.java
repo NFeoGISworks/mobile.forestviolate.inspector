@@ -24,10 +24,14 @@ package com.nextgis.forestinspector.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
+import android.support.v7.internal.widget.ThemeUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.DocumentViewActivity;
@@ -52,11 +56,18 @@ public class DocumentsListAdapter
     protected MapEventSource          mMap;
     protected String                  mNotesPathName;
     protected List<DocumentsListItem> mDocuments;
+    protected long                    mUserId;
+    protected int                     mItemBackgroundColor;
 
 
     public DocumentsListAdapter(Context context)
     {
         super(context);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mUserId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
+        mItemBackgroundColor =
+                ThemeUtils.getThemeAttrColor(mContext, R.attr.docItemBackgroundForCurrentUser);
 
         mMap = (MapEventSource) MapBase.getInstance();
 
@@ -162,6 +173,11 @@ public class DocumentsListAdapter
                 break;
         }
 
+
+        if (mUserId == item.mUserId) {
+            viewHolder.mItemLayout.setBackgroundColor(mItemBackgroundColor);
+        }
+
         viewHolder.mTypeName.setText(item.mName);
         viewHolder.mDocDesc.setText(item.mDesc);
 
@@ -178,11 +194,12 @@ public class DocumentsListAdapter
             extends ListSelectorAdapter.ViewHolder
             implements View.OnClickListener
     {
-        ImageView mTypeIcon;
-        TextView  mTypeName;
-        TextView  mDocDesc;
-        TextView  mDocDate;
-        ImageView mStateIcon;
+        LinearLayout mItemLayout;
+        ImageView    mTypeIcon;
+        TextView     mTypeName;
+        TextView     mDocDesc;
+        TextView     mDocDate;
+        ImageView    mStateIcon;
 
 
         public ViewHolder(
@@ -191,6 +208,7 @@ public class DocumentsListAdapter
         {
             super(itemView, listener);
 
+            mItemLayout = (LinearLayout) itemView.findViewById(R.id.item_layout);
             mTypeIcon = (ImageView) itemView.findViewById(R.id.type_icon);
             mTypeName = (TextView) itemView.findViewById(R.id.type_name);
             mDocDesc = (TextView) itemView.findViewById(R.id.doc_desc);

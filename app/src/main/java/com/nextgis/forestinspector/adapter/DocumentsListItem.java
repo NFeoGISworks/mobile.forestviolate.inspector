@@ -36,6 +36,7 @@ public class DocumentsListItem
     public int    mType;
     public int    mStatus;
     public long   mId;
+    public long   mUserId;
 
 
     @Override
