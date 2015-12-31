@@ -133,6 +133,8 @@ public interface Constants
     String FIELD_DOCUMENTS_REGION          = "region";
     String FIELD_DOCUMENTS_VECTOR          = "vector";
     String FIELD_DOCUMENTS_POS             = "pos";
+    String FIELD_DOCUMENTS_USER_ID         = "user_id";
+    String FIELD_DOCUMENTS_CONTRACT_DATE   = "contract_date";
 
     /**
      * notes fields

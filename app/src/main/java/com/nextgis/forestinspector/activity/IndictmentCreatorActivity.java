@@ -36,6 +36,7 @@ import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplibui.control.DateTime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -119,14 +120,15 @@ public class IndictmentCreatorActivity
                     (NGWLookupTable) mDocsLayer.getLayerByName(Constants.KEY_LAYER_VIOLATE_TYPES);
             if (null != violationTypeTable) {
                 Map<String, String> data = violationTypeTable.getData();
-                List<String> violationTypeArray = new ArrayList<>();
+                List<String> typeArray = new ArrayList<>();
 
                 for (Map.Entry<String, String> entry : data.entrySet()) {
-                    violationTypeArray.add(entry.getKey());
+                    typeArray.add(entry.getKey());
                 }
+                Collections.sort(typeArray);
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        this, android.R.layout.simple_spinner_item, violationTypeArray);
+                        this, android.R.layout.simple_spinner_item, typeArray);
 
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mViolationTypeSpinner = (Spinner) findViewById(R.id.violation_type);
@@ -137,14 +139,15 @@ public class IndictmentCreatorActivity
                     Constants.KEY_LAYER_FOREST_CAT_TYPES);
             if (null != forestCatTypeTable) {
                 Map<String, String> data = forestCatTypeTable.getData();
-                List<String> forestCatTypeArray = new ArrayList<>();
+                List<String> typeArray = new ArrayList<>();
 
                 for (Map.Entry<String, String> entry : data.entrySet()) {
-                    forestCatTypeArray.add(entry.getKey());
+                    typeArray.add(entry.getKey());
                 }
+                Collections.sort(typeArray);
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        this, android.R.layout.simple_spinner_item, forestCatTypeArray);
+                        this, android.R.layout.simple_spinner_item, typeArray);
 
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mForestCatTypeSpinner = (Spinner) findViewById(R.id.forest_cat_type);

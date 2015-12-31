@@ -34,8 +34,10 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplibui.control.DateTime;
+import com.nextgis.maplibui.util.ConstantsUI;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +115,7 @@ public class FieldWorksCreatorActivity
                 for (Map.Entry<String, String> entry : data.entrySet()) {
                     typeArray.add(entry.getKey());
                 }
+                Collections.sort(typeArray);
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         this, android.R.layout.simple_spinner_item, typeArray);
@@ -133,6 +136,7 @@ public class FieldWorksCreatorActivity
                 for (Map.Entry<String, String> entry : data.entrySet()) {
                     typeArray.add(entry.getKey());
                 }
+                Collections.sort(typeArray);
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         this, android.R.layout.simple_spinner_item, typeArray);
@@ -144,6 +148,7 @@ public class FieldWorksCreatorActivity
 
             // TODO: request only date
             mContractDate = (DateTime) findViewById(R.id.contract_date);
+            mContractDate.setPickerType(ConstantsUI.DATE);
             mContractDate.init(null, null, null);
             mContractDate.setCurrentDate();
 
@@ -209,8 +214,8 @@ public class FieldWorksCreatorActivity
                     mContractTypeSpinner.getSelectedItem().toString());
         }
 
-//        mNewFeature.setFieldValue( // TODO new filed, type DATE
-//                                   Constants., mContractDate.getValue());
+        mNewFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_CONTRACT_DATE, mContractDate.getValue());
         mNewFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_LAW, mContractNumber.getText().toString());
         mNewFeature.setFieldValue(
@@ -275,8 +280,8 @@ public class FieldWorksCreatorActivity
             }
         }
 
-//        mContractDate.setValue( // TODO new filed, type DATE
-//                mNewFeature.getFieldValue(Constants.));
+        mContractDate.setValue(
+                mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CONTRACT_DATE));
         mContractNumber.setText(
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
         mCuttingAreaCleanQuality.setText(

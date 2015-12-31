@@ -90,6 +90,7 @@ public abstract class DocumentCreatorActivity
         super.onCreate(savedInstanceState);
 
         MainApplication app = (MainApplication) getApplication();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         MapBase map = app.getMap();
         mDocsLayer = null;
         for (int i = 0; i < map.getLayerCount(); i++) {
@@ -116,12 +117,19 @@ public abstract class DocumentCreatorActivity
                         com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
                 app.setTempFeature(mNewFeature);
 
+                int userId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
+                mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
+
                 mNewFeature.setFieldValue(
                         Constants.FIELD_DOCUMENTS_TYPE, getDocType());
                 mNewFeature.setFieldValue(
                         Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
                 mNewFeature.setFieldValue(
                         Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+                mNewFeature.setFieldValue(
+                        Constants.FIELD_DOCUMENTS_USER_ID, userId);
+                mNewFeature.setFieldValue(
+                        Constants.FIELD_DOCUMENTS_USER, mUserDesc);
             }
         }
 
@@ -129,8 +137,6 @@ public abstract class DocumentCreatorActivity
 
             setContentView(getContentViewRes());
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
             String sUserPassId = prefs.getString(SettingsConstants.KEY_PREF_USERPASSID, "");
 
             setToolbar(R.id.main_toolbar);
@@ -257,9 +263,6 @@ public abstract class DocumentCreatorActivity
         if (null == mNewFeature) {
             return;
         }
-
-        mNewFeature.setFieldValue(
-                Constants.FIELD_DOCUMENTS_USER, mUserDesc);
 
         mNewFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_NUMBER, mDocNumber.getText().toString());
