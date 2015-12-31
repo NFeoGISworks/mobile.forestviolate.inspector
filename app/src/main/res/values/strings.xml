@@ -254,7 +254,7 @@
     <string name="field_works_item_infringers_signatures">infringers_signatures:</string>
     <string name="field_works_add_signature">Add signature</string>
     <string name="field_works_sign">Sign</string>
-    <string name="field_works_save">Save</string>
+    <string name="field_works_for">for</string>
     <string name="action_create_indictment">Create indictment</string>
     <string name="action_create_sheet">Create sheet</string>
     <string name="action_create_field_works">Create field works indictment</string>

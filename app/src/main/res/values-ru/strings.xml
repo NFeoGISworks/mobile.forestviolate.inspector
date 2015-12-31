@@ -256,6 +256,7 @@
     <string name="field_works_item_infringers_signatures">Подписи лиц, виновных в нарушении:</string>
     <string name="field_works_add_signature">Добавить подпись</string>
     <string name="field_works_sign">Подписать</string>
+    <string name="field_works_for">по</string>
     <string name="action_create_indictment">Создать акт о лесонарушении</string>
     <string name="action_create_sheet">Создать ведомость перечета</string>
     <string name="action_create_field_works">Создать акт полевых мероприятий</string>

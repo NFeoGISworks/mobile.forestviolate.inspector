@@ -128,7 +128,8 @@ public class DocumentsListLoader
                                 Constants.FIELD_DOCUMENTS_DATE,
                                 Constants.FIELD_DOCUMENTS_NUMBER,
                                 Constants.FIELD_DOCUMENTS_STATUS,
-                                Constants.FIELD_DOCUMENTS_VIOLATION_TYPE}, null, null,
+                                Constants.FIELD_DOCUMENTS_VIOLATION_TYPE,
+                                Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE}, null, null,
                         Constants.FIELD_DOCUMENTS_DATE + " DESC", " " + Constants.MAX_DOCUMENTS);
 
                 if (null != cursor) {
@@ -140,6 +141,8 @@ public class DocumentsListLoader
                     int statusPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_STATUS);
                     int violatePos =
                             cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
+                    int forestCatTypePos =
+                            cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
 
                     if (cursor.moveToFirst()) {
                         do {
@@ -152,7 +155,8 @@ public class DocumentsListLoader
                             int docType = cursor.getInt(typePos);
                             if (!mShowIndictments && Constants.DOC_TYPE_INDICTMENT == docType
                                     || !mShowSheets && Constants.DOC_TYPE_SHEET == docType
-                                    || !mShowFieldWorks && Constants.DOC_TYPE_FIELD_WORKS == docType) {
+                                    || !mShowFieldWorks
+                                    && Constants.DOC_TYPE_FIELD_WORKS == docType) {
                                 continue;
                             }
 
@@ -161,12 +165,16 @@ public class DocumentsListLoader
                             switch (docType) {
                                 case Constants.DOC_TYPE_INDICTMENT:
                                     doc.mName = mContext.getString(R.string.indictment);
+                                    doc.mDesc = cursor.getString(violatePos);
                                     break;
                                 case Constants.DOC_TYPE_SHEET:
                                     doc.mName = mContext.getString(R.string.sheet_item_name);
+                                    doc.mDesc = "";
                                     break;
                                 case Constants.DOC_TYPE_FIELD_WORKS:
                                     doc.mName = mContext.getString(R.string.field_works_item_name);
+                                    doc.mDesc = mContext.getString(R.string.field_works_for) + " "
+                                            + cursor.getString(forestCatTypePos);
                                     break;
                                 default:
                                     continue;
@@ -178,7 +186,6 @@ public class DocumentsListLoader
 
                             doc.mName += " " + cursor.getString(numberPos);
                             doc.mStatus = cursor.getInt(statusPos);
-                            doc.mDesc = cursor.getString(violatePos);
 
                             doc.mId = cursor.getLong(idPos);
 

@@ -348,7 +348,7 @@
 
             <Button
                 android:id="@+id/save"
-                android:text="@string/field_works_save"
+                android:text="@string/save"
                 style="@style/doc_button"
                 />
 
