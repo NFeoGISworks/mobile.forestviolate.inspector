@@ -44,6 +44,17 @@ import java.util.List;
 public class VehicleViewFragment
         extends TabFragment
 {
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        if (null == getParentFragment()) {
+            setRetainInstance(true);
+        }
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(
@@ -69,7 +80,7 @@ public class VehicleViewFragment
                         feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_DATE));
 
                 //place
-                TextView place = (TextView) view.findViewById(R.id.place);
+                TextView place = (TextView) view.findViewById(R.id.creation_place);
                 place.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_PLACE));
 
                 //intro
@@ -80,14 +91,14 @@ public class VehicleViewFragment
 
                 String parentDoc =
                         getString(R.string.found_logging) + " (" + getString(R.string.indictment) +
-                        " " + getString(R.string.number) + " " + sIndictmentNum + " " +
-                        getString(R.string.on) + " " + sDate + ")";
+                                " " + getString(R.string.number) + " " + sIndictmentNum + " " +
+                                getString(R.string.on) + " " + sDate + ")";
 
                 TextView intro = (TextView) view.findViewById(R.id.intro);
                 intro.setText(
                         feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_USER_PICK) +
-                        " " +
-                        parentDoc);
+                                " " +
+                                parentDoc);
 
                 //vehicle
                 List<Feature> vehicleItems = feature.getSubFeatures(Constants.KEY_LAYER_VEHICLES);
@@ -100,11 +111,11 @@ public class VehicleViewFragment
                         vehiclesDesc +=
                                 item.getFieldValueAsString(Constants.FIELD_VEHICLE_NAME) + ", ";
                         vehiclesDesc +=
-                                item.getFieldValueAsString(Constants.FIELD_VEHICLE_DESCRIPTION) +
-                                ", ";
+                                item.getFieldValueAsString(Constants.FIELD_VEHICLE_DESCRIPTION)
+                                        + ", ";
                         vehiclesDesc +=
-                                item.getFieldValueAsString(Constants.FIELD_VEHICLE_ENGINE_NUM) +
-                                " (";
+                                item.getFieldValueAsString(Constants.FIELD_VEHICLE_ENGINE_NUM)
+                                        + " (";
                         vehiclesDesc += getString(R.string.owner_details) + ": ";
                         vehiclesDesc +=
                                 item.getFieldValueAsString(Constants.FIELD_VEHICLE_USER) + ")\n";

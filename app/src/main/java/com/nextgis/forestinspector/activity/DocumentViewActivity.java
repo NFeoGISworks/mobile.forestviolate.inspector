@@ -32,6 +32,7 @@ import android.support.v7.widget.Toolbar;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.fragment.FieldWorksViewFragment;
 import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
 import com.nextgis.forestinspector.fragment.MapViewFragment;
 import com.nextgis.forestinspector.fragment.PhotoTableFragment;
@@ -89,6 +90,10 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
             case Constants.DOC_TYPE_SHEET:
                 nType = Constants.DOC_TYPE_SHEET;
                 setTitle(getString(R.string.sheet_title));
+                break;
+            case Constants.DOC_TYPE_FIELD_WORKS:
+                nType = Constants.DOC_TYPE_FIELD_WORKS;
+                setTitle(getString(R.string.field_works_title));
                 break;
             case Constants.DOC_TYPE_VEHICLE: // no separate document type
             default:
@@ -211,6 +216,36 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                                 new SheetListViewerFragment();
                         sheetListViewerFragment.setName(getString(R.string.sheet_tab_name));
                         mTabFragmentList.add(sheetListViewerFragment);
+                    }
+
+                    break;
+                }
+
+                case Constants.DOC_TYPE_FIELD_WORKS: {
+                    // indictment
+                    FieldWorksViewFragment fieldWorksViewFragment = new FieldWorksViewFragment();
+                    fieldWorksViewFragment.setName(getString(R.string.field_works_tab_name));
+                    mTabFragmentList.add(fieldWorksViewFragment);
+
+                    // photo table
+                    if (mFeature.getAttachments() != null && mFeature.getAttachments().size() > 0) {
+                        // filter of a signature
+                        int photosCount = 0;
+                        for (Map.Entry<String, AttachItem> entry : mFeature.getAttachments()
+                                .entrySet()) {
+                            AttachItem attachItem = entry.getValue();
+                            if (attachItem.getDisplayName().equals(Constants.SIGN_FILENAME)) {
+                                continue;
+                            }
+                            ++photosCount;
+                        }
+
+                        if (photosCount > 0) {
+                            PhotoTableFragment photoTableFragment = new PhotoTableFragment();
+                            photoTableFragment.setName(getString(R.string.photo_table_tab_name));
+                            photoTableFragment.setDocumentsLayerPathName(docs.getPath().getName());
+                            mTabFragmentList.add(photoTableFragment);
+                        }
                     }
 
                     break;

@@ -66,7 +66,7 @@
 
         <TextView
             style="@style/normal_text"
-            android:id="@+id/place"
+            android:id="@+id/creation_place"
             />
 
         <!-- text 1. -->

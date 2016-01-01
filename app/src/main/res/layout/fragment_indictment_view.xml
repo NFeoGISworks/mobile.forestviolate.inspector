@@ -54,7 +54,7 @@
             />
 
         <TextView style="@style/normal_text"
-            android:id="@+id/place"
+            android:id="@+id/creation_place"
             />
 
         <!-- 1. violation type -->

@@ -75,7 +75,6 @@
     <string name="sheet_head">Head</string>
     <string name="sheet_link">See tab \"Sheet\"</string>
     <string name="sheet_item_name">Sheet</string>
-    <string name="field_works_item_name">Field works</string>
     <string name="notes">Notes</string>
     <string name="targeting">Targeting</string>
     <string name="targeting_selection">Targeting selection</string>
@@ -222,10 +221,14 @@
     <string name="show_sheets">Show sheets</string>
     <string name="show_field_works">Show field works</string>
     <string name="show_notes">Show notes</string>
-    <!-- TODO: make strings-->
+
+    <!-- TODO: make EN strings-->
     <string name="action_field_works">Field works indictment</string>
     <string name="field_works_title">Field works indictment</string>
     <string name="field_works_item_title">field_works_item_title</string>
+    <string name="field_works_tab_name">field_works_tab_name</string>
+    <string name="field_works_item_name">Field works</string>
+
     <string name="field_works_item_law_base">field_works_item_law_base</string>
     <string name="field_works_item_i_we">I (We)</string>
     <string name="field_works_author_desc">Full name(s), rank(s) of the author(s)</string>

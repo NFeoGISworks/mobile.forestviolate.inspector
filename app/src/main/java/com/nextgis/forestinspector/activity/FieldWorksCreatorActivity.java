@@ -252,12 +252,12 @@ public class FieldWorksCreatorActivity
 
         ArrayAdapter<String> adapter;
         if (null != mFieldWorkTypeSpinner) {
-            String violationType =
+            String data =
                     (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
             adapter = (ArrayAdapter<String>) mFieldWorkTypeSpinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 String adapterVal = adapter.getItem(i);
-                if (adapterVal.equals(violationType)) {
+                if (adapterVal.equals(data)) {
                     mFieldWorkTypeSpinner.setSelection(i);
                     break;
                 }
@@ -268,12 +268,12 @@ public class FieldWorksCreatorActivity
                 (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
 
         if (null != mContractTypeSpinner) {
-            String forestCat =
+            String data =
                     (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE);
             adapter = (ArrayAdapter<String>) mContractTypeSpinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 String adapterVal = adapter.getItem(i);
-                if (adapterVal.equals(forestCat)) {
+                if (adapterVal.equals(data)) {
                     mContractTypeSpinner.setSelection(i);
                     break;
                 }
