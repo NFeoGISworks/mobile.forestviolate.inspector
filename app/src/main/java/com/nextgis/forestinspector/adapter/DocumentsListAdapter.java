@@ -25,6 +25,7 @@ package com.nextgis.forestinspector.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.internal.widget.ThemeUtils;
@@ -57,7 +58,7 @@ public class DocumentsListAdapter
     protected String                  mNotesPathName;
     protected List<DocumentsListItem> mDocuments;
     protected long                    mUserId;
-    protected int                     mItemBackgroundColor;
+    protected int                     mUserItemBackgroundColor;
 
 
     public DocumentsListAdapter(Context context)
@@ -66,7 +67,7 @@ public class DocumentsListAdapter
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         mUserId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
-        mItemBackgroundColor =
+        mUserItemBackgroundColor =
                 ThemeUtils.getThemeAttrColor(mContext, R.attr.docItemBackgroundForCurrentUser);
 
         mMap = (MapEventSource) MapBase.getInstance();
@@ -175,7 +176,9 @@ public class DocumentsListAdapter
 
 
         if (mUserId == item.mUserId) {
-            viewHolder.mItemLayout.setBackgroundColor(mItemBackgroundColor);
+            viewHolder.mItemLayout.setBackgroundColor(mUserItemBackgroundColor);
+        } else {
+            viewHolder.mItemLayout.setBackgroundColor(Color.TRANSPARENT);
         }
 
         viewHolder.mTypeName.setText(item.mName);
