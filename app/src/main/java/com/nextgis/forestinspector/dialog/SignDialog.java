@@ -150,7 +150,7 @@ public class SignDialog
                 "-1", Constants.SIGN_FILENAME, "image/png", Constants.SIGN_DESCRIPTION);
         feature.addAttachment(signAttach);
 
-        if (documentsLayer.insert(feature)) {
+        if (documentsLayer.insert(feature, true)) {
             //remove temp feature
             app.setTempFeature(null);
             getActivity().finish();

@@ -202,8 +202,9 @@ public class DocumentsLayer extends NGWVectorLayer {
                             " failed");
                 }
                 else{
-                    if(FeatureChanges.getChangeCount(layer.getPath().getName() +
-                            com.nextgis.maplib.util.Constants.CHANGES_NAME_POSTFIX) > 0){
+                    if(FeatureChanges.getChangeCount(
+                            layer.getPath().getName()
+                                    + com.nextgis.maplib.util.Constants.CHANGES_NAME_POSTFIX) > 0){
                         hasChanges = true;
                     }
                 }
@@ -364,7 +365,7 @@ public class DocumentsLayer extends NGWVectorLayer {
         return super.save();
     }
 
-    public boolean insert(DocumentEditFeature feature) {
+    public boolean insert(DocumentEditFeature feature, boolean isSigned) {
         //create document
         ContentValues values = feature.getContentValues(false);
         long docId = insert(values);
@@ -372,7 +373,12 @@ public class DocumentsLayer extends NGWVectorLayer {
             return false;
         }
 
-        addChange(docId, CHANGE_OPERATION_NEW);
+        if (isSigned) {
+            addChange(docId, CHANGE_OPERATION_NEW);
+        } else {
+            addChange(docId, CHANGE_OPERATION_NOT_SYNC);
+        }
+
         //update connected features doc_id
         feature.setId(docId);
 
@@ -382,8 +388,16 @@ public class DocumentsLayer extends NGWVectorLayer {
                 VectorLayer vectorLayer = (VectorLayer) layer;
                 String pathName = layer.getPath().getName();
                 List<Feature> featureList = feature.getSubFeatures(pathName);
+
                 if (null != featureList && featureList.size() > 0) {
                     Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + pathName);
+
+                    if (!isSigned) {
+                        uri = uri.buildUpon()
+                                .appendQueryParameter(URI_PARAMETER_NOT_SYNC, URI_VALUE_TRUE)
+                                .build();
+                    }
+
                     for (Feature subFeature : featureList) {
                         if (vectorLayer.insert(uri, subFeature.getContentValues(false)) == null) {
                             Log.d(Constants.FITAG, "insert feature into " + pathName + " failed");
@@ -398,6 +412,13 @@ public class DocumentsLayer extends NGWVectorLayer {
         File attachFolder = app.getDocFeatureFolder();
         Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + getPath().getName() +
                 "/" + docId + "/" +  "attach");
+
+        if (!isSigned) {
+            uri = uri.buildUpon()
+                    .appendQueryParameter(URI_PARAMETER_NOT_SYNC, URI_VALUE_TRUE)
+                    .build();
+        }
+
         for(Map.Entry<String, AttachItem> entry : feature.getAttachments().entrySet()){
             AttachItem item = entry.getValue();
 

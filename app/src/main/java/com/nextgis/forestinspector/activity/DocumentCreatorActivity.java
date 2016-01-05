@@ -364,6 +364,7 @@ public abstract class DocumentCreatorActivity
                 return true;
 
             case R.id.action_save:
+                save();
                 return true;
 
             case R.id.action_sign:
@@ -401,7 +402,41 @@ public abstract class DocumentCreatorActivity
 
     protected void save()
     {
-        // TODO: save()
+        if (mNewFeature.getGeometry() == null || TextUtils.isEmpty(
+                mTerritory.getText().toString())) {
+            Toast.makeText(this, getString(R.string.error_territory_must_be_set), Toast.LENGTH_LONG)
+                    .show();
+        }
+
+        MainApplication app = (MainApplication) getApplication();
+        MapBase mapBase = app.getMap();
+        DocumentsLayer documentsLayer = null;
+        //get documents layer
+        for (int i = 0; i < mapBase.getLayerCount(); i++) {
+            ILayer layer = mapBase.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                documentsLayer = (DocumentsLayer) layer;
+                break;
+            }
+        }
+
+        if (null == documentsLayer) {
+            Toast.makeText(
+                    this, getString(R.string.error_documents_layer_not_found), Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        DocumentEditFeature feature = app.getTempFeature();
+
+        // TODO: if feature exist then update else insert
+        if (documentsLayer.insert(feature, false)) {
+            //remove temp feature
+            app.setTempFeature(null);
+            finish();
+        } else {
+            Toast.makeText(this, getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
+        }
     }
 
 

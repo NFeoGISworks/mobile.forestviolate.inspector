@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.internal.widget.ThemeUtils;
 import android.util.Log;
@@ -35,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.DocumentCreatorActivity;
 import com.nextgis.forestinspector.activity.DocumentViewActivity;
 import com.nextgis.forestinspector.activity.NoteCreatorActivity;
 import com.nextgis.forestinspector.util.Constants;
@@ -104,14 +106,18 @@ public class DocumentsListAdapter
                         if (item.mType == Constants.DOC_TYPE_NOTE) {
                             //show note activity
                             intent = new Intent(mContext, NoteCreatorActivity.class);
-                            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);
-                            mContext.startActivity(intent);
                         } else {
-                            //show documents activity
-                            intent = new Intent(mContext, DocumentViewActivity.class);
-                            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);
-                            mContext.startActivity(intent);
+                            if (item.isSigned) {
+                                //show documents viewer activity
+                                intent = new Intent(mContext, DocumentViewActivity.class);
+                            } else {
+                                //show documents creator activity
+                                intent = new Intent(mContext, DocumentCreatorActivity.class);
+                            }
                         }
+
+                        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);
+                        mContext.startActivity(intent);
                     }
                 });
 
@@ -172,6 +178,14 @@ public class DocumentsListAdapter
                 viewHolder.mTypeIcon.setImageDrawable(
                         mContext.getResources().getDrawable(R.mipmap.ic_bookmark));
                 break;
+        }
+
+
+        int alpha = item.isSigned ? 255 : 50;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            viewHolder.mTypeIcon.setAlpha(alpha);
+        } else {
+            viewHolder.mTypeIcon.setImageAlpha(alpha);
         }
 
 

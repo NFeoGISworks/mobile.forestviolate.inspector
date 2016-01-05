@@ -28,12 +28,14 @@ import android.support.v4.content.AsyncTaskLoader;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.MapEventListener;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapEventSource;
 import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplib.util.FeatureChanges;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -191,6 +193,10 @@ public class DocumentsListLoader
 
                             doc.mId = cursor.getLong(idPos);
                             doc.mUserId = cursor.getLong(userIdPos);
+
+                            String pathName = docs.getPath().getName();
+                            doc.isSigned = !FeatureChanges.hasFeatureNotSyncFlag(
+                                    mContext, SettingsConstants.AUTHORITY, pathName, doc.mId);
 
                             documents.add(doc);
 
