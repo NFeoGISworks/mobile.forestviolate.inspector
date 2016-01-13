@@ -163,10 +163,12 @@ public class DocumentsLayer extends NGWVectorLayer {
                     null, null, null);
 
             List<Long> ids = new ArrayList<>();
-            if (null != cur && cur.moveToFirst()) {
-                do {
-                    ids.add(cur.getLong(0));
-                } while (cur.moveToNext());
+            if (null != cur) {
+                if (cur.moveToFirst()) {
+                    do {
+                        ids.add(cur.getLong(0));
+                    } while (cur.moveToNext());
+                }
                 cur.close();
             }
 
@@ -432,14 +434,6 @@ public class DocumentsLayer extends NGWVectorLayer {
 
         documentFeature.addSubFeature(subDocLayerName, subFeature);
 
-        if (!hasFeatureTempFlag(documentFeature.getId())) {
-            subDocumentLayer.setFeatureTempFlag(subFeature.getId(), false);
-        }
-
-        if (hasFeatureNotSyncFlag(documentFeature.getId())) {
-            subDocumentLayer.setFeatureNotSyncFlag(subFeature.getId(), true);
-        }
-
         return subFeature;
     }
 
@@ -540,150 +534,6 @@ public class DocumentsLayer extends NGWVectorLayer {
                 subLayer.deleteAllTempAttaches();
             }
         }
-    }
-
-
-    @Override
-    public boolean hasFeatureTempFlag(Feature feature)
-    {
-        boolean res = super.hasFeatureTempFlag(feature);
-
-        if (!res) {
-            return false;
-        }
-
-        if (!(feature instanceof DocumentFeature)) {
-            return true;
-        }
-
-        DocumentFeature documentFeature = (DocumentFeature) feature;
-
-        // connected features
-        for (ILayer layer : mLayers) {
-            if (layer instanceof VectorLayer) {
-                VectorLayer subLayer = (VectorLayer) layer;
-                String pathName = subLayer.getPath().getName();
-                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
-
-                if (null != featureList) {
-                    for (Feature subFeature : featureList) {
-                        if (!subLayer.hasFeatureTempFlag(subFeature)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-
-    @Override
-    public boolean hasFeatureNotSyncFlag(Feature feature)
-    {
-        boolean res = super.hasFeatureNotSyncFlag(feature);
-
-        if (!res) {
-            return false;
-        }
-
-        if (!(feature instanceof DocumentFeature)) {
-            return true;
-        }
-
-        DocumentFeature documentFeature = (DocumentFeature) feature;
-
-        // connected features
-        for (ILayer layer : mLayers) {
-            if (layer instanceof VectorLayer) {
-                VectorLayer subLayer = (VectorLayer) layer;
-                String pathName = subLayer.getPath().getName();
-                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
-
-                if (null != featureList) {
-                    for (Feature subFeature : featureList) {
-                        if (!subLayer.hasFeatureNotSyncFlag(subFeature)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-
-    @Override
-    public boolean hasFeatureWithAttachesTempFlag(Feature feature)
-    {
-        boolean res = super.hasFeatureWithAttachesTempFlag(feature);
-
-        if (!res) {
-            return false;
-        }
-
-        if (!(feature instanceof DocumentFeature)) {
-            return true;
-        }
-
-        DocumentFeature documentFeature = (DocumentFeature) feature;
-
-        // connected features
-        for (ILayer layer : mLayers) {
-            if (layer instanceof VectorLayer) {
-                VectorLayer subLayer = (VectorLayer) layer;
-                String pathName = subLayer.getPath().getName();
-                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
-
-                if (null != featureList) {
-                    for (Feature subFeature : featureList) {
-                        if (!subLayer.hasFeatureWithAttachesTempFlag(subFeature)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-
-    @Override
-    public boolean hasFeatureWithAttachesNotSyncFlag(Feature feature)
-    {
-        boolean res = super.hasFeatureWithAttachesNotSyncFlag(feature);
-
-        if (!res) {
-            return false;
-        }
-
-        if (!(feature instanceof DocumentFeature)) {
-            return true;
-        }
-
-        DocumentFeature documentFeature = (DocumentFeature) feature;
-
-        // connected features
-        for (ILayer layer : mLayers) {
-            if (layer instanceof VectorLayer) {
-                VectorLayer subLayer = (VectorLayer) layer;
-                String pathName = subLayer.getPath().getName();
-                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
-
-                if (null != featureList) {
-                    for (Feature subFeature : featureList) {
-                        if (!subLayer.hasFeatureWithAttachesNotSyncFlag(subFeature)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
     }
 
 

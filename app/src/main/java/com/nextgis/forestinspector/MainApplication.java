@@ -190,8 +190,8 @@ public class MainApplication
             feature = getTempFeature();
         }
 
-        if (null == feature || !docsLayer.hasFeatureTempFlag(feature)
-                && !docsLayer.hasFeatureNotSyncFlag(feature)) {
+        if (null == feature || !docsLayer.hasFeatureTempFlag(feature.getId())
+                && !docsLayer.hasFeatureNotSyncFlag(feature.getId())) {
 
             mIsNewTempFeature = false;
             mEditFeature = null;
@@ -246,7 +246,7 @@ public class MainApplication
             edit.commit();
         }
 
-        if (!docsLayer.hasFeatureTempFlag(feature)) {
+        if (!docsLayer.hasFeatureTempFlag(feature.getId())) {
             return null;
         } else {
             return feature;

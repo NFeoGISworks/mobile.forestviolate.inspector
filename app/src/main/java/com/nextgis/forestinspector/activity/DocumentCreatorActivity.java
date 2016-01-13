@@ -159,7 +159,7 @@ public abstract class DocumentCreatorActivity
 
             setControlViews();
 
-            if (mIsNewTempFeature && !saveEditFeature()) {
+            if (mIsNewTempFeature && !saveTempEditFeature()) {
                 Toast.makeText(this, getString(R.string.error_db_update), Toast.LENGTH_LONG).show();
             }
         }
@@ -200,7 +200,7 @@ public abstract class DocumentCreatorActivity
     {
         super.onPause();
 
-        if (!saveEditFeature()) {
+        if (!saveTempEditFeature()) {
             Toast.makeText(this, getString(R.string.error_db_update), Toast.LENGTH_LONG).show();
         }
     }
@@ -283,18 +283,6 @@ public abstract class DocumentCreatorActivity
             mTerritory.setText(
                     (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
         }
-    }
-
-
-    protected boolean saveEditFeature()
-    {
-        if (null == mEditFeature) {
-            return true;
-        }
-
-        saveControlsToFeature();
-
-        return (mDocsLayer.updateFeatureWithAttachesWithFlags(mEditFeature) > 0);
     }
 
 
@@ -448,17 +436,47 @@ public abstract class DocumentCreatorActivity
     }
 
 
-    protected void save()
+    protected boolean saveTempEditFeature()
     {
-        boolean res = saveEditFeature();
-
-        if (mDocsLayer.hasFeatureWithAttachesTempFlag(mEditFeature)) {
-            res &= (mDocsLayer.setFeatureWithAttachesTempFlag(mEditFeature, false) > 0);
+        if (null == mEditFeature) {
+            return true;
         }
 
-        res &= (mDocsLayer.setFeatureWithAttachesNotSyncFlag(mEditFeature, true) > 0);
+        saveControlsToFeature();
 
-        if (res) {
+        return (mDocsLayer.updateFeatureWithAttachesWithFlags(mEditFeature) > 0);
+    }
+
+
+    protected boolean saveEditFeature()
+    {
+        if (!saveTempEditFeature()) {
+            return false;
+        }
+
+        mDocsLayer.setFeatureWithAttachesTempFlag(mEditFeature, false);
+        mDocsLayer.setFeatureWithAttachesNotSyncFlag(mEditFeature, true);
+
+        return true;
+    }
+
+
+    protected boolean saveToSendEditFeature()
+    {
+        if (!saveTempEditFeature()) {
+            return false;
+        }
+
+        mDocsLayer.setFeatureWithAttachesTempFlag(mEditFeature, false);
+        mDocsLayer.setFeatureWithAttachesNotSyncFlag(mEditFeature, false);
+
+        return true;
+    }
+
+
+    protected void save()
+    {
+        if (saveEditFeature()) {
             finish();
         } else {
             Toast.makeText(this, getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
@@ -490,7 +508,7 @@ public abstract class DocumentCreatorActivity
             return;
         }
 
-        if (saveEditFeature()) {
+        if (saveTempEditFeature()) {
             //show dialog with sign and save / edit buttons
             SignDialog signDialog = new SignDialog();
             signDialog.setOnSignListener(this);
@@ -520,15 +538,15 @@ public abstract class DocumentCreatorActivity
 
         boolean res = mDocsLayer.insertAttachFile(featureId, attachId, signatureFile);
 
-        if (res && mDocsLayer.hasFeatureWithAttachesTempFlag(mEditFeature)) {
-            res = (mDocsLayer.setFeatureWithAttachesTempFlag(mEditFeature, false) > 0);
+        if (res) {
+            res = saveToSendEditFeature();
         }
 
-        if (res && mDocsLayer.hasFeatureWithAttachesNotSyncFlag(mEditFeature)) {
-            res = (mDocsLayer.setFeatureWithAttachesNotSyncFlag(mEditFeature, false) > 0);
+        if (res) {
+            res = mDocsLayer.setDocumentStatus(featureId, Constants.DOCUMENT_STATUS_FOR_SEND);
         }
 
-        if (res && mDocsLayer.setDocumentStatus(featureId, Constants.DOCUMENT_STATUS_FOR_SEND)) {
+        if (res) {
             res = mDocsLayer.addChangeNew(mEditFeature);
         }
 
