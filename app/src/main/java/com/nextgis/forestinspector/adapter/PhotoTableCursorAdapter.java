@@ -29,7 +29,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.activity.PhotoTableFillerActivity;
+import com.nextgis.forestinspector.fragment.PhotoTableFragment;
+import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.Constants;
 
@@ -42,21 +45,29 @@ import java.util.Map;
 public class PhotoTableCursorAdapter
         extends PhotoTableAdapter
 {
-    protected long mFeatureId;
-    protected Uri  mAttachesUri;
+    protected DocumentsLayer mDocsLayer;
+    protected long           mFeatureId;
+    protected Uri            mAttachesUri;
 
 
     public PhotoTableCursorAdapter(
             AppCompatActivity activity,
+            DocumentsLayer docsLayer,
             long featureId,
             Map<String, AttachItem> attachItemMap,
-            Uri attachesUri,
             boolean isPhotoViewer)
     {
         super(activity, attachItemMap, isPhotoViewer);
 
+        mDocsLayer = docsLayer;
         mFeatureId = featureId;
-        mAttachesUri = attachesUri;
+
+        MainApplication app = (MainApplication) activity.getApplication();
+        String docsLayerPathName = mDocsLayer.getPath().getName();
+
+        mAttachesUri = Uri.parse(
+                "content://" + app.getAuthority() + "/" + docsLayerPathName + "/" + featureId + "/"
+                        + Constants.URI_ATTACH);
     }
 
 
@@ -85,9 +96,9 @@ public class PhotoTableCursorAdapter
                             String key = mAttachItemList.get(mClickedId).getKey();
 
                             Intent intent = new Intent(mActivity, PhotoTableFillerActivity.class);
-                            intent.putExtra("photo_viewer", true);
-                            intent.putExtra("photo_item_key", key);
-                            intent.putExtra("feature_id", mFeatureId);
+                            intent.putExtra(PhotoTableFragment.PHOTO_VIEWER, true);
+                            intent.putExtra(PhotoTableFragment.PHOTO_ITEM_KEY, key);
+                            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mFeatureId);
                             mActivity.startActivity(intent);
                         }
                     });
@@ -128,14 +139,31 @@ public class PhotoTableCursorAdapter
         } catch (FileNotFoundException e) {
             Log.d(
                     Constants.TAG, "PhotoTableCursorAdapter, position = " + position + ", ERROR: " +
-                                   e.getLocalizedMessage());
+                            e.getLocalizedMessage());
             e.printStackTrace();
             return null;
         }
 
         Log.d(
                 Constants.TAG, "PhotoTableCursorAdapter, position = " + position + ", URI = " +
-                               attachUri.toString());
+                        attachUri.toString());
         return inputStream;
+    }
+
+
+    @Override
+    protected void deleteSelected(int id)
+            throws IOException
+    {
+        AttachItem item = mAttachItemList.get(id).getValue();
+        long attachId = Long.parseLong(item.getAttachId());
+
+        if (mDocsLayer.deleteTempAttach(mFeatureId, attachId) <= 0) {
+            String error = "PhotoTableCursorAdapter, deleteSelected(), deleteTempAttach() is fail";
+            Log.d(Constants.TAG, error);
+            throw new IOException(error);
+        }
+
+        super.deleteSelected(id);
     }
 }

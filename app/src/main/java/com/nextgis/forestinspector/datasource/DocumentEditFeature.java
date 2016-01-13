@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -23,7 +24,6 @@ package com.nextgis.forestinspector.datasource;
 
 import android.database.Cursor;
 import android.text.TextUtils;
-
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
@@ -32,7 +32,6 @@ import com.nextgis.maplib.datasource.Field;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoGeometryFactory;
-import com.nextgis.maplib.datasource.GeoLinearRing;
 import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoMultiPolygon;
 import com.nextgis.maplib.datasource.GeoPoint;
@@ -51,12 +50,10 @@ import java.util.Map;
 
 import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
 
-/**
- * Created by bishop on 03.08.15.
- */
+
 public class DocumentEditFeature extends DocumentFeature {
     protected List<Long> mParcelIds;
-    protected int        mNewAttachId;
+    protected long       mNewAttachId;
 
 
     public DocumentEditFeature(
@@ -67,6 +64,15 @@ public class DocumentEditFeature extends DocumentFeature {
 
         mParcelIds = new ArrayList<>();
         mNewAttachId = 0;
+    }
+
+
+    public DocumentEditFeature(DocumentFeature other)
+    {
+        super(other);
+
+        mParcelIds = new ArrayList<>();
+        mNewAttachId = getMaxAttachId() + 1;
     }
 
 
@@ -302,24 +308,26 @@ public class DocumentEditFeature extends DocumentFeature {
         return getWhereClauseForParcelIds(getParcelIds());
     }
 
-    public String getWhereClauseForParcelIds(List<Long> ids){
-        String fullQuery = "";
-        for(Long fid : ids){
-            if(!TextUtils.isEmpty(fullQuery))
-                fullQuery += " OR ";
-            fullQuery += com.nextgis.maplib.util.Constants.FIELD_ID + " = " + fid;
-        }
-        return fullQuery;
-    }
 
-    @Override
-    public void setId(long id) {
-        super.setId(id);
-        for(Map.Entry<String, List<Feature>> entry : mSubFeatures.entrySet()){
-            for(Feature feature : entry.getValue()){
-                feature.setFieldValue(Constants.FIELD_DOC_ID, id);
+    public String getWhereClauseForParcelIds(List<Long> ids)
+    {
+        StringBuilder sb = new StringBuilder(1024);
+
+        for (Long fid : ids) {
+            if (sb.length() == 0) {
+                sb.append(com.nextgis.maplib.util.Constants.FIELD_ID);
+                sb.append(" IN (");
+            } else {
+                sb.append(",");
             }
+            sb.append(fid);
         }
+
+        if (sb.length() > 0) {
+            sb.append(")");
+        }
+
+        return sb.toString();
     }
 
 

@@ -26,51 +26,17 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.datasource.DocumentEditFeature;
-import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.PhotoTableFragment;
-import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 
 
 public class PhotoTableFillerActivity
         extends FIActivity
-        implements IDocumentFeatureSource
 {
-    protected boolean mIsPhotoViewer = false;
-
-    protected String          mDocumentsLayerPathName;
-    protected DocumentFeature mFeature;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        Bundle extras = getIntent().getExtras();
-        if (null != extras) {
-            mIsPhotoViewer = extras.getBoolean("photo_viewer");
-            long featureId = extras.getLong("feature_id", -1);
-
-            if (mIsPhotoViewer && -1 != featureId) {
-                // get document from id
-                DocumentsLayer docs = DocumentEditFeature.getDocumentsLayer();
-                if (null == docs) {
-                    setContentView(R.layout.activity_document_noview);
-                    setToolbar(R.id.main_toolbar);
-                    return;
-                }
-
-                mDocumentsLayerPathName = docs.getPath().getName();
-                mFeature = docs.getFeature(featureId);
-                if (null == mFeature) {
-                    setContentView(R.layout.activity_document_noview);
-                    setToolbar(R.id.main_toolbar);
-                    return;
-                }
-            }
-        }
 
         setContentView(R.layout.activity_photo_table_filler);
         setToolbar(R.id.main_toolbar);
@@ -84,17 +50,9 @@ public class PhotoTableFillerActivity
         if (photoTableFragment == null) {
             photoTableFragment = new PhotoTableFragment();
             photoTableFragment.setName("");
-            photoTableFragment.setDocumentsLayerPathName(mDocumentsLayerPathName);
         }
 
         ft.replace(R.id.photo_table_fragment, photoTableFragment, Constants.FRAGMENT_PHOTO_TABLE);
         ft.commit();
-    }
-
-
-    @Override
-    public DocumentFeature getFeature()
-    {
-        return mFeature;
     }
 }

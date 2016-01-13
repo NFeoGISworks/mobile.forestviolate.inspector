@@ -55,24 +55,30 @@ public abstract class ListFillerActivity
     {
         super.onCreate(savedInstanceState);
 
-        MainApplication app = (MainApplication) getApplication();
-        mEditFeature = app.getTempFeature();
+        Bundle extras = getIntent().getExtras();
+
+        if (null != extras && extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+            long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+
+            MainApplication app = (MainApplication) getApplication();
+            mEditFeature = app.getEditFeature(featureId);
 
 
-        setContentView(getContentViewId());
-        setToolbar(R.id.main_toolbar);
+            setContentView(getContentViewId());
+            setToolbar(R.id.main_toolbar);
 
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
 
-        ListFillerFragment fragment = (ListFillerFragment) fm.findFragmentByTag(getFragmentTag());
+            ListFillerFragment fragment = (ListFillerFragment) fm.findFragmentByTag(getFragmentTag());
 
-        if (fragment == null) {
-            fragment = getListFillerFragment();
+            if (fragment == null) {
+                fragment = getListFillerFragment();
+            }
+
+            ft.replace(R.id.fragment, fragment, getFragmentTag());
+            ft.commit();
         }
-
-        ft.replace(R.id.fragment, fragment, getFragmentTag());
-        ft.commit();
     }
 
 

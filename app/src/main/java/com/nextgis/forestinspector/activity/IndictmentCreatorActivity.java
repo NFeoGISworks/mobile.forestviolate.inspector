@@ -99,14 +99,13 @@ public class IndictmentCreatorActivity
     @Override
     protected void setControlViews()
     {
-        if (null != mNewFeature) {
+        if (null != mEditFeature) {
 
             mCreationPlace = (EditText) findViewById(R.id.creation_place);
             mLaw = (EditText) findViewById(R.id.code_num);
 
             mDatePick = (DateTime) findViewById(R.id.date_pick);
             mDatePick.init(null, null, null);
-            mDatePick.setCurrentDate();
 
             mWho = (EditText) findViewById(R.id.who);
             mWhen = (EditText) findViewById(R.id.when);
@@ -161,7 +160,7 @@ public class IndictmentCreatorActivity
                         @Override
                         public void onClick(View v)
                         {
-                            onFillSheet();
+                            fillSheet();
                         }
                     });
 
@@ -172,7 +171,7 @@ public class IndictmentCreatorActivity
                         @Override
                         public void onClick(View v)
                         {
-                            onFillProduction();
+                            fillProduction();
                         }
                     });
 
@@ -183,7 +182,7 @@ public class IndictmentCreatorActivity
                         @Override
                         public void onClick(View v)
                         {
-                            onFillVehicle();
+                            fillVehicle();
                         }
                     });
 
@@ -194,9 +193,13 @@ public class IndictmentCreatorActivity
                         @Override
                         public void onClick(View v)
                         {
-                            onFillPhoto();
+                            fillPhotoTable();
                         }
                     });
+
+            if (mIsNewTempFeature) {
+                mDatePick.setCurrentDate();
+            }
         }
     }
 
@@ -206,72 +209,72 @@ public class IndictmentCreatorActivity
     {
         super.onCreate(savedInstanceState);
 
-        loadPhotoAttaches(mNewFeature);
+        loadPhotoAttaches(mEditFeature);
     }
 
 
     protected void saveControlsToFeature()
     {
-        if (null == mNewFeature) {
+        if (null == mEditFeature) {
             return;
         }
 
         super.saveControlsToFeature();
 
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_PLACE, mCreationPlace.getText().toString());
 
         if (null != mViolationTypeSpinner) {
-            mNewFeature.setFieldValue(
+            mEditFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_VIOLATION_TYPE,
                     mViolationTypeSpinner.getSelectedItem().toString());
         }
 
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_LAW, mLaw.getText().toString());
 
         if (null != mForestCatTypeSpinner) {
-            mNewFeature.setFieldValue(
+            mEditFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE,
                     mForestCatTypeSpinner.getSelectedItem().toString());
         }
 
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DESC_AUTHOR, mAuthorSay.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DESCRIPTION, mDescription.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_CRIME, mCrime.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DATE_VIOLATE, mWhen.getText().toString());
-        //mNewFeature.setFieldValue(
+        //mEditFeature.setFieldValue(
         //        Constants.FIELD_DOCUMENTS_USER_TRANS, );
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DATE_PICK, mDatePick.getValue());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_USER_PICK, mWho.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DESC_DETECTOR, mDetectorSay.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DESC_CRIME, mCrimeSay.getText().toString());
     }
 
 
     protected void restoreControlsFromFeature()
     {
-        if (null == mNewFeature) {
+        if (null == mEditFeature) {
             return;
         }
 
         super.restoreControlsFromFeature();
 
         mCreationPlace.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
 
         ArrayAdapter<String> adapter;
         if (null != mViolationTypeSpinner) {
             String violationType =
-                    (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
+                    (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
             adapter = (ArrayAdapter<String>) mViolationTypeSpinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 String adapterVal = adapter.getItem(i);
@@ -283,11 +286,11 @@ public class IndictmentCreatorActivity
         }
 
         mLaw.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
 
         if (null != mForestCatTypeSpinner) {
             String forestCat =
-                    (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
+                    (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
             adapter = (ArrayAdapter<String>) mForestCatTypeSpinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 String adapterVal = adapter.getItem(i);
@@ -299,21 +302,21 @@ public class IndictmentCreatorActivity
         }
 
         mAuthorSay.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
         mDescription.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION));
         mCrime.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
         mWhen.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE));
         mDatePick.setValue(
-                mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_PICK));
+                mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_PICK));
         mWho.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
         mDetectorSay.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
         mCrimeSay.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
     }
 
 
@@ -322,19 +325,19 @@ public class IndictmentCreatorActivity
     {
         switch (item.getItemId()) {
             case R.id.action_sheet:
-                onFillSheet();
+                fillSheet();
                 return true;
 
             case R.id.action_vehicle:
-                onFillVehicle();
+                fillVehicle();
                 return true;
 
             case R.id.action_production:
-                onFillProduction();
+                fillProduction();
                 return true;
 
             case R.id.action_photo:
-                onFillPhoto();
+                fillPhotoTable();
                 return true;
         }
 
@@ -342,30 +345,34 @@ public class IndictmentCreatorActivity
     }
 
 
-    private void onFillSheet()
+    private void fillSheet()
     {
         Intent intent = new Intent(this, SheetFillerActivity.class);
+        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivity(intent);
     }
 
 
-    private void onFillProduction()
+    private void fillProduction()
     {
         Intent intent = new Intent(this, ProductionFillerActivity.class);
+        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivity(intent);
     }
 
 
-    private void onFillVehicle()
+    private void fillVehicle()
     {
         Intent intent = new Intent(this, VehicleFillerActivity.class);
+        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivity(intent);
     }
 
 
-    private void onFillPhoto()
+    private void fillPhotoTable()
     {
         Intent intent = new Intent(this, PhotoTableFillerActivity.class);
+        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivity(intent);
     }
 }

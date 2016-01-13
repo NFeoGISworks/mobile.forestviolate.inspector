@@ -82,9 +82,9 @@ public class TargetingDialog
     protected GpsEventSource mGpsEventSource;
     protected Location       mLocation;
 
-    protected RecyclerView         mListView;
-    protected TargetingListAdapter mAdapter;
-    protected OnSelectListener     mOnSelectListener;
+    protected RecyclerView           mListView;
+    protected TargetingListAdapter   mAdapter;
+    protected OnSelectTargetListener mOnSelectTargetListener;
 
     protected SwitchCompat mSwitchFilter;
     protected boolean mShowAllTargets = false;
@@ -474,23 +474,23 @@ public class TargetingDialog
         String objectId =
                 cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_FV_OBJECTID));
 
-        if (null != mOnSelectListener) {
-            mOnSelectListener.onSelect(objectId);
+        if (null != mOnSelectTargetListener) {
+            mOnSelectTargetListener.onSelectTarget(objectId);
         }
     }
 
 
     protected void onCancelTargeting()
     {
-        if (null != mOnSelectListener) {
-            mOnSelectListener.onSelect(NOT_SELECTED);
+        if (null != mOnSelectTargetListener) {
+            mOnSelectTargetListener.onSelectTarget(NOT_SELECTED);
         }
     }
 
 
-    public void setOnSelectListener(OnSelectListener listener)
+    public void setOnSelectTargetListener(OnSelectTargetListener listener)
     {
-        mOnSelectListener = listener;
+        mOnSelectTargetListener = listener;
     }
 
 
@@ -503,8 +503,8 @@ public class TargetingDialog
     }
 
 
-    public interface OnSelectListener
+    public interface OnSelectTargetListener
     {
-        void onSelect(String objectId);
+        void onSelectTarget(String objectId);
     }
 }

@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -81,4 +82,7 @@ public interface SettingsConstants
     String KEY_PREF_COMPASS_WAKE_LOCK   = "compass_wake_lock";
     String KEY_PREF_SHOW_ZOOM_CONTROLS  = "show_zoom_controls";
     String KEY_PREF_NOTE_INITIAL_TERM   = "note_initial_term";
+
+
+    String KEY_PREF_TEMP_FEATURE_ID = "temp_feature_id";
 }

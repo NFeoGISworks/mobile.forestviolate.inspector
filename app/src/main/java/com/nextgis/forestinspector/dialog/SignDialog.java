@@ -28,15 +28,9 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.datasource.DocumentEditFeature;
-import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.maplib.api.ILayer;
-import com.nextgis.maplib.map.MapBase;
-import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.FileUtil;
 import com.nextgis.maplibui.dialog.StyledDialogFragment;
 import com.nextgis.maplibui.formcontrol.Sign;
@@ -49,6 +43,9 @@ import java.io.IOException;
 public class SignDialog
         extends StyledDialogFragment
 {
+    protected OnSignListener mOnSignListener;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -99,10 +96,14 @@ public class SignDialog
                         MainApplication app = (MainApplication) getActivity().getApplication();
                         File temPath = app.getDocFeatureFolder();
                         FileUtil.createDir(temPath);
-                        File sigFile = new File(temPath, Constants.SIGN_FILENAME);
+                        File signFile = new File(temPath, Constants.SIGN_FILENAME);
                         try {
-                            sign.save(194, 102, false, sigFile);
-                            onCreateDocument();
+                            sign.save(194, 102, false, signFile);
+
+                            if (null != mOnSignListener) {
+                                mOnSignListener.onSign(signFile);
+                            }
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -122,41 +123,14 @@ public class SignDialog
     }
 
 
-    private void onCreateDocument()
+    public void setOnSignListener(OnSignListener onSignListener)
     {
-        //save picture to file and add it as attachment
+        mOnSignListener = onSignListener;
+    }
 
-        MainApplication app = (MainApplication) getActivity().getApplication();
-        MapBase mapBase = app.getMap();
-        DocumentsLayer documentsLayer = null;
-        //get documents layer
-        for (int i = 0; i < mapBase.getLayerCount(); i++) {
-            ILayer layer = mapBase.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                documentsLayer = (DocumentsLayer) layer;
-                break;
-            }
-        }
 
-        if (null == documentsLayer) {
-            Toast.makeText(
-                    getActivity(), getString(R.string.error_documents_layer_not_found),
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        DocumentEditFeature feature = app.getTempFeature();
-        AttachItem signAttach = new AttachItem(
-                "-1", Constants.SIGN_FILENAME, "image/png", Constants.SIGN_DESCRIPTION);
-        feature.addAttachment(signAttach);
-
-        if (documentsLayer.insert(feature, true)) {
-            //remove temp feature
-            app.setTempFeature(null);
-            getActivity().finish();
-        } else {
-            Toast.makeText(getActivity(), getString(R.string.error_db_insert), Toast.LENGTH_LONG)
-                    .show();
-        }
+    public interface OnSignListener
+    {
+        void onSign(File signatureFile);
     }
 }

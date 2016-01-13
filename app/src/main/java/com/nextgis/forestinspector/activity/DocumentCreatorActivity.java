@@ -44,8 +44,6 @@ import com.nextgis.forestinspector.dialog.TargetingDialog;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
-import com.nextgis.maplib.api.ILayer;
-import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplibui.control.DateTime;
 
@@ -58,10 +56,12 @@ import static com.nextgis.maplib.util.Constants.TAG;
 
 public abstract class DocumentCreatorActivity
         extends FIActivity
-        implements TargetingDialog.OnSelectListener
+        implements TargetingDialog.OnSelectTargetListener,
+                   SignDialog.OnSignListener
 {
-    protected DocumentEditFeature mNewFeature;
+    protected MainApplication     mApp;
     protected DocumentsLayer      mDocsLayer;
+    protected DocumentEditFeature mEditFeature;
 
     protected String mUserDesc;
 
@@ -69,6 +69,8 @@ public abstract class DocumentCreatorActivity
     protected DateTime mCreationDateTime;
     protected EditText mAuthor;
     protected TextView mTerritory;
+
+    protected boolean mIsNewTempFeature = false;
 
 
     protected abstract int getActivityCode();
@@ -89,51 +91,18 @@ public abstract class DocumentCreatorActivity
     {
         super.onCreate(savedInstanceState);
 
-        MainApplication app = (MainApplication) getApplication();
+        mApp = (MainApplication) getApplication();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        MapBase map = app.getMap();
-        mDocsLayer = null;
-        for (int i = 0; i < map.getLayerCount(); i++) {
-            ILayer layer = map.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                mDocsLayer = (DocumentsLayer) layer;
-                break;
-            }
+        mDocsLayer = mApp.getDocsLayer();
+
+        if (null == mDocsLayer || !loadEditFeature()) {
+            setContentView(R.layout.activity_document_noview);
+            setToolbar(R.id.main_toolbar);
+            Toast.makeText(this, getString(R.string.error_db_query), Toast.LENGTH_LONG).show();
+            return;
         }
 
-        // TODO: 04.08.15 save restore bundle new feature id to fill values, previous added
-
-        if (null != mDocsLayer) {
-            mNewFeature = app.getTempFeature();
-
-            if (null != mNewFeature && getDocType() != mNewFeature.getFieldValue(
-                    Constants.FIELD_DOCUMENTS_TYPE)) {
-                app.setTempFeature(null);
-                mNewFeature = null;
-            }
-
-            if (mNewFeature == null) {
-                mNewFeature = new DocumentEditFeature(
-                        com.nextgis.maplib.util.Constants.NOT_FOUND, mDocsLayer.getFields());
-                app.setTempFeature(mNewFeature);
-
-                long userId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
-                mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
-
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_TYPE, getDocType());
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_SEND);
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_USER_ID, userId);
-                mNewFeature.setFieldValue(
-                        Constants.FIELD_DOCUMENTS_USER, mUserDesc);
-            }
-        }
-
-        if (null != mNewFeature) {
+        if (null != mEditFeature) {
 
             setContentView(getContentViewRes());
 
@@ -143,14 +112,11 @@ public abstract class DocumentCreatorActivity
             setTitle(getTitleString());
 
             mDocNumber = (EditText) findViewById(R.id.doc_num);
-            mDocNumber.setText(getNewNumber(sUserPassId));
 
             mCreationDateTime = (DateTime) findViewById(R.id.creation_datetime);
             mCreationDateTime.init(null, null, null);
-            mCreationDateTime.setCurrentDate();
 
             mAuthor = (EditText) findViewById(R.id.author);
-            mAuthor.setText(mUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
 
             mTerritory = (TextView) findViewById(R.id.territory);
             mTerritory.setOnClickListener(
@@ -185,9 +151,17 @@ public abstract class DocumentCreatorActivity
                         }
                     });
 
+            if (mIsNewTempFeature) {
+                mDocNumber.setText(getNewNumber(sUserPassId));
+                mCreationDateTime.setCurrentDate();
+                mAuthor.setText(mUserDesc + getString(R.string.passid_is) + " " + sUserPassId);
+            }
+
             setControlViews();
 
-            saveControlsToFeature();
+            if (mIsNewTempFeature && !saveEditFeature()) {
+                Toast.makeText(this, getString(R.string.error_db_update), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -212,11 +186,12 @@ public abstract class DocumentCreatorActivity
 
     protected void clearTempFeature()
     {
-        if (null != mNewFeature) {
-            MainApplication app = (MainApplication) getApplication();
-            app.setTempFeature(null);
-            mNewFeature = null;
+        if (null == mEditFeature) {
+            return;
         }
+
+        mApp.clearAllTemps();
+        mEditFeature = null;
     }
 
 
@@ -225,7 +200,9 @@ public abstract class DocumentCreatorActivity
     {
         super.onPause();
 
-        saveControlsToFeature();
+        if (!saveEditFeature()) {
+            Toast.makeText(this, getString(R.string.error_db_update), Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -234,6 +211,11 @@ public abstract class DocumentCreatorActivity
     {
         super.onResume();
 
+        if (null == mEditFeature && !loadEditFeature()) {
+            Toast.makeText(this, getString(R.string.error_db_query), Toast.LENGTH_LONG).show();
+            return;
+        }
+
         restoreControlsFromFeature();
         showTargetingDialog();
     }
@@ -241,7 +223,7 @@ public abstract class DocumentCreatorActivity
 
     protected void showTargetingDialog()
     {
-        String vector = (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VECTOR);
+        String vector = (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VECTOR);
 
         if (null == vector) {
             FragmentManager fm = getSupportFragmentManager();
@@ -251,44 +233,109 @@ public abstract class DocumentCreatorActivity
 
             if (fragment == null) {
                 TargetingDialog dialog = new TargetingDialog();
-                dialog.setOnSelectListener(this);
+                dialog.setOnSelectTargetListener(this);
                 dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_TARGETING_DIALOG);
             }
         }
     }
 
 
+    @Override
+    public void onSelectTarget(String objectId)
+    {
+        mEditFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_VECTOR, objectId);
+    }
+
+
     protected void saveControlsToFeature()
     {
-        if (null == mNewFeature) {
+        if (null == mEditFeature) {
             return;
         }
 
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_NUMBER, mDocNumber.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DATE, mCreationDateTime.getValue());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
     }
 
 
     protected void restoreControlsFromFeature()
     {
-        if (null == mNewFeature) {
+        if (null == mEditFeature) {
             return;
         }
 
         mDocNumber.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_NUMBER));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_NUMBER));
         mCreationDateTime.setValue(
-                mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
+                mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
         mAuthor.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
-        mTerritory.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
+
+        // TODO: restore DocumentEditFeature.mParcelIds from FIELD_DOCUMENTS_TERRITORY
+        if (mEditFeature.getParcelIds().size() > 0) {
+            mTerritory.setText(
+                    (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
+        }
+    }
+
+
+    protected boolean saveEditFeature()
+    {
+        if (null == mEditFeature) {
+            return true;
+        }
+
+        saveControlsToFeature();
+
+        return (mDocsLayer.updateFeatureWithAttachesWithFlags(mEditFeature) > 0);
+    }
+
+
+    protected boolean loadEditFeature()
+    {
+        mIsNewTempFeature = false;
+
+        Bundle extras = getIntent().getExtras();
+
+        Long featureId = null;
+        if (null != extras && extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+            featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+        }
+
+        mEditFeature = mApp.getEditFeature(featureId);
+
+        if (null != mEditFeature && mApp.isNewTempFeature()) {
+            mIsNewTempFeature = true;
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            long userId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
+            mUserDesc = prefs.getString(SettingsConstants.KEY_PREF_USERDESC, "");
+
+            mEditFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_TYPE, getDocType());
+            mEditFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_NEW);
+            mEditFeature.setFieldValue(
+                    Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+            mEditFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_USER_ID, userId);
+            mEditFeature.setFieldValue(
+                    Constants.FIELD_DOCUMENTS_USER, mUserDesc);
+        }
+
+        if (null == mEditFeature) {
+            mIsNewTempFeature = false;
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -383,6 +430,7 @@ public abstract class DocumentCreatorActivity
     protected void addTerritory()
     {
         Intent intent = new Intent(this, SelectTerritoryActivity.class);
+        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivityForResult(intent, getActivityCode());
     }
 
@@ -395,44 +443,22 @@ public abstract class DocumentCreatorActivity
     {
         if (requestCode == getActivityCode()) {
             mTerritory.setText(
-                    mNewFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
+                    mEditFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
         }
     }
 
 
     protected void save()
     {
-        if (mNewFeature.getGeometry() == null || TextUtils.isEmpty(
-                mTerritory.getText().toString())) {
-            Toast.makeText(this, getString(R.string.error_territory_must_be_set), Toast.LENGTH_LONG)
-                    .show();
+        boolean res = saveEditFeature();
+
+        if (mDocsLayer.hasFeatureWithAttachesTempFlag(mEditFeature)) {
+            res &= (mDocsLayer.setFeatureWithAttachesTempFlag(mEditFeature, false) > 0);
         }
 
-        MainApplication app = (MainApplication) getApplication();
-        MapBase mapBase = app.getMap();
-        DocumentsLayer documentsLayer = null;
-        //get documents layer
-        for (int i = 0; i < mapBase.getLayerCount(); i++) {
-            ILayer layer = mapBase.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                documentsLayer = (DocumentsLayer) layer;
-                break;
-            }
-        }
+        res &= (mDocsLayer.setFeatureWithAttachesNotSyncFlag(mEditFeature, true) > 0);
 
-        if (null == documentsLayer) {
-            Toast.makeText(
-                    this, getString(R.string.error_documents_layer_not_found), Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        DocumentEditFeature feature = app.getTempFeature();
-
-        // TODO: if feature exist then update else insert
-        if (documentsLayer.insert(feature, false)) {
-            //remove temp feature
-            app.setTempFeature(null);
+        if (res) {
             finish();
         } else {
             Toast.makeText(this, getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
@@ -443,7 +469,7 @@ public abstract class DocumentCreatorActivity
     protected void signAndSend()
     {
         //check required field
-        if (mNewFeature.getGeometry() == null || TextUtils.isEmpty(
+        if (mEditFeature.getGeometry() == null || TextUtils.isEmpty(
                 mTerritory.getText().toString())) {
             Toast.makeText(this, getString(R.string.error_territory_must_be_set), Toast.LENGTH_LONG)
                     .show();
@@ -464,18 +490,52 @@ public abstract class DocumentCreatorActivity
             return;
         }
 
-        saveControlsToFeature();
-
-        //show dialog with sign and save / edit buttons
-        SignDialog signDialog = new SignDialog();
-        signDialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SIGN_DIALOG);
+        if (saveEditFeature()) {
+            //show dialog with sign and save / edit buttons
+            SignDialog signDialog = new SignDialog();
+            signDialog.setOnSignListener(this);
+            signDialog.show(getSupportFragmentManager(), Constants.FRAGMENT_SIGN_DIALOG);
+        } else {
+            Toast.makeText(this, getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
+        }
     }
 
 
     @Override
-    public void onSelect(String objectId)
+    public void onSign(File signatureFile)
     {
-        mNewFeature.setFieldValue(
-                Constants.FIELD_DOCUMENTS_VECTOR, objectId);
+        AttachItem attachItem = mDocsLayer.getNewTempAttach(mEditFeature);
+
+        if (null == attachItem) {
+            Toast.makeText(this, getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        attachItem.setDisplayName(signatureFile.getName());
+        attachItem.setMimetype("image/png");
+        attachItem.setDescription(Constants.SIGN_DESCRIPTION);
+
+        long featureId = mEditFeature.getId();
+        long attachId = Long.parseLong(attachItem.getAttachId());
+
+        boolean res = mDocsLayer.insertAttachFile(featureId, attachId, signatureFile);
+
+        if (res && mDocsLayer.hasFeatureWithAttachesTempFlag(mEditFeature)) {
+            res = (mDocsLayer.setFeatureWithAttachesTempFlag(mEditFeature, false) > 0);
+        }
+
+        if (res && mDocsLayer.hasFeatureWithAttachesNotSyncFlag(mEditFeature)) {
+            res = (mDocsLayer.setFeatureWithAttachesNotSyncFlag(mEditFeature, false) > 0);
+        }
+
+        if (res && mDocsLayer.setDocumentStatus(featureId, Constants.DOCUMENT_STATUS_FOR_SEND)) {
+            res = mDocsLayer.addChangeNew(mEditFeature);
+        }
+
+        if (res) {
+            finish();
+        } else {
+            Toast.makeText(this, getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
+        }
     }
 }

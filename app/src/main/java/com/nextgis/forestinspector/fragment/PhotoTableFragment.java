@@ -33,6 +33,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,12 +45,11 @@ import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
 import com.nextgis.forestinspector.adapter.PhotoTableAdapter;
 import com.nextgis.forestinspector.adapter.PhotoTableCursorAdapter;
-import com.nextgis.forestinspector.adapter.PhotoTableFileAdapter;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.maplib.util.AttachItem;
 
 import java.io.File;
@@ -65,8 +65,12 @@ import static com.nextgis.maplib.util.Constants.TAG;
 
 public class PhotoTableFragment
         extends TabFragment
-        implements PhotoTableAdapter.OnSelectionChangedListener, ActionMode.Callback
+        implements PhotoTableAdapter.OnSelectionChangedListener,
+                   ActionMode.Callback
 {
+    public static final String PHOTO_ITEM_KEY = "photo_item_key";
+    public static final String PHOTO_VIEWER   = "photo_viewer";
+
     protected static final int MIN_IMAGE_SIZE_DP      = 130;
     protected static final int CARD_VIEW_MARGIN_DP    = 8;
     protected static final int CARD_ELEVATION_DP      = 2;
@@ -79,24 +83,24 @@ public class PhotoTableFragment
 
     protected static final int REQUEST_TAKE_PHOTO = 1;
 
+    protected DocumentsLayer      mDocsLayer;
+    protected DocumentEditFeature mEditFeature;
+
     protected RecyclerView         mPhotoTable;
     protected PhotoTableAdapter    mPhotoTableAdapter;
     protected FloatingActionButton mCameraBtn;
 
     protected String mTempPhotoPath = null;
-    protected DocumentEditFeature mTempFeature;
 
     protected ActionMode mActionMode;
 
     protected boolean mIsPhotoViewer      = false;
     protected boolean mIsPhotoTableViewer = false;
 
-    protected String mDocumentsLayerPathName;
 
-
-    public void setDocumentsLayerPathName(String documentsLayerPathName)
+    public void setIsPhotoTableViewer(boolean isPhotoTableViewer)
     {
-        mDocumentsLayerPathName = documentsLayerPathName;
+        mIsPhotoTableViewer = isPhotoTableViewer;
     }
 
 
@@ -110,29 +114,32 @@ public class PhotoTableFragment
         }
 
         Bundle extras = getActivity().getIntent().getExtras();
-        String photoItemKey = null;
-        if (null != extras) {
-            photoItemKey = extras.getString("photo_item_key");
-            mIsPhotoViewer = extras.getBoolean("photo_viewer");
+        if (null == extras || !extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+            return;
         }
 
-        MainApplication app = (MainApplication) getActivity().getApplication();
+        long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+        mIsPhotoViewer = extras.getBoolean(PHOTO_VIEWER);
+        String photoItemKey = extras.getString(PHOTO_ITEM_KEY);
+
+
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        DocumentFeature feature = ((IDocumentFeatureSource) activity).getFeature();
+        MainApplication app = (MainApplication) activity.getApplication();
+        DocumentsLayer docs = app.getDocsLayer();
 
         Map<String, AttachItem> attaches;
-        Uri attachesUri = null;
-
-        if (null != feature) {
-            mIsPhotoTableViewer = true;
-            attachesUri = Uri.parse(
-                    "content://" + app.getAuthority() + "/" + mDocumentsLayerPathName + "/" +
-                    feature.getId() + "/attach");
+        if (mIsPhotoTableViewer) {
+            DocumentFeature feature = docs.getFeatureWithAttaches(featureId);
             attaches = feature.getAttachments();
-
         } else {
-            mTempFeature = app.getTempFeature();
-            attaches = mTempFeature.getAttachments();
+            mEditFeature = app.getEditFeature(featureId);
+            attaches = mEditFeature.getAttachments();
+        }
+
+        if (mIsPhotoViewer && !TextUtils.isEmpty(photoItemKey) && null != attaches) {
+            Map<String, AttachItem> attachesTmp = attaches;
+            attaches = new TreeMap<>();
+            attaches.put(photoItemKey, attachesTmp.get(photoItemKey));
         }
 
         if (null == attaches) {
@@ -141,18 +148,8 @@ public class PhotoTableFragment
             throw new RuntimeException(error);
         }
 
-        if (mIsPhotoViewer) {
-            Map<String, AttachItem> attachesTmp = attaches;
-            attaches = new TreeMap<>();
-            attaches.put(photoItemKey, attachesTmp.get(photoItemKey));
-        }
-
-        if (mIsPhotoTableViewer) {
-            mPhotoTableAdapter = new PhotoTableCursorAdapter(
-                    activity, feature.getId(), attaches, attachesUri, mIsPhotoViewer);
-        } else {
-            mPhotoTableAdapter = new PhotoTableFileAdapter(activity, attaches, mIsPhotoViewer);
-        }
+        mPhotoTableAdapter = new PhotoTableCursorAdapter(
+                activity, docs, featureId, attaches, mIsPhotoViewer);
     }
 
 
@@ -280,9 +277,9 @@ public class PhotoTableFragment
                         new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date());
                 File tempFile = new File(photoDir, timeStamp + ".jpg");
 
-                if (!tempFile.exists() && tempFile.createNewFile() ||
-                    tempFile.exists() && tempFile.delete() &&
-                    tempFile.createNewFile()) {
+                if (!tempFile.exists() && tempFile.createNewFile()
+                        || tempFile.exists() && tempFile.delete() &&
+                        tempFile.createNewFile()) {
 
                     mTempPhotoPath = tempFile.getAbsolutePath();
                     Log.d(TAG, "mTempPhotoPath: " + mTempPhotoPath);
@@ -307,30 +304,43 @@ public class PhotoTableFragment
         File tempPhotoFile = new File(mTempPhotoPath);
 
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            OnPhotoTaked(tempPhotoFile);
+            onPhotoTook(tempPhotoFile);
         }
 
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_CANCELED) {
             if (tempPhotoFile.delete()) {
                 Log.d(
-                        TAG, "tempPhotoFile deleted on Activity.RESULT_CANCELED, path: " +
-                             tempPhotoFile.getAbsolutePath());
+                        TAG, "tempPhotoFile deleted on Activity.RESULT_CANCELED, path: "
+                                + tempPhotoFile.getAbsolutePath());
             } else {
                 Log.d(
-                        TAG, "tempPhotoFile delete FAILED on Activity.RESULT_CANCELED, path: " +
-                             tempPhotoFile.getAbsolutePath());
+                        TAG, "tempPhotoFile delete FAILED on Activity.RESULT_CANCELED, path: "
+                                + tempPhotoFile.getAbsolutePath());
             }
         }
     }
 
 
-    protected void OnPhotoTaked(File tempPhotoFile)
+    protected void onPhotoTook(File tempPhotoFile)
     {
-        AttachItem photoAttach = new AttachItem("-1", tempPhotoFile.getName(), "image/jpeg", "");
-        mTempFeature.addAttachment(photoAttach);
+        AttachItem photoAttach = mDocsLayer.getNewTempAttach(mEditFeature);
 
-        if (null != mPhotoTableAdapter) {
-            mPhotoTableAdapter.setAttachItems(mTempFeature.getAttachments());
+        if (null == photoAttach) {
+            Log.d(TAG, "onPhotoTook(), photoAttach == null");
+            return;
+        }
+
+        photoAttach.setDisplayName(tempPhotoFile.getName());
+        photoAttach.setMimetype("image/jpeg");
+        photoAttach.setDescription("");
+
+        long featureId = mEditFeature.getId();
+        long attachId = Long.parseLong(photoAttach.getAttachId());
+
+        boolean res = mDocsLayer.insertAttachFile(featureId, attachId, tempPhotoFile);
+
+        if (res && null != mPhotoTableAdapter) {
+            mPhotoTableAdapter.setAttachItems(mEditFeature.getAttachments());
             mPhotoTableAdapter.notifyDataSetChanged();
         }
     }

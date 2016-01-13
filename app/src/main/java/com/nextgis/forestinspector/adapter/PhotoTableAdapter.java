@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.PhotoTableFillerActivity;
 import com.nextgis.forestinspector.dialog.PhotoDescEditorDialog;
+import com.nextgis.forestinspector.fragment.PhotoTableFragment;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.util.AttachItem;
 
@@ -263,8 +264,8 @@ public abstract class PhotoTableAdapter
                             String key = mAttachItemList.get(mClickedId).getKey();
 
                             Intent intent = new Intent(mActivity, PhotoTableFillerActivity.class);
-                            intent.putExtra("photo_viewer", true);
-                            intent.putExtra("photo_item_key", key);
+                            intent.putExtra(PhotoTableFragment.PHOTO_VIEWER, true);
+                            intent.putExtra(PhotoTableFragment.PHOTO_ITEM_KEY, key);
                             mActivity.startActivity(intent);
                         }
                     });

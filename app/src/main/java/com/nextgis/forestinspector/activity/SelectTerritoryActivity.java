@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -40,94 +41,104 @@ import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 
 public class SelectTerritoryActivity extends FIActivity {
-    protected DocumentEditFeature mDocumentFeature;
+    protected DocumentEditFeature mEditFeature;
     protected TextView            mTerritoryText;
     protected View                mMainButton;
 
     protected final int TERRITORY_ACTIVITY = 55;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_select_territory);
-        setToolbar(R.id.main_toolbar);
+        Bundle extras = getIntent().getExtras();
 
-        mMainButton = findViewById(R.id.multiple_actions);
+        if (null != extras && extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+            long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
 
-        final View addByHand = findViewById(R.id.add_by_hand);
-        if (null != addByHand) {
-            addByHand.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
+            MainApplication app = (MainApplication) getApplication();
+            mEditFeature = app.getEditFeature(featureId);
+
+
+            setContentView(R.layout.activity_select_territory);
+            setToolbar(R.id.main_toolbar);
+
+            mMainButton = findViewById(R.id.multiple_actions);
+
+            final View addByHand = findViewById(R.id.add_by_hand);
+            if (null != addByHand) {
+                addByHand.setOnClickListener(
+                        new View.OnClickListener()
                         {
-                            addByHand();
-                        }
-                    });
-        }
+                            @Override
+                            public void onClick(View v)
+                            {
+                                addByHand();
+                            }
+                        });
+            }
 
-        final View addByParcelList = findViewById(R.id.add_by_parcel_list);
-        if (null != addByParcelList) {
-            addByParcelList.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
+            final View addByParcelList = findViewById(R.id.add_by_parcel_list);
+            if (null != addByParcelList) {
+                addByParcelList.setOnClickListener(
+                        new View.OnClickListener()
                         {
-                            addByParcelList();
-                        }
-                    });
-        }
+                            @Override
+                            public void onClick(View v)
+                            {
+                                addByParcelList();
+                            }
+                        });
+            }
 
-        final View addBySheet = findViewById(R.id.add_by_sheet);
-        if (null != addBySheet) {
-            addBySheet.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
+            final View addBySheet = findViewById(R.id.add_by_sheet);
+            if (null != addBySheet) {
+                addBySheet.setOnClickListener(
+                        new View.OnClickListener()
                         {
-                            addBySheet();
-                        }
-                    });
-        }
+                            @Override
+                            public void onClick(View v)
+                            {
+                                addBySheet();
+                            }
+                        });
+            }
 
-        final View addByWalk = findViewById(R.id.add_by_walk);
-        if (null != addByWalk) {
-            addByWalk.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
+            final View addByWalk = findViewById(R.id.add_by_walk);
+            if (null != addByWalk) {
+                addByWalk.setOnClickListener(
+                        new View.OnClickListener()
                         {
-                            addByWalk();
-                        }
-                    });
+                            @Override
+                            public void onClick(View v)
+                            {
+                                addByWalk();
+                            }
+                        });
+            }
+
+            MapEditFragment mapFragment =
+                    (MapEditFragment) getSupportFragmentManager().findFragmentById(
+                            R.id.map_fragment);
+            if (null != mapFragment) { mapFragment.updateTerritory(mEditFeature.getGeometry()); }
+
+            mTerritoryText = (TextView) findViewById(R.id.territory);
+
+            getBottomToolbar().setVisibility(View.GONE);
         }
-
-        MainApplication app = (MainApplication) getApplication();
-        mDocumentFeature = app.getTempFeature();
-        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        if(null != mapFragment)
-            mapFragment.updateTerritory(mDocumentFeature.getGeometry());
-
-        mTerritoryText = (TextView) findViewById(R.id.territory);
-
-        getBottomToolbar().setVisibility(View.GONE);
     }
 
     private void addBySheet() {
-        if(null == mDocumentFeature ||
-                mDocumentFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) == 0){
+        if(null == mEditFeature ||
+                mEditFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) == 0){
             Toast.makeText(this, getString(R.string.error_sheet_is_empty), Toast.LENGTH_LONG).show();
         }
-        mDocumentFeature.setUnionGeometryFromLayer(Constants.KEY_LAYER_SHEET);
+        mEditFeature.setUnionGeometryFromLayer(Constants.KEY_LAYER_SHEET);
 
         MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
         if(null != mapFragment)
-            mapFragment.updateTerritory(mDocumentFeature.getGeometry());
+            mapFragment.updateTerritory(mEditFeature.getGeometry());
     }
 
     private void addByWalk() {
@@ -140,6 +151,7 @@ public class SelectTerritoryActivity extends FIActivity {
 
     private void addByParcelList() {
         Intent intent = new Intent(this, SelectParcelsActivity.class);
+        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivityForResult(intent, TERRITORY_ACTIVITY);
     }
 
@@ -163,7 +175,7 @@ public class SelectTerritoryActivity extends FIActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == TERRITORY_ACTIVITY){
-            String text = mDocumentFeature.getTerritoryText(getString(R.string.forestry),
+            String text = mEditFeature.getTerritoryText(getString(R.string.forestry),
                     getString(R.string.district_forestry), getString(R.string.parcel),
                     getString(R.string.unit));
 
@@ -171,13 +183,13 @@ public class SelectTerritoryActivity extends FIActivity {
 
             MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
             if(null != mapFragment)
-                mapFragment.updateTerritory(mDocumentFeature.getGeometry());
+                mapFragment.updateTerritory(mEditFeature.getGeometry());
         }
     }
 
     public void setTerritoryText(String text){
         mTerritoryText.setText(text);
-        mDocumentFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, text);
+        mEditFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, text);
     }
 
     @Override
@@ -219,7 +231,8 @@ public class SelectTerritoryActivity extends FIActivity {
 
     @Override
     protected void onPause() {
-        mDocumentFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, mTerritoryText.getText().toString());
+        mEditFeature.setFieldValue(
+                Constants.FIELD_DOCUMENTS_TERRITORY, mTerritoryText.getText().toString());
         super.onPause();
     }
 
@@ -240,17 +253,17 @@ public class SelectTerritoryActivity extends FIActivity {
     }
 
     public void clearTerritoryGeometry() {
-        mDocumentFeature.setGeometry(null);
+        mEditFeature.setGeometry(null);
     }
 
     public void setTerritoryTextByGeom() {
-        String text = mDocumentFeature.getTerritoryTextByGeom(getString(R.string.forestry),
+        String text = mEditFeature.getTerritoryTextByGeom(getString(R.string.forestry),
                 getString(R.string.district_forestry), getString(R.string.parcel),
                 getString(R.string.unit));
         setTerritoryText(text);
     }
 
     public String getTerritoryText() {
-        return mDocumentFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY);
+        return mEditFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY);
     }
 }

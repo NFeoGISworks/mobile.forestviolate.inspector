@@ -42,6 +42,7 @@ import android.widget.Toast;
 import com.DaveKoelle.AlphanumComparator;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
+import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.GpsEventListener;
@@ -353,14 +354,14 @@ public abstract class ListFillerDialog
         double altitude = location.getAltitude();
         mAltView.setText(
                 getString(com.nextgis.maplibui.R.string.altitude_caption_short) + ": " +
-                df.format(altitude) + " " +
-                getString(com.nextgis.maplibui.R.string.unit_meter));
+                        df.format(altitude) + " " +
+                        getString(com.nextgis.maplibui.R.string.unit_meter));
 
         float accuracy = location.getAccuracy();
         mAccView.setText(
                 getString(com.nextgis.maplibui.R.string.accuracy_caption_short) + ": " +
-                df.format(accuracy) + " " +
-                getString(com.nextgis.maplibui.R.string.unit_meter));
+                        df.format(accuracy) + " " +
+                        getString(com.nextgis.maplibui.R.string.unit_meter));
     }
 
 
@@ -429,13 +430,13 @@ public abstract class ListFillerDialog
         }
 
         MapBase map = MapBase.getInstance();
-        DocumentsLayer documentsLayer =
+        DocumentsLayer docLayer =
                 (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
-        if (null == documentsLayer) {
+        if (null == docLayer) {
             return;
         }
 
-        VectorLayer subDocLayer = (VectorLayer) documentsLayer.getLayerByName(getLayerName());
+        VectorLayer subDocLayer = (VectorLayer) docLayer.getLayerByName(getLayerName());
         if (null == subDocLayer) {
             return;
         }
@@ -448,17 +449,19 @@ public abstract class ListFillerDialog
         geometryValue.add(pt);
 
 
-        Feature feature;
+        DocumentFeature docFeature = documentSource.getFeature();
+        Feature subFeature;
+
         if (null != mFeature) {
-            feature = mFeature;
+            subFeature = mFeature;
         } else {
-            feature = new Feature(
-                    com.nextgis.maplib.util.Constants.NOT_FOUND, subDocLayer.getFields());
-            documentSource.getFeature().addSubFeature(getLayerName(), feature);
+            subFeature = docLayer.getNewTempSubFeature(docFeature, subDocLayer);
         }
 
-        feature.setGeometry(geometryValue);
-        setFeatureFieldsValues(feature);
+        subFeature.setGeometry(geometryValue);
+        setFeatureFieldsValues(subFeature);
+
+        subDocLayer.updateFeatureWithFlags(subFeature);
     }
 
 

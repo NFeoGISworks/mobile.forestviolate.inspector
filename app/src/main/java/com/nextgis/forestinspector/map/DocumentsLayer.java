@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -29,7 +30,6 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
@@ -42,8 +42,6 @@ import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.NGWVectorLayer;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.AttachItem;
-import com.nextgis.maplib.util.FeatureChanges;
-import com.nextgis.maplib.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,58 +73,6 @@ public class DocumentsLayer extends NGWVectorLayer {
         mLayerType = Constants.LAYERTYPE_DOCS;
     }
 
-    public DocumentFeature getFeature(long featureId){
-        Cursor cur = query(null, FIELD_ID + " = " + featureId, null, null, null);
-        if(null == cur){
-            return null;
-        }
-        cur.moveToFirst();
-
-        DocumentFeature feature = new DocumentFeature(featureId, getFields());
-        feature.fromCursor(cur);
-
-        cur.close();
-
-        //get documents connected with this one
-        cur = query(null, Constants.FIELD_DOC_ID + " = " + featureId, null, null, null);
-        if(null != cur && cur.moveToFirst()){
-            int idPos = cur.getColumnIndex(FIELD_ID);
-            List<Long> ids = new ArrayList<>();
-            do {
-                ids.add(cur.getLong(idPos));
-            }while (cur.moveToNext());
-            cur.close();
-
-            for(Long id : ids) {
-                DocumentFeature subDocFeature = getFeature(id);
-                if (null != subDocFeature)
-                    feature.addSubFeature(Constants.KEY_LAYER_DOCUMENTS, subDocFeature);
-            }
-        }
-
-        //get connected layers
-        for(int i = 0; i < mLayers.size(); ++i){
-            ILayer layer = mLayers.get(i);
-            if(layer instanceof NGWVectorLayer){
-                NGWVectorLayer subLayer = (NGWVectorLayer) layer;
-                cur = subLayer.query(null, Constants.FIELD_DOC_ID + " = " + featureId,
-                        null, null, null);
-                if(null != cur && cur.moveToFirst()){
-                    do {
-                        Feature subFeature = new Feature(-1, subLayer.getFields());
-                        subFeature.fromCursor(cur);
-                        feature.addSubFeature(layer.getName(), subFeature);
-                    } while (cur.moveToNext());
-                    cur.close();
-                }
-            }
-        }
-
-        // get attaches
-        feature.addAttachments(getAttachMap("" + feature.getId()));
-
-        return feature;
-    }
 
     @Override
     public void sync(
@@ -163,9 +109,10 @@ public class DocumentsLayer extends NGWVectorLayer {
         super.changeFeatureId(oldFeatureId, newFeatureId);
         //update doc id in other layers
         for(ILayer layer : mLayers) {
-            if (layer instanceof NGWVectorLayer) {
-                NGWVectorLayer ngwVectorLayer = (NGWVectorLayer) layer;
-                Cursor cur = ngwVectorLayer.query(new String[] { com.nextgis.maplib.util.Constants.FIELD_ID },
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                Cursor cur = subLayer.query(
+                        new String[] {com.nextgis.maplib.util.Constants.FIELD_ID},
                         Constants.FIELD_DOC_ID + " = " + oldFeatureId, null, null, null);
                 List<Long> ids = new ArrayList<>();
                 if(null != cur && cur.moveToFirst()) {
@@ -179,8 +126,8 @@ public class DocumentsLayer extends NGWVectorLayer {
                     ContentValues values = new ContentValues();
                     values.put(Constants.FIELD_DOC_ID, newFeatureId);
                     Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" +
-                            ngwVectorLayer.getPath().getName() + "/" + id);
-                    ngwVectorLayer.update(uri, values, null, null);
+                            subLayer.getPath().getName() + "/" + id);
+                    subLayer.update(uri, values, null, null);
                 }
             }
         }
@@ -189,50 +136,58 @@ public class DocumentsLayer extends NGWVectorLayer {
     @Override
     public boolean sendLocalChanges(SyncResult syncResult) throws SQLiteException {
         // send docs
-        if(!super.sendLocalChanges(syncResult))
-            return false;
+        if (!super.sendLocalChanges(syncResult)) { return false; }
 
         // send relation records from other layers
         boolean hasChanges = false;
-        for(ILayer layer : mLayers){
-            if(layer instanceof NGWVectorLayer){
-                NGWVectorLayer ngwVectorLayer = (NGWVectorLayer) layer;
-                if(!ngwVectorLayer.sendLocalChanges(syncResult)){
-                    Log.d(Constants.FITAG, "send changes to server for " + layer.getName() +
-                            " failed");
-                }
-                else{
-                    if(FeatureChanges.getChangeCount(
-                            layer.getPath().getName()
-                                    + com.nextgis.maplib.util.Constants.CHANGES_NAME_POSTFIX) > 0){
+        for (ILayer layer : mLayers) {
+            if (layer instanceof NGWVectorLayer) {
+                NGWVectorLayer subLayer = (NGWVectorLayer) layer;
+                if (subLayer.sendLocalChanges(syncResult)) {
+                    if (subLayer.isChanges()) {
                         hasChanges = true;
                     }
+                } else {
+                    Log.d(
+                            Constants.FITAG,
+                            "send changes to server for " + layer.getName() + " failed");
                 }
             }
         }
+
         // update doc status (add change for next sync)
-        if(!hasChanges){
-            Cursor cur = query(new String[] { com.nextgis.maplib.util.Constants.FIELD_ID },
-                    Constants.FIELD_DOCUMENTS_STATUS + " = " + Constants.DOCUMENT_STATUS_SEND,
+        if (!hasChanges) {
+            Cursor cur = query(
+                    new String[] {com.nextgis.maplib.util.Constants.FIELD_ID},
+                    Constants.FIELD_DOCUMENTS_STATUS + " = " + Constants.DOCUMENT_STATUS_FOR_SEND,
                     null, null, null);
+
             List<Long> ids = new ArrayList<>();
-            if(null != cur && cur.moveToFirst()) {
+            if (null != cur && cur.moveToFirst()) {
                 do {
                     ids.add(cur.getLong(0));
                 } while (cur.moveToNext());
                 cur.close();
             }
 
-            for(Long id : ids){
-                ContentValues values = new ContentValues();
-                values.put(Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_OK);
-                if(update(id, values, FIELD_ID + " = " + id, null) == 1)
+            for (Long id : ids) {
+                if (setDocumentStatus(id, Constants.DOCUMENT_STATUS_OK)) {
                     addChange(id, CHANGE_OPERATION_CHANGED);
+                }
             }
         }
 
         return true;
     }
+
+
+    public boolean setDocumentStatus(long featureId, int status)
+    {
+        ContentValues values = new ContentValues();
+        values.put(Constants.FIELD_DOCUMENTS_STATUS, status);
+        return update(featureId, values, FIELD_ID + " = " + featureId, null) == 1;
+    }
+
 
     @Override
     public boolean getChangesFromServer(String authority, SyncResult syncResult) throws SQLiteException {
@@ -365,83 +320,482 @@ public class DocumentsLayer extends NGWVectorLayer {
         return super.save();
     }
 
-    public boolean insert(DocumentEditFeature feature, boolean isSigned) {
-        //create document
-        ContentValues values = feature.getContentValues(false);
-        long docId = insert(values);
-        if(docId == com.nextgis.maplib.util.Constants.NOT_FOUND){
-            return false;
+
+    @Override
+    public DocumentFeature getFeature(long featureId)
+    {
+        Feature feature = super.getFeature(featureId);
+        if (null == feature) {
+            return null;
         }
 
-        if (isSigned) {
-            addChange(docId, CHANGE_OPERATION_NEW);
-        } else {
-            addChange(docId, CHANGE_OPERATION_NOT_SYNC);
-        }
+        DocumentFeature documentFeature = new DocumentFeature(feature);
 
-        //update connected features doc_id
-        feature.setId(docId);
+        //get documents connected with this one
+        Cursor cur = query(null, Constants.FIELD_DOC_ID + " = " + featureId, null, null, null);
+        if (null != cur) {
+            if (cur.moveToFirst()) {
+                int idPos = cur.getColumnIndex(FIELD_ID);
+                List<Long> ids = new ArrayList<>();
+                do {
+                    ids.add(cur.getLong(idPos));
+                } while (cur.moveToNext());
 
-        //create connected features
-        for (ILayer layer : mLayers){
-            if(layer instanceof VectorLayer) {
-                VectorLayer vectorLayer = (VectorLayer) layer;
-                String pathName = layer.getPath().getName();
-                List<Feature> featureList = feature.getSubFeatures(pathName);
-
-                if (null != featureList && featureList.size() > 0) {
-                    Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + pathName);
-
-                    if (!isSigned) {
-                        uri = uri.buildUpon()
-                                .appendQueryParameter(URI_PARAMETER_NOT_SYNC, URI_VALUE_TRUE)
-                                .build();
+                for (Long id : ids) {
+                    DocumentFeature subDocFeature = getFeature(id);
+                    if (null != subDocFeature) {
+                        documentFeature.addSubFeature(Constants.KEY_LAYER_DOCUMENTS, subDocFeature);
                     }
+                }
+            }
+            cur.close();
+        }
 
+        //get connected layers
+        for (int i = 0; i < mLayers.size(); ++i) {
+            ILayer layer = mLayers.get(i);
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                cur = subLayer.query(
+                        null, Constants.FIELD_DOC_ID + " = " + featureId, null, null, null);
+                if (null != cur) {
+                    if (cur.moveToFirst()) {
+                        do {
+                            Feature subFeature = new Feature(NOT_FOUND, subLayer.getFields());
+                            subFeature.fromCursor(cur);
+                            documentFeature.addSubFeature(subLayer.getName(), subFeature);
+                        } while (cur.moveToNext());
+                    }
+                    cur.close();
+                }
+            }
+        }
+
+        return documentFeature;
+    }
+
+
+    @Override
+    public DocumentFeature getFeatureWithAttaches(long featureId)
+    {
+        Feature feature = super.getFeatureWithAttaches(featureId);
+
+        if (null == feature) {
+            return null;
+        }
+
+        DocumentFeature documentFeature = (DocumentFeature) feature;
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
                     for (Feature subFeature : featureList) {
-                        if (vectorLayer.insert(uri, subFeature.getContentValues(false)) == null) {
-                            Log.d(Constants.FITAG, "insert feature into " + pathName + " failed");
+                        subFeature.addAttachments(subLayer.getAttachMap("" + subFeature.getId()));
+                    }
+                }
+            }
+        }
+
+        return documentFeature;
+    }
+
+
+    @Override
+    public DocumentFeature getNewTempFeature()
+    {
+        Feature feature = super.getNewTempFeature();
+
+        if (null == feature) {
+            return null;
+        }
+
+        return new DocumentFeature(feature);
+    }
+
+
+    public Feature getNewTempSubFeature(
+            DocumentFeature documentFeature,
+            VectorLayer subDocumentLayer)
+    {
+        Feature subFeature = subDocumentLayer.getNewTempFeature();
+
+        if (null == subFeature) {
+            return null;
+        }
+
+        String subDocLayerName = subDocumentLayer.getName();
+
+        documentFeature.addSubFeature(subDocLayerName, subFeature);
+
+        if (!hasFeatureTempFlag(documentFeature.getId())) {
+            subDocumentLayer.setFeatureTempFlag(subFeature.getId(), false);
+        }
+
+        if (hasFeatureNotSyncFlag(documentFeature.getId())) {
+            subDocumentLayer.setFeatureNotSyncFlag(subFeature.getId(), true);
+        }
+
+        return subFeature;
+    }
+
+
+
+    @Override
+    public int updateFeatureWithFlags(Feature feature)
+    {
+        int res = super.updateFeatureWithFlags(feature);
+
+        if (!(feature instanceof DocumentFeature)) {
+            return res;
+        }
+
+        DocumentFeature documentFeature = (DocumentFeature) feature;
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = layer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        res += subLayer.updateFeatureWithFlags(subFeature);
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+
+    @Override
+    public int updateFeatureWithAttachesWithFlags(Feature feature)
+    {
+        int res = super.updateFeatureWithAttachesWithFlags(feature);
+
+        if (!(feature instanceof DocumentFeature)) {
+            return res;
+        }
+
+        DocumentFeature documentFeature = (DocumentFeature) feature;
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        long subFeatureIdL = subFeature.getId();
+
+                        Map<String, AttachItem> subAttaches = subLayer.getAttachMap(
+                                "" + subFeatureIdL);
+                        if (null != subAttaches) {
+                            for (AttachItem subAttachItem : subAttaches.values()) {
+                                res += subLayer.updateAttachWithFlags(subFeature, subAttachItem);
+                            }
                         }
                     }
                 }
             }
         }
 
-        //add attachments
-        MainApplication app = (MainApplication) mContext.getApplicationContext();
-        File attachFolder = app.getDocFeatureFolder();
-        Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" + getPath().getName() +
-                "/" + docId + "/" +  "attach");
+        return res;
+    }
 
-        if (!isSigned) {
-            uri = uri.buildUpon()
-                    .appendQueryParameter(URI_PARAMETER_NOT_SYNC, URI_VALUE_TRUE)
-                    .build();
+
+    @Override
+    public void deleteAllTempFeatures()
+    {
+        super.deleteAllTempFeatures();
+
+        // connected layers
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                subLayer.deleteAllTempFeatures();
+            }
+        }
+    }
+
+
+    @Override
+    public void deleteAllTempAttaches()
+    {
+        super.deleteAllTempAttaches();
+
+        // connected layers
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                subLayer.deleteAllTempAttaches();
+            }
+        }
+    }
+
+
+    @Override
+    public boolean hasFeatureTempFlag(Feature feature)
+    {
+        boolean res = super.hasFeatureTempFlag(feature);
+
+        if (!res) {
+            return false;
         }
 
-        for(Map.Entry<String, AttachItem> entry : feature.getAttachments().entrySet()){
-            AttachItem item = entry.getValue();
+        if (!(feature instanceof DocumentFeature)) {
+            return true;
+        }
 
-            values = new ContentValues();
-            values.put(VectorLayer.ATTACH_DISPLAY_NAME, item.getDisplayName());
-            values.put(VectorLayer.ATTACH_MIME_TYPE, item.getMimetype());
-            values.put(VectorLayer.ATTACH_DESCRIPTION, item.getDescription());
+        DocumentFeature documentFeature = (DocumentFeature) feature;
 
-            Uri result = insert(uri, values);
-            if (result == null) {
-                Log.d(Constants.FITAG, "insert attach failed");
-            } else {
-                List<String> pathSegments = result.getPathSegments();
-                String featureId = pathSegments.get(pathSegments.size() - 3);
-                String attachId = pathSegments.get(pathSegments.size() - 1);
-                File to = new File(mPath, featureId + File.separator + attachId);
-                File from = new File(attachFolder, item.getDisplayName());
-                if(!FileUtil.copyRecursive(from, to)){
-                    Log.d(Constants.FITAG, "create attach file failed");
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        if (!subLayer.hasFeatureTempFlag(subFeature)) {
+                            return false;
+                        }
+                    }
                 }
             }
         }
 
         return true;
+    }
+
+
+    @Override
+    public boolean hasFeatureNotSyncFlag(Feature feature)
+    {
+        boolean res = super.hasFeatureNotSyncFlag(feature);
+
+        if (!res) {
+            return false;
+        }
+
+        if (!(feature instanceof DocumentFeature)) {
+            return true;
+        }
+
+        DocumentFeature documentFeature = (DocumentFeature) feature;
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        if (!subLayer.hasFeatureNotSyncFlag(subFeature)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public boolean hasFeatureWithAttachesTempFlag(Feature feature)
+    {
+        boolean res = super.hasFeatureWithAttachesTempFlag(feature);
+
+        if (!res) {
+            return false;
+        }
+
+        if (!(feature instanceof DocumentFeature)) {
+            return true;
+        }
+
+        DocumentFeature documentFeature = (DocumentFeature) feature;
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        if (!subLayer.hasFeatureWithAttachesTempFlag(subFeature)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public boolean hasFeatureWithAttachesNotSyncFlag(Feature feature)
+    {
+        boolean res = super.hasFeatureWithAttachesNotSyncFlag(feature);
+
+        if (!res) {
+            return false;
+        }
+
+        if (!(feature instanceof DocumentFeature)) {
+            return true;
+        }
+
+        DocumentFeature documentFeature = (DocumentFeature) feature;
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        if (!subLayer.hasFeatureWithAttachesNotSyncFlag(subFeature)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public long setFeatureWithAttachesTempFlag(
+            Feature feature,
+            boolean flag)
+    {
+        long res = super.setFeatureWithAttachesTempFlag(feature, flag);
+
+        if (!(feature instanceof DocumentFeature)) {
+            return res;
+        }
+
+        DocumentFeature documentFeature = (DocumentFeature) feature;
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        res += subLayer.setFeatureWithAttachesTempFlag(subFeature, flag);
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+
+    @Override
+    public long setFeatureWithAttachesNotSyncFlag(
+            Feature feature,
+            boolean flag)
+    {
+        long res = super.setFeatureWithAttachesNotSyncFlag(feature, flag);
+
+        if (!(feature instanceof DocumentFeature)) {
+            return res;
+        }
+
+        DocumentFeature documentFeature = (DocumentFeature) feature;
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        res += subLayer.setFeatureWithAttachesNotSyncFlag(subFeature, flag);
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+
+    public boolean addChangeNew(DocumentEditFeature documentFeature)
+    {
+        long docId = documentFeature.getId();
+        if (docId == com.nextgis.maplib.util.Constants.NOT_FOUND) {
+            return false;
+        }
+
+        //update connected features doc_id
+        documentFeature.setId(docId);
+
+        addChange(docId, CHANGE_OPERATION_NEW);
+        addAttachesChangeNew(this, documentFeature);
+
+        // connected features
+        for (ILayer layer : mLayers) {
+            if (layer instanceof VectorLayer) {
+                VectorLayer subLayer = (VectorLayer) layer;
+                String pathName = subLayer.getPath().getName();
+                List<Feature> featureList = documentFeature.getSubFeatures(pathName);
+
+                if (null != featureList) {
+                    for (Feature subFeature : featureList) {
+                        subLayer.addChange(subFeature.getId(), CHANGE_OPERATION_NEW);
+                        addAttachesChangeNew(subLayer, subFeature);
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    protected void addAttachesChangeNew(
+            VectorLayer vectorLayer,
+            Feature feature)
+    {
+        long featureIdL = feature.getId();
+
+        Map<String, AttachItem> attaches = vectorLayer.getAttachMap("" + featureIdL);
+        if (null != attaches) {
+            for (AttachItem attachItem : attaches.values()) {
+                long attachIdL = Long.parseLong(attachItem.getAttachId());
+                vectorLayer.addChange(featureIdL, attachIdL, CHANGE_OPERATION_NEW);
+            }
+        }
     }
 }

@@ -36,9 +36,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.DocumentCreatorActivity;
 import com.nextgis.forestinspector.activity.DocumentViewActivity;
+import com.nextgis.forestinspector.activity.FieldWorksCreatorActivity;
+import com.nextgis.forestinspector.activity.IndictmentCreatorActivity;
 import com.nextgis.forestinspector.activity.NoteCreatorActivity;
+import com.nextgis.forestinspector.activity.SheetCreatorActivity;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
@@ -102,7 +104,7 @@ public class DocumentsListAdapter
                     public void onItemClick(int position)
                     {
                         DocumentsListItem item = mDocuments.get(position);
-                        Intent intent;
+                        Intent intent = null;
                         if (item.mType == Constants.DOC_TYPE_NOTE) {
                             //show note activity
                             intent = new Intent(mContext, NoteCreatorActivity.class);
@@ -112,12 +114,26 @@ public class DocumentsListAdapter
                                 intent = new Intent(mContext, DocumentViewActivity.class);
                             } else {
                                 //show documents creator activity
-                                intent = new Intent(mContext, DocumentCreatorActivity.class);
+                                switch (item.mType) {
+                                    case Constants.DOC_TYPE_INDICTMENT:
+                                        intent = new Intent(
+                                                mContext, IndictmentCreatorActivity.class);
+                                        break;
+                                    case Constants.DOC_TYPE_SHEET:
+                                        intent = new Intent(mContext, SheetCreatorActivity.class);
+                                        break;
+                                    case Constants.DOC_TYPE_FIELD_WORKS:
+                                        intent = new Intent(
+                                                mContext, FieldWorksCreatorActivity.class);
+                                        break;
+                                }
                             }
                         }
 
-                        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);
-                        mContext.startActivity(intent);
+                        if (null != intent) {
+                            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);
+                            mContext.startActivity(intent);
+                        }
                     }
                 });
 

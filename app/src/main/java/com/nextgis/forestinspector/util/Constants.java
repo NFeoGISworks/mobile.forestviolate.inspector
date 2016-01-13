@@ -195,11 +195,12 @@ public interface Constants
 
     int DOWNLOAD_SEPARATE_THREADS = 10;
 
-    int DOCUMENT_STATUS_SEND     = 1;       //the document send but some connected tables - no
+    int DOCUMENT_STATUS_NEW      = 0;   //the document is new
+    int DOCUMENT_STATUS_FOR_SEND = 1;   //the document is sent but some connected tables - no
     int DOCUMENT_STATUS_CHECKING = 2;   //the moderator check document
-    int DOCUMENT_STATUS_OK       = 3;         //the document accepted
-    int DOCUMENT_STATUS_WARNING  = 4;    //the document denied
-    int DOCUMENT_STATUS_DELETED  = 5;    //the document deleted
+    int DOCUMENT_STATUS_OK       = 3;   //the document accepted
+    int DOCUMENT_STATUS_WARNING  = 4;   //the document denied
+    int DOCUMENT_STATUS_DELETED  = 5;   //the document deleted
 
     /**
      * layer types

@@ -28,8 +28,11 @@ import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import com.nextgis.forestinspector.activity.PreferencesActivity;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
+import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.map.FILayerFactory;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.FileUtil;
@@ -46,8 +49,11 @@ import static com.nextgis.maplib.util.SettingsConstants.KEY_PREF_MAP;
 public class MainApplication
         extends GISApplication
 {
-    protected DocumentEditFeature mTempFeature;
+    protected DocumentsLayer      mDocsLayer;
+    protected DocumentEditFeature mEditFeature;
     protected File                mDocFeatureFolder;
+
+    protected boolean mIsNewTempFeature = false;
 
 
     @Override
@@ -77,6 +83,25 @@ public class MainApplication
         mMap.load();
 
         return mMap;
+    }
+
+
+    public DocumentsLayer getDocsLayer()
+    {
+        if (null != mDocsLayer) {
+            return mDocsLayer;
+        }
+
+        MapBase map = getMap();
+        for (int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                mDocsLayer = (DocumentsLayer) layer;
+                break;
+            }
+        }
+
+        return mDocsLayer;
     }
 
 
@@ -122,21 +147,111 @@ public class MainApplication
     }
 
 
-    public DocumentEditFeature getTempFeature()
+    public void clearTempDocumentFeatureFolder()
     {
-        return mTempFeature;
-    }
-
-
-    public void setTempFeature(DocumentEditFeature tempFeature)
-    {
-        mTempFeature = tempFeature;
-        //delete photos of previous feature
-        if (null == tempFeature && FileUtil.renameAndDelete(mDocFeatureFolder)) {
+        if (FileUtil.renameAndDelete(mDocFeatureFolder)) {
             FileUtil.createDir(mDocFeatureFolder);
         }
     }
 
+
+    public void clearAllTemps()
+    {
+        getDocsLayer().deleteAllTemps();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.remove(com.nextgis.forestinspector.util.SettingsConstants.KEY_PREF_TEMP_FEATURE_ID);
+        edit.commit();
+
+        clearTempDocumentFeatureFolder();
+
+        mEditFeature = null;
+    }
+
+
+    public DocumentEditFeature getEditFeature(Long featureId)
+    {
+        mIsNewTempFeature = false;
+
+        if (null != mEditFeature) {
+            return mEditFeature;
+        }
+
+        DocumentsLayer docsLayer = getDocsLayer();
+        DocumentFeature feature;
+
+        if (null != featureId) {
+            feature = docsLayer.getFeatureWithAttaches(featureId);
+
+        } else {
+            clearAllTemps();
+            mIsNewTempFeature = true;
+            feature = getTempFeature();
+        }
+
+        if (null == feature || !docsLayer.hasFeatureTempFlag(feature)
+                && !docsLayer.hasFeatureNotSyncFlag(feature)) {
+
+            mIsNewTempFeature = false;
+            mEditFeature = null;
+            return null;
+        }
+
+        mEditFeature = new DocumentEditFeature(feature);
+        return mEditFeature;
+    }
+
+
+    public boolean isNewTempFeature()
+    {
+        return mIsNewTempFeature;
+    }
+
+
+    protected DocumentFeature getTempFeature()
+    {
+        DocumentsLayer docsLayer = getDocsLayer();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        DocumentFeature feature = null;
+
+        long featureId = prefs.getLong(
+                com.nextgis.forestinspector.util.SettingsConstants.KEY_PREF_TEMP_FEATURE_ID,
+                com.nextgis.maplib.util.Constants.NOT_FOUND);
+
+        if (com.nextgis.maplib.util.Constants.NOT_FOUND != featureId) {
+            feature = docsLayer.getFeatureWithAttaches(featureId);
+
+            if (null == feature) {
+                SharedPreferences.Editor edit = prefs.edit();
+                edit.remove(
+                        com.nextgis.forestinspector.util.SettingsConstants.KEY_PREF_TEMP_FEATURE_ID);
+                edit.commit();
+
+                featureId = (long) com.nextgis.maplib.util.Constants.NOT_FOUND;
+            }
+        }
+
+        if (com.nextgis.maplib.util.Constants.NOT_FOUND == featureId) {
+            feature = docsLayer.getNewTempFeature();
+
+            if (null == feature) {
+                return null;
+            }
+
+            SharedPreferences.Editor edit = prefs.edit();
+            edit.putLong(
+                    com.nextgis.forestinspector.util.SettingsConstants.KEY_PREF_TEMP_FEATURE_ID,
+                    feature.getId());
+            edit.commit();
+        }
+
+        if (!docsLayer.hasFeatureTempFlag(feature)) {
+            return null;
+        } else {
+            return feature;
+        }
+    }
 
 /*
     // for debug

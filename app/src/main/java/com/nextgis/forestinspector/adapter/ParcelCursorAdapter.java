@@ -42,19 +42,19 @@ public class ParcelCursorAdapter
     private static LayoutInflater mInflater = null;
 
     protected Context             mContext;
-    protected DocumentEditFeature mDocumentFeature;
+    protected DocumentEditFeature mEditFeature;
 
 
     public ParcelCursorAdapter(
             Context context,
             Cursor cursor,
             int flags,
-            DocumentEditFeature documentFeature)
+            DocumentEditFeature editFeature)
     {
         super(context, cursor, flags);
 
         mContext = context;
-        mDocumentFeature = documentFeature;
+        mEditFeature = editFeature;
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -97,7 +97,7 @@ public class ParcelCursorAdapter
         // Find fields to populate in inflated template
         String sParcelDesc =
                 cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_LV)) +
-                " " + mContext.getString(R.string.forestry) + ", " +
+                        " " + mContext.getString(R.string.forestry) + ", " +
                 cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV)) +
                 " " + mContext.getString(R.string.district_forestry) + ", " +
                 mContext.getString(R.string.parcel) + " " +
@@ -109,7 +109,7 @@ public class ParcelCursorAdapter
 
 
         viewHolder.mCheckBox.setTag(id);
-        if (mDocumentFeature.getParcelIds().contains(id)) {
+        if (mEditFeature.getParcelIds().contains(id)) {
             viewHolder.mCheckBox.setChecked(true);
         } else {
             viewHolder.mCheckBox.setChecked(false);
@@ -124,11 +124,11 @@ public class ParcelCursorAdapter
                     {
                         Long id = (Long) buttonView.getTag();
                         if (isChecked) {
-                            if (!mDocumentFeature.getParcelIds().contains(id)) {
-                                mDocumentFeature.getParcelIds().add(id);
+                            if (!mEditFeature.getParcelIds().contains(id)) {
+                                mEditFeature.getParcelIds().add(id);
                             }
                         } else {
-                            mDocumentFeature.getParcelIds().remove(id);
+                            mEditFeature.getParcelIds().remove(id);
                         }
                     }
                 });

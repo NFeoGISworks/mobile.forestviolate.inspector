@@ -54,7 +54,7 @@ public class MapViewFragment
     protected FloatingActionButton mivZoomOut;
     protected RelativeLayout       mMapRelativeLayout;
 
-    protected DocumentFeature mFeature;
+    protected DocumentFeature mDocFeature;
 
     // http://stackoverflow.com/a/29621490
     protected boolean mFragmentResume    = false;
@@ -85,7 +85,7 @@ public class MapViewFragment
         Activity activity = getActivity();
         if (activity instanceof IDocumentFeatureSource) {
             IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
-            mFeature = documentFeatureSource.getFeature();
+            mDocFeature = documentFeatureSource.getFeature();
         }
 
         MainApplication app = (MainApplication) getActivity().getApplication();
@@ -261,7 +261,7 @@ public class MapViewFragment
         showMapButtons(showControls, mMapRelativeLayout);
 
         if (null != mMap) {
-            GeoEnvelope geoEnvelope = mFeature.getGeometry().getEnvelope();
+            GeoEnvelope geoEnvelope = mDocFeature.getGeometry().getEnvelope();
             mMap.zoomToExtent(geoEnvelope);
             mMap.addListener(this);
         }

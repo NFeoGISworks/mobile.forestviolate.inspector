@@ -101,7 +101,7 @@ public class FieldWorksCreatorActivity
     @Override
     protected void setControlViews()
     {
-        if (null != mNewFeature) {
+        if (null != mEditFeature) {
 
             mCreationPlace = (EditText) findViewById(R.id.creation_place);
             mRepresentative = (EditText) findViewById(R.id.representative);
@@ -150,7 +150,6 @@ public class FieldWorksCreatorActivity
             mContractDate = (DateTime) findViewById(R.id.contract_date);
             mContractDate.setPickerType(ConstantsUI.DATE);
             mContractDate.init(null, null, null);
-            mContractDate.setCurrentDate();
 
             mContractNumber = (EditText) findViewById(R.id.contract_number);
             mCuttingAreaCleanQuality = (EditText) findViewById(R.id.cutting_area_clean_quality);
@@ -172,6 +171,10 @@ public class FieldWorksCreatorActivity
             mInfringerOrganisationName = (EditText) findViewById(R.id.infringer_organisation_name);
             mInfringerFullName = (EditText) findViewById(R.id.infringer_full_name);
             mInfringerLivingPlace = (EditText) findViewById(R.id.infringer_living_place);
+
+            if (mIsNewTempFeature) {
+                mContractDate.setCurrentDate();
+            }
         }
     }
 
@@ -181,57 +184,57 @@ public class FieldWorksCreatorActivity
     {
         super.onCreate(savedInstanceState);
 
-        loadPhotoAttaches(mNewFeature);
+        loadPhotoAttaches(mEditFeature);
     }
 
 
     @Override
     protected void saveControlsToFeature()
     {
-        if (null == mNewFeature) {
+        if (null == mEditFeature) {
             return;
         }
 
         super.saveControlsToFeature();
 
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_PLACE, mCreationPlace.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_USER_TRANS, mRepresentative.getText().toString());
 
         if (null != mFieldWorkTypeSpinner) {
-            mNewFeature.setFieldValue(
+            mEditFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE,
                     mFieldWorkTypeSpinner.getSelectedItem().toString());
         }
 
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_USER_PICK, mContract.getText().toString());
 
         if (null != mContractTypeSpinner) {
-            mNewFeature.setFieldValue(
+            mEditFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_DATE_VIOLATE, // not DATE, is String
                     mContractTypeSpinner.getSelectedItem().toString());
         }
 
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_CONTRACT_DATE, mContractDate.getValue());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_LAW, mContractNumber.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DESC_DETECTOR,
                 mCuttingAreaCleanQuality.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DESC_AUTHOR,
                 mCuttingAreaCultivationQuality.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_VIOLATION_TYPE, mViolation.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DESC_CRIME,
                 mInfringerOrganisationName.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_CRIME, mInfringerFullName.getText().toString());
-        mNewFeature.setFieldValue(
+        mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_DESCRIPTION, mInfringerLivingPlace.getText().toString());
     }
 
@@ -239,21 +242,21 @@ public class FieldWorksCreatorActivity
     @Override
     protected void restoreControlsFromFeature()
     {
-        if (null == mNewFeature) {
+        if (null == mEditFeature) {
             return;
         }
 
         super.restoreControlsFromFeature();
 
         mCreationPlace.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_PLACE));
         mRepresentative.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_TRANS));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_TRANS));
 
         ArrayAdapter<String> adapter;
         if (null != mFieldWorkTypeSpinner) {
             String data =
-                    (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
+                    (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
             adapter = (ArrayAdapter<String>) mFieldWorkTypeSpinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 String adapterVal = adapter.getItem(i);
@@ -265,11 +268,11 @@ public class FieldWorksCreatorActivity
         }
 
         mContract.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_USER_PICK));
 
         if (null != mContractTypeSpinner) {
             String data =
-                    (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE);
+                    (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE_VIOLATE);
             adapter = (ArrayAdapter<String>) mContractTypeSpinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 String adapterVal = adapter.getItem(i);
@@ -281,21 +284,21 @@ public class FieldWorksCreatorActivity
         }
 
         mContractDate.setValue(
-                mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CONTRACT_DATE));
+                mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CONTRACT_DATE));
         mContractNumber.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_LAW));
         mCuttingAreaCleanQuality.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_DETECTOR));
         mCuttingAreaCultivationQuality.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_AUTHOR));
         mViolation.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE));
         mInfringerOrganisationName.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESC_CRIME));
         mInfringerFullName.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_CRIME));
         mInfringerLivingPlace.setText(
-                (String) mNewFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION));
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DESCRIPTION));
     }
 
 
@@ -315,6 +318,7 @@ public class FieldWorksCreatorActivity
     private void fillPhotoTable()
     {
         Intent intent = new Intent(this, PhotoTableFillerActivity.class);
+        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivity(intent);
     }
 }

@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * ****************************************************************************
  * Copyright (c) 2015. NextGIS, info@nextgis.com
  *
@@ -38,11 +39,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
-import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
@@ -54,7 +53,6 @@ import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoMultiPolygon;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.datasource.GeoPolygon;
-import com.nextgis.maplib.datasource.ngw.SyncAdapter;
 import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.Constants;
@@ -71,9 +69,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by bishop on 02.12.15.
- */
+
 public class EditTerritoryOverlay extends Overlay implements MapViewEventListener {
 
 
@@ -102,24 +98,25 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
     protected final float mAnchorCenterX, mAnchorCenterY;
 
 
-    protected int             mMode;
+    protected int mMode;
 
     protected DrawItems mDrawItems;
 
     protected static final int mType = 7;
 
-    protected DocumentEditFeature mDocumentEditFeature;
+    protected DocumentEditFeature mEditFeature;
+    protected long                mEditFeatureId;
 
     /**
      * Store keys
      */
-    protected static final String BUNDLE_KEY_MODE          = "mode";
+    protected static final String BUNDLE_KEY_MODE = "mode";
 
     protected final float mTolerancePX;
     protected final float mAnchorTolerancePX;
 
     protected PointF mTempPointOffset;
-    protected boolean     mHasEdits;
+    protected boolean mHasEdits;
 
     protected BottomToolbar mCurrentToolbar;
 
@@ -128,8 +125,15 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
 
     protected WalkEditReceiver mReceiver;
 
-    public EditTerritoryOverlay(Context context, MapViewOverlays mapViewOverlays) {
+
+    public EditTerritoryOverlay(
+            Context context,
+            MapViewOverlays mapViewOverlays,
+            long editFeatureId)
+    {
         super(context, mapViewOverlays);
+
+        mEditFeatureId = editFeatureId;
 
         mMode = MODE_NONE;
 
@@ -140,12 +144,13 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        mFillColor = Color.MAGENTA;//ThemeUtils.getThemeAttrColor(mContext, com.nextgis.maplibui.R.attr.colorAccent);
+        mFillColor =
+                Color.MAGENTA;//ThemeUtils.getThemeAttrColor(mContext, com.nextgis.maplibui.R.attr.colorAccent);
         mOutlineColor = Color.BLACK;
         mSelectColor = Color.RED;
 
-        mAnchor =
-                BitmapFactory.decodeResource(mContext.getResources(), com.nextgis.maplibui.R.drawable.ic_action_anchor);
+        mAnchor = BitmapFactory.decodeResource(
+                mContext.getResources(), com.nextgis.maplibui.R.drawable.ic_action_anchor);
         mAnchorRectOffsetX = -mAnchor.getWidth() * 0.05f;
         mAnchorRectOffsetY = -mAnchor.getHeight() * 0.05f;
         mAnchorCenterX = mAnchor.getWidth() * 0.75f;
@@ -160,15 +165,17 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
 
     }
 
+
     public boolean setMode(int mode)
     {
         Activity parent = (Activity) mContext;
         MainApplication app = (MainApplication) parent.getApplication();
-        mDocumentEditFeature = app.getTempFeature();
-        fillDrawItems(mDocumentEditFeature.getGeometry());
-        
+        mEditFeature = app.getEditFeature(mEditFeatureId);
+
+        fillDrawItems(mEditFeature.getGeometry());
+
         if (mode == MODE_EDIT) {
-            
+
             for (EditEventListener listener : mListeners) {
                 listener.onStartEditSession();
             }
@@ -178,7 +185,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         } else if (mode == MODE_NONE) {
             mDrawItems.setSelectedPointIndex(Constants.NOT_FOUND);
             mDrawItems.setSelectedRing(Constants.NOT_FOUND);
-            mDocumentEditFeature = null;
+            mEditFeature = null;
             mMapViewOverlays.postInvalidate();
         } else if (mode == MODE_HIGHLIGHT) {
             mDrawItems.setSelectedPointIndex(Constants.NOT_FOUND);
@@ -196,9 +203,12 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         return true;
     }
 
-    public int getMode() {
+
+    public int getMode()
+    {
         return mMode;
     }
+
 
     @Override
     public void draw(
@@ -206,11 +216,11 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             MapDrawable mapDrawable)
     {
 
-        if (null == mDocumentEditFeature || mMode == MODE_CHANGE) {
+        if (null == mEditFeature || mMode == MODE_CHANGE) {
             return;
         }
 
-        GeoGeometry geom = mDocumentEditFeature.getGeometry();
+        GeoGeometry geom = mEditFeature.getGeometry();
         if (null == geom) {
             return;
         }
@@ -355,7 +365,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             PointF currentMouseOffset)
     {
 
-        if (null == mDocumentEditFeature || null == mDocumentEditFeature.getGeometry()) {
+        if (null == mEditFeature || null == mEditFeature.getGeometry()) {
             return;
         }
 
@@ -364,7 +374,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             drawItems = mDrawItems.pan(currentMouseOffset);
         }
 
-        switch (mDocumentEditFeature.getGeometry().getType()) {
+        switch (mEditFeature.getGeometry().getType()) {
             case GeoConstants.GTPoint:
             case GeoConstants.GTMultiPoint:
                 drawItems.drawPoints(canvas);
@@ -389,13 +399,13 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             PointF currentFocusLocation,
             float scale)
     {
-        if (null == mDocumentEditFeature || null == mDocumentEditFeature.getGeometry()) {
+        if (null == mEditFeature || null == mEditFeature.getGeometry()) {
             return;
         }
 
         DrawItems drawItems = mDrawItems.zoom(currentFocusLocation, scale);
 
-        switch (mDocumentEditFeature.getGeometry().getType()) {
+        switch (mEditFeature.getGeometry().getType()) {
             case GeoConstants.GTPoint:
             case GeoConstants.GTMultiPoint:
                 drawItems.drawPoints(canvas);
@@ -493,14 +503,14 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         setHasEdits(true);
 
         mDrawItems.setSelectedPoint(x, y);
-        mDrawItems.fillGeometry(0, mDocumentEditFeature.getGeometry(), mMapViewOverlays.getMap());
+        mDrawItems.fillGeometry(0, mEditFeature.getGeometry(), mMapViewOverlays.getMap());
 
         updateMap();
     }
 
     protected void fillGeometry(){
         MapDrawable mapDrawable = mMapViewOverlays.getMap();
-        mDrawItems.fillGeometry(0, mDocumentEditFeature.getGeometry(), mapDrawable);
+        mDrawItems.fillGeometry(0, mEditFeature.getGeometry(), mapDrawable);
     }
 
     public void setToolbar(final BottomToolbar toolbar)
@@ -541,7 +551,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem)
                             {
-                                if (null == mDocumentEditFeature) {
+                                if (null == mEditFeature) {
                                     return false;
                                 }
 
@@ -622,7 +632,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
 
 
     protected boolean isItemValid() {
-        return null != mDocumentEditFeature && null != mDocumentEditFeature.getGeometry();
+        return null != mEditFeature && null != mEditFeature.getGeometry();
     }
 
 
@@ -633,7 +643,9 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         setHasEdits(true);
 
         mDrawItems.deleteSelectedRing();
-        mDocumentEditFeature.setGeometry(mDrawItems.fillGeometry(0, mDocumentEditFeature.getGeometry(), mMapViewOverlays.getMap()));
+        mEditFeature.setGeometry(
+                mDrawItems.fillGeometry(
+                        0, mEditFeature.getGeometry(), mMapViewOverlays.getMap()));
 
         if (mDrawItems.mDrawItemsVertex.size() <= 0)
             mDrawItems.clear();
@@ -651,11 +663,11 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         mDrawItems.deleteSelectedPoint();
 
         GeoGeometry geom = mDrawItems.fillGeometry(
-                0, mDocumentEditFeature.getGeometry(), mMapViewOverlays.getMap());
+                0, mEditFeature.getGeometry(), mMapViewOverlays.getMap());
         setHasEdits(geom != null);
 
         if (null == geom) {
-            mDocumentEditFeature.setGeometry(null);
+            mEditFeature.setGeometry(null);
         }
 
         updateMap();
@@ -682,7 +694,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
             addGeometryToExistent(geometryType, center);
 
         //set new coordinates to GeoPoint from screen coordinates
-        mDrawItems.fillGeometry(0, mDocumentEditFeature.getGeometry(), mapDrawable);
+        mDrawItems.fillGeometry(0, mEditFeature.getGeometry(), mapDrawable);
         updateMap();
         return true;
     }
@@ -711,22 +723,22 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
     protected void createNewGeometry(int geometryType, GeoPoint center) {
         switch (geometryType) {
             case GeoConstants.GTPoint:
-                mDocumentEditFeature.setGeometry(new GeoPoint());
+                mEditFeature.setGeometry(new GeoPoint());
                 break;
             case GeoConstants.GTMultiPoint:
-                mDocumentEditFeature.setGeometry(new GeoMultiPoint());
+                mEditFeature.setGeometry(new GeoMultiPoint());
                 break;
             case GeoConstants.GTLineString:
-                mDocumentEditFeature.setGeometry(new GeoLineString());
+                mEditFeature.setGeometry(new GeoLineString());
                 break;
             case GeoConstants.GTMultiLineString:
-                mDocumentEditFeature.setGeometry(new GeoMultiLineString());
+                mEditFeature.setGeometry(new GeoMultiLineString());
                 break;
             case GeoConstants.GTPolygon:
-                mDocumentEditFeature.setGeometry(new GeoPolygon());
+                mEditFeature.setGeometry(new GeoPolygon());
                 break;
             case GeoConstants.GTMultiPolygon:
-                mDocumentEditFeature.setGeometry(new GeoMultiPolygon());
+                mEditFeature.setGeometry(new GeoMultiPolygon());
                 break;
         }
 
@@ -797,9 +809,9 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         double dMaxY = y + mTolerancePX;
         GeoEnvelope screenEnv = new GeoEnvelope(dMinX, dMaxX, dMinY, dMaxY);
 
-        if(null != mDocumentEditFeature && null != mDocumentEditFeature.getGeometry()) {
+        if(null != mEditFeature && null != mEditFeature.getGeometry()) {
             //1. search current geometry point
-            if (mDrawItems.intersects(screenEnv, mDocumentEditFeature.getGeometry(), mMapViewOverlays.getMap())) {
+            if (mDrawItems.intersects(screenEnv, mEditFeature.getGeometry(), mMapViewOverlays.getMap())) {
                 if (mMode == MODE_HIGHLIGHT) { // highlight same geometry
                     mDrawItems.setSelectedPointIndex(Constants.NOT_FOUND);
                     mDrawItems.setSelectedRing(Constants.NOT_FOUND);
@@ -821,7 +833,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
     {
         if (mMode == MODE_EDIT) {
 
-            if (null != mDocumentEditFeature && null != mDocumentEditFeature.getGeometry()) {
+            if (null != mEditFeature && null != mEditFeature.getGeometry()) {
 
                 //check if we are near selected point
                 double dMinX = event.getX() - mTolerancePX * 2 - mAnchorTolerancePX;
@@ -860,17 +872,17 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
 
             setHasEdits(true);
             mMode = MODE_EDIT;
-            mDrawItems.fillGeometry(0, mDocumentEditFeature.getGeometry(), mMapViewOverlays.getMap());
+            mDrawItems.fillGeometry(0, mEditFeature.getGeometry(), mMapViewOverlays.getMap());
             updateMap(); // redraw the map
         }
     }
 
     protected void startGeometryByWalk()
     {
-        GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mDocumentEditFeature.getGeometry();
+        GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mEditFeature.getGeometry();
         if(null == multiPolygon) {
             multiPolygon = new GeoMultiPolygon();
-            mDocumentEditFeature.setGeometry(multiPolygon);
+            mEditFeature.setGeometry(multiPolygon);
         }
 
         // register broadcast events
@@ -883,7 +895,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         Intent trackerService = new Intent(mContext, WalkEditService.class);
         trackerService.setAction(WalkEditService.ACTION_START);
         trackerService.putExtra(ConstantsUI.KEY_GEOMETRY_TYPE, GeoConstants.GTPolygon);
-        DocumentsLayer layer = mDocumentEditFeature.getDocumentsLayer();
+        DocumentsLayer layer = mEditFeature.getDocumentsLayer();
         if(null != layer)
             trackerService.putExtra(ConstantsUI.KEY_LAYER_ID, layer.getId());
         trackerService.putExtra(ConstantsUI.TARGET_CLASS, mContext.getClass().getName());
@@ -909,9 +921,9 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         @Override
         public void onReceive(Context context, Intent intent) {
             GeoGeometry geometry = (GeoGeometry) intent.getSerializableExtra(ConstantsUI.KEY_GEOMETRY);
-            GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mDocumentEditFeature.getGeometry();
+            GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mEditFeature.getGeometry();
             multiPolygon.set(0, geometry);
-            mDocumentEditFeature.setGeometry(multiPolygon);
+            mEditFeature.setGeometry(multiPolygon);
             mMapViewOverlays.postInvalidate();
         }
     }
@@ -924,11 +936,11 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
 
     protected boolean isCurrentGeometryValid()
     {
-        if (null == mDocumentEditFeature || null == mDocumentEditFeature.getGeometry()) {
+        if (null == mEditFeature || null == mEditFeature.getGeometry()) {
             return false;
         }
 
-        GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mDocumentEditFeature.getGeometry();
+        GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mEditFeature.getGeometry();
         for (int i = 0; i < multiPolygon.size(); i++) {
             GeoPolygon subPolygon = multiPolygon.get(i);
             if (subPolygon.getOuterRing().getPointCount() > 2) {
@@ -1147,8 +1159,8 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                     canvas.drawLine(itemsVertex[i], itemsVertex[i + 1], itemsVertex[i + 2], itemsVertex[i + 3], mPaint);
                 }
 
-                if (mDocumentEditFeature.getGeometry().getType() == GeoConstants.GTPolygon ||
-                        mDocumentEditFeature.getGeometry().getType() == GeoConstants.GTMultiPolygon) {
+                if (mEditFeature.getGeometry().getType() == GeoConstants.GTPolygon ||
+                        mEditFeature.getGeometry().getType() == GeoConstants.GTMultiPolygon) {
                     if (itemsVertex.length >= 2) {
                         canvas.drawLine(
                                 itemsVertex[0], itemsVertex[1], itemsVertex[itemsVertex.length - 2],

@@ -56,17 +56,19 @@ import java.util.Map;
  * The tabbed view with document contents. The tab list consist of document type.
  */
 public class DocumentViewActivity extends FIActivity implements  IDocumentFeatureSource{
-    protected ViewPager mViewPager;
+    protected ViewPager            mViewPager;
     protected SectionsPagerAdapter mSectionsPagerAdapter;
-    protected DocumentFeature mFeature;
+    protected DocumentFeature      mDocFeature;
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         // get document from id
         DocumentsLayer docs = DocumentEditFeature.getDocumentsLayer();
-        if(null == docs){
+        if (null == docs) {
             setContentView(R.layout.activity_document_noview);
             setToolbar(R.id.main_toolbar);
             return;
@@ -74,15 +76,15 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
 
         Bundle b = getIntent().getExtras();
         long id = b.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
-        mFeature = docs.getFeature(id);
-        if(null == mFeature){
+        mDocFeature = docs.getFeatureWithAttaches(id);
+        if (null == mDocFeature) {
             setContentView(R.layout.activity_document_noview);
             setToolbar(R.id.main_toolbar);
             return;
         }
 
         int nType;
-        switch (mFeature.getFieldValueAsInteger(Constants.FIELD_DOCUMENTS_TYPE)){
+        switch (mDocFeature.getFieldValueAsInteger(Constants.FIELD_DOCUMENTS_TYPE)) {
             case Constants.DOC_TYPE_INDICTMENT:
                 nType = Constants.DOC_TYPE_INDICTMENT;
                 setTitle(getString(R.string.indictment));
@@ -104,8 +106,8 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
 
         setContentView(R.layout.activity_document_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        String sNum = mFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);
-        Date date = (Date) mFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
+        String sNum = mDocFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);
+        Date date = (Date) mDocFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
         String sDate = DateFormat.getDateInstance().format(date);
         toolbar.setSubtitle(sNum + " " + getString(R.string.on) + " " + sDate);
         toolbar.getBackground().setAlpha(getToolbarAlpha());
@@ -138,7 +140,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
 
     @Override
     public DocumentFeature getFeature() {
-        return mFeature;
+        return mDocFeature;
     }
 
     protected class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -158,7 +160,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     mTabFragmentList.add(indictmentViewFragment);
 
                     // sheet
-                    if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0) {
+                    if (mDocFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0) {
                         SheetListViewerFragment sheetListViewerFragment =
                                 new SheetListViewerFragment();
                         sheetListViewerFragment.setName(getString(R.string.sheet_tab_name));
@@ -166,7 +168,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     }
 
                     // production
-                    if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_PRODUCTION) > 0) {
+                    if (mDocFeature.getSubFeaturesCount(Constants.KEY_LAYER_PRODUCTION) > 0) {
                         ProductionListViewerFragment productionListViewerFragment =
                                 new ProductionListViewerFragment();
                         productionListViewerFragment.setName(
@@ -175,17 +177,17 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     }
 
                     // vehicle
-                    if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_VEHICLES) > 0) {
+                    if (mDocFeature.getSubFeaturesCount(Constants.KEY_LAYER_VEHICLES) > 0) {
                         VehicleViewFragment vehicleViewFragment = new VehicleViewFragment();
                         vehicleViewFragment.setName(getString(R.string.vehicle_tab_name));
                         mTabFragmentList.add(vehicleViewFragment);
                     }
 
                     // photo table
-                    if (mFeature.getAttachments() != null && mFeature.getAttachments().size() > 0) {
+                    if (mDocFeature.getAttachments() != null && mDocFeature.getAttachments().size() > 0) {
                         // filter of a signature
                         int photosCount = 0;
-                        for (Map.Entry<String, AttachItem> entry : mFeature.getAttachments()
+                        for (Map.Entry<String, AttachItem> entry : mDocFeature.getAttachments()
                                 .entrySet()) {
                             AttachItem attachItem = entry.getValue();
                             if (attachItem.getDisplayName().equals(Constants.SIGN_FILENAME)) {
@@ -197,7 +199,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                         if (photosCount > 0) {
                             PhotoTableFragment photoTableFragment = new PhotoTableFragment();
                             photoTableFragment.setName(getString(R.string.photo_table_tab_name));
-                            photoTableFragment.setDocumentsLayerPathName(docs.getPath().getName());
+                            photoTableFragment.setIsPhotoTableViewer(true);
                             mTabFragmentList.add(photoTableFragment);
                         }
                     }
@@ -211,7 +213,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     mTabFragmentList.add(sheetViewFragment);
 
                     // sheet
-                    if (mFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0) {
+                    if (mDocFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) > 0) {
                         SheetListViewerFragment sheetListViewerFragment =
                                 new SheetListViewerFragment();
                         sheetListViewerFragment.setName(getString(R.string.sheet_tab_name));
@@ -228,10 +230,10 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     mTabFragmentList.add(fieldWorksViewFragment);
 
                     // photo table
-                    if (mFeature.getAttachments() != null && mFeature.getAttachments().size() > 0) {
+                    if (mDocFeature.getAttachments() != null && mDocFeature.getAttachments().size() > 0) {
                         // filter of a signature
                         int photosCount = 0;
-                        for (Map.Entry<String, AttachItem> entry : mFeature.getAttachments()
+                        for (Map.Entry<String, AttachItem> entry : mDocFeature.getAttachments()
                                 .entrySet()) {
                             AttachItem attachItem = entry.getValue();
                             if (attachItem.getDisplayName().equals(Constants.SIGN_FILENAME)) {
@@ -243,7 +245,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                         if (photosCount > 0) {
                             PhotoTableFragment photoTableFragment = new PhotoTableFragment();
                             photoTableFragment.setName(getString(R.string.photo_table_tab_name));
-                            photoTableFragment.setDocumentsLayerPathName(docs.getPath().getName());
+                            photoTableFragment.setIsPhotoTableViewer(true);
                             mTabFragmentList.add(photoTableFragment);
                         }
                     }

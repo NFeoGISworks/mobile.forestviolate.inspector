@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -27,7 +28,6 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.activity.SelectTerritoryActivity;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
@@ -38,22 +38,45 @@ import com.nextgis.maplibui.api.EditEventListener;
 import com.nextgis.maplibui.fragment.BottomToolbar;
 import com.nextgis.maplibui.util.ConstantsUI;
 
-/**
- * Created by bishop on 02.08.15.
- */
+
 public class MapEditFragment
-        extends MapFragment implements EditEventListener {
+        extends MapFragment
+        implements EditEventListener
+{
+    protected DocumentEditFeature mEditFeature;
 
     protected EditTerritoryOverlay mTerritoryOverlay;
-    protected float mTolerancePX;
+    protected float                mTolerancePX;
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        Bundle extras = getActivity().getIntent().getExtras();
+
+        if (null != extras && extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+            long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+
+            MainApplication app = (MainApplication) getActivity().getApplication();
+            mEditFeature = app.getEditFeature(featureId);
+        }
+    }
+
+
+    @Override
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
+    {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        mTolerancePX = getActivity().getResources().getDisplayMetrics().density * ConstantsUI.TOLERANCE_DP;
+        mTolerancePX =
+                getActivity().getResources().getDisplayMetrics().density * ConstantsUI.TOLERANCE_DP;
 
-        mTerritoryOverlay = new EditTerritoryOverlay(getActivity(), mMap);
+        mTerritoryOverlay = new EditTerritoryOverlay(getActivity(), mMap, mEditFeature.getId());
         mMap.addOverlay(mTerritoryOverlay);
 
         mTerritoryOverlay.addListener(this);
@@ -61,15 +84,19 @@ public class MapEditFragment
         return view;
     }
 
-    public void updateTerritory(GeoGeometry geometry) {
-        if(null != geometry) {
+
+    public void updateTerritory(GeoGeometry geometry)
+    {
+        if (null != geometry) {
             mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_HIGHLIGHT);
             zoomToExtent(geometry.getEnvelope());
             storeMapSettings();
         }
     }
 
-    public void addByHand() {
+
+    public void addByHand()
+    {
         SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
         View mainButton = activity.getFAB();
         if (null != mainButton) {
@@ -88,16 +115,19 @@ public class MapEditFragment
         mTerritoryOverlay.setToolbar(toolbar);
     }
 
+
     @Override
-    public void onStartEditSession() {
+    public void onStartEditSession()
+    {
 
     }
 
+
     @Override
-    public void onFinishEditSession() {
-        if(mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_NONE ||
-                mTerritoryOverlay.getMode() ==  EditTerritoryOverlay.MODE_HIGHLIGHT)
-            return;
+    public void onFinishEditSession()
+    {
+        if (mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_NONE
+                || mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_HIGHLIGHT) { return; }
 
         SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
         final BottomToolbar toolbar = activity.getBottomToolbar();
@@ -116,7 +146,9 @@ public class MapEditFragment
         mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_HIGHLIGHT);
     }
 
-    public void addByWalk() {
+
+    public void addByWalk()
+    {
         SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
         View mainButton = activity.getFAB();
         if (null != mainButton) {
@@ -137,7 +169,8 @@ public class MapEditFragment
 
 
     @Override
-    public void onLongPress(MotionEvent event) {
+    public void onLongPress(MotionEvent event)
+    {
         if (mTerritoryOverlay.getMode() != EditTerritoryOverlay.MODE_HIGHLIGHT) {
             return;
         }
@@ -152,16 +185,11 @@ public class MapEditFragment
             return;
         }
 
-        MainApplication app = (MainApplication) getActivity().getApplication();
-        if(null == app)
-            return;
-        DocumentEditFeature documentFeature = app.getTempFeature();
-        if(null == documentFeature)
-            return;
-
-        GeoGeometry geometry = documentFeature.getGeometry();
-        if (geometry.intersects(mapEnv)) {
-            addByHand();
+        if (null != mEditFeature) {
+            GeoGeometry geometry = mEditFeature.getGeometry();
+            if (geometry.intersects(mapEnv)) {
+                addByHand();
+            }
         }
     }
 }

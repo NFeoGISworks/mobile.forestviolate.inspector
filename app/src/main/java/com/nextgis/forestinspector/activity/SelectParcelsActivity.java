@@ -56,8 +56,8 @@ public class SelectParcelsActivity
 
     protected ListView            mListView;
     protected ParcelCursorAdapter mAdapter;
-    protected DocumentEditFeature mDocumentFeature;
-    protected boolean mFiltered     = false;
+    protected DocumentEditFeature mEditFeature;
+    protected boolean mFiltered = false;
 
 
     @Override
@@ -65,17 +65,23 @@ public class SelectParcelsActivity
     {
         super.onCreate(savedInstanceState);
 
-        MainApplication app = (MainApplication) getApplication();
-        mDocumentFeature = app.getTempFeature();
+        Bundle extras = getIntent().getExtras();
 
-        setContentView(R.layout.activity_select_territory_form_cadastre);
-        setToolbar(R.id.main_toolbar);
+        if (null != extras && extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+            long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
 
-        mListView = (ListView) findViewById(R.id.parcelsList);
-        mAdapter = new ParcelCursorAdapter(this, null, 0, mDocumentFeature);
-        mListView.setAdapter(mAdapter);
+            MainApplication app = (MainApplication) getApplication();
+            mEditFeature = app.getEditFeature(featureId);
 
-        handleIntent(getIntent());
+            setContentView(R.layout.activity_select_territory_form_cadastre);
+            setToolbar(R.id.main_toolbar);
+
+            mListView = (ListView) findViewById(R.id.parcelsList);
+            mAdapter = new ParcelCursorAdapter(this, null, 0, mEditFeature);
+            mListView.setAdapter(mAdapter);
+
+            handleIntent(getIntent());
+        }
     }
 
 
@@ -97,8 +103,8 @@ public class SelectParcelsActivity
             String query = intent.getStringExtra(SearchManager.QUERY);
             //use the query to search your data
             String fullQuery = Constants.FIELD_CADASTRE_LV + " LIKE '%" + query + "%' OR " +
-                               Constants.FIELD_CADASTRE_ULV + " LIKE '%" + query + "%' OR " +
-                               Constants.FIELD_CADASTRE_PARCEL + " LIKE '%" + query + "%'";
+                    Constants.FIELD_CADASTRE_ULV + " LIKE '%" + query + "%' OR " +
+                    Constants.FIELD_CADASTRE_PARCEL + " LIKE '%" + query + "%'";
 
             bundle = new Bundle();
             bundle.putString(KEY_QUERY, fullQuery);
@@ -175,7 +181,7 @@ public class SelectParcelsActivity
 
         if (id == R.id.action_filter) {
             if (!mFiltered) {
-                String fullQuery = mDocumentFeature.getWhereClauseForParcelIds();
+                String fullQuery = mEditFeature.getWhereClauseForParcelIds();
                 Bundle bundle = new Bundle();
                 bundle.putString(KEY_QUERY, fullQuery);
                 getSupportLoaderManager().restartLoader(0, bundle, this);

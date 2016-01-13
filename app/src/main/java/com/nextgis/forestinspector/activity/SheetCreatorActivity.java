@@ -74,7 +74,7 @@ public class SheetCreatorActivity
     @Override
     protected void setControlViews()
     {
-        if (null != mNewFeature) {
+        if (null != mEditFeature) {
 
             Button createSheetBtn = (Button) findViewById(R.id.create_sheet);
             createSheetBtn.setOnClickListener(

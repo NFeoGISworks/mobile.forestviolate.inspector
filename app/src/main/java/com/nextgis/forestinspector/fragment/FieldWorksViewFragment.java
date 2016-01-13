@@ -153,7 +153,7 @@ public class FieldWorksViewFragment
                         Uri attachUri = Uri.parse(
                                 "content://" + SettingsConstants.AUTHORITY + "/" +
                                 Constants.KEY_LAYER_DOCUMENTS + "/" + feature.getId() + "/" +
-                                "attach" + "/" + aid);
+                                com.nextgis.maplib.util.Constants.URI_ATTACH + "/" + aid);
 
                         Cursor cursor = getActivity().getContentResolver().query(
                                 attachUri, new String[] {VectorLayer.ATTACH_DATA}, null, null,
