@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,10 +47,7 @@ import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplibui.control.DateTime;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Calendar;
-
-import static com.nextgis.maplib.util.Constants.TAG;
 
 
 public abstract class DocumentCreatorActivity
@@ -334,51 +330,6 @@ public abstract class DocumentCreatorActivity
         int month = c.get(Calendar.MONTH) + 1;
 
         return passId + "/" + month + "-" + year;
-    }
-
-
-    protected void loadPhotoAttaches(DocumentEditFeature feature)
-    {
-        if (null == feature) {
-            return;
-        }
-
-        feature.clearAttachments();
-
-        MainApplication app = (MainApplication) getApplicationContext();
-        File photoDir = app.getDocFeatureFolder();
-
-        if (!photoDir.isDirectory()) {
-            throw new IllegalArgumentException("photoDir is not directory");
-        }
-
-        File[] photoFiles = photoDir.listFiles(
-                new FilenameFilter()
-                {
-                    @Override
-                    public boolean accept(
-                            final File dir,
-                            final String name)
-                    {
-                        Log.d(
-                                TAG, "loadPhotoAttaches(), FilenameFilter, dir: " +
-                                        dir.getAbsolutePath() + ", name: " + name);
-
-                        if (name.matches(".*\\.jpg")) {
-                            Log.d(
-                                    TAG,
-                                    "loadPhotoAttaches(), FilenameFilter, name.matches: " + true);
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                });
-
-        for (File photoFile : photoFiles) {
-            AttachItem photoAttach = new AttachItem("-1", photoFile.getName(), "image/jpeg", "");
-            feature.addAttachment(photoAttach);
-        }
     }
 
 

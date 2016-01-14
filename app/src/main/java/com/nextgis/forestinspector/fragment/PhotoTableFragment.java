@@ -125,11 +125,11 @@ public class PhotoTableFragment
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         MainApplication app = (MainApplication) activity.getApplication();
-        DocumentsLayer docs = app.getDocsLayer();
+        mDocsLayer = app.getDocsLayer();
 
         Map<String, AttachItem> attaches;
         if (mIsPhotoTableViewer) {
-            DocumentFeature feature = docs.getFeatureWithAttaches(featureId);
+            DocumentFeature feature = mDocsLayer.getFeatureWithAttaches(featureId);
             attaches = feature.getAttachments();
         } else {
             mEditFeature = app.getEditFeature(featureId);
@@ -149,7 +149,7 @@ public class PhotoTableFragment
         }
 
         mPhotoTableAdapter = new PhotoTableCursorAdapter(
-                activity, docs, featureId, attaches, mIsPhotoViewer);
+                activity, mDocsLayer, featureId, attaches, mIsPhotoViewer);
     }
 
 
