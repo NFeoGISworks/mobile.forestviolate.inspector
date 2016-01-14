@@ -50,6 +50,7 @@ import com.nextgis.forestinspector.adapter.PhotoTableCursorAdapter;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.util.AttachItem;
 
 import java.io.File;
@@ -68,8 +69,9 @@ public class PhotoTableFragment
         implements PhotoTableAdapter.OnSelectionChangedListener,
                    ActionMode.Callback
 {
-    public static final String PHOTO_ITEM_KEY = "photo_item_key";
-    public static final String PHOTO_VIEWER   = "photo_viewer";
+    public static final String PHOTO_ITEM_KEY  = "photo_item_key";
+    public static final String PHOTO_VIEWER    = "photo_viewer";
+    public static final String TEMP_PHOTO_PATH = "temp_photo_path";
 
     protected static final int MIN_IMAGE_SIZE_DP      = 130;
     protected static final int CARD_VIEW_MARGIN_DP    = 8;
@@ -98,9 +100,14 @@ public class PhotoTableFragment
     protected boolean mIsPhotoTableViewer = false;
 
 
-    public void setIsPhotoTableViewer(boolean isPhotoTableViewer)
+    @Override
+    public void onSaveInstanceState(Bundle outState)
     {
-        mIsPhotoTableViewer = isPhotoTableViewer;
+        super.onSaveInstanceState(outState);
+
+        if (null != mEditFeature) {
+            outState.putString(TEMP_PHOTO_PATH, mTempPhotoPath);
+        }
     }
 
 
@@ -108,6 +115,10 @@ public class PhotoTableFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        if (null != savedInstanceState) {
+            mTempPhotoPath = savedInstanceState.getString(TEMP_PHOTO_PATH);
+        }
 
         if (null == getParentFragment()) {
             setRetainInstance(true);
@@ -121,6 +132,7 @@ public class PhotoTableFragment
         long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
         mIsPhotoViewer = extras.getBoolean(PHOTO_VIEWER);
         String photoItemKey = extras.getString(PHOTO_ITEM_KEY);
+        mIsPhotoTableViewer = extras.getBoolean(Constants.DOCUMENT_VIEWER);
 
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -339,10 +351,24 @@ public class PhotoTableFragment
 
         boolean res = mDocsLayer.insertAttachFile(featureId, attachId, tempPhotoFile);
 
+        if (res) {
+            res = saveTempEditFeature();
+        }
+
         if (res && null != mPhotoTableAdapter) {
             mPhotoTableAdapter.setAttachItems(mEditFeature.getAttachments());
             mPhotoTableAdapter.notifyDataSetChanged();
         }
+    }
+
+
+    protected boolean saveTempEditFeature()
+    {
+        if (null == mEditFeature) {
+            return true;
+        }
+
+        return (mDocsLayer.updateFeatureWithAttachesWithFlags(mEditFeature) > 0);
     }
 
 

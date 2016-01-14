@@ -222,4 +222,6 @@ public interface Constants
     int INDICTMENT_ACTIVITY  = 1101;
     int SHEET_ACTIVITY       = 1102;
     int FIELD_WORKS_ACTIVITY = 1103;
+
+    String DOCUMENT_VIEWER = "document_viewer";
 }

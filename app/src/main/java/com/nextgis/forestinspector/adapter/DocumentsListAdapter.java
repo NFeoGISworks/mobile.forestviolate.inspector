@@ -112,6 +112,7 @@ public class DocumentsListAdapter
                             if (item.isSigned) {
                                 //show documents viewer activity
                                 intent = new Intent(mContext, DocumentViewActivity.class);
+                                intent.putExtra(Constants.DOCUMENT_VIEWER, true);
                             } else {
                                 //show documents creator activity
                                 switch (item.mType) {

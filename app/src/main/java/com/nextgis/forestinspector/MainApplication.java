@@ -32,7 +32,6 @@ import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.map.FILayerFactory;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.FileUtil;
@@ -93,13 +92,15 @@ public class MainApplication
         }
 
         MapBase map = getMap();
-        for (int i = 0; i < map.getLayerCount(); i++) {
-            ILayer layer = map.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                mDocsLayer = (DocumentsLayer) layer;
-                break;
-            }
-        }
+        mDocsLayer = (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
+
+//        for (int i = 0; i < map.getLayerCount(); i++) {
+//            ILayer layer = map.getLayer(i);
+//            if (layer instanceof DocumentsLayer) {
+//                mDocsLayer = (DocumentsLayer) layer;
+//                break;
+//            }
+//        }
 
         return mDocsLayer;
     }

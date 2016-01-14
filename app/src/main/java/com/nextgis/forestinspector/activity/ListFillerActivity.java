@@ -70,7 +70,8 @@ public abstract class ListFillerActivity
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
 
-            ListFillerFragment fragment = (ListFillerFragment) fm.findFragmentByTag(getFragmentTag());
+            ListFillerFragment fragment =
+                    (ListFillerFragment) fm.findFragmentByTag(getFragmentTag());
 
             if (fragment == null) {
                 fragment = getListFillerFragment();

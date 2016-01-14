@@ -59,6 +59,8 @@ public abstract class DocumentCreatorActivity
     protected DocumentsLayer      mDocsLayer;
     protected DocumentEditFeature mEditFeature;
 
+    protected Long mRestoredFeatureId;
+
     protected String mUserDesc;
 
     protected EditText mDocNumber;
@@ -83,9 +85,25 @@ public abstract class DocumentCreatorActivity
 
 
     @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        if (null != mEditFeature) {
+            outState.putLong(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
+        }
+    }
+
+
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        if (null != savedInstanceState) {
+            mRestoredFeatureId =
+                    savedInstanceState.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+        }
 
         mApp = (MainApplication) getApplication();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -289,9 +307,12 @@ public abstract class DocumentCreatorActivity
         Bundle extras = getIntent().getExtras();
 
         Long featureId = null;
-        if (null != extras && extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+        if (null != mRestoredFeatureId) {
+            featureId = mRestoredFeatureId;
+        } else if (null != extras && extras.containsKey(
+                com.nextgis.maplib.util.Constants.FIELD_ID)) {
             featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
-        }
+        } // if featureId == null -- get new temp feature
 
         mEditFeature = mApp.getEditFeature(featureId);
 

@@ -29,8 +29,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.fragment.FieldWorksViewFragment;
 import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
@@ -55,10 +55,13 @@ import java.util.Map;
 /**
  * The tabbed view with document contents. The tab list consist of document type.
  */
-public class DocumentViewActivity extends FIActivity implements  IDocumentFeatureSource{
-    protected ViewPager            mViewPager;
+public class DocumentViewActivity
+        extends FIActivity
+        implements IDocumentFeatureSource
+{
+    protected ViewPager mViewPager;
     protected SectionsPagerAdapter mSectionsPagerAdapter;
-    protected DocumentFeature      mDocFeature;
+    protected DocumentFeature mDocFeature;
 
 
     @Override
@@ -67,19 +70,25 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
         super.onCreate(savedInstanceState);
 
         // get document from id
-        DocumentsLayer docs = DocumentEditFeature.getDocumentsLayer();
+
+        MainApplication app = (MainApplication) getApplication();
+        DocumentsLayer docs = app.getDocsLayer();
         if (null == docs) {
-            setContentView(R.layout.activity_document_noview);
-            setToolbar(R.id.main_toolbar);
+            setNoView();
             return;
         }
 
-        Bundle b = getIntent().getExtras();
-        long id = b.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+        Bundle extras = getIntent().getExtras();
+        if (null == extras || !extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)
+                || !extras.getBoolean(Constants.DOCUMENT_VIEWER)) {
+            setNoView();
+            return;
+        }
+
+        long id = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
         mDocFeature = docs.getFeatureWithAttaches(id);
         if (null == mDocFeature) {
-            setContentView(R.layout.activity_document_noview);
-            setToolbar(R.id.main_toolbar);
+            setNoView();
             return;
         }
 
@@ -126,7 +135,7 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        if(tabLayout.getTabCount() < mSectionsPagerAdapter.getCount()) {
+        if (tabLayout.getTabCount() < mSectionsPagerAdapter.getCount()) {
             // For each of the sections in the app, add a tab to the action bar.
             for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
                 // Create a tab with text corresponding to the page title defined by
@@ -138,16 +147,33 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
         }
     }
 
+
+    protected void setNoView()
+    {
+        setContentView(R.layout.activity_document_noview);
+        setToolbar(R.id.main_toolbar);
+    }
+
+
     @Override
-    public DocumentFeature getFeature() {
+    public DocumentFeature getFeature()
+    {
         return mDocFeature;
     }
 
-    protected class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+    protected class SectionsPagerAdapter
+            extends FragmentPagerAdapter
+    {
 
         protected List<TabFragment> mTabFragmentList;
 
-        public SectionsPagerAdapter(FragmentManager fm, int nType, DocumentsLayer docs) {
+
+        public SectionsPagerAdapter(
+                FragmentManager fm,
+                int nType,
+                DocumentsLayer docs)
+        {
             super(fm);
 
             mTabFragmentList = new ArrayList<>();
@@ -184,7 +210,8 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     }
 
                     // photo table
-                    if (mDocFeature.getAttachments() != null && mDocFeature.getAttachments().size() > 0) {
+                    if (mDocFeature.getAttachments() != null
+                            && mDocFeature.getAttachments().size() > 0) {
                         // filter of a signature
                         int photosCount = 0;
                         for (Map.Entry<String, AttachItem> entry : mDocFeature.getAttachments()
@@ -199,7 +226,6 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                         if (photosCount > 0) {
                             PhotoTableFragment photoTableFragment = new PhotoTableFragment();
                             photoTableFragment.setName(getString(R.string.photo_table_tab_name));
-                            photoTableFragment.setIsPhotoTableViewer(true);
                             mTabFragmentList.add(photoTableFragment);
                         }
                     }
@@ -230,7 +256,8 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                     mTabFragmentList.add(fieldWorksViewFragment);
 
                     // photo table
-                    if (mDocFeature.getAttachments() != null && mDocFeature.getAttachments().size() > 0) {
+                    if (mDocFeature.getAttachments() != null
+                            && mDocFeature.getAttachments().size() > 0) {
                         // filter of a signature
                         int photosCount = 0;
                         for (Map.Entry<String, AttachItem> entry : mDocFeature.getAttachments()
@@ -245,7 +272,6 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
                         if (photosCount > 0) {
                             PhotoTableFragment photoTableFragment = new PhotoTableFragment();
                             photoTableFragment.setName(getString(R.string.photo_table_tab_name));
-                            photoTableFragment.setIsPhotoTableViewer(true);
                             mTabFragmentList.add(photoTableFragment);
                         }
                     }
@@ -259,18 +285,24 @@ public class DocumentViewActivity extends FIActivity implements  IDocumentFeatur
             mTabFragmentList.add(mapViewFragment);
         }
 
+
         @Override
-        public Fragment getItem(int position) {
+        public Fragment getItem(int position)
+        {
             return mTabFragmentList.get(position);
         }
 
+
         @Override
-        public int getCount() {
+        public int getCount()
+        {
             return mTabFragmentList.size();
         }
 
+
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(int position)
+        {
             TabFragment fragment = mTabFragmentList.get(position);
             return fragment.getName();
         }

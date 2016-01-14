@@ -29,11 +29,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
 import com.nextgis.forestinspector.adapter.ListFillerAdapter;
 import com.nextgis.forestinspector.adapter.SimpleDividerItemDecoration;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
 
 
 public abstract class ListViewerFragment
@@ -65,15 +67,29 @@ public abstract class ListViewerFragment
         }
 
         Activity activity = getActivity();
+        Bundle extras = activity.getIntent().getExtras();
+        DocumentFeature documentFeature = null;
 
-        if (activity instanceof IDocumentFeatureSource) {
-            IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
-            DocumentFeature feature = documentFeatureSource.getFeature();
+        if (null != extras) {
+            if (extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+                long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+                boolean isDocViewer = extras.getBoolean(Constants.DOCUMENT_VIEWER);
 
-            if (null != feature) {
-                mAdapter = getFillerAdapter(feature);
-                mAdapter.setOnItemClickListener(this);
+                MainApplication app = (MainApplication) activity.getApplication();
+
+                if (isDocViewer) {
+                    DocumentsLayer docs = app.getDocsLayer();
+                    documentFeature = docs.getFeatureWithAttaches(featureId);
+                } else {
+                    documentFeature = app.getEditFeature(featureId);
+                }
+
             }
+        }
+
+        if (null != documentFeature) {
+            mAdapter = getFillerAdapter(documentFeature);
+            mAdapter.setOnItemClickListener(this);
         }
     }
 

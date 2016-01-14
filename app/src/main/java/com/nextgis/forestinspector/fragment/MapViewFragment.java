@@ -34,8 +34,9 @@ import android.widget.RelativeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoPoint;
@@ -70,6 +71,20 @@ public class MapViewFragment
         if (null == getParentFragment()) {
             setRetainInstance(true);
         }
+
+        Activity activity = getActivity();
+        Bundle extras = activity.getIntent().getExtras();
+
+        if (null == extras || !extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)
+                || !extras.getBoolean(Constants.DOCUMENT_VIEWER)) {
+            throw new RuntimeException("MapViewFragment, extras have not required data");
+        }
+
+        long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+
+        MainApplication app = (MainApplication) activity.getApplication();
+        DocumentsLayer docs = app.getDocsLayer();
+        mDocFeature = docs.getFeatureWithAttaches(featureId);
     }
 
 
@@ -83,14 +98,9 @@ public class MapViewFragment
         final View view = inflater.inflate(R.layout.fragment_map_view, container, false);
 
         Activity activity = getActivity();
-        if (activity instanceof IDocumentFeatureSource) {
-            IDocumentFeatureSource documentFeatureSource = (IDocumentFeatureSource) activity;
-            mDocFeature = documentFeatureSource.getFeature();
-        }
+        MainApplication app = (MainApplication) activity.getApplication();
 
-        MainApplication app = (MainApplication) getActivity().getApplication();
-
-        mMap = new MapViewOverlays(getActivity(), (MapDrawable) app.getMap());
+        mMap = new MapViewOverlays(activity, (MapDrawable) app.getMap());
         mMap.setId(999);
 
         //search relative view of map, if not found - add it
