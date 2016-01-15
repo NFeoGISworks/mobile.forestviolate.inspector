@@ -33,6 +33,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -125,11 +126,16 @@ public class SelectParcelsActivity
     {
         Uri uri = Uri.parse(
                 "content://" + SettingsConstants.AUTHORITY + "/" + Constants.KEY_LAYER_KV);
-        if (args == null) {
-            return new CursorLoader(this, uri, null, null, null, null);
-        } else {
-            return new CursorLoader(this, uri, null, " " + args.getString(KEY_QUERY), null, null);
+        String selection = null;
+
+        if (null != args && args.containsKey(KEY_QUERY)) {
+            String query = args.getString(KEY_QUERY);
+            if (!TextUtils.isEmpty(query)) {
+                selection = " " + query;
+            }
         }
+
+        return new CursorLoader(this, uri, null, selection, null, null);
     }
 
 
