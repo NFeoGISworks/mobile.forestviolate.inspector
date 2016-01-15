@@ -24,6 +24,8 @@ package com.nextgis.forestinspector.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
@@ -43,11 +45,17 @@ import com.nextgis.forestinspector.dialog.TargetingDialog;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
+import com.nextgis.maplib.datasource.GeoEnvelope;
+import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplib.datasource.GeoGeometryFactory;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplibui.control.DateTime;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
+
+import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
 
 
 public abstract class DocumentCreatorActivity
@@ -276,6 +284,7 @@ public abstract class DocumentCreatorActivity
                 Constants.FIELD_DOCUMENTS_AUTHOR, mAuthor.getText().toString());
         mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_TERRITORY, mTerritory.getText().toString());
+        setRegionFieldValue();
     }
 
 
@@ -404,6 +413,82 @@ public abstract class DocumentCreatorActivity
         if (requestCode == getActivityCode()) {
             mTerritory.setText(
                     mEditFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY));
+        }
+    }
+
+
+//    protected void setRegionFieldValue()
+//    {
+//        if (null == mEditFeature.getGeometry()) {
+//            return;
+//        }
+//
+//        GeoEnvelope env = mEditFeature.getGeometry().getEnvelope();
+//
+//        Uri uri = Uri.parse(
+//                "content://" + mApp.getAuthority() + "/" + Constants.KEY_LAYER_FV_REGIONS);
+//        uri = uri.buildUpon()
+//                .appendQueryParameter(com.nextgis.maplib.util.Constants.URI_PARAMETER_LIMIT, "1")
+//                .build();
+//
+//        String selection = String.format(
+//                Locale.US, "bbox=[%f,%f,%f,%f]", env.getMinX(), env.getMinY(), env.getMaxX(),
+//                env.getMaxY());
+//
+//        String[] columns = new String[] {Constants.FIELD_REGIONS_NAME_EN};
+//
+//        Cursor cursor = mApp.getContentResolver().query(uri, columns, selection, null, null);
+//
+//        if (null != cursor) {
+//            if (cursor.moveToFirst()) {
+//                String regionName = cursor.getString(0);
+//                mEditFeature.setFieldValue(Constants.FIELD_DOCUMENTS_REGION, regionName);
+//            }
+//            cursor.close();
+//        }
+//    }
+
+
+    protected void setRegionFieldValue()
+    {
+        if (null == mEditFeature.getGeometry()) {
+            return;
+        }
+
+        GeoEnvelope env = mEditFeature.getGeometry().getEnvelope();
+
+        Uri uri = Uri.parse(
+                "content://" + mApp.getAuthority() + "/" + Constants.KEY_LAYER_FV_REGIONS);
+
+        String[] columns = new String[] { Constants.FIELD_REGIONS_NAME_EN, FIELD_GEOM};
+
+        Cursor cursor = mApp.getContentResolver().query(uri, columns, null, null, null);
+
+        if (null != cursor) {
+            if (cursor.moveToFirst()) {
+                do {
+                    GeoGeometry geom = null;
+
+                    try {
+                        geom = GeoGeometryFactory.fromBlob(
+                                cursor.getBlob(cursor.getColumnIndex(FIELD_GEOM)));
+
+
+                    } catch (IOException | ClassNotFoundException e) {
+                        //e.printStackTrace();
+                    }
+
+//                    if (null != geom && geom.getEnvelope().intersects(env)) {
+                    if (null != geom && geom.getEnvelope().contains(env)) {
+                        String regionName =
+                                cursor.getString(cursor.getColumnIndex(Constants.FIELD_REGIONS_NAME_EN));
+                        mEditFeature.setFieldValue(Constants.FIELD_DOCUMENTS_REGION, regionName);
+                        break;
+                    }
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
         }
     }
 

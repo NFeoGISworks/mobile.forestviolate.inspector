@@ -47,6 +47,7 @@
     <string name="load_linked_layers">Load linked layers</string>
     <string name="load_notes">Load notes</string>
     <string name="load_targeting">Load targeting</string>
+    <string name="load_regions">Load regions</string>
     <string name="connecting">Connecting to server…</string>
     <string name="connected">Connected</string>
     <string name="check_tables_exist">Check tables exist</string>
@@ -77,6 +78,7 @@
     <string name="sheet_item_name">Sheet</string>
     <string name="notes">Notes</string>
     <string name="targeting">Targeting</string>
+    <string name="regions">Regions</string>
     <string name="targeting_selection">Targeting selection</string>
     <string name="note_title">Note</string>
     <string name="note_changing_title">Note changing</string>

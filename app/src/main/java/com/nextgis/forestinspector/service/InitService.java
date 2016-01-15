@@ -257,6 +257,7 @@ public class InitService extends Service {
             keys.put(Constants.KEY_FIELDWORK_TYPES, -1L);
             keys.put(Constants.KEY_CONTRACT_TYPES, -1L);
             keys.put(Constants.KEY_FV, -1L);
+            keys.put(Constants.KEY_FV_REGIONS, -1L);
 
             if(!checkServerLayers(connection, keys)){
                 publishProgress(getString(R.string.error_wrong_server), Constants.STEP_STATE_ERROR);
@@ -348,7 +349,7 @@ public class InitService extends Service {
 
             mStep = 5;
             int nSubStep = 1;
-            int nTotalSubSteps = 7;
+            int nTotalSubSteps = 9;
             DocumentsLayer documentsLayer = null;
 
             for(int i = 0; i < map.getLayerCount(); i++){
@@ -515,7 +516,7 @@ public class InitService extends Service {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
-            // step 8: load notes
+            // step 8: forest violation targeting
 
             mStep = 7;
 
@@ -529,11 +530,25 @@ public class InitService extends Service {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
+            // step 9: regions
+
+            mStep = 8;
+
+            publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
+
+            if (!loadRegions(keys.get(Constants.KEY_FV_REGIONS), mAccount.name, map, this)){
+                publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
+                return false;
+            }
+            else {
+                publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
+            }
+
             //TODO: load additional tables
 
             map.save();
 
-            mStep = 8; // add extra step to finish view
+            mStep = 9; // add extra step to finish view
             publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
 
             return true;
@@ -1022,6 +1037,37 @@ public class InitService extends Service {
             ngwVectorLayer.setServerWhere(
                     String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
             ngwVectorLayer.setVisible(true);
+            //TODO: add layer draw default style and quarter labels
+            ngwVectorLayer.setAccountName(accountName);
+            ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+            ngwVectorLayer.setMinZoom(0);
+            ngwVectorLayer.setMaxZoom(25);
+
+            map.addLayer(ngwVectorLayer);
+
+            try {
+                ngwVectorLayer.createFromNGW(progressor);
+            } catch (NGException | IOException | JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return true;
+        }
+
+
+        protected boolean loadRegions(
+                long resourceId,
+                String accountName,
+                MapBase map,
+                IProgressor progressor)
+        {
+            NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(
+                    getApplicationContext(),
+                    map.createLayerStorage(Constants.KEY_LAYER_FV_REGIONS));
+            ngwVectorLayer.setName(getString(R.string.regions));
+            ngwVectorLayer.setRemoteId(resourceId);
+            ngwVectorLayer.setVisible(false);
             //TODO: add layer draw default style and quarter labels
             ngwVectorLayer.setAccountName(accountName);
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);

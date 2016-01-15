@@ -61,6 +61,7 @@ public interface Constants
     String KEY_FIELDWORK_TYPES  = "fieldwork_types";
     String KEY_CONTRACT_TYPES   = "contract_types";
     String KEY_FV               = "fv";
+    String KEY_FV_REGIONS       = "fv_regions";
 
     String KEY_LAYER_DOCUMENTS        = "documents";
     String KEY_LAYER_SHEET            = "sheet";
@@ -79,6 +80,7 @@ public interface Constants
     String KEY_LAYER_FIELDWORK_TYPES  = "fieldwork_types";
     String KEY_LAYER_CONTRACT_TYPES   = "contract_types";
     String KEY_LAYER_FV               = "fv";
+    String KEY_LAYER_FV_REGIONS       = "fv_regions";
 
     /**
      * inspectors keys
@@ -183,6 +185,13 @@ public interface Constants
     String FIELD_CADASTRE_LV     = "NAME_LV";
     String FIELD_CADASTRE_ULV    = "NAME_ULV";
     String FIELD_CADASTRE_PARCEL = "KV";
+
+    /**
+     * regions fields
+     */
+    String FIELD_REGIONS_NAME_RU = "NAME_RU";
+    String FIELD_REGIONS_NAME_EN = "NAME_EN";
+    String FIELD_REGIONS_PHONE   = "PHONE";
 
     /**
      * production fields
