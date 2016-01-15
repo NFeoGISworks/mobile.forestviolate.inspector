@@ -219,8 +219,27 @@ public class DocumentsListAdapter
                 "dd MMM yy"); //(SimpleDateFormat) DateFormat.getDateInstance();
         viewHolder.mDocDate.setText(sdf.format(item.mDate));
 
-        // TODO: state icon
-        // viewHolder.mStateIcon.setImageDrawable();
+
+        switch (item.mStatus) {
+            case Constants.DOCUMENT_STATUS_NEW:
+                viewHolder.mStateIcon.setImageDrawable(
+                        mContext.getResources().getDrawable(R.drawable.ic_document_status_new));
+                break;
+
+            case Constants.DOCUMENT_STATUS_FOR_SEND:
+                viewHolder.mStateIcon.setImageDrawable(
+                        mContext.getResources().getDrawable(R.drawable.ic_document_status_sent_partially));
+                break;
+
+            case Constants.DOCUMENT_STATUS_OK:
+                viewHolder.mStateIcon.setImageDrawable(
+                        mContext.getResources().getDrawable(R.drawable.ic_document_status_sent_full));
+                break;
+
+            default:
+                viewHolder.mStateIcon.setImageDrawable(null);
+                break;
+        }
     }
 
 
