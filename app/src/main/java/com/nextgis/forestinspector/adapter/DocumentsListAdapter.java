@@ -109,7 +109,7 @@ public class DocumentsListAdapter
                             //show note activity
                             intent = new Intent(mContext, NoteCreatorActivity.class);
                         } else {
-                            if (item.isSigned) {
+                            if (item.mIsSigned) {
                                 //show documents viewer activity
                                 intent = new Intent(mContext, DocumentViewActivity.class);
                                 intent.putExtra(Constants.DOCUMENT_VIEWER, true);
@@ -154,8 +154,11 @@ public class DocumentsListAdapter
             case Constants.DOC_TYPE_SHEET:
             case Constants.DOC_TYPE_FIELD_WORKS:
             default:
-                selection = false;
+                if (item.mIsSigned) {
+                    selection = false;
+                }
                 break;
+
             case Constants.DOC_TYPE_NOTE:
                 break;
         }
@@ -176,29 +179,32 @@ public class DocumentsListAdapter
 
         switch (item.mType) {
             case Constants.DOC_TYPE_INDICTMENT:
-                viewHolder.mCheckBox.setEnabled(false);
                 viewHolder.mTypeIcon.setImageDrawable(
                         mContext.getResources().getDrawable(R.mipmap.ic_indicment));
                 break;
             case Constants.DOC_TYPE_SHEET:
-                viewHolder.mCheckBox.setEnabled(false);
                 viewHolder.mTypeIcon.setImageDrawable(
                         mContext.getResources().getDrawable(R.mipmap.ic_sheet));
                 break;
             case Constants.DOC_TYPE_FIELD_WORKS:
-                viewHolder.mCheckBox.setEnabled(false);
                 viewHolder.mTypeIcon.setImageDrawable(
                         mContext.getResources().getDrawable(R.mipmap.ic_fieldworks));
                 break;
             case Constants.DOC_TYPE_NOTE:
-                viewHolder.mCheckBox.setEnabled(true);
                 viewHolder.mTypeIcon.setImageDrawable(
                         mContext.getResources().getDrawable(R.mipmap.ic_bookmark));
                 break;
         }
 
 
-        int alpha = item.isSigned ? 255 : 50;
+        if (!item.mIsSigned || item.mType == Constants.DOC_TYPE_NOTE) {
+            viewHolder.mCheckBox.setEnabled(true);
+        } else {
+            viewHolder.mCheckBox.setEnabled(false);
+        }
+
+
+        int alpha = item.mIsSigned ? 255 : 50;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             viewHolder.mTypeIcon.setAlpha(alpha);
         } else {

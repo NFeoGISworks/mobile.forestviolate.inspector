@@ -192,7 +192,7 @@ public class DocumentsListLoader
                             doc.mId = cursor.getLong(idPos);
                             doc.mUserId = cursor.getLong(userIdPos);
 
-                            doc.isSigned = !docs.hasFeatureNotSyncFlag(doc.mId);
+                            doc.mIsSigned = !docs.hasFeatureNotSyncFlag(doc.mId);
 
                             documents.add(doc);
 

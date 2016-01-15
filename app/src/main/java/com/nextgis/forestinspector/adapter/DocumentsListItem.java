@@ -37,7 +37,7 @@ public class DocumentsListItem
     public int    mStatus;
     public long   mId;
     public long   mUserId;
-    public boolean isSigned = false;
+    public boolean mIsSigned = false;
 
 
     @Override
