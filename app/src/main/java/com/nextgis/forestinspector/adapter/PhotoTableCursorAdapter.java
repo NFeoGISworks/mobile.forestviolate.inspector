@@ -23,16 +23,10 @@
 package com.nextgis.forestinspector.adapter;
 
 import android.content.ContentUris;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 import com.nextgis.forestinspector.MainApplication;
-import com.nextgis.forestinspector.activity.PhotoTableFillerActivity;
-import com.nextgis.forestinspector.fragment.PhotoTableFragment;
-import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplib.util.Constants;
 
@@ -45,83 +39,24 @@ import java.util.Map;
 public class PhotoTableCursorAdapter
         extends PhotoTableAdapter
 {
-    protected DocumentsLayer mDocsLayer;
-    protected long           mFeatureId;
-    protected Uri            mAttachesUri;
+    protected Uri mAttachesUri;
 
 
     public PhotoTableCursorAdapter(
             AppCompatActivity activity,
-            DocumentsLayer docsLayer,
             long featureId,
             Map<String, AttachItem> attachItemMap,
-            boolean isPhotoViewer)
+            boolean isDocumentViewer,
+            boolean isOnePhotoViewer)
     {
-        super(activity, attachItemMap, isPhotoViewer);
-
-        mDocsLayer = docsLayer;
-        mFeatureId = featureId;
+        super(activity, featureId, attachItemMap, isDocumentViewer, isOnePhotoViewer);
 
         MainApplication app = (MainApplication) activity.getApplication();
-        String docsLayerPathName = mDocsLayer.getPath().getName();
+        String docsLayerPathName = app.getDocsLayer().getPath().getName();
 
         mAttachesUri = Uri.parse(
                 "content://" + app.getAuthority() + "/" + docsLayerPathName + "/" + featureId + "/"
                         + Constants.URI_ATTACH);
-    }
-
-
-    @Override
-    public void onBindViewHolder(
-            final ListSelectorAdapter.ViewHolder holder,
-            final int position)
-    {
-        super.onBindViewHolder(holder, position);
-
-        PhotoTableAdapter.ViewHolder viewHolder = (PhotoTableAdapter.ViewHolder) holder;
-
-        viewHolder.mCheckBox.setVisibility(View.GONE);
-        viewHolder.mPhotoDesc.setOnClickListener(null);
-
-        if (!mIsPhotoViewer) {
-            viewHolder.mImageView.setOnClickListener(
-                    new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View view)
-                        {
-                            ImageView imageView = (ImageView) view;
-                            mClickedId = (Integer) imageView.getTag();
-
-                            String key = mAttachItemList.get(mClickedId).getKey();
-
-                            Intent intent = new Intent(mActivity, PhotoTableFillerActivity.class);
-                            intent.putExtra(PhotoTableFragment.PHOTO_VIEWER, true);
-                            intent.putExtra(PhotoTableFragment.PHOTO_ITEM_KEY, key);
-                            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mFeatureId);
-                            mActivity.startActivity(intent);
-                        }
-                    });
-
-            //addOnSelectionChangedListener(viewHolder); // it is in super
-        }
-    }
-
-
-    @Override
-    public void setAttachItems(Map<String, AttachItem> attachItemMap)
-    {
-        super.setAttachItems(attachItemMap);
-
-        for (Map.Entry<String, AttachItem> entry : mAttachItemList) {
-            if (entry.getValue()
-                    .getDescription()
-                    .equals(com.nextgis.forestinspector.util.Constants.SIGN_DESCRIPTION)) {
-
-                mAttachItemList.remove(entry);
-                break;
-            }
-        }
     }
 
 
@@ -148,22 +83,5 @@ public class PhotoTableCursorAdapter
                 Constants.TAG, "PhotoTableCursorAdapter, position = " + position + ", URI = " +
                         attachUri.toString());
         return inputStream;
-    }
-
-
-    @Override
-    protected void deleteSelected(int id)
-            throws IOException
-    {
-        AttachItem item = mAttachItemList.get(id).getValue();
-        long attachId = Long.parseLong(item.getAttachId());
-
-        if (mDocsLayer.deleteTempAttach(mFeatureId, attachId) <= 0) {
-            String error = "PhotoTableCursorAdapter, deleteSelected(), deleteTempAttach() is fail";
-            Log.d(Constants.TAG, error);
-            throw new IOException(error);
-        }
-
-        super.deleteSelected(id);
     }
 }

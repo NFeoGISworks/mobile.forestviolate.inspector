@@ -67,7 +67,9 @@ import static com.nextgis.maplib.util.Constants.TAG;
 public class PhotoTableFragment
         extends TabFragment
         implements PhotoTableAdapter.OnSelectionChangedListener,
-                   ActionMode.Callback
+                   ActionMode.Callback,
+                   PhotoTableAdapter.OnAttachChangingListener,
+                   PhotoTableAdapter.OnDeleteSelectedListener
 {
     public static final String PHOTO_ITEM_KEY  = "photo_item_key";
     public static final String PHOTO_VIEWER    = "photo_viewer";
@@ -96,8 +98,8 @@ public class PhotoTableFragment
 
     protected ActionMode mActionMode;
 
-    protected boolean mIsPhotoViewer      = false;
-    protected boolean mIsPhotoTableViewer = false;
+    protected boolean mIsOnePhotoViewer = false;
+    protected boolean mIsDocumentViewer = false;
 
 
     @Override
@@ -105,7 +107,7 @@ public class PhotoTableFragment
     {
         super.onSaveInstanceState(outState);
 
-        if (null != mEditFeature) {
+        if (null != mTempPhotoPath) {
             outState.putString(TEMP_PHOTO_PATH, mTempPhotoPath);
         }
     }
@@ -130,9 +132,9 @@ public class PhotoTableFragment
         }
 
         long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
-        mIsPhotoViewer = extras.getBoolean(PHOTO_VIEWER);
+        mIsOnePhotoViewer = extras.getBoolean(PHOTO_VIEWER);
         String photoItemKey = extras.getString(PHOTO_ITEM_KEY);
-        mIsPhotoTableViewer = extras.getBoolean(Constants.DOCUMENT_VIEWER);
+        mIsDocumentViewer = extras.getBoolean(Constants.DOCUMENT_VIEWER);
 
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -140,7 +142,7 @@ public class PhotoTableFragment
         mDocsLayer = app.getDocsLayer();
 
         Map<String, AttachItem> attaches;
-        if (mIsPhotoTableViewer) {
+        if (mIsDocumentViewer) {
             DocumentFeature feature = mDocsLayer.getFeatureWithAttaches(featureId);
             attaches = feature.getAttachments();
         } else {
@@ -148,7 +150,7 @@ public class PhotoTableFragment
             attaches = mEditFeature.getAttachments();
         }
 
-        if (mIsPhotoViewer && !TextUtils.isEmpty(photoItemKey) && null != attaches) {
+        if (mIsOnePhotoViewer && !TextUtils.isEmpty(photoItemKey) && null != attaches) {
             Map<String, AttachItem> attachesTmp = attaches;
             attaches = new TreeMap<>();
             attaches.put(photoItemKey, attachesTmp.get(photoItemKey));
@@ -161,7 +163,9 @@ public class PhotoTableFragment
         }
 
         mPhotoTableAdapter = new PhotoTableCursorAdapter(
-                activity, mDocsLayer, featureId, attaches, mIsPhotoViewer);
+                activity, featureId, attaches, mIsDocumentViewer, mIsOnePhotoViewer);
+        mPhotoTableAdapter.setOnAttachChangingListener(this);
+        mPhotoTableAdapter.setOnDeleteSelectedListener(this);
     }
 
 
@@ -192,7 +196,7 @@ public class PhotoTableFragment
         int minItemCount = widthRestDP / CARD_VIEW_MIN_WIDTH_DP;
 
         int realPhotoCount;
-        if (mIsPhotoViewer) {
+        if (mIsOnePhotoViewer) {
             realPhotoCount = 1;
         } else {
             realPhotoCount = minItemCount > maxItemCount ? maxItemCount : minItemCount;
@@ -203,7 +207,7 @@ public class PhotoTableFragment
         int photoRealWidthPX = (int) (photoRealWidthDp * density);
 
 
-        if (mIsPhotoViewer) {
+        if (mIsOnePhotoViewer) {
             getActivity().setTitle(R.string.view_photo);
         }
 
@@ -225,7 +229,7 @@ public class PhotoTableFragment
         mCameraBtn = (FloatingActionButton) view.findViewById(R.id.camera_btn);
         if (null != mCameraBtn) {
 
-            if (mIsPhotoTableViewer || mIsPhotoViewer) {
+            if (mIsDocumentViewer || mIsOnePhotoViewer) {
                 mCameraBtn.setVisibility(View.GONE);
             } else {
                 mCameraBtn.setOnClickListener(
@@ -263,7 +267,7 @@ public class PhotoTableFragment
         super.onResume();
 
         Integer clickedId = mPhotoTableAdapter.getClickedId();
-        if (!mIsPhotoViewer && null != clickedId) {
+        if (!mIsOnePhotoViewer && null != clickedId) {
             mPhotoTableAdapter.notifyItemChanged(clickedId);
         }
     }
@@ -352,23 +356,13 @@ public class PhotoTableFragment
         boolean res = mDocsLayer.insertAttachFile(featureId, attachId, tempPhotoFile);
 
         if (res) {
-            res = saveTempEditFeature();
+            res = mDocsLayer.updateAttachWithFlags(mEditFeature, photoAttach) > 0;
         }
 
         if (res && null != mPhotoTableAdapter) {
             mPhotoTableAdapter.setAttachItems(mEditFeature.getAttachments());
             mPhotoTableAdapter.notifyDataSetChanged();
         }
-    }
-
-
-    protected boolean saveTempEditFeature()
-    {
-        if (null == mEditFeature) {
-            return true;
-        }
-
-        return (mDocsLayer.updateFeatureWithAttachesWithFlags(mEditFeature) > 0);
     }
 
 
@@ -417,7 +411,7 @@ public class PhotoTableFragment
         mPhotoTableAdapter.clearSelectionForAll();
         mActionMode = null;
 
-        if (!mIsPhotoTableViewer) {
+        if (!mIsDocumentViewer) {
             mCameraBtn.setVisibility(View.VISIBLE);
         }
     }
@@ -493,6 +487,26 @@ public class PhotoTableFragment
 
             default:
                 return false;
+        }
+    }
+
+
+    @Override
+    public void onAttachChanging(AttachItem attachItem)
+    {
+        if (mDocsLayer.updateAttachWithFlags(mEditFeature, attachItem) <= 0) {
+            Toast.makeText(getActivity(), getString(R.string.error_db_update), Toast.LENGTH_LONG)
+                    .show();
+        }
+    }
+
+
+    @Override
+    public void onDeleteSelected(long attachId)
+    {
+        if (mDocsLayer.deleteAttachWithFlags(mEditFeature.getId(), attachId) <= 0) {
+            Toast.makeText(getActivity(), getString(R.string.error_db_delete), Toast.LENGTH_LONG)
+                    .show();
         }
     }
 }

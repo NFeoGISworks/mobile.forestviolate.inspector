@@ -45,10 +45,12 @@ public class PhotoTableFileAdapter
 
     public PhotoTableFileAdapter(
             AppCompatActivity activity,
+            long featureId,
             Map<String, AttachItem> attachItemMap,
-            boolean isPhotoViewer)
+            boolean isDocumentViewer,
+            boolean isOnePhotoViewer)
     {
-        super(activity, attachItemMap, isPhotoViewer);
+        super(activity, featureId, attachItemMap, isDocumentViewer, isOnePhotoViewer);
 
         MainApplication app = (MainApplication) mActivity.getApplicationContext();
         mAttachDir = app.getDocFeatureFolder();

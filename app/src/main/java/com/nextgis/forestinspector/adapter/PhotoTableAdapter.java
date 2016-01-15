@@ -68,12 +68,17 @@ public abstract class PhotoTableAdapter
     protected int mImageSizePx;
 
     protected AppCompatActivity mActivity;
+    protected long              mFeatureId;
+    protected boolean           mIsDocumentViewer;
+    protected boolean           mIsOnePhotoViewer;
 
     protected Map<String, AttachItem>             mAttachItemMap;
     protected List<Map.Entry<String, AttachItem>> mAttachItemList;
 
-    protected boolean mIsPhotoViewer = false;
     protected Integer mClickedId;
+
+    protected OnAttachChangingListener mOnAttachChangingListener;
+    protected OnDeleteSelectedListener mOnDeleteSelectedListener;
 
 
     protected abstract InputStream getPhotoInputStream(int position)
@@ -82,13 +87,17 @@ public abstract class PhotoTableAdapter
 
     public PhotoTableAdapter(
             AppCompatActivity activity,
+            long featureId,
             Map<String, AttachItem> attachItemMap,
-            boolean isPhotoViewer)
+            boolean isDocumentViewer,
+            boolean isOnePhotoViewer)
     {
         super(activity);
 
         mActivity = activity;
-        mIsPhotoViewer = isPhotoViewer;
+        mFeatureId = featureId;
+        mIsDocumentViewer = isDocumentViewer;
+        mIsOnePhotoViewer = isOnePhotoViewer;
         setAttachItems(attachItemMap);
     }
 
@@ -103,6 +112,14 @@ public abstract class PhotoTableAdapter
         mAttachItemList = new ArrayList<>(mAttachItemMap.size());
 
         if (mAttachItemList.addAll(mAttachItemMap.entrySet())) {
+
+            for (Map.Entry<String, AttachItem> entry : mAttachItemList) {
+                if (entry.getValue().getDescription().equals(Constants.SIGN_DESCRIPTION)) {
+                    mAttachItemList.remove(entry);
+                    break;
+                }
+            }
+
             Collections.sort(
                     mAttachItemList, new Comparator<Map.Entry<String, AttachItem>>()
                     {
@@ -189,7 +206,7 @@ public abstract class PhotoTableAdapter
 
         final PhotoTableAdapter.ViewHolder viewHolder = (PhotoTableAdapter.ViewHolder) holder;
 
-        if (mIsPhotoViewer) {
+        if (mIsOnePhotoViewer) {
             viewHolder.mCheckBox.setVisibility(View.GONE);
 
             viewHolder.mPhotoDesc.setEllipsize(null);
@@ -211,37 +228,46 @@ public abstract class PhotoTableAdapter
                     Toast.LENGTH_LONG).show();
         }
 
-        viewHolder.mPhotoDesc.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View view)
+        if (mIsDocumentViewer) {
+            viewHolder.mCheckBox.setVisibility(View.GONE);
+        } else {
+            viewHolder.mPhotoDesc.setOnClickListener(
+                    new View.OnClickListener()
                     {
-                        TextView descView = (TextView) view;
-                        final int clickedPos = (Integer) descView.getTag();
+                        @Override
+                        public void onClick(View view)
+                        {
+                            TextView descView = (TextView) view;
+                            final int clickedPos = (Integer) descView.getTag();
 
-                        final PhotoDescEditorDialog dialog = new PhotoDescEditorDialog();
-                        dialog.setPhotoDesc(
-                                mAttachItemList.get(clickedPos).getValue().getDescription());
-                        dialog.setOnPositiveClickedListener(
-                                new PhotoDescEditorDialog.OnPositiveClickedListener()
-                                {
-                                    @Override
-                                    public void onPositiveClicked()
+                            final PhotoDescEditorDialog dialog = new PhotoDescEditorDialog();
+                            dialog.setPhotoDesc(
+                                    mAttachItemList.get(clickedPos).getValue().getDescription());
+                            dialog.setOnPositiveClickedListener(
+                                    new PhotoDescEditorDialog.OnPositiveClickedListener()
                                     {
-                                        String descText = dialog.getText();
-                                        mAttachItemList.get(clickedPos)
-                                                .getValue()
-                                                .setDescription(descText);
-                                        notifyItemChanged(clickedPos);
-                                    }
-                                });
-                        dialog.show(
-                                mActivity.getSupportFragmentManager(),
-                                Constants.FRAGMENT_PHOTO_DESC_EDITOR_DIALOG);
+                                        @Override
+                                        public void onPositiveClicked()
+                                        {
+                                            String descText = dialog.getText();
+                                            AttachItem item =
+                                                    mAttachItemList.get(clickedPos).getValue();
+                                            item.setDescription(descText);
 
-                    }
-                });
+                                            if (null != mOnAttachChangingListener) {
+                                                mOnAttachChangingListener.onAttachChanging(item);
+                                            }
+
+                                            notifyItemChanged(clickedPos);
+                                        }
+                                    });
+                            dialog.show(
+                                    mActivity.getSupportFragmentManager(),
+                                    Constants.FRAGMENT_PHOTO_DESC_EDITOR_DIALOG);
+
+                        }
+                    });
+        }
 
         ViewGroup.LayoutParams layoutParams = viewHolder.mImageView.getLayoutParams();
         layoutParams.height = mImageSizePx;
@@ -251,7 +277,7 @@ public abstract class PhotoTableAdapter
         viewHolder.mImageView.setImageBitmap(null);
         viewHolder.mImageView.setTag(position);
 
-        if (!mIsPhotoViewer) {
+        if (!mIsOnePhotoViewer) {
             viewHolder.mImageView.setOnClickListener(
                     new View.OnClickListener()
                     {
@@ -266,9 +292,13 @@ public abstract class PhotoTableAdapter
                             Intent intent = new Intent(mActivity, PhotoTableFillerActivity.class);
                             intent.putExtra(PhotoTableFragment.PHOTO_VIEWER, true);
                             intent.putExtra(PhotoTableFragment.PHOTO_ITEM_KEY, key);
+                            intent.putExtra(
+                                    com.nextgis.maplib.util.Constants.FIELD_ID, mFeatureId);
                             mActivity.startActivity(intent);
                         }
                     });
+
+            //addOnSelectionChangedListener(viewHolder); // it is in super
         }
 
         final Handler handler = new Handler()
@@ -405,6 +435,12 @@ public abstract class PhotoTableAdapter
     {
         super.deleteSelected(id);
 
+        if (null != mOnDeleteSelectedListener) {
+            AttachItem item = mAttachItemList.get(id).getValue();
+            long attachId = Long.parseLong(item.getAttachId());
+            mOnDeleteSelectedListener.onDeleteSelected(attachId);
+        }
+
         String key = mAttachItemList.get(id).getKey();
         mAttachItemMap.remove(key);
         mAttachItemList.remove(id);
@@ -447,7 +483,7 @@ public abstract class PhotoTableAdapter
 
             Bitmap small = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, bmOptions);
 
-            if (mIsPhotoViewer) {
+            if (mIsOnePhotoViewer) {
                 return small;
             }
 
@@ -498,5 +534,29 @@ public abstract class PhotoTableAdapter
         Integer id = mClickedId;
         mClickedId = null;
         return id;
+    }
+
+
+    public void setOnAttachChangingListener(OnAttachChangingListener onAttachChangingListener)
+    {
+        mOnAttachChangingListener = onAttachChangingListener;
+    }
+
+
+    public interface OnAttachChangingListener
+    {
+        void onAttachChanging(AttachItem attachItem);
+    }
+
+
+    public void setOnDeleteSelectedListener(OnDeleteSelectedListener onDeleteSelectedListener)
+    {
+        mOnDeleteSelectedListener = onDeleteSelectedListener;
+    }
+
+
+    public interface OnDeleteSelectedListener
+    {
+        void onDeleteSelected(long attachId);
     }
 }

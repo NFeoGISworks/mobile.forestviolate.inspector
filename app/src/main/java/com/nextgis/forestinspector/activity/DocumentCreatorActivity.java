@@ -433,19 +433,6 @@ public abstract class DocumentCreatorActivity
     }
 
 
-    protected boolean saveToSendEditFeature()
-    {
-        if (!saveTempEditFeature()) {
-            return false;
-        }
-
-        mDocsLayer.setFeatureWithAttachesTempFlag(mEditFeature, false);
-        mDocsLayer.setFeatureWithAttachesNotSyncFlag(mEditFeature, false);
-
-        return true;
-    }
-
-
     protected void save()
     {
         if (saveEditFeature()) {
@@ -511,10 +498,12 @@ public abstract class DocumentCreatorActivity
         boolean res = mDocsLayer.insertAttachFile(featureId, attachId, signatureFile);
 
         if (res) {
-            res = saveToSendEditFeature();
+            res = mDocsLayer.updateAttachWithFlags(mEditFeature, attachItem) > 0;
         }
 
         if (res) {
+            mDocsLayer.setFeatureWithAttachesTempFlag(mEditFeature, false);
+            mDocsLayer.setFeatureWithAttachesNotSyncFlag(mEditFeature, false);
             res = mDocsLayer.setDocumentStatus(featureId, Constants.DOCUMENT_STATUS_FOR_SEND);
         }
 
