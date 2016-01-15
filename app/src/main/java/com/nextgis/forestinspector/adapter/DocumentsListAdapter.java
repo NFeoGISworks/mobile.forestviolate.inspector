@@ -188,7 +188,7 @@ public class DocumentsListAdapter
             case Constants.DOC_TYPE_FIELD_WORKS:
                 viewHolder.mCheckBox.setEnabled(false);
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_indicment));
+                        mContext.getResources().getDrawable(R.mipmap.ic_fieldworks));
                 break;
             case Constants.DOC_TYPE_NOTE:
                 viewHolder.mCheckBox.setEnabled(true);
