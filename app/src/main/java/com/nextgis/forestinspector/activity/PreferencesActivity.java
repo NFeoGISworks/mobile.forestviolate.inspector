@@ -37,9 +37,6 @@ import com.nextgis.maplibui.activity.NGPreferenceActivity;
 import com.nextgis.maplibui.util.ControlHelper;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Application preference
  */
@@ -120,10 +117,22 @@ public class PreferencesActivity extends NGPreferenceActivity {
         }
 
         final ListPreference appTheme = (ListPreference) findPreference( SettingsConstantsUI.KEY_PREF_THEME);
-        if(null != appTheme){
-            int id = appTheme.findIndexOfValue(appTheme.getValue());
-            CharSequence summary = appTheme.getEntries()[id];
-            appTheme.setSummary(summary);
+        if (null != appTheme) {
+            appTheme.setSummary(appTheme.getEntry());
+            appTheme.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener()
+                    {
+                        @Override
+                        public boolean onPreferenceChange(
+                                Preference preference,
+                                Object newValue)
+                        {
+                            PreferencesActivity activity = PreferencesActivity.this;
+                            activity.startActivity(activity.getIntent());
+                            activity.finish();
+                            return true;
+                        }
+                    });
         }
 
         final ListPreference lpCoordinateFormat = (ListPreference) findPreference( SettingsConstantsUI.KEY_PREF_COORD_FORMAT);
