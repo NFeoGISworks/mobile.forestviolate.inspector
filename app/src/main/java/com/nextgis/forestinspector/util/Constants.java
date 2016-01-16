@@ -194,6 +194,14 @@ public interface Constants
     String FIELD_REGIONS_PHONE   = "PHONE";
 
     /**
+     * kv fields
+     */
+    String FIELD_KV_REGION   = "REGION";
+    String FIELD_KV_NAME_LV  = "NAME_LV";
+    String FIELD_KV_NAME_ULV = "NAME_ULV";
+    String FIELD_KV_KV       = "KV";
+
+    /**
      * production fields
      */
     String FIELD_PRODUCTION_SPECIES   = "poroda";
