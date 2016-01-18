@@ -81,127 +81,184 @@ import java.util.concurrent.ThreadPoolExecutor;
  * Application initialisation service
  */
 public class InitService extends Service {
-    public static final String ACTION_START = "START_INITIAL_SYNC";
-    public static final String ACTION_STOP = "STOP_INITIAL_SYNC";
+    public static final String ACTION_START  = "START_INITIAL_SYNC";
+    public static final String ACTION_STOP   = "STOP_INITIAL_SYNC";
+    public static final String ACTION_REPORT = "REPORT_INITIAL_SYNC";
 
-    private InitialSync mThread;
+    public static final int MAX_SYNC_STEP = 9;
+
+    private InitialSyncThread mThread;
+
     private volatile boolean mIsRunning;
 
+
     @Override
-    public void onCreate() {
+    public void onCreate()
+    {
         super.onCreate();
         mIsRunning = false;
     }
 
+
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent == null)
-            return START_NOT_STICKY;
+    public int onStartCommand(
+            Intent intent,
+            int flags,
+            int startId)
+    {
+        if (intent == null) return START_NOT_STICKY;
 
         switch (intent.getAction()) {
             case ACTION_START:
-                if (!mIsRunning)
-                    startSync();
-                else
-                    reportSync();
+                if (mIsRunning) { reportSync(); } else { startSync(); }
                 break;
             case ACTION_STOP:
                 stopSync();
+                break;
+            case ACTION_REPORT:
+                if (mIsRunning) { reportSync(); } else { reportDone(); }
                 break;
         }
 
         return START_STICKY;
     }
 
-    private void reportSync() {
+
+    private void reportSync()
+    {
         mThread.publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
+    }
+
+
+    private void reportDone()
+    {
+        Intent intent = new Intent(Constants.BROADCAST_MESSAGE);
+
+        intent.putExtra(Constants.KEY_STEP, MAX_SYNC_STEP);
+        intent.putExtra(Constants.KEY_MESSAGE, getString(R.string.done));
+        intent.putExtra(Constants.KEY_STATE, Constants.STEP_STATE_DONE);
+
+        sendBroadcast(intent);
+        stopSync();
     }
 
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent intent)
+    {
         return null;
     }
 
-    private void startSync() {
+
+    private void startSync()
+    {
         final MainApplication app = (MainApplication) getApplication();
-        if(app == null){
+        if (app == null) {
             Log.d(Constants.FITAG, "failed to get main application");
         }
 
         final Account account = app.getAccount(getString(R.string.account_name));
-        if(account == null) {
-            Log.d(Constants.FITAG, "No account" + getString(R.string.account_name) + " created. Run first step.");
+        if (account == null) {
+            Log.d(
+                    Constants.FITAG,
+                    "No account" + getString(R.string.account_name) + " created. Run first step.");
         }
 
-        mThread = new InitialSync(account);
+        mThread = new InitialSyncThread(account);
         mIsRunning = true;
         mThread.start();
     }
 
-    private void stopSync() {
+
+    private void stopSync()
+    {
         mIsRunning = false;
 
-        if (mThread != null && mThread.isAlive())
-            mThread.interrupt();
+        if (mThread != null && mThread.isAlive()) { mThread.interrupt(); }
 
         stopSelf();
     }
 
+
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         mIsRunning = false;
         super.onDestroy();
     }
 
-    private class InitialSync extends Thread implements IProgressor {
-        protected Account mAccount;
-        protected int mMaxProgress;
-        protected String mProgressMessage;
-        protected int mStep;
-        protected Intent mMessageIntent;
 
-        public InitialSync(Account account) {
+    private class InitialSyncThread
+            extends Thread
+            implements IProgressor
+    {
+        protected Account mAccount;
+        protected int     mMaxProgress;
+        protected String  mProgressMessage;
+        protected int     mStep;
+        protected Intent  mMessageIntent;
+
+
+        public InitialSyncThread(Account account)
+        {
             mAccount = account;
             mMaxProgress = 0;
         }
 
+
         @Override
-        public void setMax(int maxValue) {
+        public void setMax(int maxValue)
+        {
             mMaxProgress = maxValue;
         }
 
+
         @Override
-        public boolean isCanceled() {
+        public boolean isCanceled()
+        {
             return !mIsRunning;
         }
 
+
         @Override
-        public void setValue(int value) {
-            String message = mProgressMessage + " (" + value + " " + getString(R.string.of) + " " + mMaxProgress + ")";
+        public void setValue(int value)
+        {
+            String message = mProgressMessage + " (" + value + " " + getString(R.string.of) + " "
+                    + mMaxProgress + ")";
             publishProgress(message, Constants.STEP_STATE_WORK);
         }
 
+
         @Override
-        public void setIndeterminate(boolean indeterminate) {
+        public void setIndeterminate(boolean indeterminate)
+        {
 
         }
 
+
         @Override
-        public void setMessage(String message) {
+        public void setMessage(String message)
+        {
             mProgressMessage = message;
         }
 
+
         @Override
-        public void run() {
+        public void run()
+        {
             doWork();
+            InitService.this.stopSync();
         }
 
-        public final void publishProgress(String message, int state) {
+
+        public final void publishProgress(
+                String message,
+                int state)
+        {
             mMessageIntent.putExtra(Constants.KEY_STEP, mStep);
-            mMessageIntent.putExtra(Constants.KEY_STATE, state);
             mMessageIntent.putExtra(Constants.KEY_MESSAGE, message);
+            mMessageIntent.putExtra(Constants.KEY_STATE, state);
             sendBroadcast(mMessageIntent);
         }
 
@@ -548,7 +605,7 @@ public class InitService extends Service {
 
             map.save();
 
-            mStep = 9; // add extra step to finish view
+            mStep = MAX_SYNC_STEP; // add extra step to finish view
             publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
 
             return true;

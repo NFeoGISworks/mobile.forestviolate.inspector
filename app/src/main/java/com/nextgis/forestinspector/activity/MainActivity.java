@@ -110,7 +110,7 @@ public class MainActivity
             createFirstStartView();
         } else {
             MapBase map = app.getMap();
-            if (map.getLayerCount() <= 0) {
+            if (map.getLayerCount() <= 0 || app.isInitServiceRunning()) {
                 Log.d(
                         Constants.FITAG, "Account" + getString(R.string.account_name) +
                                 " created. Run second step.");
@@ -215,8 +215,16 @@ public class MainActivity
                     }
                 });
 
+        MainApplication app = (MainApplication) getApplication();
+        String action;
+        if (app.isInitServiceRunning()) {
+            action = InitService.ACTION_REPORT;
+        } else {
+            action = InitService.ACTION_START;
+        }
+
         Intent syncIntent = new Intent(MainActivity.this, InitService.class);
-        syncIntent.setAction(InitService.ACTION_START);
+        syncIntent.setAction(action);
         startService(syncIntent);
     }
 
