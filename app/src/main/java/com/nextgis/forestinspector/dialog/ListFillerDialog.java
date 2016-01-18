@@ -40,11 +40,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.DaveKoelle.AlphanumComparator;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
-import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.Feature;
@@ -52,7 +52,6 @@ import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
-import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.GeoConstants;
@@ -75,7 +74,7 @@ public abstract class ListFillerDialog
 {
     public static final String UNKNOWN_LOCATION = "-";
 
-    protected Feature  mFeature;
+    protected Feature mFeature;
     protected Location mFeatureLocation;
 
     protected TextView mLatView;
@@ -321,16 +320,16 @@ public abstract class ListFillerDialog
 
             mLatView.setText(
                     getString(com.nextgis.maplibui.R.string.latitude_caption_short) + ": " +
-                    getString(com.nextgis.maplibui.R.string.n_a));
+                            getString(com.nextgis.maplibui.R.string.n_a));
             mLongView.setText(
                     getString(com.nextgis.maplibui.R.string.longitude_caption_short) + ": " +
-                    getString(com.nextgis.maplibui.R.string.n_a));
+                            getString(com.nextgis.maplibui.R.string.n_a));
             mAltView.setText(
                     getString(com.nextgis.maplibui.R.string.altitude_caption_short) + ": " +
-                    getString(com.nextgis.maplibui.R.string.n_a));
+                            getString(com.nextgis.maplibui.R.string.n_a));
             mAccView.setText(
                     getString(com.nextgis.maplibui.R.string.accuracy_caption_short) + ": " +
-                    getString(com.nextgis.maplibui.R.string.n_a));
+                            getString(com.nextgis.maplibui.R.string.n_a));
 
             return;
         }
@@ -345,11 +344,13 @@ public abstract class ListFillerDialog
 
         mLatView.setText(
                 getString(com.nextgis.maplibui.R.string.latitude_caption_short) + ": " +
-                LocationUtil.formatLatitude(location.getLatitude(), nFormat, getResources()));
+                        LocationUtil.formatLatitude(
+                                location.getLatitude(), nFormat, getResources()));
 
         mLongView.setText(
                 getString(com.nextgis.maplibui.R.string.longitude_caption_short) + ": " +
-                LocationUtil.formatLongitude(location.getLongitude(), nFormat, getResources()));
+                        LocationUtil.formatLongitude(
+                                location.getLongitude(), nFormat, getResources()));
 
         double altitude = location.getAltitude();
         mAltView.setText(
@@ -421,6 +422,8 @@ public abstract class ListFillerDialog
     public void saveData()
     {
         Activity activity = getActivity();
+        MainApplication app = (MainApplication) activity.getApplication();
+
         IDocumentFeatureSource documentSource = null;
         if (activity instanceof IDocumentFeatureSource) {
             documentSource = (IDocumentFeatureSource) activity;
@@ -429,9 +432,7 @@ public abstract class ListFillerDialog
             return;
         }
 
-        MapBase map = MapBase.getInstance();
-        DocumentsLayer docLayer =
-                (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
+        DocumentsLayer docLayer = app.getDocsLayer();
         if (null == docLayer) {
             return;
         }
