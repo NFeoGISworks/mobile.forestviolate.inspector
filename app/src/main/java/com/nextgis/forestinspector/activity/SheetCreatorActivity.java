@@ -106,6 +106,7 @@ public class SheetCreatorActivity
     private void fillSheet()
     {
         Intent intent = new Intent(this, SheetFillerActivity.class);
+        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivity(intent);
     }
 }
