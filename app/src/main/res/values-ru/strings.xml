@@ -274,4 +274,11 @@
 
     <string name="action_sync_settings">Настройки синхронизации</string>
 
+    <string name="synchronization">Синхронизация</string>
+    <string name="sync_started">Синхронизация начата</string>
+    <string name="sync_finished">Синхронизация завершена</string>
+    <string name="sync_canceled">Синхронизация отменена</string>
+    <string name="sync_error">ОШИБКА синхронизации</string>
+    <string name="sync_progress">Синхронизация выполняется</string>
+
 </resources>

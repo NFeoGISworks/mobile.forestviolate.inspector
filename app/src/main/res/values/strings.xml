@@ -274,4 +274,11 @@
 
     <string name="action_sync_settings">Sync Settings</string>
 
+    <string name="synchronization">Synchronization</string>
+    <string name="sync_started">Synchronization started</string>
+    <string name="sync_finished">Synchronization finished</string>
+    <string name="sync_canceled">Synchronization canceled</string>
+    <string name="sync_error">ERROR of synchronization</string>
+    <string name="sync_progress">Synchronization in progress</string>
+
 </resources>
