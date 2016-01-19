@@ -24,7 +24,6 @@ package com.nextgis.forestinspector.activity;
 
 import android.accounts.Account;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -43,7 +42,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.InitStepListAdapter;
@@ -62,7 +60,9 @@ import java.util.Locale;
 
 public class MainActivity
         extends FIActivity
-        implements NGWLoginFragment.OnAddAccountListener
+        implements MainApplication.OnAccountAddedListener,
+                   MainApplication.OnAccountDeletedListener,
+                   MainApplication.OnReloadMapListener
 {
 
     /**
@@ -101,7 +101,7 @@ public class MainActivity
             createFirstStartView();
         }
 
-        final Account account = app.getAccount(getString(R.string.account_name));
+        final Account account = app.getAccount();
         if (account == null) {
             Log.d(
                     Constants.FITAG,
@@ -124,7 +124,6 @@ public class MainActivity
                 createNormalView();
             }
         }
-
     }
 
 
@@ -135,17 +134,18 @@ public class MainActivity
         setToolbar(R.id.main_toolbar);
         setTitle(getText(R.string.first_run));
 
+        MainApplication app = (MainApplication) getApplication();
         FragmentManager fm = getSupportFragmentManager();
         NGWLoginFragment ngwLoginFragment = (NGWLoginFragment) fm.findFragmentByTag("NGWLogin");
 
         if (ngwLoginFragment == null) {
             ngwLoginFragment = new LoginFragment();
+            ngwLoginFragment.setOnAddAccountListener(app);
+
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(com.nextgis.maplibui.R.id.login_frame, ngwLoginFragment, "NGWLogin");
             ft.commit();
         }
-        ngwLoginFragment.setForNewAccount(true);
-        ngwLoginFragment.setOnAddAccountListener(this);
     }
 
 
@@ -171,29 +171,17 @@ public class MainActivity
                 int step = intent.getIntExtra(Constants.KEY_STEP, 0);
                 int state = intent.getIntExtra(Constants.KEY_STATE, 0);
                 String message = intent.getStringExtra(Constants.KEY_MESSAGE);
-                if (state == Constants.STEP_STATE_ERROR) {
 
-                    try {
-                        Thread.sleep(4000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                switch (state) {
+                    case Constants.STEP_STATE_FINISH:
+                        refreshActivityView();
+                        break;
 
-                    //delete map
-                    final MainApplication app = (MainApplication) getApplication();
-                    String accName = account.name;
-                    app.removeAccount(account);
-
-                    for (int i = 0; i < 10; i++) {
-                        if (app.getAccount(accName) == null) {
-                            break;
-                        }
-                    }
-                    refreshActivityView();
-                } else if (step >= mAdapter.getCount()) {
-                    refreshActivityView();
-                } else {
-                    mAdapter.setMessage(step, state, message);
+                    case Constants.STEP_STATE_WAIT:
+                    case Constants.STEP_STATE_WORK:
+                    case Constants.STEP_STATE_DONE:
+                        mAdapter.setMessage(step, state, message);
+                        break;
                 }
             }
         };
@@ -231,8 +219,7 @@ public class MainActivity
 
     protected void createNormalView()
     {
-
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.setDefaultValues(this, R.xml.preference_headers_legacy, false);
 
         setContentView(R.layout.activity_main);
 
@@ -436,6 +423,11 @@ public class MainActivity
     {
         super.onPause();
 
+        MainApplication app = (MainApplication) getApplication();
+        app.setOnAccountAddedListener(null);
+        app.setOnAccountDeletedListener(null);
+        app.setOnReloadMapListener(null);
+
         if (null != mSyncStatusReceiver) {
             unregisterReceiver(mSyncStatusReceiver);
         }
@@ -447,6 +439,15 @@ public class MainActivity
     {
         super.onResume();
 
+        MainApplication app = (MainApplication) getApplication();
+        app.setOnAccountAddedListener(this);
+        app.setOnAccountDeletedListener(this);
+        app.setOnReloadMapListener(this);
+
+        if (app.isAccountAdded() || app.isAccountDeleted() || app.isMapReloaded()) {
+            refreshActivityView();
+        }
+
         if (null != mSyncStatusReceiver) {
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(Constants.BROADCAST_MESSAGE);
@@ -456,31 +457,23 @@ public class MainActivity
 
 
     @Override
-    public void onAddAccount(
-            Account account,
-            String token,
-            boolean accountAdded)
+    public void onAccountAdded()
     {
-        if (accountAdded) {
+        refreshActivityView();
+    }
 
-            //free any map data here
-            final MainApplication app = (MainApplication) getApplication();
-            MapBase map = app.getMap();
 
-            // delete all layers from map if any
-            map.delete();
+    @Override
+    public void onAccountDeleted()
+    {
+        refreshActivityView();
+    }
 
-            //set sync with server
-            ContentResolver.setSyncAutomatically(account, app.getAuthority(), true);
-            ContentResolver.addPeriodicSync(
-                    account, app.getAuthority(), Bundle.EMPTY,
-                    com.nextgis.maplib.util.Constants.DEFAULT_SYNC_PERIOD);
 
-            // goto step 2
-            refreshActivityView();
-        } else {
-            Toast.makeText(this, R.string.error_init, Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    public void onReloadMap()
+    {
+        refreshActivityView();
     }
 
 

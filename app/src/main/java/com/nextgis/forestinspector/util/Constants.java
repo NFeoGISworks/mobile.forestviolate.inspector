@@ -103,10 +103,11 @@ public interface Constants
     int DOC_TYPE_SHEET       = 3;
     int DOC_TYPE_VEHICLE     = 4;
 
-    int STEP_STATE_WAIT  = 0;
-    int STEP_STATE_WORK  = 1;
-    int STEP_STATE_DONE  = 2;
-    int STEP_STATE_ERROR = 3;
+    int STEP_STATE_WAIT   = 0;
+    int STEP_STATE_WORK   = 1;
+    int STEP_STATE_DONE   = 2;
+    int STEP_STATE_FINISH = 3;
+    int STEP_STATE_ERROR  = 4;
 
     String FIELD_DOC_ID                    = "doc_id";
     /**

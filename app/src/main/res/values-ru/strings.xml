@@ -36,6 +36,7 @@
     <string name="geomixer_fv_tiles">Лесонарушения растр (GeoMixer)</string>
     <string name="fi_login_title">Аккаунт лесного инспектора</string>
     <string name="fi_login_description"><![CDATA[Введите ваш логин и пароль к серверу учета лесонарушений. После нажатия на кнопку \"Подключить\" приложение выполнит вход на сервер. В случае удачного подключения, будет запущен процесс получения рабочих данных. Данный процесс требует большого количества трафика, поэтому на данном этапе рекомендуется использовать подключение по Wi-Fi.]]></string>
+    <string name="fi_edit_pass_description">Введите новый пароль для подключения к серверу системы</string>
     <string name="first_run">Первый запуск</string>
     <string name="fi_url">Адрес сервера</string>
     <string name="error_init">Ошибка инициализации</string>
@@ -68,7 +69,6 @@
     <string name="keep_screen_on_summary">Держать экран включенным</string>
     <string name="show_zoom_controls">Включить управление масштабами</string>
     <string name="show_zoom_controls_summary">Показывать кнопки +/- на карте для увеличения/уменьшения</string>
-    <string name="general">Общие</string>
     <string name="click_to_change_account">Изменить настройки аккаунта</string>
     <string name="theme">Тема приложения</string>
     <string name="of">из</string>
@@ -264,4 +264,14 @@
     <string name="action_create_sheet">Создать ведомость перечета</string>
     <string name="action_create_field_works">Создать акт полевых мероприятий</string>
     <string name="action_create_note">Создать заметку</string>
+
+    <string name="general_settings">Общие настройки</string>
+    <string name="general_settings_summary">Общие настройки приложения</string>
+    <string name="map_settings">Настройки карты</string>
+    <string name="map_settings_summary">Настройки параметров карты</string>
+    <string name="sync_settings">Настройки синхронизации</string>
+    <string name="sync_settings_summary">Настройки параметров синхронизации данных с сервером системы</string>
+
+    <string name="action_sync_settings">Настройки синхронизации</string>
+
 </resources>

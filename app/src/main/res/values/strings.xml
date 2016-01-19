@@ -35,6 +35,7 @@
     <string name="geomixer_fv_tiles">GeoMixer violation tiles</string>
     <string name="fi_login_title">Forest inspector account</string>
     <string name="fi_login_description"><![CDATA[Input your login and password to the forest violation accounting server. After click \"Login\" the application will connect to the server. If connection will success, the downloading your working data from server will start. This process need a lot of traffic, so Wi-Fi connection recommended.]]></string>
+    <string name="fi_edit_pass_description">Enter new password to connect to the system server</string>
     <string name="first_run">First run</string>
     <string name="fi_url">Server URL</string>
     <string name="error_init">Failed to initialize</string>
@@ -67,7 +68,6 @@
     <string name="keep_screen_on_summary">Do not turn off screen</string>
     <string name="show_zoom_controls">Show zoom controls</string>
     <string name="show_zoom_controls_summary">Show zoom in/zoom out control on the map</string>
-    <string name="general">General</string>
     <string name="click_to_change_account">Change account settings</string>
     <string name="theme">Application theme</string>
     <string name="of">of</string>
@@ -264,4 +264,14 @@
     <string name="action_create_sheet">Create sheet</string>
     <string name="action_create_field_works">Create field works indictment</string>
     <string name="action_create_note">Create note</string>
+
+    <string name="general_settings">General settings</string>
+    <string name="general_settings_summary">The application general settings</string>
+    <string name="map_settings">Map settings</string>
+    <string name="map_settings_summary">Map parameters settings</string>
+    <string name="sync_settings">Sync settings</string>
+    <string name="sync_settings_summary">Data synchronization settings with the server system</string>
+
+    <string name="action_sync_settings">Sync Settings</string>
+
 </resources>

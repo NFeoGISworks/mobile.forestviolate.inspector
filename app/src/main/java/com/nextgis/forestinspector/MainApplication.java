@@ -22,14 +22,20 @@
 
 package com.nextgis.forestinspector;
 
+import android.accounts.Account;
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
-import com.nextgis.forestinspector.activity.PreferencesActivity;
+import android.widget.Toast;
+import com.nextgis.forestinspector.activity.FIPreferencesActivity;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
@@ -39,8 +45,11 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.FileUtil;
+import com.nextgis.maplib.util.NetworkUtil;
 import com.nextgis.maplib.util.SettingsConstants;
 import com.nextgis.maplibui.GISApplication;
+import com.nextgis.maplibui.activity.NGWSettingsActivity;
+import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import java.io.File;
@@ -51,12 +60,87 @@ import static com.nextgis.maplib.util.SettingsConstants.KEY_PREF_MAP;
 
 public class MainApplication
         extends GISApplication
+        implements NGWLoginFragment.OnAddAccountListener,
+                   NGWSettingsActivity.OnDeleteAccountListener
+
 {
     protected DocumentsLayer      mDocsLayer;
     protected DocumentEditFeature mEditFeature;
     protected File                mDocFeatureFolder;
 
     protected boolean mIsNewTempFeature = false;
+
+    protected NetworkUtil mNet;
+
+    protected OnAccountAddedListener   mOnAccountAddedListener;
+    protected OnAccountDeletedListener mOnAccountDeletedListener;
+    protected OnReloadMapListener      mOnReloadMapListener;
+
+    protected boolean mIsAccountCreated = false;
+    protected boolean mIsAccountDeleted = false;
+    protected boolean mIsMapReloaded    = false;
+
+
+    @Override
+    public void onCreate()
+    {
+        // For service debug
+//        android.os.Debug.waitForDebugger();
+
+        super.onCreate();
+
+        mNet = new NetworkUtil(this);
+
+        BroadcastReceiver initSyncStatusReceiver = new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(
+                    Context context,
+                    Intent intent)
+            {
+                if (isRanAsService()) {
+                    return;
+                }
+
+                int state = intent.getIntExtra(Constants.KEY_STATE, Constants.STEP_STATE_WAIT);
+
+                switch (state) {
+
+                    case Constants.STEP_STATE_ERROR: {
+
+                        try {
+                            Thread.sleep(4000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        Account account = getAccount();
+
+                        ContentResolver.removePeriodicSync(account, getAuthority(), Bundle.EMPTY);
+                        ContentResolver.setSyncAutomatically(account, getAuthority(), false);
+                        ContentResolver.cancelSync(account, getAuthority());
+
+                        removeAccount(account);
+
+                        //delete map
+                        MapBase map = getMap();
+                        FileUtil.deleteRecursive(map.getPath());
+
+                        reloadMap();
+                        break;
+                    }
+
+                    case Constants.STEP_STATE_FINISH:
+                        reloadMap();
+                        break;
+                }
+            }
+        };
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.BROADCAST_MESSAGE);
+        registerReceiver(initSyncStatusReceiver, intentFilter);
+    }
 
 
     @Override
@@ -98,14 +182,6 @@ public class MainApplication
         MapBase map = getMap();
         mDocsLayer = (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
 
-//        for (int i = 0; i < map.getLayerCount(); i++) {
-//            ILayer layer = map.getLayer(i);
-//            if (layer instanceof DocumentsLayer) {
-//                mDocsLayer = (DocumentsLayer) layer;
-//                break;
-//            }
-//        }
-
         return mDocsLayer;
     }
 
@@ -126,7 +202,7 @@ public class MainApplication
     @Override
     public void showSettings(String settings)
     {
-        Intent intentSet = new Intent(this, PreferencesActivity.class);
+        Intent intentSet = new Intent(this, FIPreferencesActivity.class);
         intentSet.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentSet);
     }
@@ -259,6 +335,25 @@ public class MainApplication
     }
 
 
+    public boolean isRanAsService()
+    {
+        return getCurrentProcessName().matches(".*:(init)?sync$");
+    }
+
+
+    public String getCurrentProcessName()
+    {
+        int pid = android.os.Process.myPid();
+        ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
+            if (processInfo.pid == pid) {
+                return processInfo.processName;
+            }
+        }
+        return "";
+    }
+
+
     public boolean isInitServiceRunning()
     {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -272,23 +367,6 @@ public class MainApplication
         }
 
         return false;
-    }
-
-
-/*
-    // for debug
-    protected NetworkUtil mNet;
-
-
-    @Override
-    public void onCreate()
-    {
-        // For service debug
-//        android.os.Debug.waitForDebugger();
-
-        super.onCreate();
-
-        mNet = new NetworkUtil(this);
     }
 
 
@@ -323,5 +401,122 @@ public class MainApplication
         ContentResolver.requestSync(account, getAuthority(), settingsBundle);
         return true;
     }
-*/
+
+
+    @Override
+    public void onAddAccount(
+            Account account,
+            String token,
+            boolean accountAdded)
+    {
+        if (accountAdded) {
+            mIsAccountCreated = true;
+
+            //free any map data here
+            MapBase map = getMap();
+
+            // delete all layers from map if any
+            map.delete();
+
+            //set sync with server
+            ContentResolver.setSyncAutomatically(account, getAuthority(), true);
+            ContentResolver.addPeriodicSync(
+                    account, getAuthority(), Bundle.EMPTY,
+                    com.nextgis.maplib.util.Constants.DEFAULT_SYNC_PERIOD);
+
+            // goto step 2
+            if (null != mOnAccountAddedListener) {
+                mOnAccountAddedListener.onAccountAdded();
+            }
+
+        } else {
+            Toast.makeText(this, R.string.error_init, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onDeleteAccount(Account account)
+    {
+        mIsAccountDeleted = true;
+        MapBase map = getMap();
+        map.load(); // reload map without listener
+
+        if (null != mOnAccountDeletedListener) {
+            mOnAccountDeletedListener.onAccountDeleted();
+        }
+    }
+
+
+    public void reloadMap()
+    {
+        MapBase map = getMap();
+        map.load();
+
+        mIsMapReloaded = true;
+
+        if (null != mOnReloadMapListener) {
+            mOnReloadMapListener.onReloadMap();
+        }
+    }
+
+
+    public boolean isAccountAdded()
+    {
+        boolean isCreated = mIsAccountCreated;
+        mIsAccountCreated = false;
+        return isCreated;
+    }
+
+
+    public boolean isAccountDeleted()
+    {
+        boolean isDeleted = mIsAccountDeleted;
+        mIsAccountDeleted = false;
+        return isDeleted;
+    }
+
+
+    public boolean isMapReloaded()
+    {
+        boolean isReloaded = mIsMapReloaded;
+        mIsMapReloaded = false;
+        return isReloaded;
+    }
+
+
+    public void setOnAccountAddedListener(OnAccountAddedListener onAccountAddedListener)
+    {
+        mOnAccountAddedListener = onAccountAddedListener;
+    }
+
+
+    public interface OnAccountAddedListener
+    {
+        void onAccountAdded();
+    }
+
+
+    public void setOnAccountDeletedListener(OnAccountDeletedListener onAccountDeletedListener)
+    {
+        mOnAccountDeletedListener = onAccountDeletedListener;
+    }
+
+
+    public interface OnAccountDeletedListener
+    {
+        void onAccountDeleted();
+    }
+
+
+    public void setOnReloadMapListener(OnReloadMapListener onReloadMapListener)
+    {
+        mOnReloadMapListener = onReloadMapListener;
+    }
+
+
+    public interface OnReloadMapListener
+    {
+        void onReloadMap();
+    }
 }

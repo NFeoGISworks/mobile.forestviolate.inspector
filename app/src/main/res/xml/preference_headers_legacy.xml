@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Project: Forest violations
+  ~ Purpose: Mobile application for registering facts of the forest violations.
+  ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
+  ~ ******************************************************************************
+  ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:title="@string/general_settings"
+        android:summary="@string/general_settings_summary"
+        >
+        <intent
+            android:action="com.nextgis.mobile.PREFS_GENERAL"
+            android:targetClass="com.nextgis.forestinspector.activities.FoclSettingsActivity"
+            android:targetPackage="com.nextgis.forestinspector"
+            />
+    </Preference>
+
+    <Preference
+        android:title="@string/map_settings"
+        android:summary="@string/map_settings_summary"
+        >
+        <intent
+            android:action="com.nextgis.mobile.PREFS_MAP"
+            android:targetClass="com.nextgis.forestinspector.activities.FoclSettingsActivity"
+            android:targetPackage="com.nextgis.forestinspector"
+            />
+    </Preference>
+
+    <Preference
+        android:title="@string/sync_settings"
+        android:summary="@string/sync_settings_summary"
+        >
+        <intent
+            android:action="com.nextgis.mobile.PREFS_NGW"
+            android:targetClass="com.nextgis.forestinspector.activity.SyncSettingsActivity"
+            android:targetPackage="com.nextgis.forestinspector"
+            />
+    </Preference>
+
+</PreferenceScreen>

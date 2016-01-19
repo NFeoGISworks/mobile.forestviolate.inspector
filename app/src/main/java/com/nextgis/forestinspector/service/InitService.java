@@ -116,7 +116,7 @@ public class InitService extends Service {
                 stopSync();
                 break;
             case ACTION_REPORT:
-                if (mIsRunning) { reportSync(); } else { reportDone(); }
+                if (mIsRunning) { reportSync(); } else { reportFinish(); }
                 break;
         }
 
@@ -130,13 +130,13 @@ public class InitService extends Service {
     }
 
 
-    private void reportDone()
+    private void reportFinish()
     {
         Intent intent = new Intent(Constants.BROADCAST_MESSAGE);
 
         intent.putExtra(Constants.KEY_STEP, MAX_SYNC_STEP);
         intent.putExtra(Constants.KEY_MESSAGE, getString(R.string.done));
-        intent.putExtra(Constants.KEY_STATE, Constants.STEP_STATE_DONE);
+        intent.putExtra(Constants.KEY_STATE, Constants.STEP_STATE_FINISH);
 
         sendBroadcast(intent);
         stopSync();
@@ -606,7 +606,7 @@ public class InitService extends Service {
             map.save();
 
             mStep = MAX_SYNC_STEP; // add extra step to finish view
-            publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
+            publishProgress(getString(R.string.done), Constants.STEP_STATE_FINISH);
 
             return true;
         }

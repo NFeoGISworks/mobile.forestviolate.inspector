@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -23,22 +24,24 @@ package com.nextgis.forestinspector.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.Loader;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-
+import android.widget.TextView;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
+
 
 /**
  * The login fragment to the forest violations server
  */
-public class LoginFragment extends NGWLoginFragment {
+public class LoginFragment
+        extends NGWLoginFragment
+{
 
     @Override
     public View onCreateView(
@@ -59,20 +62,45 @@ public class LoginFragment extends NGWLoginFragment {
         mLogin.addTextChangedListener(watcher);
         mPassword.addTextChangedListener(watcher);
 
+        TextView loginDescription = (TextView) view.findViewById(R.id.login_description);
+        if (mForNewAccount) {
+            loginDescription.setText(R.string.fi_login_description);
+            mURL.setText(SettingsConstants.SITE_URL);
+        } else {
+            loginDescription.setText(R.string.fi_edit_pass_description);
+            mURL.setText(mUrlText);
+            mLogin.setText(mLoginText);
+            mURL.setEnabled(mChangeAccountUrl);
+            mLogin.setEnabled(mChangeAccountLogin);
+        }
+
+        mURL.setEnabled(mForNewAccount);
+        mLogin.setEnabled(mForNewAccount);
+
+        // for debug
+//        mLogin.setText("testuser");
+//        mPassword.setText("userpass");
+
         return view;
     }
 
+
     @Override
-    public void onLoadFinished(
-            Loader<String> loader,
+    public void onClick(View v)
+    {
+        if (mForNewAccount) {
+            mLogin.setText(mLogin.getText().toString().trim());
+        }
+        super.onClick(v);
+    }
+
+
+    @Override
+    public void onTokenReceived(
+            String accountName,
             String token)
     {
-        if (loader.getId() == com.nextgis.maplibui.R.id.auth_token_loader) {
-            if (token != null && token.length() > 0) {
-                onTokenReceived(getString(R.string.account_name), token);
-            } else {
-                Toast.makeText(getActivity(), R.string.error_login, Toast.LENGTH_SHORT).show();
-            }
-        }
+        accountName = getString(R.string.account_name);
+        super.onTokenReceived(accountName, token);
     }
 }

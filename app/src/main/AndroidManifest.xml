@@ -94,7 +94,17 @@
             />
 
         <activity
-            android:name=".activity.PreferencesActivity"
+            android:name=".activity.FIPreferencesActivity"
+            android:label="@string/action_settings"
+            />
+
+        <activity
+            android:name=".activity.SyncSettingsActivity"
+            android:label="@string/action_sync_settings"
+            />
+
+        <activity
+            android:name=".activity.SyncLoginActivity"
             android:label="@string/action_settings"
             />
 
