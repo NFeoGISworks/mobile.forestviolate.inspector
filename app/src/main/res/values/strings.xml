@@ -281,4 +281,10 @@
     <string name="sync_error">ERROR of synchronization</string>
     <string name="sync_progress">Synchronization in progress</string>
 
+    <string name="warning_not_sent_data">Not sent data!</string>
+    <string name="warning_not_sent_data_msg">There are not sent data! Send?</string>
+    <string name="warning_saved_not_sent_data_msg">There are saved, but not sent data! Delete?</string>
+    <string name="send">Send</string>
+    <string name="delete">Delete</string>
+
 </resources>

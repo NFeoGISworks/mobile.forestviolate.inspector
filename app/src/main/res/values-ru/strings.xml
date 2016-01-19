@@ -281,4 +281,10 @@
     <string name="sync_error">ОШИБКА синхронизации</string>
     <string name="sync_progress">Синхронизация выполняется</string>
 
+    <string name="warning_not_sent_data">Не отправленные данные!</string>
+    <string name="warning_not_sent_data_msg">Имеются не отправленные данные! Отправить?</string>
+    <string name="warning_saved_not_sent_data_msg">Имеются сохраненные, но не отправленные данные! Удалить?</string>
+    <string name="send">Отправить</string>
+    <string name="delete">Удалить</string>
+
 </resources>

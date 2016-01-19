@@ -24,7 +24,9 @@ package com.nextgis.forestinspector.activity;
 
 import android.accounts.Account;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.PeriodicSync;
 import android.content.SharedPreferences;
@@ -326,5 +328,89 @@ public class SyncSettingsActivity
 //            invalidateHeaders();
 //            setSelection(0);
         }
+    }
+
+
+    @Override
+    protected Preference addDeleteAccountAction(
+            final IGISApplication application,
+            Account account,
+            PreferenceCategory actionCategory)
+    {
+        Preference preferenceDelete = super.addDeleteAccountAction(
+                application, account, actionCategory);
+
+        if (null == preferenceDelete) {
+            return null;
+        }
+
+        MapBase map = application.getMap();
+        final boolean isChanges = map.isChanges();
+        final boolean haveFeaturesNotSyncFlag = map.haveFeaturesNotSyncFlag();
+
+        final Preference.OnPreferenceClickListener oldClickListener =
+                preferenceDelete.getOnPreferenceClickListener();
+
+        final AlertDialog.Builder dialogBuilder =
+                new AlertDialog.Builder(SyncSettingsActivity.this);
+
+        dialogBuilder.setIcon(com.nextgis.maplibui.R.drawable.ic_action_warning)
+                .setTitle(R.string.warning_not_sent_data)
+                .setMessage(
+                        isChanges
+                        ? R.string.warning_not_sent_data_msg
+                        : R.string.warning_saved_not_sent_data_msg)
+
+                .setNegativeButton(
+                        R.string.delete, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialog,
+                                    int which)
+                            {
+                                if (null != oldClickListener) {
+                                    oldClickListener.onPreferenceClick(null);
+                                }
+                            }
+                        });
+
+        if (isChanges) {
+            dialogBuilder.setPositiveButton(
+                    R.string.send, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(
+                                DialogInterface dialog,
+                                int which)
+                        {
+                            MainApplication app = (MainApplication) application;
+                            app.runSync();
+                            finish();
+                        }
+                    });
+        } else {
+            dialogBuilder.setPositiveButton(R.string.cancel, null);
+        }
+
+
+        preferenceDelete.setOnPreferenceClickListener(
+                new Preference.OnPreferenceClickListener()
+                {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference)
+                    {
+                        if (isChanges || haveFeaturesNotSyncFlag) {
+                            dialogBuilder.show();
+                        } else {
+                            oldClickListener.onPreferenceClick(null);
+                        }
+
+                        return true;
+                    }
+                });
+
+
+        return preferenceDelete;
     }
 }
