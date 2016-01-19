@@ -95,6 +95,9 @@ public class InitService extends Service {
     @Override
     public void onCreate()
     {
+        // For service debug
+//        android.os.Debug.waitForDebugger();
+
         super.onCreate();
         mIsRunning = false;
     }
@@ -110,13 +113,26 @@ public class InitService extends Service {
 
         switch (intent.getAction()) {
             case ACTION_START:
-                if (mIsRunning) { reportSync(); } else { startSync(); }
+                if (mIsRunning) {
+                    Log.d(Constants.FITAG, "reportSync()");
+                    reportSync();
+                } else {
+                    Log.d(Constants.FITAG, "startSync()");
+                    startSync();
+                }
                 break;
             case ACTION_STOP:
+                Log.d(Constants.FITAG, "stopSync()");
                 stopSync();
                 break;
             case ACTION_REPORT:
-                if (mIsRunning) { reportSync(); } else { reportFinish(); }
+                if (mIsRunning) {
+                    Log.d(Constants.FITAG, "reportSync()");
+                    reportSync();
+                } else {
+                    Log.d(Constants.FITAG, "reportFinish()");
+                    reportFinish();
+                }
                 break;
         }
 
@@ -126,7 +142,9 @@ public class InitService extends Service {
 
     private void reportSync()
     {
-        mThread.publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
+        if (null != mThread) {
+            mThread.publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
+        }
     }
 
 
@@ -256,6 +274,10 @@ public class InitService extends Service {
                 String message,
                 int state)
         {
+            if (null == mMessageIntent) {
+                return;
+            }
+
             mMessageIntent.putExtra(Constants.KEY_STEP, mStep);
             mMessageIntent.putExtra(Constants.KEY_MESSAGE, message);
             mMessageIntent.putExtra(Constants.KEY_STATE, state);
@@ -607,6 +629,7 @@ public class InitService extends Service {
 
             mStep = MAX_SYNC_STEP; // add extra step to finish view
             publishProgress(getString(R.string.done), Constants.STEP_STATE_FINISH);
+            Log.d(Constants.FITAG, "init work is finished");
 
             return true;
         }
@@ -835,7 +858,8 @@ public class InitService extends Service {
 
                 JSONObject jsonDetail = features.getJSONObject(0);
                 int id = jsonDetail.getInt(NGWUtil.NGWKEY_ID);
-                GeoGeometry geom = GeoGeometryFactory.fromWKT(jsonDetail.getString(NGWUtil.NGWKEY_GEOM));
+                GeoGeometry geom = GeoGeometryFactory.fromWKT(
+                        jsonDetail.getString(NGWUtil.NGWKEY_GEOM));
                 GeoEnvelope env = geom.getEnvelope();
 
                 JSONObject fields = jsonDetail.getJSONObject(NGWUtil.NGWKEY_FIELDS);
@@ -1049,8 +1073,8 @@ public class InitService extends Service {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
             long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
 
-            NGWVectorLayerUI ngwVectorLayer =
-                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_NOTES));
+            NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(
+                    getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_NOTES));
             ngwVectorLayer.setName(getString(R.string.notes));
             ngwVectorLayer.setRemoteId(resourceId);
             ngwVectorLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);

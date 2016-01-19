@@ -195,8 +195,6 @@
 
         <service
             android:name=".service.InitService"
-            android:exported="false"
-            android:process=":initsync"
             >
 
         </service>
