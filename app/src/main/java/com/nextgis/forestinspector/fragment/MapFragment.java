@@ -45,6 +45,7 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.datasource.GeoEnvelope;
+import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.MapDrawable;
@@ -689,5 +690,14 @@ public class MapFragment
     public void zoomToExtent(GeoEnvelope envelope)
     {
         mMap.zoomToExtent(envelope);
+    }
+
+
+    public void updateTerritory(GeoGeometry geometry)
+    {
+        if (null != geometry) {
+            zoomToExtent(geometry.getEnvelope());
+            storeMapSettings();
+        }
     }
 }

@@ -91,6 +91,7 @@ public class DocumentsFragment
 
         mAdapter = new DocumentsListAdapter(getActivity());
         mAdapter.addOnSelectionChangedListener(this);
+        mAdapter.setOnDocLongClickListener((MainActivity) getActivity());
 
         runLoader();
     }

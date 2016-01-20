@@ -51,7 +51,8 @@ public abstract class ListSelectorAdapter
 
     protected Queue<OnSelectionChangedListener> mOnSelectionChangedListeners;
 
-    protected ListSelectorAdapter.ViewHolder.OnItemClickListener mOnItemClickListener;
+    protected ListSelectorAdapter.ViewHolder.OnItemClickListener     mOnItemClickListener;
+    protected ListSelectorAdapter.ViewHolder.OnItemLongClickListener mOnItemLongClickListener;
 
 
     protected abstract int getItemViewResId();
@@ -62,6 +63,12 @@ public abstract class ListSelectorAdapter
     public void setOnItemClickListener(ListSelectorAdapter.ViewHolder.OnItemClickListener listener)
     {
         mOnItemClickListener = listener;
+    }
+
+
+    public void setOnItemLongClickListener(ListSelectorAdapter.ViewHolder.OnItemLongClickListener listener)
+    {
+        mOnItemLongClickListener = listener;
     }
 
 
@@ -126,16 +133,20 @@ public abstract class ListSelectorAdapter
 
     public static abstract class ViewHolder
             extends RecyclerView.ViewHolder
-            implements ListSelectorAdapter.OnSelectionChangedListener, View.OnClickListener
+            implements ListSelectorAdapter.OnSelectionChangedListener,
+                       View.OnClickListener,
+                       View.OnLongClickListener
     {
-        public int                 mPosition;
-        public CompoundButton      mCheckBox;
-        public OnItemClickListener mClickListener;
+        public int                     mPosition;
+        public CompoundButton          mCheckBox;
+        public OnItemClickListener     mClickListener;
+        public OnItemLongClickListener mLongClickListener;
 
 
         public ViewHolder(
                 View itemView,
-                OnItemClickListener clickListener)
+                OnItemClickListener clickListener,
+                OnItemLongClickListener longClickListener)
         {
             super(itemView);
 
@@ -143,7 +154,9 @@ public abstract class ListSelectorAdapter
 
             if (null != clickListener) {
                 mClickListener = clickListener;
+                mLongClickListener = longClickListener;
                 itemView.setOnClickListener(this);
+                itemView.setOnLongClickListener(this);
             }
         }
 
@@ -168,9 +181,26 @@ public abstract class ListSelectorAdapter
         }
 
 
+        @Override
+        public boolean onLongClick(View v)
+        {
+            if (null != mLongClickListener) {
+                mLongClickListener.onItemLongClick(getAdapterPosition());
+                return true;
+            }
+            return false;
+        }
+
+
         public interface OnItemClickListener
         {
             void onItemClick(int position);
+        }
+
+
+        public interface OnItemLongClickListener
+        {
+            void onItemLongClick(int position);
         }
     }
 
@@ -351,8 +381,8 @@ public abstract class ListSelectorAdapter
 
     public void addOnSelectionChangedListener(OnSelectionChangedListener listener)
     {
-        if (mOnSelectionChangedListeners != null &&
-            !mOnSelectionChangedListeners.contains(listener)) {
+        if (mOnSelectionChangedListeners != null && !mOnSelectionChangedListeners.contains(
+                listener)) {
 
             mOnSelectionChangedListeners.add(listener);
         }

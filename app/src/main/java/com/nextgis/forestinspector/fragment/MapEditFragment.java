@@ -85,13 +85,14 @@ public class MapEditFragment
     }
 
 
+    @Override
     public void updateTerritory(GeoGeometry geometry)
     {
         if (null != geometry) {
             mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_HIGHLIGHT);
-            zoomToExtent(geometry.getEnvelope());
-            storeMapSettings();
         }
+
+        super.updateTerritory(geometry);
     }
 
 

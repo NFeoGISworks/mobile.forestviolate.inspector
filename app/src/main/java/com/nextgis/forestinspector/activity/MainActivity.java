@@ -44,6 +44,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.adapter.DocumentsListAdapter;
 import com.nextgis.forestinspector.adapter.InitStepListAdapter;
 import com.nextgis.forestinspector.fragment.DocumentsFragment;
 import com.nextgis.forestinspector.fragment.LoginFragment;
@@ -51,6 +52,7 @@ import com.nextgis.forestinspector.fragment.MapFragment;
 import com.nextgis.forestinspector.service.InitService;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
+import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
@@ -62,7 +64,8 @@ public class MainActivity
         extends FIActivity
         implements MainApplication.OnAccountAddedListener,
                    MainApplication.OnAccountDeletedListener,
-                   MainApplication.OnReloadMapListener
+                   MainApplication.OnReloadMapListener,
+                   DocumentsListAdapter.OnDocLongClickListener
 {
 
     /**
@@ -561,6 +564,14 @@ public class MainActivity
     }
 
 
+    @Override
+    public void onDocLongClick(GeoGeometry geometry)
+    {
+        updateMapTerritory(geometry);
+        showMap();
+    }
+
+
     public interface OnShowIndictmentsListener
     {
         void onShowIndictments(boolean show);
@@ -585,6 +596,18 @@ public class MainActivity
     }
 
 
+    public void updateMapTerritory(GeoGeometry geometry)
+    {
+        mSectionsPagerAdapter.mMapFragment.updateTerritory(geometry);
+    }
+
+
+    public void showMap()
+    {
+        mViewPager.setCurrentItem(1, true);
+    }
+
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the
      * sections/tabs/pages.
@@ -592,6 +615,8 @@ public class MainActivity
     public class SectionsPagerAdapter
             extends FragmentPagerAdapter
     {
+        protected MapFragment mMapFragment;
+
 
         public SectionsPagerAdapter(FragmentManager fm)
         {
@@ -610,9 +635,11 @@ public class MainActivity
                 return documentsFragment;
 
             } else {
-                MapFragment mapFragment = new MapFragment();
-                mapFragment.setInViewPager(true);
-                return mapFragment;
+                if (null == mMapFragment) {
+                    mMapFragment = new MapFragment();
+                    mMapFragment.setInViewPager(true);
+                }
+                return mMapFragment;
             }
         }
 

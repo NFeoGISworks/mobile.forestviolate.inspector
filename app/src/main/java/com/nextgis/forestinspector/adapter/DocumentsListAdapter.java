@@ -25,6 +25,7 @@ package com.nextgis.forestinspector.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -35,6 +36,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.DocumentViewActivity;
 import com.nextgis.forestinspector.activity.FieldWorksCreatorActivity;
@@ -44,12 +46,17 @@ import com.nextgis.forestinspector.activity.SheetCreatorActivity;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplib.datasource.GeoGeometryFactory;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapEventSource;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
+import static com.nextgis.maplib.util.Constants.FIELD_ID;
 
 
 /**
@@ -58,11 +65,13 @@ import java.util.List;
 public class DocumentsListAdapter
         extends ListSelectorAdapter
 {
-    protected MapEventSource          mMap;
-    protected String                  mNotesPathName;
+    protected MapEventSource mMap;
+    protected String mNotesPathName;
     protected List<DocumentsListItem> mDocuments;
-    protected long                    mUserId;
-    protected int                     mUserItemBackgroundColor;
+    protected long mUserId;
+    protected int mUserItemBackgroundColor;
+
+    protected OnDocLongClickListener mOnDocLongClickListener;
 
 
     public DocumentsListAdapter(Context context)
@@ -132,13 +141,49 @@ public class DocumentsListAdapter
                         }
 
                         if (null != intent) {
-                            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, item.mId);
+                            intent.putExtra(FIELD_ID, item.mId);
                             mContext.startActivity(intent);
                         }
                     }
                 });
 
-        return new DocumentsListAdapter.ViewHolder(itemView, mOnItemClickListener);
+        setOnItemLongClickListener(
+                new ListSelectorAdapter.ViewHolder.OnItemLongClickListener()
+                {
+                    @Override
+                    public void onItemLongClick(int position)
+                    {
+                        MainApplication app = (MainApplication) mContext.getApplicationContext();
+                        String docsLayerPathName = app.getDocsLayer().getPath().getName();
+
+                        DocumentsListItem item = mDocuments.get(position);
+                        Uri uri = Uri.parse(
+                                "content://" + app.getAuthority() + "/" + docsLayerPathName + "/"
+                                        + item.mId);
+                        String[] columns = new String[] {FIELD_GEOM};
+
+                        Cursor cursor =
+                                mContext.getContentResolver().query(uri, columns, null, null, null);
+
+                        if (null != cursor) {
+                            if (cursor.moveToFirst()) {
+                                GeoGeometry geometry = null;
+                                try {
+                                    geometry = GeoGeometryFactory.fromBlob(cursor.getBlob(0));
+                                } catch (IOException | ClassNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                                if (null != geometry && null != mOnDocLongClickListener) {
+                                    mOnDocLongClickListener.onDocLongClick(geometry);
+                                }
+                            }
+                            cursor.close();
+                        }
+                    }
+                });
+
+        return new DocumentsListAdapter.ViewHolder(
+                itemView, mOnItemClickListener, mOnItemLongClickListener);
     }
 
 
@@ -234,12 +279,14 @@ public class DocumentsListAdapter
 
             case Constants.DOCUMENT_STATUS_FOR_SEND:
                 viewHolder.mStateIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.drawable.ic_document_status_sent_partially));
+                        mContext.getResources()
+                                .getDrawable(R.drawable.ic_document_status_sent_partially));
                 break;
 
             case Constants.DOCUMENT_STATUS_OK:
                 viewHolder.mStateIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.drawable.ic_document_status_sent_full));
+                        mContext.getResources()
+                                .getDrawable(R.drawable.ic_document_status_sent_full));
                 break;
 
             default:
@@ -263,9 +310,10 @@ public class DocumentsListAdapter
 
         public ViewHolder(
                 View itemView,
-                OnItemClickListener listener)
+                OnItemClickListener clickListener,
+                OnItemLongClickListener longClickListener)
         {
-            super(itemView, listener);
+            super(itemView, clickListener, longClickListener);
 
             mItemLayout = (LinearLayout) itemView.findViewById(R.id.item_layout);
             mTypeIcon = (ImageView) itemView.findViewById(R.id.type_icon);
@@ -329,5 +377,17 @@ public class DocumentsListAdapter
         }
 
         mDocuments.remove(id);
+    }
+
+
+    public void setOnDocLongClickListener(OnDocLongClickListener onDocLongClickListener)
+    {
+        mOnDocLongClickListener = onDocLongClickListener;
+    }
+
+
+    public interface OnDocLongClickListener
+    {
+        void onDocLongClick(GeoGeometry geometry);
     }
 }

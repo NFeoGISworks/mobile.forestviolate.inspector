@@ -109,7 +109,7 @@ public class SheetListFillerAdapter
                 View itemView,
                 OnItemClickListener listener)
         {
-            super(itemView, listener);
+            super(itemView, listener, null);
 
             mUnit = (TextView) itemView.findViewById(R.id.unit);
             mSpecies = (TextView) itemView.findViewById(R.id.species);

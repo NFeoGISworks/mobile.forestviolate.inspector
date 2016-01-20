@@ -131,7 +131,7 @@ public class TargetingListAdapter
                 View itemView,
                 OnItemClickListener listener)
         {
-            super(itemView, listener);
+            super(itemView, listener, null);
 
             mTarget = (TextView) itemView.findViewById(R.id.target);
         }

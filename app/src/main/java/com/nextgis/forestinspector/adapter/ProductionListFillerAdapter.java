@@ -106,7 +106,7 @@ public class ProductionListFillerAdapter
                 View itemView,
                 OnItemClickListener listener)
         {
-            super(itemView, listener);
+            super(itemView, listener, null);
 
             mSpecies = (TextView) itemView.findViewById(R.id.species);
             mType = (TextView) itemView.findViewById(R.id.type);

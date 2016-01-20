@@ -102,7 +102,7 @@ public class VehicleListFillerAdapter
                 View itemView,
                 OnItemClickListener listener)
         {
-            super(itemView, listener);
+            super(itemView, listener, null);
 
             mName = (TextView) itemView.findViewById(R.id.name);
             mDesc = (TextView) itemView.findViewById(R.id.desc);
