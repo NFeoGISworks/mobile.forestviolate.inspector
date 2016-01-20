@@ -35,7 +35,10 @@ import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.api.IStyleRule;
 import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.display.RuleFeatureRenderer;
+import com.nextgis.maplib.display.Style;
 import com.nextgis.maplib.map.LayerFactory;
 import com.nextgis.maplib.map.LayerGroup;
 import com.nextgis.maplib.map.NGWLookupTable;
@@ -646,6 +649,34 @@ public class DocumentsLayer extends NGWVectorLayer {
                 long attachIdL = Long.parseLong(attachItem.getAttachId());
                 vectorLayer.addChange(featureIdL, attachIdL, CHANGE_OPERATION_NEW);
             }
+        }
+    }
+
+
+    @Override
+    protected Style getDefaultStyle()
+            throws Exception
+    {
+        return DocumentStyleRule.getDefaultStyle();
+    }
+
+
+    protected IStyleRule getStyleRule()
+    {
+        return new DocumentStyleRule(mContext, this);
+    }
+
+
+    @Override
+    protected void setDefaultRenderer()
+    {
+        try {
+            Style style = getDefaultStyle();
+            IStyleRule rule = getStyleRule();
+            mRenderer = new RuleFeatureRenderer(this, rule, style);
+        } catch (Exception e) {
+            Log.d(TAG, e.getLocalizedMessage());
+            mRenderer = null;
         }
     }
 }

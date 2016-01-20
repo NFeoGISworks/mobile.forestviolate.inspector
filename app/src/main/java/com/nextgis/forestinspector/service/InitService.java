@@ -26,7 +26,6 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -848,7 +847,8 @@ public class InitService extends Service {
             String sURL = NGWUtil.getFeaturesUrl(connection.getURL(), resourceId, "login=" + login);
 
             try {
-                String sResponse = NetworkUtil.get(sURL, connection.getLogin(), connection.getPassword());
+                String sResponse = NetworkUtil.get(
+                        sURL, connection.getLogin(), connection.getPassword());
                 if(null == sResponse)
                     return false;
 
@@ -993,9 +993,6 @@ public class InitService extends Service {
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_ALL);
             ngwVectorLayer.setMinZoom(0);
             ngwVectorLayer.setMaxZoom(25);
-            SimpleTiledPolygonStyle style = new SimpleTiledPolygonStyle(Color.RED);
-            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
-            ngwVectorLayer.setRenderer(renderer);
 
             map.addLayer(ngwVectorLayer);
 
@@ -1070,7 +1067,8 @@ public class InitService extends Service {
         }
 
         protected boolean loadNotes(long resourceId, String accountName, MapBase map, IProgressor progressor) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
+                    InitService.this);
             long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
 
             NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(
