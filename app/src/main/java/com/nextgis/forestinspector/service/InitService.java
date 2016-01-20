@@ -26,6 +26,7 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -46,6 +47,7 @@ import com.nextgis.maplib.datasource.ngw.INGWResource;
 import com.nextgis.maplib.datasource.ngw.Resource;
 import com.nextgis.maplib.datasource.ngw.ResourceGroup;
 import com.nextgis.maplib.display.SimpleFeatureRenderer;
+import com.nextgis.maplib.display.SimpleMarkerStyle;
 import com.nextgis.maplib.display.SimpleTiledPolygonStyle;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
@@ -1121,6 +1123,15 @@ public class InitService extends Service {
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
             ngwVectorLayer.setMinZoom(0);
             ngwVectorLayer.setMaxZoom(25);
+
+            SimpleMarkerStyle style = new SimpleMarkerStyle();
+            style.setType(SimpleMarkerStyle.MarkerStyleCircle);
+            style.setColor(Color.RED);
+            style.setOutlineColor(Color.YELLOW);
+            style.setSize(9);
+            style.setWidth(3);
+            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
+            ngwVectorLayer.setRenderer(renderer);
 
             map.addLayer(ngwVectorLayer);
 
