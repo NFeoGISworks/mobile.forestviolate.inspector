@@ -57,7 +57,7 @@ public class DocumentStyleRule
     public static Style getDefaultStyle()
     {
         SimpleTiledPolygonStyle polygonStyle = new SimpleTiledPolygonStyle();
-        polygonStyle.setColor(Color.RED);
+        polygonStyle.setColor(Color.GRAY);
         polygonStyle.setWidth(3);
         polygonStyle.setFill(true);
         return polygonStyle;
@@ -85,7 +85,7 @@ public class DocumentStyleRule
         SimpleTiledPolygonStyle polygonStyle = (SimpleTiledPolygonStyle) style;
 
         if (mUserId == userId) {
-            polygonStyle.setColor(Color.GRAY);
+            polygonStyle.setColor(Color.CYAN);
             polygonStyle.setWidth(6);
         }
     }
