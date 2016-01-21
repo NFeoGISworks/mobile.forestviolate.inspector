@@ -31,7 +31,6 @@ import android.view.MenuItem;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.dialog.NoteListFillerDialog;
 import com.nextgis.forestinspector.util.Constants;
-import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
@@ -54,17 +53,7 @@ public class NoteCreatorActivity
         super.onCreate(savedInstanceState);
 
         MapBase map = MapBase.getInstance();
-        VectorLayer notesLayer = null;
-
-        for (int i = 0; i < map.getLayerCount(); ++i) {
-            ILayer layer = map.getLayer(i);
-
-            if (layer.getName().equals(getString(R.string.notes))) {
-                notesLayer = (VectorLayer) layer;
-                break;
-            }
-        }
-
+        VectorLayer notesLayer = (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_NOTES);
         if (null == notesLayer) {
             setContentView(R.layout.activity_document_noview);
             setToolbar(R.id.main_toolbar);

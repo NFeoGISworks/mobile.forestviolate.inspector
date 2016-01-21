@@ -55,8 +55,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
-import static com.nextgis.maplib.util.Constants.FIELD_ID;
+import static com.nextgis.maplib.util.Constants.*;
 
 
 /**
@@ -65,11 +64,12 @@ import static com.nextgis.maplib.util.Constants.FIELD_ID;
 public class DocumentsListAdapter
         extends ListSelectorAdapter
 {
-    protected MapEventSource mMap;
-    protected String mNotesPathName;
+    protected MapEventSource          mMap;
+    protected String                  mDocsPathName;
+    protected String                  mNotesPathName;
     protected List<DocumentsListItem> mDocuments;
-    protected long mUserId;
-    protected int mUserItemBackgroundColor;
+    protected long                    mUserId;
+    protected int                     mUserItemBackgroundColor;
 
     protected OnDocLongClickListener mOnDocLongClickListener;
 
@@ -85,13 +85,14 @@ public class DocumentsListAdapter
 
         mMap = (MapEventSource) MapBase.getInstance();
 
-        for (int i = 0, size = null != mMap ? mMap.getLayerCount() : 0; i < size; ++i) {
-            ILayer layer = mMap.getLayer(i);
+        ILayer docsLayer = mMap.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
+        if (null != docsLayer) {
+            mDocsPathName = docsLayer.getPath().getName();
+        }
 
-            if (layer.getName().equals(mContext.getString(R.string.notes))) {
-                mNotesPathName = layer.getPath().getName();
-                break;
-            }
+        ILayer notesLayer = mMap.getLayerByPathName(Constants.KEY_LAYER_NOTES);
+        if (null != notesLayer) {
+            mNotesPathName = notesLayer.getPath().getName();
         }
     }
 
@@ -365,14 +366,36 @@ public class DocumentsListAdapter
     {
         super.deleteSelected(id);
 
-        if (null != mNotesPathName) {
-            DocumentsListItem item = mDocuments.get(id);
+        String layerPathName = null;
+        DocumentsListItem item = mDocuments.get(id);
+        boolean isSavedDoc = false;
+
+        switch (item.mType) {
+            case Constants.DOC_TYPE_INDICTMENT:
+            case Constants.DOC_TYPE_SHEET:
+            case Constants.DOC_TYPE_FIELD_WORKS:
+                layerPathName = mDocsPathName;
+                isSavedDoc = true;
+                break;
+
+            case Constants.DOC_TYPE_NOTE:
+                layerPathName = mNotesPathName;
+                break;
+        }
+
+        if (null != layerPathName) {
             Uri uri = Uri.parse(
-                    "content://" + SettingsConstants.AUTHORITY + "/" + mNotesPathName + "/"
+                    "content://" + SettingsConstants.AUTHORITY + "/" + layerPathName + "/"
                             + item.mId);
 
+            if (isSavedDoc) {
+                uri = uri.buildUpon()
+                        .appendQueryParameter(URI_PARAMETER_NOT_SYNC, Boolean.FALSE.toString())
+                        .build();
+            }
+
             if (mContext.getContentResolver().delete(uri, null, null) <= 0) {
-                Log.d(Constants.FITAG, "delete feature into " + mNotesPathName + " failed");
+                Log.d(Constants.FITAG, "delete feature into " + layerPathName + " failed");
             }
         }
 

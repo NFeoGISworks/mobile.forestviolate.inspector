@@ -26,7 +26,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.MapEventListener;
@@ -97,25 +96,20 @@ public class DocumentsListLoader
             return documents;
         }
 
-
         mDocsId = mNotesId = -10;
-        for (int i = 0; i < mMap.getLayerCount(); ++i) {
-            ILayer layer = mMap.getLayer(i);
 
-            if (layer instanceof DocumentsLayer) {
-                mDocsId = layer.getId();
-            } else if (layer.getName().equals(mContext.getString(R.string.notes))) {
-                mNotesId = layer.getId();
-            }
+        ILayer docsLayer = mMap.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
+        if (null != docsLayer) {
+            mDocsId = docsLayer.getId();
+        }
 
-            if (mDocsId > -10 && mNotesId > -10) {
-                break;
-            }
+        ILayer notesLayer = mMap.getLayerByPathName(Constants.KEY_LAYER_NOTES);
+        if (null != notesLayer) {
+            mNotesId = notesLayer.getId();
         }
 
 
         if (mShowIndictments || mShowSheets || mShowFieldWorks) {
-            ILayer docsLayer = mMap.getLayerById(mDocsId);
             if (docsLayer != null) {
                 VectorLayer docs = (VectorLayer) docsLayer;
 
@@ -205,7 +199,6 @@ public class DocumentsListLoader
 
 
         if (mShowNotes) {
-            ILayer notesLayer = mMap.getLayerById(mNotesId);
             if (notesLayer != null) {
                 VectorLayer notes = (VectorLayer) notesLayer;
 
