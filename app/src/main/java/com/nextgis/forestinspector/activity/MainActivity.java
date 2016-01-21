@@ -613,13 +613,15 @@ public class MainActivity
             float zoom,
             GeoPoint center)
     {
-        mSectionsPagerAdapter.mMapFragment.setZoomAndCenter(zoom, center);
+        MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(1);
+        mapFragment.setZoomAndCenter(zoom, center);
     }
 
 
     public void updateMapTerritory(GeoGeometry geometry)
     {
-        mSectionsPagerAdapter.mMapFragment.updateTerritory(geometry);
+        MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(1);
+        mapFragment.updateTerritory(geometry);
     }
 
 
@@ -648,19 +650,21 @@ public class MainActivity
         @Override
         public Fragment getItem(int position)
         {
-            if (position == 0) {
-                DocumentsFragment documentsFragment = new DocumentsFragment();
-                setOnShowIndictmentsListener(documentsFragment);
-                setOnShowSheetsListener(documentsFragment);
-                setOnShowNotesListener(documentsFragment);
-                return documentsFragment;
-
-            } else {
-                if (null == mMapFragment) {
-                    mMapFragment = new MapFragment();
-                    mMapFragment.setInViewPager(true);
-                }
-                return mMapFragment;
+            switch (position) {
+                case 0:
+                    DocumentsFragment documentsFragment = new DocumentsFragment();
+                    setOnShowIndictmentsListener(documentsFragment);
+                    setOnShowSheetsListener(documentsFragment);
+                    setOnShowNotesListener(documentsFragment);
+                    return documentsFragment;
+                case 1:
+                    if (null == mMapFragment) {
+                        mMapFragment = new MapFragment();
+                        mMapFragment.setInViewPager(true);
+                    }
+                    return mMapFragment;
+                default:
+                    return null;
             }
         }
 
