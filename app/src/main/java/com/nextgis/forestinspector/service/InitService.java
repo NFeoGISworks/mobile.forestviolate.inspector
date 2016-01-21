@@ -1085,6 +1085,15 @@ public class InitService extends Service {
             ngwVectorLayer.setMinZoom(0);
             ngwVectorLayer.setMaxZoom(25);
 
+            SimpleMarkerStyle style = new SimpleMarkerStyle();
+            style.setType(SimpleMarkerStyle.MarkerStyleCircle);
+            style.setColor(Color.BLUE);
+            style.setOutlineColor(Color.GREEN);
+            style.setSize(9);
+            style.setWidth(3);
+            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
+            ngwVectorLayer.setRenderer(renderer);
+
             map.addLayer(ngwVectorLayer);
 
             try {

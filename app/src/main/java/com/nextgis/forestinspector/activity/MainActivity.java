@@ -53,6 +53,8 @@ import com.nextgis.forestinspector.service.InitService;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplib.datasource.GeoMultiPoint;
+import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
@@ -565,10 +567,21 @@ public class MainActivity
 
 
     @Override
-    public void onDocLongClick(GeoGeometry geometry)
+    public void onDocLongClick(
+            GeoGeometry geometry,
+            boolean isPoint)
     {
-        updateMapTerritory(geometry);
-        showMap();
+        if (isPoint) {
+            GeoMultiPoint point = (GeoMultiPoint) geometry;
+            if (point.size() > 0) {
+                setZoomAndCenter(16, point.get(0));
+                showMap();
+            }
+
+        } else {
+            updateMapTerritory(geometry);
+            showMap();
+        }
     }
 
 
@@ -593,6 +606,14 @@ public class MainActivity
     public interface OnShowNotesListener
     {
         void onShowNotes(boolean show);
+    }
+
+
+    public void setZoomAndCenter(
+            float zoom,
+            GeoPoint center)
+    {
+        mSectionsPagerAdapter.mMapFragment.setZoomAndCenter(zoom, center);
     }
 
 

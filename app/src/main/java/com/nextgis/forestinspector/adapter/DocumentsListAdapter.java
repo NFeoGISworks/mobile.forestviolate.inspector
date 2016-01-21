@@ -36,7 +36,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.DocumentViewActivity;
 import com.nextgis.forestinspector.activity.FieldWorksCreatorActivity;
@@ -64,12 +63,12 @@ import static com.nextgis.maplib.util.Constants.*;
 public class DocumentsListAdapter
         extends ListSelectorAdapter
 {
-    protected MapEventSource          mMap;
-    protected String                  mDocsPathName;
-    protected String                  mNotesPathName;
+    protected MapEventSource mMap;
+    protected String mDocsPathName;
+    protected String mNotesPathName;
     protected List<DocumentsListItem> mDocuments;
-    protected long                    mUserId;
-    protected int                     mUserItemBackgroundColor;
+    protected long mUserId;
+    protected int mUserItemBackgroundColor;
 
     protected OnDocLongClickListener mOnDocLongClickListener;
 
@@ -154,31 +153,47 @@ public class DocumentsListAdapter
                     @Override
                     public void onItemLongClick(int position)
                     {
-                        MainApplication app = (MainApplication) mContext.getApplicationContext();
-                        String docsLayerPathName = app.getDocsLayer().getPath().getName();
-
+                        String layerPathName = null;
                         DocumentsListItem item = mDocuments.get(position);
-                        Uri uri = Uri.parse(
-                                "content://" + app.getAuthority() + "/" + docsLayerPathName + "/"
-                                        + item.mId);
-                        String[] columns = new String[] {FIELD_GEOM};
+                        boolean isPoint = false;
 
-                        Cursor cursor =
-                                mContext.getContentResolver().query(uri, columns, null, null, null);
+                        switch (item.mType) {
+                            case Constants.DOC_TYPE_INDICTMENT:
+                            case Constants.DOC_TYPE_SHEET:
+                            case Constants.DOC_TYPE_FIELD_WORKS:
+                                layerPathName = mDocsPathName;
+                                break;
 
-                        if (null != cursor) {
-                            if (cursor.moveToFirst()) {
-                                GeoGeometry geometry = null;
-                                try {
-                                    geometry = GeoGeometryFactory.fromBlob(cursor.getBlob(0));
-                                } catch (IOException | ClassNotFoundException e) {
-                                    e.printStackTrace();
+                            case Constants.DOC_TYPE_NOTE:
+                                layerPathName = mNotesPathName;
+                                isPoint = true;
+                                break;
+                        }
+
+                        if (null != layerPathName) {
+                            Uri uri = Uri.parse(
+                                    "content://" + SettingsConstants.AUTHORITY + "/" + layerPathName
+                                            + "/" + item.mId);
+
+                            String[] columns = new String[] {FIELD_GEOM};
+
+                            Cursor cursor = mContext.getContentResolver()
+                                    .query(uri, columns, null, null, null);
+
+                            if (null != cursor) {
+                                if (cursor.moveToFirst()) {
+                                    GeoGeometry geometry = null;
+                                    try {
+                                        geometry = GeoGeometryFactory.fromBlob(cursor.getBlob(0));
+                                    } catch (IOException | ClassNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                    if (null != geometry && null != mOnDocLongClickListener) {
+                                        mOnDocLongClickListener.onDocLongClick(geometry, isPoint);
+                                    }
                                 }
-                                if (null != geometry && null != mOnDocLongClickListener) {
-                                    mOnDocLongClickListener.onDocLongClick(geometry);
-                                }
+                                cursor.close();
                             }
-                            cursor.close();
                         }
                     }
                 });
@@ -411,6 +426,8 @@ public class DocumentsListAdapter
 
     public interface OnDocLongClickListener
     {
-        void onDocLongClick(GeoGeometry geometry);
+        void onDocLongClick(
+                GeoGeometry geometry,
+                boolean isPoint);
     }
 }

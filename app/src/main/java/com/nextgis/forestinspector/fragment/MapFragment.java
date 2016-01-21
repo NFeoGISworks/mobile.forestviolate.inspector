@@ -693,6 +693,14 @@ public class MapFragment
     }
 
 
+    public void setZoomAndCenter(
+            float zoom,
+            GeoPoint center)
+    {
+        mMap.setZoomAndCenter(zoom, center);
+    }
+
+
     public void updateTerritory(GeoGeometry geometry)
     {
         if (null != geometry) {
