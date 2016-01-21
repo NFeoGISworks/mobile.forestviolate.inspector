@@ -240,7 +240,11 @@ public class MainApplication
 
     public void clearAllTemps()
     {
-        getDocsLayer().deleteAllTemps();
+        DocumentsLayer documentsLayer = getDocsLayer();
+
+        if (null != documentsLayer) {
+            documentsLayer.deleteAllTemps();
+        }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor edit = prefs.edit();
