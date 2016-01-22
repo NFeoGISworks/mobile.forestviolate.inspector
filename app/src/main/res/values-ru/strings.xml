@@ -287,4 +287,7 @@
     <string name="send">Отправить</string>
     <string name="delete">Удалить</string>
 
+    <string name="target_item_name">Целеуказание</string>
+    <string name="selected_items">Выбранные элементы</string>
+
 </resources>

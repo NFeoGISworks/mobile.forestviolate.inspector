@@ -28,6 +28,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.dialog.ClickedItemsInfoGetter;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.datasource.GeoEnvelope;
@@ -55,6 +57,7 @@ import com.nextgis.maplib.util.LocationUtil;
 import com.nextgis.maplibui.api.MapViewEventListener;
 import com.nextgis.maplibui.mapui.MapViewOverlays;
 import com.nextgis.maplibui.overlay.CurrentLocationOverlay;
+import com.nextgis.maplibui.util.ConstantsUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 
@@ -87,6 +90,8 @@ public class MapFragment
 
     protected boolean mIsInViewPager = false;
 
+    protected float mTolerancePX;
+
 
     public void setInViewPager(boolean isInViewPager)
     {
@@ -102,6 +107,9 @@ public class MapFragment
         if (null == getParentFragment()) {
             setRetainInstance(true);
         }
+
+        MainApplication app = (MainApplication) getActivity().getApplication();
+        mTolerancePX = app.getResources().getDisplayMetrics().density * ConstantsUI.TOLERANCE_DP;
     }
 
 
@@ -445,7 +453,19 @@ public class MapFragment
     @Override
     public void onLongPress(MotionEvent event)
     {
+        double minX = event.getX() - mTolerancePX;
+        double maxX = event.getX() + mTolerancePX;
+        double minY = event.getY() - mTolerancePX;
+        double maxY = event.getY() + mTolerancePX;
 
+        GeoEnvelope envelope = mMap.screenToMap(new GeoEnvelope(minX, maxX, minY, maxY));
+        if (null == envelope) {
+            return;
+        }
+
+        ClickedItemsInfoGetter infoGetter =
+                new ClickedItemsInfoGetter((AppCompatActivity) getActivity(), envelope);
+        infoGetter.showInfo();
     }
 
 

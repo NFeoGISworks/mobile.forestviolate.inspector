@@ -279,7 +279,7 @@ public class DocumentsListAdapter
             viewHolder.mItemLayout.setBackgroundColor(Color.TRANSPARENT);
         }
 
-        viewHolder.mTypeName.setText(item.mName);
+        viewHolder.mTypeName.setText(item.mTypeName);
         viewHolder.mDocDesc.setText(item.mDesc);
 
         SimpleDateFormat sdf = new SimpleDateFormat(

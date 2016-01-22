@@ -1085,6 +1085,7 @@ public class InitService extends Service {
             ngwVectorLayer.setMinZoom(0);
             ngwVectorLayer.setMaxZoom(25);
 
+            // TODO: make with RuleStyle for Constants.FIELD_NOTES_DATE_END + " >= " + System.currentTimeMillis()
             SimpleMarkerStyle style = new SimpleMarkerStyle();
             style.setType(SimpleMarkerStyle.MarkerStyleCircle);
             style.setColor(Color.BLUE);
@@ -1133,6 +1134,7 @@ public class InitService extends Service {
             ngwVectorLayer.setMinZoom(0);
             ngwVectorLayer.setMaxZoom(25);
 
+            // TODO: make with RuleStyle for Constants.FIELD_FV_STATUS + " = " + Constants.FV_STATUS_NEW_FOREST_CHANGE
             SimpleMarkerStyle style = new SimpleMarkerStyle();
             style.setType(SimpleMarkerStyle.MarkerStyleCircle);
             style.setColor(Color.RED);

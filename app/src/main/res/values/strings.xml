@@ -287,4 +287,7 @@
     <string name="send">Send</string>
     <string name="delete">Delete</string>
 
+    <string name="target_item_name">Targeting</string>
+    <string name="selected_items">Selected items</string>
+
 </resources>

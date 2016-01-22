@@ -30,7 +30,7 @@ import java.util.Date;
 public class DocumentsListItem
         implements Comparable<DocumentsListItem>
 {
-    public String mName;
+    public String mTypeName;
     public String mDesc;
     public Date   mDate;
     public int    mType;

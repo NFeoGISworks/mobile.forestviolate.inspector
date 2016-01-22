@@ -23,19 +23,24 @@
 package com.nextgis.forestinspector.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.MapEventListener;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapEventSource;
 import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplib.util.LayerUtil;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,12 +56,19 @@ public class DocumentsListLoader
     protected List<DocumentsListItem> mDocuments;
     protected MapEventSource          mMap;
 
-    protected int mDocsId, mNotesId;
+    protected int mDocsLayerId, mNotesLayerId, mTargetsLayerId;
 
     protected boolean mShowIndictments = false;
     protected boolean mShowSheets      = false;
     protected boolean mShowFieldWorks  = false;
     protected boolean mShowNotes       = false;
+    protected boolean mShowTargets     = false;
+
+    protected List<Long> mDocsIds;
+    protected List<Long> mNotesIds;
+    protected List<Long> mTargetsIds;
+
+    protected long mUserId;
 
 
     public DocumentsListLoader(
@@ -80,6 +92,27 @@ public class DocumentsListLoader
         }
 
         mMap = (MapEventSource) MapBase.getInstance();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mUserId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
+    }
+
+
+    public DocumentsListLoader(
+            Context context,
+            List<Long> docsIds,
+            List<Long> notesIds,
+            List<Long> targetsIds)
+    {
+        super(context);
+
+        mContext = context;
+        mDocsIds = docsIds;
+        mNotesIds = notesIds;
+        mTargetsIds = targetsIds;
+
+        mMap = (MapEventSource) MapBase.getInstance();
+        mShowTargets = true;
     }
 
 
@@ -96,158 +129,277 @@ public class DocumentsListLoader
             return documents;
         }
 
-        mDocsId = mNotesId = -10;
+        mDocsLayerId = mNotesLayerId = mTargetsLayerId = -10;
 
         ILayer docsLayer = mMap.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
         if (null != docsLayer) {
-            mDocsId = docsLayer.getId();
+            mDocsLayerId = docsLayer.getId();
         }
 
         ILayer notesLayer = mMap.getLayerByPathName(Constants.KEY_LAYER_NOTES);
         if (null != notesLayer) {
-            mNotesId = notesLayer.getId();
+            mNotesLayerId = notesLayer.getId();
         }
 
+        ILayer targetsLayer = mMap.getLayerByPathName(Constants.KEY_LAYER_FV);
+        if (null != targetsLayer) {
+            mTargetsLayerId = targetsLayer.getId();
+        }
 
-        if (mShowIndictments || mShowSheets || mShowFieldWorks) {
-            if (docsLayer != null) {
-                VectorLayer docs = (VectorLayer) docsLayer;
+        if ((mShowIndictments || mShowSheets || mShowFieldWorks
+                || mShowTargets && null != mDocsIds && mDocsIds.size() > 0) && docsLayer != null) {
 
-                //order by datetime(datetimeColumn) DESC LIMIT 100
-                Cursor cursor = docs.query(
-                        new String[] {
-                                com.nextgis.maplib.util.Constants.FIELD_ID,
-                                Constants.FIELD_DOCUMENTS_USER_ID,
-                                Constants.FIELD_DOCUMENTS_TYPE,
-                                Constants.FIELD_DOC_ID,
-                                Constants.FIELD_DOCUMENTS_DATE,
-                                Constants.FIELD_DOCUMENTS_NUMBER,
-                                Constants.FIELD_DOCUMENTS_STATUS,
-                                Constants.FIELD_DOCUMENTS_VIOLATION_TYPE,
-                                Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE}, null, null,
-                        Constants.FIELD_DOCUMENTS_DATE + " DESC", " " + Constants.MAX_DOCUMENTS);
+            VectorLayer docs = (VectorLayer) docsLayer;
 
-                if (null != cursor) {
-                    int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
-                    int userIdPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_USER_ID);
-                    int typePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_TYPE);
-                    int docIdPos = cursor.getColumnIndex(Constants.FIELD_DOC_ID);
-                    int datePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DATE);
-                    int numberPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_NUMBER);
-                    int statusPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_STATUS);
-                    int violatePos =
-                            cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
-                    int forestCatTypePos =
-                            cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
+            String[] columns = new String[] {
+                    com.nextgis.maplib.util.Constants.FIELD_ID,
+                    Constants.FIELD_DOCUMENTS_USER_ID,
+                    Constants.FIELD_DOCUMENTS_TYPE,
+                    Constants.FIELD_DOC_ID,
+                    Constants.FIELD_DOCUMENTS_DATE,
+                    Constants.FIELD_DOCUMENTS_NUMBER,
+                    Constants.FIELD_DOCUMENTS_STATUS,
+                    Constants.FIELD_DOCUMENTS_VIOLATION_TYPE,
+                    Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE};
 
-                    if (cursor.moveToFirst()) {
-                        do {
-                            int nParentDocId = cursor.getInt(docIdPos);
-                            if (nParentDocId > 0) //don't show connected documents
-                            {
+            String selection = null;
+            if (mShowTargets) {
+                selection = LayerUtil.getSelectionForIds(mDocsIds);
+            }
+
+            String sortOrder = Constants.FIELD_DOCUMENTS_DATE + " DESC";
+            String limit = " " + Constants.MAX_DOCUMENTS;
+
+            //order by datetime(datetimeColumn) DESC LIMIT 100
+            Cursor cursor = docs.query(columns, selection, null, sortOrder, limit);
+
+            if (null != cursor) {
+                int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
+                int userIdPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_USER_ID);
+                int typePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_TYPE);
+                int docIdPos = cursor.getColumnIndex(Constants.FIELD_DOC_ID);
+                int datePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DATE);
+                int numberPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_NUMBER);
+                int statusPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_STATUS);
+                int violatePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
+                int forestCatTypePos =
+                        cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
+
+                if (cursor.moveToFirst()) {
+                    do {
+                        int nParentDocId = cursor.getInt(docIdPos);
+                        if (nParentDocId > 0) //don't show connected documents
+                        {
+                            continue;
+                        }
+
+                        int docType = cursor.getInt(typePos);
+                        if (!mShowTargets && (
+                                !mShowIndictments && Constants.DOC_TYPE_INDICTMENT == docType
+                                        || !mShowSheets && Constants.DOC_TYPE_SHEET == docType
+                                        || !mShowFieldWorks
+                                        && Constants.DOC_TYPE_FIELD_WORKS == docType)) {
+                            continue;
+                        }
+
+                        DocumentsListItem doc = new DocumentsListItem();
+
+                        switch (docType) {
+                            case Constants.DOC_TYPE_INDICTMENT:
+                                doc.mTypeName = mContext.getString(R.string.indictment);
+                                doc.mDesc = cursor.getString(violatePos);
+                                break;
+                            case Constants.DOC_TYPE_SHEET:
+                                doc.mTypeName = mContext.getString(R.string.sheet_item_name);
+                                doc.mDesc = "";
+                                break;
+                            case Constants.DOC_TYPE_FIELD_WORKS:
+                                doc.mTypeName = mContext.getString(R.string.field_works_item_name);
+                                doc.mDesc = mContext.getString(R.string.field_works_for) + " "
+                                        + cursor.getString(forestCatTypePos);
+                                break;
+                            default:
                                 continue;
-                            }
+                        }
 
-                            int docType = cursor.getInt(typePos);
-                            if (!mShowIndictments && Constants.DOC_TYPE_INDICTMENT == docType
-                                    || !mShowSheets && Constants.DOC_TYPE_SHEET == docType
-                                    || !mShowFieldWorks
-                                    && Constants.DOC_TYPE_FIELD_WORKS == docType) {
-                                continue;
-                            }
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(cursor.getLong(datePos));
 
-                            DocumentsListItem doc = new DocumentsListItem();
-                            doc.mType = docType;
-                            switch (docType) {
-                                case Constants.DOC_TYPE_INDICTMENT:
-                                    doc.mName = mContext.getString(R.string.indictment);
-                                    doc.mDesc = cursor.getString(violatePos);
-                                    break;
-                                case Constants.DOC_TYPE_SHEET:
-                                    doc.mName = mContext.getString(R.string.sheet_item_name);
-                                    doc.mDesc = "";
-                                    break;
-                                case Constants.DOC_TYPE_FIELD_WORKS:
-                                    doc.mName = mContext.getString(R.string.field_works_item_name);
-                                    doc.mDesc = mContext.getString(R.string.field_works_for) + " "
-                                            + cursor.getString(forestCatTypePos);
-                                    break;
-                                default:
-                                    continue;
-                            }
+                        doc.mType = docType;
+                        doc.mDate = calendar.getTime();
+                        doc.mTypeName += " " + cursor.getString(numberPos);
+                        doc.mStatus = cursor.getInt(statusPos);
+                        doc.mId = cursor.getLong(idPos);
+                        doc.mUserId = cursor.getLong(userIdPos);
+                        doc.mIsSigned = !docs.hasFeatureNotSyncFlag(doc.mId);
 
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTimeInMillis(cursor.getLong(datePos));
-                            doc.mDate = calendar.getTime();
+                        documents.add(doc);
 
-                            doc.mName += " " + cursor.getString(numberPos);
-                            doc.mStatus = cursor.getInt(statusPos);
-
-                            doc.mId = cursor.getLong(idPos);
-                            doc.mUserId = cursor.getLong(userIdPos);
-
-                            doc.mIsSigned = !docs.hasFeatureNotSyncFlag(doc.mId);
-
-                            documents.add(doc);
-
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
+                    } while (cursor.moveToNext());
                 }
+                cursor.close();
             }
         }
 
 
-        if (mShowNotes) {
-            if (notesLayer != null) {
-                VectorLayer notes = (VectorLayer) notesLayer;
+        if ((mShowNotes || mShowTargets && null != mNotesIds && mNotesIds.size() > 0)
+                && notesLayer != null) {
 
-                String selection =
-                        Constants.FIELD_NOTES_DATE_END + " >= " + System.currentTimeMillis();
+            VectorLayer notes = (VectorLayer) notesLayer;
 
-                Cursor cursor = notes.query(
-                        new String[] {
-                                com.nextgis.maplib.util.Constants.FIELD_ID,
-                                Constants.FIELD_NOTES_DATE_BEG,
-                                Constants.FIELD_NOTES_DATE_END,
-                                Constants.FIELD_NOTES_DESCRIPTION}, selection, null,
-                        Constants.FIELD_NOTES_DATE_BEG + " DESC", " " + Constants.MAX_NOTES);
+            String[] columns = new String[] {
+                    com.nextgis.maplib.util.Constants.FIELD_ID,
+                    Constants.FIELD_NOTES_DATE_BEG,
+                    Constants.FIELD_NOTES_DATE_END,
+                    Constants.FIELD_NOTES_DESCRIPTION};
 
-                if (null != cursor) {
-                    int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
-                    int dateBegPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DATE_BEG);
-                    int dateEndPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DATE_END);
-                    int descPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DESCRIPTION);
+            String selection;
+            if (mShowTargets) {
+                selection = LayerUtil.getSelectionForIds(mNotesIds);
+            } else {
+                selection = Constants.FIELD_NOTES_DATE_END + " >= " + System.currentTimeMillis();
+            }
 
-                    if (cursor.moveToFirst()) {
-                        do {
-                            DocumentsListItem doc = new DocumentsListItem();
-                            doc.mType = Constants.DOC_TYPE_NOTE;
+            String sortOrder = Constants.FIELD_NOTES_DATE_BEG + " DESC";
+            String limit = " " + Constants.MAX_NOTES;
 
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTimeInMillis(cursor.getLong(dateBegPos));
-                            doc.mDate = calendar.getTime();
+            Cursor cursor = notes.query(columns, selection, null, sortOrder, limit);
 
-                            doc.mName = mContext.getString(R.string.note_item_name);
+            if (null != cursor) {
+                int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
+                int dateBegPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DATE_BEG);
+                int dateEndPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DATE_END);
+                int descPos = cursor.getColumnIndex(Constants.FIELD_NOTES_DESCRIPTION);
 
-                            doc.mStatus = -1; //note status
-                            doc.mDesc = cursor.getString(descPos);
+                if (cursor.moveToFirst()) {
+                    do {
+                        DocumentsListItem doc = new DocumentsListItem();
 
-                            doc.mId = cursor.getLong(idPos);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(cursor.getLong(dateBegPos));
 
-                            documents.add(doc);
+                        doc.mType = Constants.DOC_TYPE_NOTE;
+                        doc.mDate = calendar.getTime();
+                        doc.mTypeName = mContext.getString(R.string.note_item_name);
+                        doc.mStatus = -1; //note status
+                        doc.mDesc = cursor.getString(descPos);
+                        doc.mId = cursor.getLong(idPos);
+                        doc.mUserId = mUserId;
 
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
+                        documents.add(doc);
+
+                    } while (cursor.moveToNext());
                 }
+                cursor.close();
             }
         }
 
 
-        Collections.sort(documents);
+        if ((mShowTargets && null != mTargetsIds && mTargetsIds.size() > 0)
+                && targetsLayer != null) {
+
+            VectorLayer targets = (VectorLayer) targetsLayer;
+
+            String[] columns = {
+                    com.nextgis.maplib.util.Constants.FIELD_ID,
+                    Constants.FIELD_FV_DATE,
+                    Constants.FIELD_FV_FORESTRY,
+                    Constants.FIELD_FV_PRECINCT,
+                    Constants.FIELD_FV_REGION,
+                    Constants.FIELD_FV_TERRITORY};
+
+//            String selection =
+//                    Constants.FIELD_FV_STATUS + " = " + Constants.FV_STATUS_NEW_FOREST_CHANGE;
+            String selection = LayerUtil.getSelectionForIds(mTargetsIds);
+
+            String sortOrder = Constants.FIELD_FV_DATE + " DESC";
+
+            Cursor cursor = targets.query(columns, selection, null, sortOrder, null);
+
+            if (null != cursor) {
+                int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
+                int datePos = cursor.getColumnIndexOrThrow(Constants.FIELD_FV_DATE);
+                int forestryPos = cursor.getColumnIndexOrThrow(Constants.FIELD_FV_FORESTRY);
+                int precinctPos = cursor.getColumnIndexOrThrow(Constants.FIELD_FV_PRECINCT);
+                int regionPos = cursor.getColumnIndexOrThrow(Constants.FIELD_FV_REGION);
+                int territoryPos = cursor.getColumnIndexOrThrow(Constants.FIELD_FV_TERRITORY);
+
+                if (cursor.moveToFirst()) {
+                    do {
+                        DocumentsListItem doc = new DocumentsListItem();
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(cursor.getLong(datePos));
+
+                        doc.mType = Constants.DOC_TYPE_TARGET;
+                        doc.mDate = calendar.getTime();
+                        doc.mTypeName = mContext.getString(R.string.target_item_name);
+                        doc.mStatus = -1; //target status
+                        doc.mDesc = cursor.getString(regionPos) + " " +
+                                cursor.getString(forestryPos) + "\n" +
+                                cursor.getString(precinctPos) + " " +
+                                cursor.getString(territoryPos);
+                        doc.mId = cursor.getLong(idPos);
+
+                        documents.add(doc);
+
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+            }
+        }
+
+        if (mShowTargets) {
+            Collections.sort(
+                    documents, new Comparator<DocumentsListItem>()
+                    {
+                        @Override
+                        public int compare(
+                                DocumentsListItem lhs,
+                                DocumentsListItem rhs)
+                        {
+                            int res = compareTypes(lhs.mType, rhs.mType);
+                            if (res == 0) {
+                                return lhs.mDate.compareTo(rhs.mDate);
+                            }
+                            return res;
+                        }
+                    });
+        } else {
+            Collections.sort(documents);
+        }
 
         return documents;
+    }
+
+
+    protected int compareTypes(
+            int lhs,
+            int rhs)
+    {
+        if (lhs <= Constants.DOC_TYPE_SHEET && rhs <= Constants.DOC_TYPE_SHEET) {
+            return 0;
+        }
+
+        if (lhs <= Constants.DOC_TYPE_SHEET && rhs >= Constants.DOC_TYPE_TARGET) {
+            return -1;
+        }
+
+        if (lhs >= Constants.DOC_TYPE_TARGET && rhs <= Constants.DOC_TYPE_SHEET) {
+            return 1;
+        }
+
+        // lhs >= Constants.DOC_TYPE_TARGET && rhs >= Constants.DOC_TYPE_TARGET
+        return compareInteger(lhs, rhs);
+    }
+
+
+    protected int compareInteger(
+            int lhs,
+            int rhs)
+    {
+        // from source Integer.compare()
+        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
 
@@ -387,7 +539,7 @@ public class DocumentsListLoader
     public void onLayerChanged(int id)
     {
         //work only on docs and notes layers
-        if (id == mDocsId || id == mNotesId) {
+        if (id == mDocsLayerId || id == mNotesLayerId || mShowTargets && id == mTargetsLayerId) {
             // Tell the loader about the change.
             onContentChanged();
         }
