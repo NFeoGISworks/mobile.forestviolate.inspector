@@ -110,8 +110,8 @@ public class ClickedItemsListAdapter
                         mContext.getResources().getDrawable(R.mipmap.ic_bookmark));
                 break;
             case Constants.DOC_TYPE_TARGET:
-//                viewHolder.mTypeIcon.setImageDrawable(
-//                        mContext.getResources().getDrawable(R.mipmap.));
+                viewHolder.mTypeIcon.setImageDrawable(
+                        mContext.getResources().getDrawable(R.mipmap.ic_target));
                 viewHolder.mDocDesc.setMaxLines(4);
                 break;
         }

@@ -285,6 +285,7 @@ public class DocumentsListLoader
                         doc.mDesc = cursor.getString(descPos);
                         doc.mId = cursor.getLong(idPos);
                         doc.mUserId = mUserId;
+                        doc.mIsSigned = true;
 
                         documents.add(doc);
 
@@ -340,6 +341,7 @@ public class DocumentsListLoader
                                 cursor.getString(precinctPos) + " " +
                                 cursor.getString(territoryPos);
                         doc.mId = cursor.getLong(idPos);
+                        doc.mIsSigned = true;
 
                         documents.add(doc);
 
