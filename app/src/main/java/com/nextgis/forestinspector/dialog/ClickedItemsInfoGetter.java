@@ -33,12 +33,15 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.ILayerView;
 import com.nextgis.maplib.datasource.GeoEnvelope;
+import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplibui.activity.ModifyAttributesActivity;
 
 import java.util.List;
 
 import static com.nextgis.maplib.util.Constants.FIELD_ID;
+import static com.nextgis.maplibui.util.ConstantsUI.*;
 
 
 public class ClickedItemsInfoGetter
@@ -136,18 +139,31 @@ public class ClickedItemsInfoGetter
             case Constants.DOC_TYPE_SHEET:
             case Constants.DOC_TYPE_FIELD_WORKS:
                 intent = new Intent(mActivity, DocumentViewActivity.class);
+                intent.putExtra(FIELD_ID, featureId);
                 intent.putExtra(Constants.DOCUMENT_VIEWER, true);
                 break;
             case Constants.DOC_TYPE_NOTE:
                 intent = new Intent(mActivity, NoteCreatorActivity.class);
+                intent.putExtra(FIELD_ID, featureId);
                 break;
             case Constants.DOC_TYPE_TARGET:
-//                intent = new Intent(mContext, TargetViewerActivity.class);
+                VectorLayer targetsLayer =
+                        (VectorLayer) mMap.getLayerByPathName(Constants.KEY_LAYER_FV);
+
+                GeoGeometry geometry = targetsLayer.getGeometryForId(featureId);
+
+                intent = new Intent(mActivity, ModifyAttributesActivity.class);
+                intent.putExtra(KEY_LAYER_ID, targetsLayer.getId());
+                intent.putExtra(KEY_FEATURE_ID, featureId);
+                intent.putExtra(KEY_VIEW_ONLY, true);
+                intent.putExtra(KEY_GEOMETRY_CHANGED, false);
+                if (null != geometry) {
+                    intent.putExtra(KEY_GEOMETRY, geometry);
+                }
                 break;
         }
 
         if (null != intent) {
-            intent.putExtra(FIELD_ID, featureId);
             mActivity.startActivity(intent);
         }
     }
