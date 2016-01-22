@@ -247,7 +247,7 @@
     <string name="field_works_item_cutting_area_cultivation_quality">2. Качество разработки лесосеки, соблюдение требований Правил заготовки древесины, Правил ухода за лесом, Правил пожарной безопасности в лесах, Санитарных правил в лесах:</string>
     <string name="field_works_item_violation">3. В ходе проведения полевых мероприятий по контролю охраны, защиты и воспроизводства лесов выявлены следующие нарушения лесного и земельного законодательства:</string>
     <string name="field_works_item_attachments">Список приложений, обосновывающих выводы по итогам проведенных полевых мероприятий по контролю:</string>
-
+    <string name="field_works_create_attachments_table">Создать таблицу вложений</string>
     <string name="field_works_create_photo_table">Заполнить фототаблицу</string>
     <string name="field_works_item_inspectors_signatures">Подписи государственного(ых) инспектора(ов):</string>
     <string name="field_works_item_participants_signatures">Подписи лиц, участвовавших в полевых мероприятиях:</string>
