@@ -45,6 +45,7 @@ import com.nextgis.forestinspector.adapter.DocumentsListAdapter;
 import com.nextgis.forestinspector.adapter.DocumentsListItem;
 import com.nextgis.forestinspector.adapter.DocumentsListLoader;
 import com.nextgis.forestinspector.adapter.SimpleDividerItemDecoration;
+import com.nextgis.forestinspector.util.Constants;
 
 import java.io.IOException;
 import java.util.List;
@@ -308,11 +309,11 @@ public class DocumentsFragment
             args.putBoolean(KEY_SHOW_NOTES, mShowNotes);
         }
 
-        Loader loader = getLoaderManager().getLoader(0);
+        Loader loader = getLoaderManager().getLoader(Constants.DOCUMENTS_LOADER);
         if (null != loader && loader.isStarted()) {
-            getLoaderManager().restartLoader(0, args, this);
+            getLoaderManager().restartLoader(Constants.DOCUMENTS_LOADER, args, this);
         } else {
-            getLoaderManager().initLoader(0, args, this);
+            getLoaderManager().initLoader(Constants.DOCUMENTS_LOADER, args, this);
         }
     }
 

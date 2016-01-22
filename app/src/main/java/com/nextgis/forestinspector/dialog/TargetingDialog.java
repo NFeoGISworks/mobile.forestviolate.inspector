@@ -387,11 +387,11 @@ public class TargetingDialog
 
     private void runLoader()
     {
-        Loader loader = getLoaderManager().getLoader(0);
+        Loader loader = getLoaderManager().getLoader(Constants.TARGETING_LOADER);
         if (null != loader && loader.isStarted()) {
-            getLoaderManager().restartLoader(0, null, this);
+            getLoaderManager().restartLoader(Constants.TARGETING_LOADER, null, this);
         } else {
-            getLoaderManager().initLoader(0, null, this);
+            getLoaderManager().initLoader(Constants.TARGETING_LOADER, null, this);
         }
     }
 
@@ -407,7 +407,6 @@ public class TargetingDialog
         String[] projection = {
                 com.nextgis.maplib.util.Constants.FIELD_ID,
                 Constants.FIELD_FV_OBJECTID,
-                Constants.FIELD_FV_STATUS,
                 Constants.FIELD_FV_DATE,
                 Constants.FIELD_FV_FORESTRY,
                 Constants.FIELD_FV_PRECINCT,

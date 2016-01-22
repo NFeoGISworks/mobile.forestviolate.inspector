@@ -83,17 +83,7 @@ public class DocumentEditFeature extends DocumentFeature {
 
     public static DocumentsLayer getDocumentsLayer(){
         MapBase map = MapBase.getInstance();
-        DocumentsLayer docsLayer = (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
-        /*DocumentsLayer docsLayer = null;
-        for (int i = 0; i < map.getLayerCount(); i++) {
-            ILayer layer = map.getLayer(i);
-            if (layer instanceof DocumentsLayer) {
-                docsLayer = (DocumentsLayer) layer;
-                break;
-            }
-        }
-        */
-        return docsLayer;
+        return (DocumentsLayer) map.getLayerByPathName(Constants.KEY_LAYER_DOCUMENTS);
     }
 
     public String getTerritoryTextByGeom(

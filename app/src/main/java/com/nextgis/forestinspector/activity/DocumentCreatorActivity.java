@@ -246,13 +246,13 @@ public abstract class DocumentCreatorActivity
         if (null == vector) {
             FragmentManager fm = getSupportFragmentManager();
 
-            TargetingDialog fragment =
+            TargetingDialog dialog =
                     (TargetingDialog) fm.findFragmentByTag(Constants.FRAGMENT_TARGETING_DIALOG);
 
-            if (fragment == null) {
-                TargetingDialog dialog = new TargetingDialog();
+            if (dialog == null) {
+                dialog = new TargetingDialog();
                 dialog.setOnSelectTargetListener(this);
-                dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_TARGETING_DIALOG);
+                dialog.show(fm, Constants.FRAGMENT_TARGETING_DIALOG);
             }
         }
     }

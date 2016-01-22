@@ -98,7 +98,7 @@ public class SelectParcelsActivity
     private void handleIntent(Intent intent)
     {
         Bundle bundle = null;
-        Loader loader = getSupportLoaderManager().getLoader(0);
+        Loader loader = getSupportLoaderManager().getLoader(Constants.PARCELS_LOADER);
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -112,9 +112,9 @@ public class SelectParcelsActivity
         }
 
         if (null != loader && loader.isStarted()) {
-            getSupportLoaderManager().restartLoader(0, bundle, this);
+            getSupportLoaderManager().restartLoader(Constants.PARCELS_LOADER, bundle, this);
         } else {
-            getSupportLoaderManager().initLoader(0, bundle, this);
+            getSupportLoaderManager().initLoader(Constants.PARCELS_LOADER, bundle, this);
         }
     }
 

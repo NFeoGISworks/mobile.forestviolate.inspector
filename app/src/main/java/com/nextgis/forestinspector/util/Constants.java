@@ -97,11 +97,13 @@ public interface Constants
     /**
      * document types
      */
-    int DOC_TYPE_NOTE        = 0;
-    int DOC_TYPE_FIELD_WORKS = 1;
-    int DOC_TYPE_INDICTMENT  = 2;
-    int DOC_TYPE_SHEET       = 3;
-    int DOC_TYPE_VEHICLE     = 4;
+    int DOC_TYPE_FIELD_WORKS  = 1;
+    int DOC_TYPE_INDICTMENT   = 2;
+    int DOC_TYPE_SHEET        = 3;
+    int DOC_TYPE_VEHICLE      = 4;
+    int DOC_TYPE_DOCUMENT_ANY = 21;
+    int DOC_TYPE_TARGET       = 22;
+    int DOC_TYPE_NOTE         = 23;
 
     int STEP_STATE_WAIT   = 0;
     int STEP_STATE_WORK   = 1;
@@ -234,6 +236,7 @@ public interface Constants
     String FRAGMENT_PHOTO_TABLE              = "photo_table";
     String FRAGMENT_PHOTO_DESC_EDITOR_DIALOG = "photo_desc_editor_dialog";
     String FRAGMENT_TARGETING_DIALOG         = "targeting_dialog";
+    String FRAGMENT_CLICKED_LIST_DIALOG      = "clicked_list_dialog";
 
     int DOCS_VECTOR_SCOPE = 10000;
 
@@ -242,4 +245,9 @@ public interface Constants
     int FIELD_WORKS_ACTIVITY = 1103;
 
     String DOCUMENT_VIEWER = "document_viewer";
+
+    int DOCUMENTS_LOADER = 0;
+    int PARCELS_LOADER   = 1;
+    int TARGETING_LOADER = 2;
+    int CLICKED_LOADER   = 3;
 }
