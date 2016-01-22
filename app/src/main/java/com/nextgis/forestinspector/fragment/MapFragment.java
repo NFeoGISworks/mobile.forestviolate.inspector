@@ -393,7 +393,7 @@ public class MapFragment
             startGpsWork();
         }
 
-        mShowStatusPanel = prefs.getBoolean(SettingsConstantsUI.KEY_PREF_SHOW_STATUS_PANEL, true);
+        mShowStatusPanel = prefs.getBoolean(SettingsConstantsUI.KEY_PREF_SHOW_STATUS_PANEL, false);
 
         if (null != mStatusPanel) {
             if (mShowStatusPanel) {
