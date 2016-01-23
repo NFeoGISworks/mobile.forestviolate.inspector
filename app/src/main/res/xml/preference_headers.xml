@@ -46,6 +46,17 @@
     </header>
 
     <header
+        android:title="@string/location"
+        android:summary="@string/location_summary"
+        android:fragment="com.nextgis.forestinspector.fragment.FIPreferenceFragment"
+        >
+        <extra
+            android:name="com.nextgis.mobile.PREFS_SETTINGS"
+            android:value="com.nextgis.mobile.PREFS_LOCATION"
+            />
+    </header>
+
+    <header
         android:title="@string/sync_settings"
         android:summary="@string/sync_settings_summary"
         >

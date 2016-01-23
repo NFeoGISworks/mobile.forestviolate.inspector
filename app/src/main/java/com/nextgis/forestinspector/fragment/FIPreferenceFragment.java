@@ -25,6 +25,7 @@ package com.nextgis.forestinspector.fragment;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 import com.nextgis.forestinspector.R;
@@ -64,6 +65,24 @@ public class FIPreferenceFragment
                 final ListPreference lpCoordinateFormat = (ListPreference) findPreference(
                         SettingsConstantsUI.KEY_PREF_COORD_FORMAT);
                 FIPreferencesActivity.initializeCoordinateFormat(lpCoordinateFormat);
+                break;
+
+            case SettingsConstantsUI.ACTION_PREFS_LOCATION:
+                addPreferencesFromResource(R.xml.preferences_location);
+
+                final ListPreference lpLocationAccuracy = (ListPreference) findPreference(
+                        com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_SOURCE);
+                FIPreferencesActivity.initializeLocationAccuracy(lpLocationAccuracy, false);
+
+                final ListPreference minTimeLoc = (ListPreference) findPreference(
+                        com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_MIN_TIME);
+                final ListPreference minDistanceLoc = (ListPreference) findPreference(
+                        com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_MIN_DISTANCE);
+                FIPreferencesActivity.initializeLocationMins(minTimeLoc, minDistanceLoc, false);
+
+                final EditTextPreference accurateMaxCount = (EditTextPreference) findPreference(
+                        com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_ACCURATE_COUNT);
+                FIPreferencesActivity.initializeAccurateTaking(accurateMaxCount);
                 break;
         }
     }

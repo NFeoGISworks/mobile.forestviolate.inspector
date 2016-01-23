@@ -46,6 +46,17 @@
     </Preference>
 
     <Preference
+        android:title="@string/location"
+        android:summary="@string/location_summary"
+        >
+        <intent
+            android:action="com.nextgis.mobile.PREFS_LOCATION"
+            android:targetClass="com.nextgis.forestinspector.activities.FoclSettingsActivity"
+            android:targetPackage="com.nextgis.forestinspector"
+            />
+    </Preference>
+
+    <Preference
         android:title="@string/sync_settings"
         android:summary="@string/sync_settings_summary"
         >

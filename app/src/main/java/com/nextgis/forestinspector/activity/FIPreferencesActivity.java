@@ -23,10 +23,15 @@
 package com.nextgis.forestinspector.activity;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.widget.Toast;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.fragment.FIPreferenceFragment;
 import com.nextgis.forestinspector.util.SettingsConstants;
@@ -34,6 +39,8 @@ import com.nextgis.maplibui.activity.NGPreferenceActivity;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import java.util.List;
+
+import static com.nextgis.maplibui.service.TrackerService.isTrackerServiceRunning;
 
 
 /**
@@ -73,6 +80,24 @@ public class FIPreferencesActivity
                     final ListPreference lpCoordinateFormat = (ListPreference) findPreference(
                             SettingsConstantsUI.KEY_PREF_COORD_FORMAT);
                     initializeCoordinateFormat(lpCoordinateFormat);
+                    break;
+
+                case SettingsConstantsUI.ACTION_PREFS_LOCATION:
+                    addPreferencesFromResource(R.xml.preferences_location);
+
+                    final ListPreference lpLocationAccuracy = (ListPreference) findPreference(
+                            com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_SOURCE);
+                    initializeLocationAccuracy(lpLocationAccuracy, false);
+
+                    final ListPreference minTimeLoc = (ListPreference) findPreference(
+                            com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_MIN_TIME);
+                    final ListPreference minDistanceLoc = (ListPreference) findPreference(
+                            com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_MIN_DISTANCE);
+                    initializeLocationMins(minTimeLoc, minDistanceLoc, false);
+
+                    final EditTextPreference accurateMaxCount = (EditTextPreference) findPreference(
+                            com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_ACCURATE_COUNT);
+                    initializeAccurateTaking(accurateMaxCount);
                     break;
             }
 
@@ -199,5 +224,167 @@ public class FIPreferencesActivity
                         }
                     });
         }
+    }
+
+
+    public static void initializeLocationAccuracy(
+            final ListPreference listPreference,
+            final boolean isTracks)
+    {
+        if (listPreference != null) {
+            Context ctx = listPreference.getContext();
+            CharSequence[] entries = new CharSequence[3];
+            entries[0] = ctx.getString(R.string.pref_location_accuracy_gps);
+            entries[1] = ctx.getString(R.string.pref_location_accuracy_cell);
+            entries[2] = ctx.getString(R.string.pref_location_accuracy_gps) +
+                    " & " +
+                    ctx.getString(R.string.pref_location_accuracy_cell);
+            listPreference.setEntries(entries);
+            listPreference.setSummary(listPreference.getEntry());
+
+            listPreference.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener()
+                    {
+                        @Override
+                        public boolean onPreferenceChange(
+                                Preference preference,
+                                Object newValue)
+                        {
+                            int value = Integer.parseInt(newValue.toString());
+                            CharSequence summary =
+                                    ((ListPreference) preference).getEntries()[value - 1];
+                            preference.setSummary(summary);
+
+                            sectionWork(preference.getContext(), isTracks);
+
+                            return true;
+                        }
+                    });
+        }
+    }
+
+
+    public static void initializeLocationMins(
+            ListPreference minTime,
+            final ListPreference minDistance,
+            final boolean isTracks)
+    {
+        final Context context = minDistance.getContext();
+        minTime.setSummary(getMinSummary(context, minTime.getEntry(), minTime.getValue()));
+        minDistance.setSummary(
+                getMinSummary(context, minDistance.getEntry(), minDistance.getValue()));
+
+        minTime.setOnPreferenceChangeListener(
+                new Preference.OnPreferenceChangeListener()
+                {
+                    @Override
+                    public boolean onPreferenceChange(
+                            Preference preference,
+                            Object newValue)
+                    {
+                        int id = ((ListPreference) preference).findIndexOfValue((String) newValue);
+                        preference.setSummary(
+                                getMinSummary(
+                                        context, ((ListPreference) preference).getEntries()[id],
+                                        (String) newValue));
+
+                        String preferenceKey = isTracks
+                                               ? com.nextgis.maplib.util.SettingsConstants.KEY_PREF_TRACKS_MIN_TIME
+                                               : com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_MIN_TIME;
+                        preference.getSharedPreferences()
+                                .edit()
+                                .putString(preferenceKey, (String) newValue)
+                                .commit();
+
+                        sectionWork(preference.getContext(), isTracks);
+
+                        return true;
+                    }
+                });
+
+        minDistance.setOnPreferenceChangeListener(
+                new Preference.OnPreferenceChangeListener()
+                {
+                    @Override
+                    public boolean onPreferenceChange(
+                            Preference preference,
+                            Object newValue)
+                    {
+                        int id = ((ListPreference) preference).findIndexOfValue((String) newValue);
+                        preference.setSummary(
+                                getMinSummary(
+                                        context, ((ListPreference) preference).getEntries()[id],
+                                        (String) newValue));
+
+                        String preferenceKey = isTracks
+                                               ? com.nextgis.maplib.util.SettingsConstants.KEY_PREF_TRACKS_MIN_DISTANCE
+                                               : com.nextgis.maplib.util.SettingsConstants.KEY_PREF_LOCATION_MIN_DISTANCE;
+                        preference.getSharedPreferences()
+                                .edit()
+                                .putString(preferenceKey, (String) newValue)
+                                .commit();
+
+                        sectionWork(preference.getContext(), isTracks);
+
+                        return true;
+                    }
+                });
+    }
+
+
+    public static void initializeAccurateTaking(EditTextPreference accurateMaxCount)
+    {
+        accurateMaxCount.setSummary(accurateMaxCount.getText());
+
+        accurateMaxCount.setOnPreferenceChangeListener(
+                new Preference.OnPreferenceChangeListener()
+                {
+                    @Override
+                    public boolean onPreferenceChange(
+                            Preference preference,
+                            Object newValue)
+                    {
+                        preference.setSummary((CharSequence) newValue);
+                        return true;
+                    }
+                });
+    }
+
+
+    protected static void sectionWork(
+            Context context,
+            boolean isTracks)
+    {
+        if (!isTracks) {
+            Activity parent = (Activity) context;
+            MainApplication application = (MainApplication) parent.getApplication();
+            application.getGpsEventSource().updateActiveListeners();
+        } else {
+            if (isTrackerServiceRunning(context)) {
+                Toast.makeText(
+                        context, context.getString(R.string.tracks_reload), Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
+
+
+    private static String getMinSummary(
+            Context context,
+            CharSequence newEntry,
+            String newValue)
+    {
+        int value = 0;
+
+        try {
+            value = Integer.parseInt(newValue);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        String addition = newEntry + "";
+        addition += value == 0 ? context.getString(R.string.frequentest) : "";
+
+        return addition;
     }
 }
