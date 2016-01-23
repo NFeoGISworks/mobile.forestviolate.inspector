@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
@@ -43,11 +44,14 @@ import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.MapActivity;
 import com.nextgis.forestinspector.dialog.ClickedItemsInfoGetter;
+import com.nextgis.forestinspector.overlay.SelectLocationOverlay;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
+import com.nextgis.maplib.datasource.GeoGeometryFactory;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.MapDrawable;
@@ -59,6 +63,8 @@ import com.nextgis.maplibui.mapui.MapViewOverlays;
 import com.nextgis.maplibui.overlay.CurrentLocationOverlay;
 import com.nextgis.maplibui.util.ConstantsUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
+
+import java.io.IOException;
 
 
 public class MapFragment
@@ -78,10 +84,12 @@ public class MapFragment
 
     protected GpsEventSource         mGpsEventSource;
     protected CurrentLocationOverlay mCurrentLocationOverlay;
+    protected SelectLocationOverlay  mSelectLocationOverlay;
 
-    protected boolean  mShowStatusPanel;
-    protected GeoPoint mCurrentCenter;
-    protected int      mCoordinatesFormat;
+    protected boolean     mShowStatusPanel;
+    protected GeoPoint    mCurrentCenter;
+    protected int         mCoordinatesFormat;
+    protected GeoEnvelope mEnvelopeParam;
 
     // http://stackoverflow.com/a/29621490
     protected boolean mFragmentResume    = false;
@@ -110,6 +118,24 @@ public class MapFragment
 
         MainApplication app = (MainApplication) getActivity().getApplication();
         mTolerancePX = app.getResources().getDisplayMetrics().density * ConstantsUI.TOLERANCE_DP;
+
+        Intent intent = getActivity().getIntent();
+        byte[] geometryParam = intent.getByteArrayExtra(MapActivity.PARAM_GEOMETRY);
+        GeoGeometry geometry = null;
+
+        if (null != geometryParam) {
+            try {
+                geometry = GeoGeometryFactory.fromBlob(geometryParam);
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                geometry = null;
+            }
+        }
+
+        if (null != geometry) {
+            mEnvelopeParam = geometry.getEnvelope();
+        }
+
     }
 
 
@@ -125,11 +151,18 @@ public class MapFragment
         mMap = new MapViewOverlays(getActivity(), (MapDrawable) app.getMap());
         mMap.setId(999);
 
+        if (null != mEnvelopeParam) {
+            mMap.zoomToExtent(mEnvelopeParam);
+        }
+
         mGpsEventSource = app.getGpsEventSource();
         mCurrentLocationOverlay = new CurrentLocationOverlay(getActivity(), mMap);
         mCurrentLocationOverlay.setStandingMarker(R.drawable.ic_location_standing);
         mCurrentLocationOverlay.setMovingMarker(R.drawable.ic_location_moving);
+        mSelectLocationOverlay = new SelectLocationOverlay(getActivity(), mMap);
+        mSelectLocationOverlay.setVisibility(false);
 
+        mMap.addOverlay(mSelectLocationOverlay);
         mMap.addOverlay(mCurrentLocationOverlay);
 
         //search relative view of map, if not found - add it
@@ -350,38 +383,42 @@ public class MapFragment
         Log.d(Constants.TAG, "KEY_PREF_SHOW_ZOOM_CONTROLS: " + (showControls ? "ON" : "OFF"));
 
         if (null != mMap) {
-            if (prefs.getBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, true)) {
-                //zoom to inspector extent
-                float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
-                float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
-                float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
-                float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
-                mMap.zoomToExtent(new GeoEnvelope(minX, maxX, minY, maxY));
 
-                final SharedPreferences.Editor edit = prefs.edit();
-                edit.putBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, false);
-                edit.commit();
-            } else {
-                float mMapZoom;
-                try {
-                    mMapZoom = prefs.getFloat(
-                            SettingsConstants.KEY_PREF_ZOOM_LEVEL, mMap.getMinZoom());
-                } catch (ClassCastException e) {
-                    mMapZoom = mMap.getMinZoom();
-                }
+            if (null == mEnvelopeParam) {
+                if (prefs.getBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, true)) {
+                    //zoom to inspector extent
+                    float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+                    float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+                    float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+                    float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
+                    mMap.zoomToExtent(new GeoEnvelope(minX, maxX, minY, maxY));
 
-                double mMapScrollX;
-                double mMapScrollY;
-                try {
-                    mMapScrollX = Double.longBitsToDouble(
-                            prefs.getLong(SettingsConstants.KEY_PREF_SCROLL_X, 0));
-                    mMapScrollY = Double.longBitsToDouble(
-                            prefs.getLong(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
-                } catch (ClassCastException e) {
-                    mMapScrollX = 0;
-                    mMapScrollY = 0;
+                    final SharedPreferences.Editor edit = prefs.edit();
+                    edit.putBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, false);
+                    edit.commit();
+
+                } else {
+                    float mMapZoom;
+                    try {
+                        mMapZoom = prefs.getFloat(
+                                SettingsConstants.KEY_PREF_ZOOM_LEVEL, mMap.getMinZoom());
+                    } catch (ClassCastException e) {
+                        mMapZoom = mMap.getMinZoom();
+                    }
+
+                    double mMapScrollX;
+                    double mMapScrollY;
+                    try {
+                        mMapScrollX = Double.longBitsToDouble(
+                                prefs.getLong(SettingsConstants.KEY_PREF_SCROLL_X, 0));
+                        mMapScrollY = Double.longBitsToDouble(
+                                prefs.getLong(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
+                    } catch (ClassCastException e) {
+                        mMapScrollX = 0;
+                        mMapScrollY = 0;
+                    }
+                    mMap.setZoomAndCenter(mMapZoom, new GeoPoint(mMapScrollX, mMapScrollY));
                 }
-                mMap.setZoomAndCenter(mMapZoom, new GeoPoint(mMapScrollX, mMapScrollY));
             }
             mMap.addListener(this);
         }
@@ -453,6 +490,10 @@ public class MapFragment
     @Override
     public void onLongPress(MotionEvent event)
     {
+        if (getActivity() instanceof MapActivity) {
+            return;
+        }
+
         double minX = event.getX() - mTolerancePX;
         double maxX = event.getX() + mTolerancePX;
         double minY = event.getY() - mTolerancePX;
@@ -727,5 +768,23 @@ public class MapFragment
             zoomToExtent(geometry.getEnvelope());
             storeMapSettings();
         }
+    }
+
+
+    public Location getSelectedLocation()
+    {
+        return mSelectLocationOverlay.getSelectedLocation();
+    }
+
+
+    public void setSelectedLocation(Location location)
+    {
+        mSelectLocationOverlay.setSelectedLocation(location);
+    }
+
+
+    public void setSelectedLocationVisible(boolean isVisible)
+    {
+        mSelectLocationOverlay.setVisibility(isVisible);
     }
 }

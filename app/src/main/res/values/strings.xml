@@ -186,6 +186,7 @@
     <string name="action_sheet">Trees sheet</string>
     <string name="action_vehicle">Vehicles form</string>
     <string name="action_phototable">Photo table</string>
+    <string name="action_map">Map</string>
     <string name="coordinates">Coordinates</string>
     <string name="error_invalid_input">Invalid input parameters</string>
     <string name="photo_desc">Photo description</string>
@@ -289,5 +290,7 @@
 
     <string name="target_item_name">Targeting</string>
     <string name="selected_items">Selected items</string>
+
+    <string name="open_map">Open map</string>
 
 </resources>

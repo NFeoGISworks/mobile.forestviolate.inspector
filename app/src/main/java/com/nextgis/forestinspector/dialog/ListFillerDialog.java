@@ -23,6 +23,7 @@
 package com.nextgis.forestinspector.dialog;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
@@ -43,14 +44,17 @@ import com.DaveKoelle.AlphanumComparator;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.IDocumentFeatureSource;
+import com.nextgis.forestinspector.activity.MapActivity;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoPoint;
+import com.nextgis.maplib.datasource.GeoPolygon;
 import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.VectorLayer;
@@ -59,6 +63,7 @@ import com.nextgis.maplib.util.LocationUtil;
 import com.nextgis.maplibui.dialog.StyledDialogFragment;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,8 +78,9 @@ public abstract class ListFillerDialog
         implements GpsEventListener
 {
     public static final String UNKNOWN_LOCATION = "-";
+    public static final int    REQUEST_LOCATION = 1;
 
-    protected Feature mFeature;
+    protected Feature  mFeature;
     protected Location mFeatureLocation;
 
     protected TextView mLatView;
@@ -195,6 +201,53 @@ public abstract class ListFillerDialog
         createLocationPanelView(view);
 
         setFieldViews(view);
+
+        ImageButton openMap = (ImageButton) view.findViewById(R.id.open_map);
+        openMap.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        DocumentFeature feature = getDocumentFeature();
+                        GeoGeometry geometry = null;
+                        Intent intent = new Intent(getActivity(), MapActivity.class);
+
+                        if (null != feature) {
+                            geometry = feature.getGeometry();
+                        }
+
+                        if (null == geometry) {
+                            final SharedPreferences prefs =
+                                    PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            float minX =
+                                    prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+                            float minY =
+                                    prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+                            float maxX =
+                                    prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+                            float maxY =
+                                    prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
+
+                            GeoPolygon polygon = new GeoPolygon();
+                            polygon.add(new GeoPoint(minX, minY));
+                            polygon.add(new GeoPoint(minX, maxY));
+                            polygon.add(new GeoPoint(maxX, maxY));
+                            polygon.add(new GeoPoint(maxX, minY));
+
+                            geometry = polygon;
+                        }
+
+                        try {
+                            intent.putExtra(MapActivity.PARAM_GEOMETRY, geometry.toBlob());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        startActivityForResult(intent, REQUEST_LOCATION);
+                    }
+                });
+
 
         if (isThemeDark()) {
             setIcon(R.drawable.ic_action_edit_light);
@@ -367,6 +420,25 @@ public abstract class ListFillerDialog
 
 
     @Override
+    public void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data)
+    {
+        if (requestCode == REQUEST_LOCATION && resultCode == Activity.RESULT_OK) {
+            double latitude = data.getDoubleExtra(MapActivity.LOCATION_LATITUDE, 0);
+            double longitude = data.getDoubleExtra(MapActivity.LOCATION_LONGITUDE, 0);
+
+            mFeatureLocation = new Location("");
+            mFeatureLocation.setLatitude(latitude);
+            mFeatureLocation.setLongitude(longitude);
+
+            setLocationText(mFeatureLocation);
+        }
+    }
+
+
+    @Override
     public void onLocationChanged(Location location)
     {
 
@@ -421,16 +493,7 @@ public abstract class ListFillerDialog
 
     public void saveData()
     {
-        Activity activity = getActivity();
-        MainApplication app = (MainApplication) activity.getApplication();
-
-        IDocumentFeatureSource documentSource = null;
-        if (activity instanceof IDocumentFeatureSource) {
-            documentSource = (IDocumentFeatureSource) activity;
-        }
-        if (null == documentSource) {
-            return;
-        }
+        MainApplication app = (MainApplication) getActivity().getApplication();
 
         DocumentsLayer docLayer = app.getDocsLayer();
         if (null == docLayer) {
@@ -450,7 +513,7 @@ public abstract class ListFillerDialog
         geometryValue.add(pt);
 
 
-        DocumentFeature docFeature = documentSource.getFeature();
+        DocumentFeature docFeature = getDocumentFeature();
         Feature subFeature;
 
         if (null != mFeature) {
@@ -463,6 +526,22 @@ public abstract class ListFillerDialog
         setFeatureFieldsValues(subFeature);
 
         subDocLayer.updateFeatureWithFlags(subFeature);
+    }
+
+
+    protected DocumentFeature getDocumentFeature()
+    {
+        Activity activity = getActivity();
+
+        IDocumentFeatureSource documentSource = null;
+        if (activity instanceof IDocumentFeatureSource) {
+            documentSource = (IDocumentFeatureSource) activity;
+        }
+        if (null == documentSource) {
+            return null;
+        }
+
+        return documentSource.getFeature();
     }
 
 

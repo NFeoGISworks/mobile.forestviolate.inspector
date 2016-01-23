@@ -187,6 +187,7 @@
     <string name="action_sheet">Ведомость перечета</string>
     <string name="action_vehicle">Акт об обнаружении орудий заготовки</string>
     <string name="action_phototable">Фототаблица</string>
+    <string name="action_map">Карта</string>
     <string name="coordinates">Координаты</string>
     <string name="error_invalid_input">Неверные параметры</string>
     <string name="photo_desc">Описание фотографии</string>
@@ -289,5 +290,7 @@
 
     <string name="target_item_name">Целеуказание</string>
     <string name="selected_items">Выбранные элементы</string>
+
+    <string name="open_map">Открыть карту</string>
 
 </resources>

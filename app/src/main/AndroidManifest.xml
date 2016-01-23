@@ -164,6 +164,11 @@
             />
 
         <activity
+            android:name=".activity.MapActivity"
+            android:label="@string/action_map"
+            />
+
+        <activity
             android:name=".activity.SelectParcelsActivity"
             android:label="@string/action_cadastre"
             android:launchMode="singleTop"

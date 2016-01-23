@@ -27,6 +27,7 @@
     <attr name="photoTableItemBackgroundColor" format="reference"/>
     <attr name="photoDescBackgroundColor" format="reference"/>
     <attr name="docItemBackgroundForCurrentUser" format="reference"/>
+    <attr name="ic_action_map" format="reference"/>
 
     <!-- Base application theme. -->
     <style name="AppTheme.Light" parent="Theme.NextGIS.AppCompat.Light">
@@ -36,6 +37,7 @@
         <item name="photoTableItemBackgroundColor">@color/color_grey_000</item>
         <item name="photoDescBackgroundColor">@color/color_grey_200</item>
         <item name="docItemBackgroundForCurrentUser">@color/color_grey_300</item>
+        <item name="ic_action_map">@drawable/ic_maps_pin_light</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.NextGIS.AppCompat.Dark">
@@ -45,6 +47,7 @@
         <item name="photoTableItemBackgroundColor">@color/color_grey_800</item>
         <item name="photoDescBackgroundColor">@color/color_grey_700</item>
         <item name="docItemBackgroundForCurrentUser">@color/color_grey_700</item>
+        <item name="ic_action_map">@drawable/ic_maps_pin_dark</item>
     </style>
 
     <style name="status_panel">
