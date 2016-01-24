@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.nextgis.forestinspector.activity.FIPreferencesActivity;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.fragment.NGWSettingsFragment;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.map.FILayerFactory;
 import com.nextgis.forestinspector.service.InitService;
@@ -48,7 +49,6 @@ import com.nextgis.maplib.util.FileUtil;
 import com.nextgis.maplib.util.NetworkUtil;
 import com.nextgis.maplib.util.SettingsConstants;
 import com.nextgis.maplibui.GISApplication;
-import com.nextgis.maplibui.activity.NGWSettingsActivity;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
@@ -61,7 +61,7 @@ import static com.nextgis.maplib.util.SettingsConstants.KEY_PREF_MAP;
 public class MainApplication
         extends GISApplication
         implements NGWLoginFragment.OnAddAccountListener,
-                   NGWSettingsActivity.OnDeleteAccountListener
+                   NGWSettingsFragment.OnDeleteAccountListener
 
 {
     protected DocumentsLayer      mDocsLayer;

@@ -38,6 +38,7 @@
         <item name="photoDescBackgroundColor">@color/color_grey_200</item>
         <item name="docItemBackgroundForCurrentUser">@color/color_grey_300</item>
         <item name="ic_action_map">@drawable/ic_maps_pin_light</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.NextGIS.AppCompat.Dark">
@@ -48,6 +49,7 @@
         <item name="photoDescBackgroundColor">@color/color_grey_700</item>
         <item name="docItemBackgroundForCurrentUser">@color/color_grey_700</item>
         <item name="ic_action_map">@drawable/ic_maps_pin_dark</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <style name="status_panel">

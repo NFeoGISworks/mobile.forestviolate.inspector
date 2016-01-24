@@ -238,6 +238,9 @@ public interface Constants
     String FRAGMENT_TARGETING_DIALOG         = "targeting_dialog";
     String FRAGMENT_CLICKED_LIST_DIALOG      = "clicked_list_dialog";
     String FRAGMENT_MAP                      = "map";
+    String FRAGMENT_PREFERENCE               = "preference";
+    String FRAGMENT_NGW_SETTINGS             = "ngw_settings";
+    String FRAGMENT_SYNC_SETTINGS            = "sync_settings";
 
     int DOCS_VECTOR_SCOPE = 10000;
 

@@ -2,8 +2,9 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
- * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+ * Copyright (c) 2015-2016. NextGIS, info@nextgis.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +22,25 @@
 
 package com.nextgis.forestinspector.activity;
 
-import com.nextgis.forestinspector.R;
-import com.nextgis.maplibui.activity.NGActivity;
+
+import android.support.v7.preference.PreferenceFragmentCompat;
+import com.nextgis.forestinspector.fragment.NGWSettingsFragment;
+import com.nextgis.forestinspector.util.Constants;
 
 
-public class FIActivity
-        extends NGActivity
+public class NGWSettingsActivity
+        extends NGPreferenceActivity
 {
     @Override
-    public int getThemeId()
+    protected String getFragmentTag()
     {
-        return mIsDarkTheme
-               ? R.style.AppTheme_Dark
-               : R.style.AppTheme_Light;
+        return Constants.FRAGMENT_NGW_SETTINGS;
+    }
+
+
+    @Override
+    protected PreferenceFragmentCompat getPreferenceFragment()
+    {
+        return new NGWSettingsFragment();
     }
 }
