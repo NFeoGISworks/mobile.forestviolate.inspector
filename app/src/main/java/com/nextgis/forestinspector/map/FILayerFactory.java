@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -23,22 +24,18 @@ package com.nextgis.forestinspector.map;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.util.FileUtil;
 import com.nextgis.maplibui.mapui.LayerFactoryUI;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 
-import static com.nextgis.maplib.util.Constants.CONFIG;
-import static com.nextgis.maplib.util.Constants.JSON_TYPE_KEY;
-import static com.nextgis.maplib.util.Constants.TAG;
+import static com.nextgis.maplib.util.Constants.*;
 
 /**
  * Layer factory for forest inspector specific data
@@ -59,6 +56,15 @@ public class FILayerFactory extends LayerFactoryUI{
                 case Constants.LAYERTYPE_DOCS:
                     layer = new DocumentsLayer(context, path, this);
                     break;
+                case Constants.LAYERTYPE_LV:
+                    layer = new LvLayer(context, path);
+                    break;
+                case Constants.LAYERTYPE_ULV:
+                    layer = new UlvLayer(context, path);
+                    break;
+                case Constants.LAYERTYPE_KV:
+                    layer = new KvLayer(context, path);
+                    break;
             }
         } catch (IOException | JSONException e) {
             Log.d(TAG, e.getLocalizedMessage());
@@ -72,6 +78,12 @@ public class FILayerFactory extends LayerFactoryUI{
         switch (type) {
             case Constants.LAYERTYPE_DOCS:
                 return context.getString(R.string.documents_layer);
+            case Constants.LAYERTYPE_LV:
+                return context.getString(R.string.lv_layer);
+            case Constants.LAYERTYPE_ULV:
+                return context.getString(R.string.ulv_layer);
+            case Constants.LAYERTYPE_KV:
+                return context.getString(R.string.kv_layer);
             default:
                 return super.getLayerTypeString(context, type);
         }

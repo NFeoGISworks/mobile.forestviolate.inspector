@@ -304,4 +304,8 @@
     <string name="tracks_reload">Перезапустите запись для применения изменений</string>
     <string name="frequentest">, так часто, как возможно</string>
 
+    <string name="lv_layer">Лесничества</string>
+    <string name="ulv_layer">Участковые лесничества</string>
+    <string name="kv_layer">Лесные кварталы</string>
+
 </resources>

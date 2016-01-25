@@ -304,4 +304,8 @@
     <string name="tracks_reload">Restart current track to apply changes</string>
     <string name="frequentest">, as frequent as possible</string>
 
+    <string name="lv_layer">Forestries</string>
+    <string name="ulv_layer">District forestries</string>
+    <string name="kv_layer">Parcels</string>
+
 </resources>

@@ -34,6 +34,9 @@ import android.util.Log;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.map.KvLayer;
+import com.nextgis.forestinspector.map.LvLayer;
+import com.nextgis.forestinspector.map.UlvLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
@@ -48,7 +51,6 @@ import com.nextgis.maplib.datasource.ngw.Resource;
 import com.nextgis.maplib.datasource.ngw.ResourceGroup;
 import com.nextgis.maplib.display.SimpleFeatureRenderer;
 import com.nextgis.maplib.display.SimpleMarkerStyle;
-import com.nextgis.maplib.display.SimpleTiledPolygonStyle;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.map.NGWLookupTable;
@@ -78,12 +80,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
+
 /**
  * Application initialisation service
  */
-public class InitService extends Service {
-    public static final String ACTION_START  = "START_INITIAL_SYNC";
-    public static final String ACTION_STOP   = "STOP_INITIAL_SYNC";
+public class InitService
+        extends Service
+{
+    public static final String ACTION_START = "START_INITIAL_SYNC";
+    public static final String ACTION_STOP = "STOP_INITIAL_SYNC";
     public static final String ACTION_REPORT = "REPORT_INITIAL_SYNC";
 
     public static final int MAX_SYNC_STEP = 9;
@@ -110,7 +115,7 @@ public class InitService extends Service {
             int flags,
             int startId)
     {
-        if (intent == null) return START_NOT_STICKY;
+        if (intent == null) { return START_NOT_STICKY; }
 
         switch (intent.getAction()) {
             case ACTION_START:
@@ -285,7 +290,9 @@ public class InitService extends Service {
             sendBroadcast(mMessageIntent);
         }
 
-        protected Boolean doWork() {
+
+        protected Boolean doWork()
+        {
             mMessageIntent = new Intent(Constants.BROADCAST_MESSAGE);
 
             // step 1: connect to server
@@ -303,16 +310,15 @@ public class InitService extends Service {
             Connection connection = new Connection("tmp", sLogin, sPassword, sURL);
             publishProgress(getString(R.string.connecting), Constants.STEP_STATE_WORK);
 
-            if(!connection.connect()){
-                publishProgress(getString(R.string.error_connect_failed), Constants.STEP_STATE_ERROR);
+            if (!connection.connect()) {
+                publishProgress(
+                        getString(R.string.error_connect_failed), Constants.STEP_STATE_ERROR);
                 return false;
-            }
-            else{
+            } else {
                 publishProgress(getString(R.string.connected), Constants.STEP_STATE_WORK);
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 1: find keys
 
@@ -339,7 +345,7 @@ public class InitService extends Service {
             keys.put(Constants.KEY_FV, -1L);
             keys.put(Constants.KEY_FV_REGIONS, -1L);
 
-            if(!checkServerLayers(connection, keys)){
+            if (!checkServerLayers(connection, keys)) {
                 publishProgress(getString(R.string.error_wrong_server), Constants.STEP_STATE_ERROR);
 
                 try {
@@ -349,13 +355,11 @@ public class InitService extends Service {
                 }
 
                 return false;
-            }
-            else {
+            } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 2: get inspector detail
             // name, description, bbox
@@ -363,8 +367,9 @@ public class InitService extends Service {
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if(!getInspectorDetail(connection, keys.get(Constants.KEY_INSPECTORS), sLogin)){
-                publishProgress(getString(R.string.error_get_inspector_detail), Constants.STEP_STATE_ERROR);
+            if (!getInspectorDetail(connection, keys.get(Constants.KEY_INSPECTORS), sLogin)) {
+                publishProgress(
+                        getString(R.string.error_get_inspector_detail), Constants.STEP_STATE_ERROR);
 
                 try {
                     Thread.sleep(nTimeout);
@@ -373,13 +378,11 @@ public class InitService extends Service {
                 }
 
                 return false;
-            }
-            else {
+            } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 3: create base layers
 
@@ -388,8 +391,7 @@ public class InitService extends Service {
 
             createBasicLayers(map);
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 4: forest cadastre
 
@@ -397,16 +399,16 @@ public class InitService extends Service {
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadForestCadastre(keys.get(Constants.KEY_LV), keys.get(Constants.KEY_ULV), keys.get(Constants.KEY_KV), mAccount.name, map, this)){
+            if (!loadForestCadastre(
+                    keys.get(Constants.KEY_LV), keys.get(Constants.KEY_ULV),
+                    keys.get(Constants.KEY_KV), mAccount.name, map, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
-            }
-            else {
+            } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 5: load documents
 
@@ -414,16 +416,14 @@ public class InitService extends Service {
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadDocuments(keys.get(Constants.KEY_DOCUMENTS), mAccount.name, map, this)){
+            if (!loadDocuments(keys.get(Constants.KEY_DOCUMENTS), mAccount.name, map, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
-            }
-            else {
+            } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 6: load sheets
 
@@ -432,155 +432,170 @@ public class InitService extends Service {
             int nTotalSubSteps = 9;
             DocumentsLayer documentsLayer = null;
 
-            for(int i = 0; i < map.getLayerCount(); i++){
+            for (int i = 0; i < map.getLayerCount(); i++) {
                 ILayer layer = map.getLayer(i);
-                if(layer instanceof DocumentsLayer){
+                if (layer instanceof DocumentsLayer) {
                     documentsLayer = (DocumentsLayer) layer;
                 }
             }
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadLinkedTables(keys.get(Constants.KEY_SHEET), mAccount.name,
-                    Constants.KEY_LAYER_SHEET, documentsLayer, this)){
+            if (!loadLinkedTables(
+                    keys.get(Constants.KEY_SHEET), mAccount.name, Constants.KEY_LAYER_SHEET,
+                    documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
 
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 6: load productions
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
-            if (!loadLinkedTables(keys.get(Constants.KEY_PRODUCTION), mAccount.name,
-                    Constants.KEY_LAYER_PRODUCTION, documentsLayer, this)){
+            if (!loadLinkedTables(
+                    keys.get(Constants.KEY_PRODUCTION), mAccount.name,
+                    Constants.KEY_LAYER_PRODUCTION, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 6: load vehicles
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
-            if (!loadLinkedTables(keys.get(Constants.KEY_VEHICLES), mAccount.name,
-                    Constants.KEY_LAYER_VEHICLES, documentsLayer, this)){
+            if (!loadLinkedTables(
+                    keys.get(Constants.KEY_VEHICLES), mAccount.name, Constants.KEY_LAYER_VEHICLES,
+                    documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLookupTables(
                     keys.get(Constants.KEY_VIOLATE_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_VIOLATE_TYPES, documentsLayer, this)){
+                    Constants.KEY_LAYER_VIOLATE_TYPES, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLookupTables(
                     keys.get(Constants.KEY_SPECIES_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_SPECIES_TYPES, documentsLayer, this)){
+                    Constants.KEY_LAYER_SPECIES_TYPES, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
-            if (!loadLookupTables(keys.get(Constants.KEY_TREES_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_TREES_TYPES, documentsLayer, this)){
+            if (!loadLookupTables(
+                    keys.get(Constants.KEY_TREES_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_TREES_TYPES, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
-            if (!loadLookupTables(keys.get(Constants.KEY_HEIGHT_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_HEIGHT_TYPES, documentsLayer, this)){
+            if (!loadLookupTables(
+                    keys.get(Constants.KEY_HEIGHT_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_HEIGHT_TYPES, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
-            if (!loadLookupTables(keys.get(Constants.KEY_THICKNESS_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_THICKNESS_TYPES, documentsLayer, this)){
+            if (!loadLookupTables(
+                    keys.get(Constants.KEY_THICKNESS_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_THICKNESS_TYPES, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
 
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
 
-            if (!loadLookupTables(keys.get(Constants.KEY_FOREST_CAT_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_FOREST_CAT_TYPES, documentsLayer, this)){
+            if (!loadLookupTables(
+                    keys.get(Constants.KEY_FOREST_CAT_TYPES), mAccount.name,
+                    Constants.KEY_LAYER_FOREST_CAT_TYPES, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
-            }
-            else {
+            } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLookupTables(
                     keys.get(Constants.KEY_FIELDWORK_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_FIELDWORK_TYPES, documentsLayer, this)){
+                    Constants.KEY_LAYER_FIELDWORK_TYPES, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
-            publishProgress(nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps, Constants.STEP_STATE_WORK);
+            publishProgress(
+                    nSubStep + " " + getString(R.string.of) + " " + nTotalSubSteps,
+                    Constants.STEP_STATE_WORK);
             nSubStep++;
 
             if (!loadLookupTables(
                     keys.get(Constants.KEY_CONTRACT_TYPES), mAccount.name,
-                    Constants.KEY_LAYER_CONTRACT_TYPES, documentsLayer, this)){
+                    Constants.KEY_LAYER_CONTRACT_TYPES, documentsLayer, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
-            if(isCanceled())
-                return false;
+            if (isCanceled()) { return false; }
 
             // step 7: load notes
 
@@ -588,11 +603,10 @@ public class InitService extends Service {
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, map, this)){
+            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, map, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
-            }
-            else {
+            } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
@@ -602,11 +616,10 @@ public class InitService extends Service {
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadTargeting(keys.get(Constants.KEY_FV), mAccount.name, map, this)){
+            if (!loadTargeting(keys.get(Constants.KEY_FV), mAccount.name, map, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
-            }
-            else {
+            } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
@@ -616,11 +629,10 @@ public class InitService extends Service {
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadRegions(keys.get(Constants.KEY_FV_REGIONS), mAccount.name, map, this)){
+            if (!loadRegions(keys.get(Constants.KEY_FV_REGIONS), mAccount.name, map, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
-            }
-            else {
+            } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
@@ -636,11 +648,13 @@ public class InitService extends Service {
         }
 
 
-        protected void createBasicLayers(MapBase map){
+        protected void createBasicLayers(MapBase map)
+        {
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
+            final SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences(InitService.this);
             float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
             float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
             float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
@@ -685,7 +699,7 @@ public class InitService extends Service {
             map.addLayer(ksLayer);
             //mMap.moveLayer(1, ksLayer);
 
-            if(extent.isInit()) {
+            if (extent.isInit()) {
                 //download
                 try {
                     downloadTiles(ksLayer, extent, 5, 12);
@@ -710,18 +724,25 @@ public class InitService extends Service {
             //mMap.moveLayer(2, mixerLayer);
 
             //set extent
-            if(map instanceof MapDrawable && extent.isInit()) {
+            if (map instanceof MapDrawable && extent.isInit()) {
                 ((MapDrawable) map).zoomToExtent(extent);
             }
 
             publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
         }
 
-        private void downloadTiles(final RemoteTMSLayerUI osmLayer, GeoEnvelope loadBounds, int zoomFrom, int zoomTo) throws InterruptedException {
+
+        private void downloadTiles(
+                final RemoteTMSLayerUI osmLayer,
+                GeoEnvelope loadBounds,
+                int zoomFrom,
+                int zoomTo)
+                throws InterruptedException
+        {
             //download
             publishProgress(getString(R.string.form_tiles_list), Constants.STEP_STATE_WORK);
             final List<TileItem> tilesList = new LinkedList<>();
-            for(int zoom = zoomFrom; zoom < zoomTo + 1; zoom++) {
+            for (int zoom = zoomFrom; zoom < zoomTo + 1; zoom++) {
                 tilesList.addAll(MapUtil.getTileItems(loadBounds, zoom, osmLayer.getTMSType()));
             }
 
@@ -770,9 +791,9 @@ public class InitService extends Service {
             }
 
             // wait for download ending
-            int nProgressStep = futures.size() / com.nextgis.maplib.util.Constants.DRAW_NOTIFY_STEP_PERCENT;
-            if(nProgressStep == 0)
-                nProgressStep = 1;
+            int nProgressStep =
+                    futures.size() / com.nextgis.maplib.util.Constants.DRAW_NOTIFY_STEP_PERCENT;
+            if (nProgressStep == 0) { nProgressStep = 1; }
             double percentFract = 100.0 / futures.size();
 
             for (int i = 0, futuresSize = futures.size(); i < futuresSize; i++) {
@@ -784,9 +805,11 @@ public class InitService extends Service {
                     Future future = futures.get(i);
                     future.get(); // wait for task ending
 
-                    if(i % nProgressStep == 0) {
+                    if (i % nProgressStep == 0) {
                         int percent = (int) (i * percentFract);
-                        publishProgress(percent + "% " + getString(R.string.downloaded), Constants.STEP_STATE_WORK);
+                        publishProgress(
+                                percent + "% " + getString(R.string.downloaded),
+                                Constants.STEP_STATE_WORK);
                     }
 
                 } catch (CancellationException | InterruptedException e) {
@@ -797,37 +820,40 @@ public class InitService extends Service {
             }
         }
 
-        protected boolean checkServerLayers(INGWResource resource, Map<String, Long> keys){
+
+        protected boolean checkServerLayers(
+                INGWResource resource,
+                Map<String, Long> keys)
+        {
             if (resource instanceof Connection) {
                 Connection connection = (Connection) resource;
                 connection.loadChildren();
-            }
-            else if (resource instanceof ResourceGroup) {
+            } else if (resource instanceof ResourceGroup) {
                 ResourceGroup resourceGroup = (ResourceGroup) resource;
                 resourceGroup.loadChildren();
             }
 
-            for(int i = 0; i < resource.getChildrenCount(); ++i){
+            for (int i = 0; i < resource.getChildrenCount(); ++i) {
                 INGWResource childResource = resource.getChild(i);
 
-                if(keys.containsKey(childResource.getKey()) && childResource instanceof Resource) {
+                if (keys.containsKey(childResource.getKey()) && childResource instanceof Resource) {
                     Resource ngwResource = (Resource) childResource;
                     keys.put(ngwResource.getKey(), ngwResource.getRemoteId());
                 }
 
                 boolean bIsFill = true;
                 for (Map.Entry<String, Long> entry : keys.entrySet()) {
-                    if(entry.getValue() <= 0){
+                    if (entry.getValue() <= 0) {
                         bIsFill = false;
                         break;
                     }
                 }
 
-                if(bIsFill){
+                if (bIsFill) {
                     return true;
                 }
 
-                if(checkServerLayers(childResource, keys)){
+                if (checkServerLayers(childResource, keys)) {
                     return true;
                 }
             }
@@ -835,7 +861,7 @@ public class InitService extends Service {
             boolean bIsFill = true;
 
             for (Map.Entry<String, Long> entry : keys.entrySet()) {
-                if(entry.getValue() <= 0){
+                if (entry.getValue() <= 0) {
                     bIsFill = false;
                     break;
                 }
@@ -844,19 +870,22 @@ public class InitService extends Service {
             return bIsFill;
         }
 
-        protected boolean getInspectorDetail(Connection connection, long resourceId, String login){
+
+        protected boolean getInspectorDetail(
+                Connection connection,
+                long resourceId,
+                String login)
+        {
 
             String sURL = NGWUtil.getFeaturesUrl(connection.getURL(), resourceId, "login=" + login);
 
             try {
                 String sResponse = NetworkUtil.get(
                         sURL, connection.getLogin(), connection.getPassword());
-                if(null == sResponse)
-                    return false;
+                if (null == sResponse) { return false; }
 
                 JSONArray features = new JSONArray(sResponse);
-                if(features.length() == 0)
-                    return false;
+                if (features.length() == 0) { return false; }
 
                 JSONObject jsonDetail = features.getJSONObject(0);
                 int id = jsonDetail.getInt(NGWUtil.NGWKEY_ID);
@@ -887,86 +916,83 @@ public class InitService extends Service {
             }
         }
 
-        protected boolean loadForestCadastre(long lvId, long ulvId, long kvId, String accountName, MapBase map, IProgressor progressor){
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
+
+        protected boolean loadForestCadastre(
+                long lvId,
+                long ulvId,
+                long kvId,
+                String accountName,
+                MapBase map,
+                IProgressor progressor)
+        {
+            final SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences(InitService.this);
             float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
             float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
             float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
             float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
-            NGWVectorLayerUI ngwLVVectorLayer =
-                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_LV));
-            ngwLVVectorLayer.setName(getString(R.string.lv));
-            ngwLVVectorLayer.setRemoteId(lvId);
-            ngwLVVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
-                    minX, minY, maxX, maxY));
-            ngwLVVectorLayer.setVisible(true);
-            ngwLVVectorLayer.setAccountName(accountName);
-            ngwLVVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
-            ngwLVVectorLayer.setMinZoom(0);
-            ngwLVVectorLayer.setMaxZoom(9.5f);
-            //TODO: add layer draw default style and labels
-            SimpleTiledPolygonStyle lvStyle = new SimpleTiledPolygonStyle(getResources().getColor(R.color.primary_dark));
-            lvStyle.setFill(false);
-            SimpleFeatureRenderer lvRenderer = new SimpleFeatureRenderer(ngwLVVectorLayer, lvStyle);
-            ngwLVVectorLayer.setRenderer(lvRenderer);
+            LvLayer lvLayer = new LvLayer(
+                    getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_LV));
+            lvLayer.setName(getString(R.string.lv));
+            lvLayer.setRemoteId(lvId);
+            lvLayer.setServerWhere(
+                    String.format(
+                            Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
+            lvLayer.setVisible(true);
+            lvLayer.setAccountName(accountName);
+            lvLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
+            lvLayer.setMinZoom(0);
+            lvLayer.setMaxZoom(9.5f);
 
-            map.addLayer(ngwLVVectorLayer);
+            map.addLayer(lvLayer);
 
             try {
-                ngwLVVectorLayer.createFromNGW(progressor);
+                lvLayer.createFromNGW(progressor);
             } catch (NGException | IOException | JSONException e) {
                 e.printStackTrace();
                 return false;
             }
 
-            NGWVectorLayerUI ngwULVVectorLayer =
-                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_ULV));
-            ngwULVVectorLayer.setName(getString(R.string.ulv));
-            ngwULVVectorLayer.setRemoteId(ulvId);
-            ngwULVVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
-                    minX, minY, maxX, maxY));
-            ngwULVVectorLayer.setVisible(true);
-            ngwULVVectorLayer.setAccountName(accountName);
-            ngwULVVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
-            ngwULVVectorLayer.setMinZoom(9.5f);
-            ngwULVVectorLayer.setMaxZoom(14.5f);
-            //TODO: add layer draw default style and labels
-            SimpleTiledPolygonStyle ulvStyle = new SimpleTiledPolygonStyle(getResources().getColor(R.color.primary_dark));
-            ulvStyle.setFill(false);
-            SimpleFeatureRenderer ulvRenderer = new SimpleFeatureRenderer(ngwULVVectorLayer, ulvStyle);
-            ngwULVVectorLayer.setRenderer(ulvRenderer);
+            UlvLayer ulvLayer = new UlvLayer(
+                    getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_ULV));
+            ulvLayer.setName(getString(R.string.ulv));
+            ulvLayer.setRemoteId(ulvId);
+            ulvLayer.setServerWhere(
+                    String.format(
+                            Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
+            ulvLayer.setVisible(true);
+            ulvLayer.setAccountName(accountName);
+            ulvLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
+            ulvLayer.setMinZoom(9.5f);
+            ulvLayer.setMaxZoom(14.5f);
 
-            map.addLayer(ngwULVVectorLayer);
+            map.addLayer(ulvLayer);
 
             try {
-                ngwULVVectorLayer.createFromNGW(progressor);
+                ulvLayer.createFromNGW(progressor);
             } catch (NGException | IOException | JSONException e) {
                 e.printStackTrace();
                 return false;
             }
 
-            NGWVectorLayerUI ngwKVVectorLayer =
-                    new NGWVectorLayerUI(getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_KV));
-            ngwKVVectorLayer.setName(getString(R.string.cadastre));
-            ngwKVVectorLayer.setRemoteId(kvId);
-            ngwKVVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
-                    minX, minY, maxX, maxY));
-            ngwKVVectorLayer.setVisible(true);
-            ngwKVVectorLayer.setAccountName(accountName);
-            ngwKVVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
-            ngwKVVectorLayer.setMinZoom(14.5f);
-            ngwKVVectorLayer.setMaxZoom(23);
-            //TODO: add layer draw default style and labels
-            SimpleTiledPolygonStyle style = new SimpleTiledPolygonStyle(getResources().getColor(R.color.primary_dark));
-            style.setFill(false);
-            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwKVVectorLayer, style);
-            ngwKVVectorLayer.setRenderer(renderer);
+            KvLayer kvLayer = new KvLayer(
+                    getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_KV));
+            kvLayer.setName(getString(R.string.cadastre));
+            kvLayer.setRemoteId(kvId);
+            kvLayer.setServerWhere(
+                    String.format(
+                            Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
+            kvLayer.setVisible(true);
+            kvLayer.setAccountName(accountName);
+            kvLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
+            kvLayer.setMinZoom(14.5f);
+            kvLayer.setMaxZoom(23);
 
-            map.addLayer(ngwKVVectorLayer);
+            map.addLayer(kvLayer);
 
             try {
-                ngwKVVectorLayer.createFromNGW(progressor);
+                kvLayer.createFromNGW(progressor);
             } catch (NGException | IOException | JSONException e) {
                 e.printStackTrace();
                 return false;
@@ -975,21 +1001,27 @@ public class InitService extends Service {
             return true;
         }
 
-        protected boolean loadDocuments(long resourceId, String accountName, MapBase map, IProgressor progressor){
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InitService.this);
+
+        protected boolean loadDocuments(
+                long resourceId,
+                String accountName,
+                MapBase map,
+                IProgressor progressor)
+        {
+            final SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences(InitService.this);
             float minX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
             float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
             float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
             float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
-            DocumentsLayer ngwVectorLayer =
-                    new DocumentsLayer(getApplicationContext(),
-                            map.createLayerStorage(Constants.KEY_LAYER_DOCUMENTS),
-                            map.getLayerFactory());
+            DocumentsLayer ngwVectorLayer = new DocumentsLayer(
+                    getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_DOCUMENTS),
+                    map.getLayerFactory());
             ngwVectorLayer.setName(getString(R.string.documents_layer));
             ngwVectorLayer.setRemoteId(resourceId);
-            ngwVectorLayer.setServerWhere(String.format(Locale.US, "bbox=%f,%f,%f,%f",
-                    minX, minY, maxX, maxY));
+            ngwVectorLayer.setServerWhere(
+                    String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
             ngwVectorLayer.setVisible(true);
             ngwVectorLayer.setAccountName(accountName);
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_ALL);
@@ -1008,10 +1040,15 @@ public class InitService extends Service {
             return true;
         }
 
-        protected boolean loadLinkedTables(long resourceId, String accountName, String layerName,
-                                           DocumentsLayer docs, IProgressor progressor){
-            if(null == docs)
-                return false;
+
+        protected boolean loadLinkedTables(
+                long resourceId,
+                String accountName,
+                String layerName,
+                DocumentsLayer docs,
+                IProgressor progressor)
+        {
+            if (null == docs) { return false; }
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
                     InitService.this);
@@ -1020,8 +1057,8 @@ public class InitService extends Service {
             float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
             float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
-            NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(getApplicationContext(),
-                    docs.createLayerStorage(layerName));
+            NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(
+                    getApplicationContext(), docs.createLayerStorage(layerName));
 
             ngwVectorLayer.setName(layerName);
             ngwVectorLayer.setRemoteId(resourceId);
@@ -1045,11 +1082,17 @@ public class InitService extends Service {
             return true;
         }
 
-        protected boolean loadLookupTables(long resourceId, String accountName, String layerName,
-                                           DocumentsLayer docs, IProgressor progressor){
 
-            NGWLookupTable ngwTable = new NGWLookupTable(getApplicationContext(),
-                    docs.createLayerStorage(layerName));
+        protected boolean loadLookupTables(
+                long resourceId,
+                String accountName,
+                String layerName,
+                DocumentsLayer docs,
+                IProgressor progressor)
+        {
+
+            NGWLookupTable ngwTable =
+                    new NGWLookupTable(getApplicationContext(), docs.createLayerStorage(layerName));
 
             ngwTable.setName(layerName);
             ngwTable.setRemoteId(resourceId);
@@ -1068,7 +1111,13 @@ public class InitService extends Service {
             return true;
         }
 
-        protected boolean loadNotes(long resourceId, String accountName, MapBase map, IProgressor progressor) {
+
+        protected boolean loadNotes(
+                long resourceId,
+                String accountName,
+                MapBase map,
+                IProgressor progressor)
+        {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
                     InitService.this);
             long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
@@ -1079,7 +1128,6 @@ public class InitService extends Service {
             ngwVectorLayer.setRemoteId(resourceId);
             ngwVectorLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);
             ngwVectorLayer.setVisible(true);
-            //TODO: add layer draw default style and quarter labels
             ngwVectorLayer.setAccountName(accountName);
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
             ngwVectorLayer.setMinZoom(0);
@@ -1128,7 +1176,6 @@ public class InitService extends Service {
             ngwVectorLayer.setServerWhere(
                     String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
             ngwVectorLayer.setVisible(true);
-            //TODO: add layer draw default style and quarter labels
             ngwVectorLayer.setAccountName(accountName);
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
             ngwVectorLayer.setMinZoom(0);
@@ -1169,7 +1216,6 @@ public class InitService extends Service {
             ngwVectorLayer.setName(getString(R.string.regions));
             ngwVectorLayer.setRemoteId(resourceId);
             ngwVectorLayer.setVisible(false);
-            //TODO: add layer draw default style and quarter labels
             ngwVectorLayer.setAccountName(accountName);
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
             ngwVectorLayer.setMinZoom(0);
