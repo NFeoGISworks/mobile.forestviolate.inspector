@@ -185,9 +185,10 @@ public interface Constants
     /**
      * cadastre fields
      */
+    String FIELD_CADASTRE_REGION = "REGION";
     String FIELD_CADASTRE_LV     = "NAME_LV";
     String FIELD_CADASTRE_ULV    = "NAME_ULV";
-    String FIELD_CADASTRE_PARCEL = "KV";
+    String FIELD_CADASTRE_KV     = "KV";
 
     /**
      * regions fields
@@ -195,14 +196,6 @@ public interface Constants
     String FIELD_REGIONS_NAME_RU = "NAME_RU";
     String FIELD_REGIONS_NAME_EN = "NAME_EN";
     String FIELD_REGIONS_PHONE   = "PHONE";
-
-    /**
-     * kv fields
-     */
-    String FIELD_KV_REGION   = "REGION";
-    String FIELD_KV_NAME_LV  = "NAME_LV";
-    String FIELD_KV_NAME_ULV = "NAME_ULV";
-    String FIELD_KV_KV       = "KV";
 
     /**
      * production fields
@@ -226,6 +219,9 @@ public interface Constants
      * layer types
      */
     int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
+    int LAYERTYPE_LV   = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 2);
+    int LAYERTYPE_ULV  = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 3);
+    int LAYERTYPE_KV   = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 4);
 
     String FRAGMENT_PRODUCTION_FILLER        = "production_filler";
     String FRAGMENT_SHEET_FILLER             = "sheet_filler";

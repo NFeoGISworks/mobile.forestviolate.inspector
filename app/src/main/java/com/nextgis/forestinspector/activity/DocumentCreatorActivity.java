@@ -431,7 +431,7 @@ public abstract class DocumentCreatorActivity
                 Locale.US, "bbox=[%f,%f,%f,%f]", env.getMinX(), env.getMinY(), env.getMaxX(),
                 env.getMaxY());
 
-        String[] columns = new String[] {Constants.FIELD_KV_REGION};
+        String[] columns = new String[] {Constants.FIELD_CADASTRE_REGION};
 
         Cursor cursor = mApp.getContentResolver().query(uri, columns, selection, null, null);
 

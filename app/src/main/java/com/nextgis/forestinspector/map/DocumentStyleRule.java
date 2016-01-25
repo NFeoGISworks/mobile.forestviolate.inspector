@@ -30,7 +30,7 @@ import android.preference.PreferenceManager;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.IStyleRule;
-import com.nextgis.maplib.display.SimpleTiledPolygonStyle;
+import com.nextgis.maplib.display.SimplePolygonStyle;
 import com.nextgis.maplib.display.Style;
 
 import static com.nextgis.maplib.util.Constants.FIELD_ID;
@@ -56,7 +56,7 @@ public class DocumentStyleRule
 
     public static Style getDefaultStyle()
     {
-        SimpleTiledPolygonStyle polygonStyle = new SimpleTiledPolygonStyle();
+        SimplePolygonStyle polygonStyle = new SimplePolygonStyle();
         polygonStyle.setColor(Color.GRAY);
         polygonStyle.setWidth(3);
         polygonStyle.setFill(true);
@@ -82,7 +82,7 @@ public class DocumentStyleRule
             cursor.close();
         }
 
-        SimpleTiledPolygonStyle polygonStyle = (SimpleTiledPolygonStyle) style;
+        SimplePolygonStyle polygonStyle = (SimplePolygonStyle) style;
 
         if (mUserId == userId) {
             polygonStyle.setColor(Color.CYAN);

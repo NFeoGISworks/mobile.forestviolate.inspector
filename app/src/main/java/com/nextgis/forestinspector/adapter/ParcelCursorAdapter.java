@@ -101,7 +101,7 @@ public class ParcelCursorAdapter
                 cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV)) +
                 " " + mContext.getString(R.string.district_forestry) + ", " +
                 mContext.getString(R.string.parcel) + " " +
-                cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
+                cursor.getString(cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_KV));
         long id = cursor.getLong(
                 cursor.getColumnIndexOrThrow(com.nextgis.maplib.util.Constants.FIELD_ID));
         // Populate fields with extracted properties

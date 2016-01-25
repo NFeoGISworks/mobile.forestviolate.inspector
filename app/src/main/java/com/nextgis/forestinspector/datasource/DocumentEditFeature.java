@@ -110,7 +110,7 @@ public class DocumentEditFeature extends DocumentFeature {
         if (null == where || TextUtils.isEmpty(where))
             return "";
 
-        String columns[] = {FIELD_GEOM, Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_PARCEL};
+        String columns[] = {FIELD_GEOM, Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_KV};
         Cursor cursor = parcelsLayer.query(columns, " " + where, null, null, null);
         Map<String, Map<String, String>> data = new HashMap<>();
 
@@ -122,7 +122,7 @@ public class DocumentEditFeature extends DocumentFeature {
                     String sUlv = cursor.getString(
                             cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV));
                     String sParcel = cursor.getString(
-                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
+                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_KV));
 
 
                     String key = sLv + " " + area + " " + sUlv + " " + district;
@@ -181,7 +181,7 @@ public class DocumentEditFeature extends DocumentFeature {
         VectorLayer parcelsLayer =
                 (VectorLayer) map.getLayerByPathName(Constants.KEY_LAYER_KV);
 
-        String columns[] = {FIELD_GEOM, Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_PARCEL};
+        String columns[] = {FIELD_GEOM, Constants.FIELD_CADASTRE_LV, Constants.FIELD_CADASTRE_ULV, Constants.FIELD_CADASTRE_KV};
         Cursor cursor = parcelsLayer.query(null, " " + where, null, null, null);
         //GeoEnvelope env = new GeoEnvelope();
         GeoMultiPolygon multiPolygon = new GeoMultiPolygon();
@@ -206,7 +206,7 @@ public class DocumentEditFeature extends DocumentFeature {
                     String sUlv = cursor.getString(
                             cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_ULV));
                     String sParcel = cursor.getString(
-                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_PARCEL));
+                            cursor.getColumnIndexOrThrow(Constants.FIELD_CADASTRE_KV));
 
 
                     String key = sLv + " " + area + " " + sUlv + " " + district;

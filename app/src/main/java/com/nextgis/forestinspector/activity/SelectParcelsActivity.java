@@ -105,7 +105,7 @@ public class SelectParcelsActivity
             //use the query to search your data
             String fullQuery = Constants.FIELD_CADASTRE_LV + " LIKE '%" + query + "%' OR " +
                     Constants.FIELD_CADASTRE_ULV + " LIKE '%" + query + "%' OR " +
-                    Constants.FIELD_CADASTRE_PARCEL + " LIKE '%" + query + "%'";
+                    Constants.FIELD_CADASTRE_KV + " LIKE '%" + query + "%'";
 
             bundle = new Bundle();
             bundle.putString(KEY_QUERY, fullQuery);
