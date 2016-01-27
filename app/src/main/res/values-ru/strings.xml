@@ -24,7 +24,7 @@
 <resources>
     <string name="app_name">Лесной инспектор</string>
     <string name="account_name">Лесной инспектор</string>
-    <string name="title_notes">Документы</string>
+    <string name="title_documents">Документы</string>
     <string name="title_map">Карта</string>
     <string name="action_settings">Настройки</string>
     <string name="app_description">Приложение для заполнения акта о лесонарушении, отправки его на центральный сервер, отслеживании его статуса, а также создания и изменения напоминаний о контроле участков леса.</string>
@@ -307,5 +307,8 @@
     <string name="lv_layer">Лесничества</string>
     <string name="ulv_layer">Участковые лесничества</string>
     <string name="kv_layer">Лесные кварталы</string>
+
+    <string name="layer_props">Настройки слоев</string>
+    <string name="action_layer_props">Настройки слоев</string>
 
 </resources>

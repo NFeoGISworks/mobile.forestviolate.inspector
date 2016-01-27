@@ -23,7 +23,7 @@
 <resources>
     <string name="app_name">Forest inspector</string>
     <string name="account_name">Forest inspector</string>
-    <string name="title_notes">Documents</string>
+    <string name="title_documents">Documents</string>
     <string name="title_map">Map</string>
     <string name="action_settings">Settings</string>
     <string name="app_description">The application for fulfil forest violation forms, send them to the central server and check their status, create and manage personal notifications.</string>
@@ -307,5 +307,8 @@
     <string name="lv_layer">Forestries</string>
     <string name="ulv_layer">District forestries</string>
     <string name="kv_layer">Parcels</string>
+
+    <string name="layer_props">Layer properties</string>
+    <string name="action_layer_props">Layer properties</string>
 
 </resources>

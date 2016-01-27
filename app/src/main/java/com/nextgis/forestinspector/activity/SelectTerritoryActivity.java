@@ -33,6 +33,7 @@ import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.dialog.InputParcelTextDialog;
+import com.nextgis.forestinspector.dialog.LayerListDialog;
 import com.nextgis.forestinspector.fragment.MapEditFragment;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.IGISApplication;
@@ -40,12 +41,15 @@ import com.nextgis.maplibui.fragment.BottomToolbar;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 
-public class SelectTerritoryActivity extends FIActivity {
+public class SelectTerritoryActivity
+        extends FIActivity
+{
+    protected static final int TERRITORY_ACTIVITY = 55;
+
     protected DocumentEditFeature mEditFeature;
     protected TextView            mTerritoryText;
     protected View                mMainButton;
 
-    protected final int TERRITORY_ACTIVITY = 55;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -129,141 +133,196 @@ public class SelectTerritoryActivity extends FIActivity {
         }
     }
 
-    private void addBySheet() {
-        if(null == mEditFeature ||
-                mEditFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) == 0){
-            Toast.makeText(this, getString(R.string.error_sheet_is_empty), Toast.LENGTH_LONG).show();
+
+    private void addBySheet()
+    {
+        if (null == mEditFeature
+                || mEditFeature.getSubFeaturesCount(Constants.KEY_LAYER_SHEET) == 0) {
+
+            Toast.makeText(this, getString(R.string.error_sheet_is_empty), Toast.LENGTH_LONG)
+                    .show();
         }
         mEditFeature.setUnionGeometryFromLayer(Constants.KEY_LAYER_SHEET);
 
-        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        if(null != mapFragment)
-            mapFragment.updateTerritory(mEditFeature.getGeometry());
+        MapEditFragment mapFragment =
+                (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if (null != mapFragment) { mapFragment.updateTerritory(mEditFeature.getGeometry()); }
     }
 
-    private void addByWalk() {
+
+    private void addByWalk()
+    {
         // Digitize by walking
-        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        if(null != mapFragment) {
+        MapEditFragment mapFragment =
+                (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if (null != mapFragment) {
             mapFragment.addByWalk();
         }
     }
 
-    private void addByParcelList() {
+
+    private void addByParcelList()
+    {
         Intent intent = new Intent(this, SelectParcelsActivity.class);
         intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
         startActivityForResult(intent, TERRITORY_ACTIVITY);
     }
 
-    private void addByHand() {
+
+    private void addByHand()
+    {
         //Draw on map by hand
-        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        if(null != mapFragment) {
+        MapEditFragment mapFragment =
+                (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if (null != mapFragment) {
             mapFragment.addByHand();
         }
     }
+
 
     public BottomToolbar getBottomToolbar()
     {
         return (BottomToolbar) findViewById(R.id.bottom_toolbar);
     }
 
-    public View getFAB(){
+
+    public View getFAB()
+    {
         return mMainButton;
     }
 
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == TERRITORY_ACTIVITY){
-            String text = mEditFeature.getTerritoryText(getString(R.string.forestry),
-                    getString(R.string.district_forestry), getString(R.string.parcel),
-                    getString(R.string.unit));
+    protected void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data)
+    {
+        if (requestCode == TERRITORY_ACTIVITY) {
+            String text = mEditFeature.getTerritoryText(
+                    getString(R.string.forestry), getString(R.string.district_forestry),
+                    getString(R.string.parcel), getString(R.string.unit));
 
             setTerritoryText(text);
 
-            MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-            if(null != mapFragment)
-                mapFragment.updateTerritory(mEditFeature.getGeometry());
+            MapEditFragment mapFragment =
+                    (MapEditFragment) getSupportFragmentManager().findFragmentById(
+                            R.id.map_fragment);
+            if (null != mapFragment) { mapFragment.updateTerritory(mEditFeature.getGeometry()); }
         }
     }
 
-    public void setTerritoryText(String text){
+
+    public void setTerritoryText(String text)
+    {
         mTerritoryText.setText(text);
         mEditFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, text);
     }
 
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.territory_edit, menu);
         return true;
     }
 
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            showSettings();
-            return true;
-        }
-        else if (id == R.id.action_apply) {
-            apply();
-            return true;
-        }
-        else if (id == R.id.action_cancel) {
-            finish();
-            return true;
+
+        switch (item.getItemId()) {
+            case R.id.layers_props:
+                showLayersProps();
+                return true;
+
+            case R.id.action_apply:
+                apply();
+                return true;
+
+            case R.id.action_cancel:
+                finish();
+                return true;
+
+            case R.id.action_settings:
+                showSettings();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void apply() {
-        MapEditFragment mapFragment = (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        if(null != mapFragment)
-            mapFragment.onFinishEditSession();
+
+    public void showLayersProps()
+    {
+        LayerListDialog dialog = new LayerListDialog();
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_LAYER_LIST);
+    }
+
+
+    private void apply()
+    {
+        MapEditFragment mapFragment =
+                (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if (null != mapFragment) { mapFragment.onFinishEditSession(); }
         finish();
     }
 
+
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         mEditFeature.setFieldValue(
                 Constants.FIELD_DOCUMENTS_TERRITORY, mTerritoryText.getText().toString());
         super.onPause();
     }
 
+
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         mTerritoryText.setText(getTerritoryText());
     }
 
-    private void showSettings() {
+
+    private void showSettings()
+    {
         IGISApplication app = (IGISApplication) getApplication();
         app.showSettings(SettingsConstantsUI.ACTION_PREFS_GENERAL);
     }
 
-    public void showAskParcelTextDialog() {
+
+    public void showAskParcelTextDialog()
+    {
         InputParcelTextDialog newFragment = new InputParcelTextDialog();
         newFragment.show(getSupportFragmentManager(), "input_parcel_text");
     }
 
-    public void clearTerritoryGeometry() {
+
+    public void clearTerritoryGeometry()
+    {
         mEditFeature.setGeometry(null);
     }
 
-    public void setTerritoryTextByGeom() {
-        String text = mEditFeature.getTerritoryTextByGeom(getString(R.string.forestry),
-                getString(R.string.district_forestry), getString(R.string.parcel),
-                getString(R.string.unit));
+
+    public void setTerritoryTextByGeom()
+    {
+        String text = mEditFeature.getTerritoryTextByGeom(
+                getString(R.string.forestry), getString(R.string.district_forestry),
+                getString(R.string.parcel), getString(R.string.unit));
         setTerritoryText(text);
     }
 
-    public String getTerritoryText() {
+
+    public String getTerritoryText()
+    {
         return mEditFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY);
     }
 }

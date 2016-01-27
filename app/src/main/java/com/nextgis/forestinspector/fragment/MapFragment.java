@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -44,6 +45,7 @@ import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.IActivityWithMap;
 import com.nextgis.forestinspector.activity.MapActivity;
 import com.nextgis.forestinspector.dialog.ClickedItemsInfoGetter;
 import com.nextgis.forestinspector.overlay.SelectLocationOverlay;
@@ -243,6 +245,7 @@ public class MapFragment
     {
         addMapView();
         startGpsWork();
+        setMenu(true);
     }
 
 
@@ -250,6 +253,7 @@ public class MapFragment
     {
         stopGpsWork();
         removeMapView();
+        setMenu(false);
     }
 
 
@@ -293,6 +297,16 @@ public class MapFragment
         }
         if (null != mGpsEventSource) {
             mGpsEventSource.removeListener(this);
+        }
+    }
+
+
+    protected void setMenu(boolean menuForMap)
+    {
+        Activity activity = getActivity();
+        if (activity instanceof IActivityWithMap) {
+            IActivityWithMap mapActivity = (IActivityWithMap) activity;
+            mapActivity.setMenuForMap(menuForMap);
         }
     }
 

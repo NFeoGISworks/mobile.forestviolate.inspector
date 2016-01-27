@@ -2,6 +2,7 @@
  * Project: Forest violations
  * Purpose: Mobile application for registering facts of the forest violations.
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+ * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
  * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
  *
@@ -34,6 +35,7 @@ import android.widget.RelativeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.IActivityWithMap;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
@@ -176,12 +178,14 @@ public class MapViewFragment
     public void visibleState()
     {
         addMapView();
+        setMenu(true);
     }
 
 
     public void invisibleState()
     {
         removeMapView();
+        setMenu(false);
     }
 
 
@@ -200,6 +204,16 @@ public class MapViewFragment
     {
         if (null != mMapRelativeLayout && mMapRelativeLayout.indexOfChild(mMap) != -1) {
             mMapRelativeLayout.removeView(mMap);
+        }
+    }
+
+
+    protected void setMenu(boolean menuForMap)
+    {
+        Activity activity = getActivity();
+        if (activity instanceof IActivityWithMap) {
+            IActivityWithMap mapActivity = (IActivityWithMap) activity;
+            mapActivity.setMenuForMap(menuForMap);
         }
     }
 

@@ -2,6 +2,7 @@
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
   ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
   ~ ******************************************************************************
   ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
   ~
@@ -19,17 +20,27 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".MainActivity"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity"
     >
+    <item
+        android:id="@+id/layers_props"
+        android:icon="@drawable/ic_maps_layers"
+        android:title="@string/action_layer_props"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:visible="false"
+        />
     <item
         android:id="@+id/docs_filter"
         android:icon="@drawable/ic_action_content_filter_list"
         android:title="@string/docs_filter"
         android:orderInCategory="100"
         app:showAsAction="always"
+        android:visible="true"
         >
         <menu>
             <item
@@ -88,6 +99,7 @@
         />
 
     <!-- for debug -->
+
 <!--
         <item
             android:id="@+id/action_sync"
@@ -96,16 +108,17 @@
             app:showAsAction="never"
             />
 -->
-        <item
-            android:id="@+id/action_settings"
-            android:title="@string/action_settings"
-            android:orderInCategory="100"
-            app:showAsAction="never"
-            />
-        <item
-            android:id="@+id/action_about"
-            android:title="@string/action_about"
-            android:orderInCategory="100"
-            app:showAsAction="never"
-            />
-    </menu>
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/action_about"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        />
+</menu>

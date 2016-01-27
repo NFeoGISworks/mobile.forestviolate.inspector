@@ -28,6 +28,14 @@
     >
 
     <item
+        android:id="@+id/layers_props"
+        android:icon="@drawable/ic_maps_layers"
+        android:title="@string/action_layer_props"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        />
+
+    <item
         android:id="@+id/action_ok"
         android:title="@string/ok"
         android:orderInCategory="100"

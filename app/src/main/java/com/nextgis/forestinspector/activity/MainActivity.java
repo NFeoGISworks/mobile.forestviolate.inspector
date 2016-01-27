@@ -46,6 +46,7 @@ import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.adapter.DocumentsListAdapter;
 import com.nextgis.forestinspector.adapter.InitStepListAdapter;
+import com.nextgis.forestinspector.dialog.LayerListDialog;
 import com.nextgis.forestinspector.fragment.DocumentsFragment;
 import com.nextgis.forestinspector.fragment.LoginFragment;
 import com.nextgis.forestinspector.fragment.MapFragment;
@@ -67,7 +68,8 @@ public class MainActivity
         implements MainApplication.OnAccountAddedListener,
                    MainApplication.OnAccountDeletedListener,
                    MainApplication.OnReloadMapListener,
-                   DocumentsListAdapter.OnDocLongClickListener
+                   DocumentsListAdapter.OnDocLongClickListener,
+                   IActivityWithMap
 {
 
     /**
@@ -90,6 +92,8 @@ public class MainActivity
     protected OnShowSheetsListener      mOnShowSheetsListener;
     protected OnShowFieldWorksListener  mOnShowFieldWorksListener;
     protected OnShowNotesListener       mOnShowNotesListener;
+
+    protected boolean mMenuForMap = false;
 
 
     @Override
@@ -322,28 +326,45 @@ public class MainActivity
             getMenuInflater().inflate(R.menu.main, menu);
         }
 
-        FragmentManager fm = getSupportFragmentManager();
-        DocumentsFragment documentsFragment =
-                (DocumentsFragment) fm.findFragmentByTag(makeFragmentName(R.id.pager, 0));
+        if (mMenuForMap) {
+            menu.findItem(R.id.layers_props).setVisible(true);
+            menu.findItem(R.id.docs_filter).setVisible(false);
 
-        if (null != documentsFragment) {
-            setOnShowIndictmentsListener(documentsFragment);
-            setOnShowSheetsListener(documentsFragment);
-            setOnShowFieldWorksListener(documentsFragment);
-            setOnShowNotesListener(documentsFragment);
+        } else {
+            menu.findItem(R.id.layers_props).setVisible(false);
+            menu.findItem(R.id.docs_filter).setVisible(true);
 
-            MenuItem itemShowIndictments = menu.findItem(R.id.show_indictments);
-            MenuItem itemShowSheets = menu.findItem(R.id.show_sheets);
-            MenuItem itemShowFieldWorks = menu.findItem(R.id.show_field_works);
-            MenuItem itemShowNotes = menu.findItem(R.id.show_notes);
+            FragmentManager fm = getSupportFragmentManager();
+            DocumentsFragment documentsFragment =
+                    (DocumentsFragment) fm.findFragmentByTag(makeFragmentName(R.id.pager, 0));
 
-            itemShowIndictments.setChecked(documentsFragment.isShowIndictments());
-            itemShowSheets.setChecked(documentsFragment.isShowSheets());
-            itemShowFieldWorks.setChecked(documentsFragment.isShowFieldWorks());
-            itemShowNotes.setChecked(documentsFragment.isShowNotes());
+            if (null != documentsFragment) {
+                setOnShowIndictmentsListener(documentsFragment);
+                setOnShowSheetsListener(documentsFragment);
+                setOnShowFieldWorksListener(documentsFragment);
+                setOnShowNotesListener(documentsFragment);
+
+                MenuItem itemShowIndictments = menu.findItem(R.id.show_indictments);
+                MenuItem itemShowSheets = menu.findItem(R.id.show_sheets);
+                MenuItem itemShowFieldWorks = menu.findItem(R.id.show_field_works);
+                MenuItem itemShowNotes = menu.findItem(R.id.show_notes);
+
+                itemShowIndictments.setChecked(documentsFragment.isShowIndictments());
+                itemShowSheets.setChecked(documentsFragment.isShowSheets());
+                itemShowFieldWorks.setChecked(documentsFragment.isShowFieldWorks());
+                itemShowNotes.setChecked(documentsFragment.isShowNotes());
+            }
         }
 
         return true;
+    }
+
+
+    @Override
+    public void setMenuForMap(boolean menuForMap)
+    {
+        mMenuForMap = menuForMap;
+        updateMenuView();
     }
 
 
@@ -353,13 +374,16 @@ public class MainActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
 
         final IGISApplication app = (IGISApplication) getApplication();
 
-        switch (id) {
+        switch (item.getItemId()) {
+            case R.id.layers_props:
+                showLayersProps();
+                return true;
+
             case R.id.show_indictments:
                 if (item.isChecked()) { item.setChecked(false); } else { item.setChecked(true); }
                 showIndictments(item.isChecked());
@@ -507,6 +531,13 @@ public class MainActivity
     {
         Intent intentNote = new Intent(this, NoteCreatorActivity.class);
         startActivity(intentNote);
+    }
+
+
+    public void showLayersProps()
+    {
+        LayerListDialog dialog = new LayerListDialog();
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_LAYER_LIST);
     }
 
 
@@ -682,7 +713,7 @@ public class MainActivity
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_notes).toUpperCase(l);
+                    return getString(R.string.title_documents).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_map).toUpperCase(l);
             }

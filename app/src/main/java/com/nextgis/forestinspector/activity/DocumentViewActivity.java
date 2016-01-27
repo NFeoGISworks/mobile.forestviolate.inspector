@@ -29,9 +29,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.dialog.LayerListDialog;
 import com.nextgis.forestinspector.fragment.FieldWorksViewFragment;
 import com.nextgis.forestinspector.fragment.IndictmentViewFragment;
 import com.nextgis.forestinspector.fragment.MapViewFragment;
@@ -57,11 +60,14 @@ import java.util.Map;
  */
 public class DocumentViewActivity
         extends FIActivity
-        implements IDocumentFeatureSource
+        implements IDocumentFeatureSource,
+                   IActivityWithMap
 {
-    protected ViewPager mViewPager;
+    protected ViewPager            mViewPager;
     protected SectionsPagerAdapter mSectionsPagerAdapter;
-    protected DocumentFeature mDocFeature;
+    protected DocumentFeature      mDocFeature;
+
+    protected boolean mMenuForMap = false;
 
 
     @Override
@@ -152,6 +158,49 @@ public class DocumentViewActivity
     {
         setContentView(R.layout.activity_document_noview);
         setToolbar(R.id.main_toolbar);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.document_view, menu);
+
+        if (mMenuForMap) {
+            menu.findItem(R.id.layers_props).setVisible(true);
+        } else {
+            menu.findItem(R.id.layers_props).setVisible(false);
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public void setMenuForMap(boolean menuForMap)
+    {
+        mMenuForMap = menuForMap;
+        updateMenuView();
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+            case R.id.layers_props:
+                showLayersProps();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    public void showLayersProps()
+    {
+        LayerListDialog dialog = new LayerListDialog();
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_LAYER_LIST);
     }
 
 

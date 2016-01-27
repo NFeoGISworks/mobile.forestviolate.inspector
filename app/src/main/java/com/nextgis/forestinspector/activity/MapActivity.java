@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.dialog.LayerListDialog;
 import com.nextgis.forestinspector.fragment.MapFragment;
 import com.nextgis.forestinspector.util.Constants;
 
@@ -96,6 +97,9 @@ public class MapActivity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId()) {
+            case R.id.layers_props:
+                showLayersProps();
+                return true;
             case R.id.action_ok:
                 returnLocation();
                 return true;
@@ -105,6 +109,13 @@ public class MapActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void showLayersProps()
+    {
+        LayerListDialog dialog = new LayerListDialog();
+        dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_LAYER_LIST);
     }
 
 
