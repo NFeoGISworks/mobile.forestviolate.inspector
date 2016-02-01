@@ -85,7 +85,7 @@ public class MainActivity
      * The {@link ViewPager} that will host the section contents.
      */
     protected ViewPager           mViewPager;
-    protected boolean             mFirsRun;
+    protected boolean mFirstRun;
     protected InitStepListAdapter mAdapter;
 
     protected OnShowIndictmentsListener mOnShowIndictmentsListener;
@@ -106,7 +106,7 @@ public class MainActivity
         if (app == null) {
             Log.d(Constants.FITAG, "failed to get main application");
             // should never happen
-            mFirsRun = true;
+            mFirstRun = true;
             createFirstStartView();
         }
 
@@ -115,7 +115,7 @@ public class MainActivity
             Log.d(
                     Constants.FITAG,
                     "No account" + getString(R.string.account_name) + " created. Run first step.");
-            mFirsRun = true;
+            mFirstRun = true;
             createFirstStartView();
         } else {
             MapBase map = app.getMap();
@@ -123,13 +123,13 @@ public class MainActivity
                 Log.d(
                         Constants.FITAG, "Account" + getString(R.string.account_name) +
                                 " created. Run second step.");
-                mFirsRun = true;
+                mFirstRun = true;
                 createSecondStartView(account);
             } else {
                 Log.d(
                         Constants.FITAG, "Account" + getString(R.string.account_name) +
                                 " created. Layers created. Run normal view.");
-                mFirsRun = false;
+                mFirstRun = false;
                 createNormalView();
             }
         }
@@ -321,12 +321,13 @@ public class MainActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        if (mFirsRun) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        if(mFirstRun){
             return true;
         }
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        else {
+            getMenuInflater().inflate(R.menu.main, menu);
+        }
 
         if (mMenuForMap) {
             menu.findItem(R.id.layers_props).setVisible(true);
