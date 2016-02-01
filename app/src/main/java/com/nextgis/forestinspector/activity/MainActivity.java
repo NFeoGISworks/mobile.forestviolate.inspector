@@ -322,12 +322,11 @@ public class MainActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(mFirstRun){
+        if (mFirstRun) {
             return true;
         }
-        else {
-            getMenuInflater().inflate(R.menu.main, menu);
-        }
+
+        getMenuInflater().inflate(R.menu.main, menu);
 
         if (mMenuForMap) {
             menu.findItem(R.id.layers_props).setVisible(true);
