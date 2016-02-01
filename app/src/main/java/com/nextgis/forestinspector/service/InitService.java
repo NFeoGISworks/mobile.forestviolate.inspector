@@ -27,6 +27,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -87,8 +88,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class InitService
         extends Service
 {
-    public static final String ACTION_START = "START_INITIAL_SYNC";
-    public static final String ACTION_STOP = "STOP_INITIAL_SYNC";
+    public static final String ACTION_START  = "START_INITIAL_SYNC";
+    public static final String ACTION_STOP   = "STOP_INITIAL_SYNC";
     public static final String ACTION_REPORT = "REPORT_INITIAL_SYNC";
 
     public static final int MAX_SYNC_STEP = 9;
@@ -1173,8 +1174,12 @@ public class InitService
                     getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_FV));
             ngwVectorLayer.setName(getString(R.string.targeting));
             ngwVectorLayer.setRemoteId(resourceId);
+
+            // http://stackoverflow.com/a/16909821/4727406
             ngwVectorLayer.setServerWhere(
-                    String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY));
+                    String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY) +
+                    "&status=" + Uri.encode(Constants.FV_STATUS_NEW_FOREST_CHANGE));
+
             ngwVectorLayer.setVisible(true);
             ngwVectorLayer.setAccountName(accountName);
             ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
