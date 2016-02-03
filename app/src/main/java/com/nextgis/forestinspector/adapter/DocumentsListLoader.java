@@ -28,6 +28,7 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
@@ -149,7 +150,8 @@ public class DocumentsListLoader
         if ((mShowIndictments || mShowSheets || mShowFieldWorks
                 || mShowTargets && null != mDocsIds && mDocsIds.size() > 0) && docsLayer != null) {
 
-            VectorLayer docs = (VectorLayer) docsLayer;
+            DocumentsLayer docs = (DocumentsLayer) docsLayer;
+            docs.clearAttaches();
 
             String[] columns = new String[] {
                     com.nextgis.maplib.util.Constants.FIELD_ID,

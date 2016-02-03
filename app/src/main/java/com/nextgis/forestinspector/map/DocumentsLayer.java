@@ -679,4 +679,10 @@ public class DocumentsLayer extends NGWVectorLayer {
             mRenderer = null;
         }
     }
+
+
+    public void clearAttaches()
+    {
+        mAttaches.clear();
+    }
 }
