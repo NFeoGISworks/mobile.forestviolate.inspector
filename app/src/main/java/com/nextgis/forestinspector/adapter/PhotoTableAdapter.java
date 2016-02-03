@@ -292,6 +292,7 @@ public abstract class PhotoTableAdapter
                             Intent intent = new Intent(mActivity, PhotoTableFillerActivity.class);
                             intent.putExtra(PhotoTableFragment.PHOTO_VIEWER, true);
                             intent.putExtra(PhotoTableFragment.PHOTO_ITEM_KEY, key);
+                            intent.putExtra(Constants.DOCUMENT_VIEWER, mIsDocumentViewer);
                             intent.putExtra(
                                     com.nextgis.maplib.util.Constants.FIELD_ID, mFeatureId);
                             mActivity.startActivity(intent);

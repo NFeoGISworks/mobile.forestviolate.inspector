@@ -137,6 +137,10 @@ public class DocumentsListAdapter
                                                 mContext, FieldWorksCreatorActivity.class);
                                         break;
                                 }
+
+                                if (null != intent) {
+                                    intent.putExtra(Constants.DOCUMENT_VIEWER, false);
+                                }
                             }
                         }
 
