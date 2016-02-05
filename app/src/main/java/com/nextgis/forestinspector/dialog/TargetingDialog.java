@@ -416,7 +416,7 @@ public class TargetingDialog
         String sortOrder = Constants.FIELD_FV_DATE + " DESC";
 
         String selection =
-                Constants.FIELD_FV_STATUS + " = " + Constants.FV_STATUS_NEW_FOREST_CHANGE;
+                Constants.FIELD_FV_STATUS + " = '" + Constants.FV_STATUS_NEW_FOREST_CHANGE + "'";
 
         if (!mShowAllTargets && mLocation != null) {
             GeoPoint pt = new GeoPoint(mLocation.getLongitude(), mLocation.getLatitude());
