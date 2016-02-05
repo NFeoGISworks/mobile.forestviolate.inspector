@@ -225,8 +225,16 @@ public class SelectLocationOverlay
     public void panMoveTo(MotionEvent e)
     {
         if (mMapViewOverlays.isLockMap()) {
+
+            float offsetX = 0f;
+            float offsetY = 0f;
+            if (null != mTempPointOffset) {
+                offsetX = mTempPointOffset.x;
+                offsetY = mTempPointOffset.y;
+            }
+
             mSelectedItem.setSelectedPointCoordinates(
-                    e.getX() + mTempPointOffset.x, e.getY() + mTempPointOffset.y);
+                    e.getX() + offsetX, e.getY() + offsetY);
         }
     }
 
