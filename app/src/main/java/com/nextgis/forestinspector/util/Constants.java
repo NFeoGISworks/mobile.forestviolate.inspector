@@ -251,4 +251,11 @@ public interface Constants
     int PARCELS_LOADER   = 1;
     int TARGETING_LOADER = 2;
     int CLICKED_LOADER   = 3;
+
+    float LV_MIN_ZOOM = 0f;
+    float LV_MAX_ZOOM = 9.5f;
+    float ULV_MIN_ZOOM = 9.5f;
+    float ULV_MAX_ZOOM = 13.5f;
+    float KV_MIN_ZOOM = 13.5f;
+    float KV_MAX_ZOOM = 23f;
 }

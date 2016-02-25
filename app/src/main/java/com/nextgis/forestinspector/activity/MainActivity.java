@@ -56,6 +56,7 @@ import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoPoint;
+import com.nextgis.maplib.map.Layer;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
@@ -85,7 +86,7 @@ public class MainActivity
      * The {@link ViewPager} that will host the section contents.
      */
     protected ViewPager           mViewPager;
-    protected boolean mFirstRun;
+    protected boolean             mFirstRun;
     protected InitStepListAdapter mAdapter;
 
     protected OnShowIndictmentsListener mOnShowIndictmentsListener;
@@ -126,12 +127,57 @@ public class MainActivity
                 mFirstRun = true;
                 createSecondStartView(account);
             } else {
-                Log.d(
-                        Constants.FITAG, "Account" + getString(R.string.account_name) +
-                                " created. Layers created. Run normal view.");
+                Log.d(Constants.FITAG, "Account" + getString(R.string.account_name) + " created.");
+                Log.d(Constants.FITAG, "Map data updating.");
+                updateMap(map);
+                Log.d(Constants.FITAG, "Layers created. Run normal view.");
                 mFirstRun = false;
                 createNormalView();
             }
+        }
+    }
+
+
+    protected void updateMap(MapBase map)
+    {
+        Layer lvLayer = (Layer) map.getLayerByPathName(Constants.KEY_LAYER_LV);
+        Layer ulvLayer = (Layer) map.getLayerByPathName(Constants.KEY_LAYER_ULV);
+        Layer kvLayer = (Layer) map.getLayerByPathName(Constants.KEY_LAYER_KV);
+
+        boolean saveMap = false;
+
+        if (Float.compare(lvLayer.getMinZoom(), Constants.LV_MIN_ZOOM) != 0) {
+            lvLayer.setMinZoom(Constants.LV_MIN_ZOOM);
+            saveMap = true;
+        }
+        if (Float.compare(lvLayer.getMaxZoom(), Constants.LV_MAX_ZOOM) != 0) {
+            lvLayer.setMaxZoom(Constants.LV_MAX_ZOOM);
+            saveMap = true;
+        }
+
+        if (Float.compare(ulvLayer.getMinZoom(), Constants.ULV_MIN_ZOOM) != 0) {
+            ulvLayer.setMinZoom(Constants.ULV_MIN_ZOOM);
+            saveMap = true;
+        }
+        if (Float.compare(ulvLayer.getMaxZoom(), Constants.ULV_MAX_ZOOM) != 0) {
+            ulvLayer.setMaxZoom(Constants.ULV_MAX_ZOOM);
+            saveMap = true;
+        }
+
+        if (Float.compare(kvLayer.getMinZoom(), Constants.KV_MIN_ZOOM) != 0) {
+            kvLayer.setMinZoom(Constants.KV_MIN_ZOOM);
+            saveMap = true;
+        }
+        if (Float.compare(kvLayer.getMaxZoom(), Constants.KV_MAX_ZOOM) != 0) {
+            kvLayer.setMaxZoom(Constants.KV_MAX_ZOOM);
+            saveMap = true;
+        }
+
+        if (saveMap) {
+            map.save();
+            Log.d(Constants.FITAG, "Map data is updated.");
+        } else {
+            Log.d(Constants.FITAG, "Map data is not need to update.");
         }
     }
 

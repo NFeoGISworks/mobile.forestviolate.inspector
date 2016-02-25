@@ -943,8 +943,8 @@ public class InitService
             lvLayer.setVisible(true);
             lvLayer.setAccountName(accountName);
             lvLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
-            lvLayer.setMinZoom(0);
-            lvLayer.setMaxZoom(9.5f);
+            lvLayer.setMinZoom(Constants.LV_MIN_ZOOM);
+            lvLayer.setMaxZoom(Constants.LV_MAX_ZOOM);
 
             map.addLayer(lvLayer);
 
@@ -965,8 +965,8 @@ public class InitService
             ulvLayer.setVisible(true);
             ulvLayer.setAccountName(accountName);
             ulvLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
-            ulvLayer.setMinZoom(9.5f);
-            ulvLayer.setMaxZoom(14.5f);
+            ulvLayer.setMinZoom(Constants.ULV_MIN_ZOOM);
+            ulvLayer.setMaxZoom(Constants.ULV_MAX_ZOOM);
 
             map.addLayer(ulvLayer);
 
@@ -987,8 +987,8 @@ public class InitService
             kvLayer.setVisible(true);
             kvLayer.setAccountName(accountName);
             kvLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_NONE);
-            kvLayer.setMinZoom(14.5f);
-            kvLayer.setMaxZoom(23);
+            kvLayer.setMinZoom(Constants.KV_MIN_ZOOM);
+            kvLayer.setMaxZoom(Constants.KV_MAX_ZOOM);
 
             map.addLayer(kvLayer);
 
@@ -1175,7 +1175,7 @@ public class InitService
             ngwVectorLayer.setName(getString(R.string.targeting));
             ngwVectorLayer.setRemoteId(resourceId);
 
-            // http://stackoverflow.com/a/16909821/4727406
+            // http://stackoverflow.com/a/16909821
             ngwVectorLayer.setServerWhere(
                     String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY) +
                     "&status=" + Uri.encode(Constants.FV_STATUS_NEW_FOREST_CHANGE));
