@@ -28,7 +28,7 @@
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
     >
-    <!--http://stackoverflow.com/a/1662088/4727406-->
+    <!--http://stackoverflow.com/a/1662088-->
 
     <LinearLayout
         android:orientation="vertical"

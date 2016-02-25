@@ -40,7 +40,7 @@ import com.nextgis.maplibui.activity.NGActivity;
  */
 // http://stackoverflow.com/questions/32070186/how-to-use-the-v7-v14-preference-support-library
 // http://developer.android.com/intl/ru/reference/android/support/v7/preference/PreferenceFragmentCompat.html
-// http://stackoverflow.com/a/32540395/4727406
+// http://stackoverflow.com/a/32540395
 public abstract class NGPreferenceActivity
         extends NGActivity
 {

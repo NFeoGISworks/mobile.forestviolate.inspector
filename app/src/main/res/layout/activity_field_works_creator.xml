@@ -43,7 +43,7 @@
             android:orientation="vertical"
             >
 
-            <!--http://stackoverflow.com/a/1662088/4727406-->
+            <!--http://stackoverflow.com/a/1662088-->
 
             <View
                 android:layout_width="0px"

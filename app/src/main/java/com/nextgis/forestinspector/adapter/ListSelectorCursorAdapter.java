@@ -27,7 +27,7 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 
 
-// http://stackoverflow.com/a/26673645/4727406
+// http://stackoverflow.com/a/26673645
 // https://gist.github.com/skyfishjy/443b7448f59be978bc59
 // Here is our own implementation of the CursorAdapter's methods by just copy pasting code from CursorAdapter.
 // Also see a docs to the methods from CursorAdapter.

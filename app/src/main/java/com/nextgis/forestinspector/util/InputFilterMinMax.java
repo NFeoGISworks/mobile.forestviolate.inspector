@@ -26,7 +26,7 @@ import android.text.InputFilter;
 import android.text.Spanned;
 
 
-// http://stackoverflow.com/a/14212734/4727406
+// http://stackoverflow.com/a/14212734
 public abstract class InputFilterMinMax<E extends Number & Comparable<E>>
         implements InputFilter
 {
@@ -51,7 +51,7 @@ public abstract class InputFilterMinMax<E extends Number & Comparable<E>>
     }
 
 
-    // http://stackoverflow.com/a/19072151/4727406
+    // http://stackoverflow.com/a/19072151
     @Override
     public CharSequence filter(
             CharSequence source,

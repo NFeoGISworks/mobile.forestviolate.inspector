@@ -44,7 +44,7 @@
             android:layout_margin="5dp"
             >
 
-            <!--http://stackoverflow.com/a/1662088/4727406-->
+            <!--http://stackoverflow.com/a/1662088-->
 
             <View
                 android:focusableInTouchMode="true"

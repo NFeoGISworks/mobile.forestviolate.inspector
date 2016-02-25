@@ -28,7 +28,7 @@
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
     >
-    <!--http://stackoverflow.com/a/1662088/4727406-->
+    <!--http://stackoverflow.com/a/1662088-->
 
     <LinearLayout
         android:orientation="vertical"
@@ -115,7 +115,7 @@
             style="@style/dialog_desc_text"
             />
 
-        <!--http://stackoverflow.com/a/1662088/4727406-->
+        <!--http://stackoverflow.com/a/1662088-->
         <EditText
             android:id="@+id/count"
             android:inputType="number"
