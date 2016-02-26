@@ -33,7 +33,6 @@ import android.view.WindowManager;
  */
 public class ScreenUtils
 {
-
     public static int getScreenWidth(Context context)
     {
         final WindowManager windowManager = ((Activity) context).getWindow().getWindowManager();

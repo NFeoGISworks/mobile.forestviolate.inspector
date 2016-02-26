@@ -33,7 +33,6 @@ import android.widget.ScrollView;
 public class CustomScrollView
         extends ScrollView
 {
-
     Table table;
 
 
@@ -53,18 +52,12 @@ public class CustomScrollView
             int oldl,
             int oldt)
     {
-
         final String tag = this.getTag() + "";
 
         if (tag.equalsIgnoreCase(Table.RIGHT_BODY_SCROLLVIEW_TAG)) {
             table.leftTable.bodyScrollView.scrollTo(0, t);
-
-
         } else {
             table.rightTable.bodyScrollView.scrollTo(0, t);
-
-
         }
-
     }
 }

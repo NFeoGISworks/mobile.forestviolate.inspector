@@ -50,7 +50,7 @@ public class BodyTable
     LinearLayout bodyHorizontalLinearLayout;
 
     LinkedHashMap<Object, Object[]> headers;
-    List<LinearLayout> bodyLinearLayoutTempMem = new ArrayList<LinearLayout>();
+    List<LinearLayout> bodyLinearLayoutTempMem = new ArrayList<>();
     Integer[] headerChildrenWidth;
     String    scrollViewTag;
     Table     table;
@@ -78,8 +78,6 @@ public class BodyTable
     public void setHeaderChildrenWidth(Integer[] headerChildrenWidth)
     {
         this.headerChildrenWidth = headerChildrenWidth;
-
-
     }
 
 
@@ -114,18 +112,13 @@ public class BodyTable
 
     private void initHeaders()
     {
-
-
         for (Entry<Object, Object[]> header : headers.entrySet()) {
             String key = (String) header.getKey();
             String[] values = (String[]) header.getValue();
 
-
             headerRow = new HeaderRow(table, key, values, scrollViewTag);
             this.headerHorizontalLinearLayout.addView(headerRow);
         }
-
-
     }
 
 
@@ -134,11 +127,9 @@ public class BodyTable
      */
     private void addBodyVerticalLinearLayout()
     {
-
         int firstLvlHeaderCount = headers.size();
 
         for (int x = 0; x < firstLvlHeaderCount; x++) {
-
             LinearLayout bodyLinear = new LinearLayout(this.getContext());
             bodyLinear.setOrientation(LinearLayout.VERTICAL);
 
@@ -146,7 +137,6 @@ public class BodyTable
 
             this.bodyHorizontalLinearLayout.addView(bodyLinear);
         }
-
     }
 
 
@@ -155,7 +145,6 @@ public class BodyTable
      */
     private void removeView()
     {
-
         for (LinearLayout lin : bodyLinearLayoutTempMem) {
             lin.removeAllViews();
         }
@@ -168,31 +157,23 @@ public class BodyTable
 
     public void loadData(List<Passenger> dataToBeLoad)
     {
-
         this.removeView();
 
-
         int firstLvlHeaderCounts = headers.size();
-
-        List<String[]> secondLvlHeader = new ArrayList<String[]>();
+        List<String[]> secondLvlHeader = new ArrayList<>();
 
         for (Entry<Object, Object[]> header : headers.entrySet()) {
-
             secondLvlHeader.add((String[]) header.getValue());
-
         }
 
         int passengerCount = dataToBeLoad.size();
         int numbering = ((table.pageNumber - 1) * table.pagination) + 1;
 
         for (int z = 0; z < passengerCount; z++) {
-
             int childIndex = 0;
 
             for (int x = 0; x < firstLvlHeaderCounts; x++) {
-
                 LinearLayout bodyLinear = this.bodyLinearLayoutTempMem.get(x);
-
                 LinearLayout cellLinear = new LinearLayout(this.getContext());
                 cellLinear.setOrientation(LinearLayout.HORIZONTAL);
                 bodyLinear.addView(cellLinear);
@@ -200,11 +181,11 @@ public class BodyTable
                 int secondLvlHeaderCount = secondLvlHeader.get(x).length;
 
                 for (int y = 0; y < secondLvlHeaderCount; y++) {
-
                     int width = headerChildrenWidth[childIndex];
                     Passenger passenger = dataToBeLoad.get(z);
 
-                    if (/*childIndex == 0 &&*/ scrollViewTag == Table.LEFT_BODY_SCROLLVIEW_TAG) {
+                    if (/*childIndex == 0 &&*/ scrollViewTag.equals(
+                            Table.LEFT_BODY_SCROLLVIEW_TAG)) {
 
                         if (y == 0) {
                             // name
@@ -215,26 +196,21 @@ public class BodyTable
                             cellLinear.addView(this.textView(passenger.gender + "", width));
                         }
 
-
                     } else {
                         // child will be added in right
                         if (x == 0) {
                             // ticket info
 
                             if (y == 0) {
-
                                 cellLinear.addView(this.textView(passenger.validUntil, width));
 
                             } else if (y == 1) {
-
                                 cellLinear.addView(this.textView(passenger.ticketNum + "", width));
 
                             } else if (y == 2) {
-
                                 cellLinear.addView(this.textView(passenger.setSequence, width));
 
                             } else if (y == 3) {
-
                                 cellLinear.addView(this.textView(passenger.setSequence, width));
 
                             } else {
@@ -259,19 +235,12 @@ public class BodyTable
                         } else {
                             cellLinear.addView(this.textView("", width));
                         }
-
-
                     }
 
-
                     childIndex++;
-
                 }
-
             }
         }
-
-
     }
 
 
@@ -299,5 +268,4 @@ public class BodyTable
 
         return textView;
     }
-
 }

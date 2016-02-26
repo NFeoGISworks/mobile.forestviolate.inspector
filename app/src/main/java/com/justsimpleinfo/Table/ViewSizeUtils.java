@@ -32,7 +32,6 @@ import android.view.View.MeasureSpec;
  */
 public class ViewSizeUtils
 {
-
     /**
      * Get view width This is not applicable if you set the view width in params
      *
@@ -40,15 +39,14 @@ public class ViewSizeUtils
      *
      * @return
      */
-    final public static int getViewWidth(View view)
+    public static int getViewWidth(View view)
     {
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-
         return view.getMeasuredWidth();
     }
 
 
-    final public static int getViewWidth(
+    public static int getViewWidth(
             View view,
             int height)
     {
@@ -60,11 +58,10 @@ public class ViewSizeUtils
     }
 
 
-    final public static int getViewHeight(
+    public static int getViewHeight(
             View view,
             int width)
     {
-
         int widthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
         int heightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 
@@ -81,7 +78,7 @@ public class ViewSizeUtils
      *
      * @return View height
      */
-    final public static int getViewHeight(View view)
+    public static int getViewHeight(View view)
     {
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         return view.getMeasuredHeight();

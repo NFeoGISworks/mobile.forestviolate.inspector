@@ -33,7 +33,6 @@ import android.view.View.OnClickListener;
 class OnClickListenerOfPagination
         implements OnClickListener
 {
-
     Table table;
 
 
@@ -46,8 +45,6 @@ class OnClickListenerOfPagination
     @Override
     public void onClick(View view)
     {
-
-
         // show loading dialog
         table.loadingDialog.show();
 
@@ -55,12 +52,8 @@ class OnClickListenerOfPagination
 
         switch (tag) {
             case HeaderRow.NEXT_PAGINATION_TAG:
-
-
                 table.pageNumber++;
-
                 table.loadData();
-
 
                 table.leftTable.headerRow.previousTextView.setTextColor(Color.BLACK);
                 table.leftTable.headerRow.previousTextView.setEnabled(true);
@@ -72,9 +65,8 @@ class OnClickListenerOfPagination
                 }
 
                 break;
+
             case HeaderRow.PREVIUOS_PAGINATION_TAG:
-
-
                 table.pageNumber--;
                 table.loadData();
 
@@ -90,12 +82,11 @@ class OnClickListenerOfPagination
                 }
 
                 break;
+
             default:
                 break;
         }
 
         table.loadingDialog.dismiss();
-
     }
-
 }
