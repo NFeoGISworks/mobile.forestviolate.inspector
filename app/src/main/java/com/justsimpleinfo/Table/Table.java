@@ -56,8 +56,8 @@ public class Table
     LinkedHashMap<Object, Object[]> leftHeaders  = new LinkedHashMap<>();
     LinkedHashMap<Object, Object[]> rightHeaders = new LinkedHashMap<>();
 
-    BodyTable rightTable;
     BodyTable leftTable;
+    BodyTable rightTable;
     /**
      * @leftHeaderChildrenWidht = value will be set on adjust header width to match in screen width
      */
@@ -189,10 +189,10 @@ public class Table
     private void init()
     {
         this.loadingDialog = new LoadingDialog(this.getContext());
-        this.rightTable =
-                new BodyTable(this.getContext(), this, rightHeaders, RIGHT_BODY_SCROLLVIEW_TAG);
         this.leftTable =
                 new BodyTable(this.getContext(), this, leftHeaders, LEFT_BODY_SCROLLVIEW_TAG);
+        this.rightTable =
+                new BodyTable(this.getContext(), this, rightHeaders, RIGHT_BODY_SCROLLVIEW_TAG);
 
         this.addView(this.leftTable);
         this.addView(this.rightTable);
