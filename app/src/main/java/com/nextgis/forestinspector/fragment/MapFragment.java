@@ -91,6 +91,7 @@ public class MapFragment
     protected boolean     mShowStatusPanel;
     protected GeoPoint    mCurrentCenter;
     protected int         mCoordinatesFormat;
+    protected int         mCoordinatesFraction;
     protected GeoEnvelope mEnvelopeParam;
 
     // http://stackoverflow.com/a/29621490
@@ -438,7 +439,10 @@ public class MapFragment
         }
 
         mCoordinatesFormat = prefs.getInt(
-                SettingsConstants.KEY_PREF_COORD_FORMAT + "_int", Location.FORMAT_DEGREES);
+                SettingsConstantsUI.KEY_PREF_COORD_FORMAT + "_int", Location.FORMAT_DEGREES);
+        mCoordinatesFraction = prefs.getInt(
+                SettingsConstantsUI.KEY_PREF_COORD_FRACTION,
+                com.nextgis.forestinspector.util.Constants.DEFAULT_COORDINATES_FRACTION_DIGITS);
 
         if (!mIsInViewPager || mFragmentResume) {
             startGpsWork();
@@ -698,11 +702,13 @@ public class MapFragment
                             "%.1f %s/%s", location.getSpeed() * 3600 / 1000,
                             getString(R.string.unit_kilometer), getString(R.string.unit_hour)));
             mStatusLatitude.setText(
-                    LocationUtil.formatCoordinate(location.getLatitude(), mCoordinatesFormat) +
+                    LocationUtil.formatCoordinate(
+                            location.getLatitude(), mCoordinatesFormat, mCoordinatesFraction) +
                             " " +
                             getString(R.string.latitude_caption_short));
             mStatusLongitude.setText(
-                    LocationUtil.formatCoordinate(location.getLongitude(), mCoordinatesFormat) +
+                    LocationUtil.formatCoordinate(
+                            location.getLongitude(), mCoordinatesFormat, mCoordinatesFraction) +
                             " " +
                             getString(R.string.longitude_caption_short));
         }

@@ -63,4 +63,12 @@
         android:dialogTitle="@string/select_coordinates_format"
         />
 
+    <com.nextgis.forestinspector.util.IntEditTextPreference
+        android:key="coordinates_fraction_digits"
+        android:title="@string/coordinates_fraction_digits"
+        android:defaultValue="2"
+        android:inputType="number"
+        android:numeric="integer"
+        />
+
 </PreferenceScreen>

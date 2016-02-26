@@ -32,6 +32,8 @@ import android.widget.Toast;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.FIPreferencesActivity;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.forestinspector.util.IntEditTextPreference;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
@@ -82,7 +84,10 @@ public class FIPreferenceFragment
 
                 final ListPreference lpCoordinateFormat = (ListPreference) findPreference(
                         SettingsConstantsUI.KEY_PREF_COORD_FORMAT);
-                initializeCoordinateFormat(lpCoordinateFormat);
+                final IntEditTextPreference etCoordinateFraction =
+                        (IntEditTextPreference) findPreference(
+                                SettingsConstantsUI.KEY_PREF_COORD_FRACTION);
+                initializeCoordinates(lpCoordinateFormat, etCoordinateFraction);
                 break;
 
             case SettingsConstantsUI.ACTION_PREFS_LOCATION:
@@ -157,7 +162,9 @@ public class FIPreferenceFragment
     }
 
 
-    public static void initializeCoordinateFormat(ListPreference lpCoordinateFormat)
+    public static void initializeCoordinates(
+            ListPreference lpCoordinateFormat,
+            IntEditTextPreference etCoordinateFraction)
     {
         if (null != lpCoordinateFormat) {
             lpCoordinateFormat.setSummary(lpCoordinateFormat.getEntry());
@@ -181,6 +188,25 @@ public class FIPreferenceFragment
                                     .putInt(preferenceKey, value)
                                     .commit();
 
+                            return true;
+                        }
+                    });
+        }
+
+        if (etCoordinateFraction != null) {
+            etCoordinateFraction.setSummary(
+                    etCoordinateFraction.getPersistedString(
+                            "" + Constants.DEFAULT_COORDINATES_FRACTION_DIGITS));
+
+            etCoordinateFraction.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener()
+                    {
+                        @Override
+                        public boolean onPreferenceChange(
+                                Preference preference,
+                                Object newValue)
+                        {
+                            preference.setSummary(newValue.toString());
                             return true;
                         }
                     });

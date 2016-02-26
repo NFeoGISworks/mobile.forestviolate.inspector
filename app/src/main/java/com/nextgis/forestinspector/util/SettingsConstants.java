@@ -45,11 +45,6 @@ public interface SettingsConstants
     String KEY_PREF_USERPASSID = "user_passid";
 
     /**
-     * map preference
-     */
-    String KEY_PREF_COORD_FORMAT = "coordinates_format";
-
-    /**
      * Preference key - not UI
      */
     String KEY_PREF_SCROLL_X       = "map_scroll_x";

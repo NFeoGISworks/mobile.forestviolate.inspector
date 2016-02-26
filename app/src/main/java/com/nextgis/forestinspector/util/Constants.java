@@ -258,4 +258,6 @@ public interface Constants
     float ULV_MAX_ZOOM = 13.5f;
     float KV_MIN_ZOOM = 13.5f;
     float KV_MAX_ZOOM = 23f;
+
+    int DEFAULT_COORDINATES_FRACTION_DIGITS = 2;
 }

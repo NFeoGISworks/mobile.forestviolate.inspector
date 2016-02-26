@@ -312,17 +312,21 @@ public class TargetingDialog
 
         int nFormat = prefs.getInt(
                 SettingsConstantsUI.KEY_PREF_COORD_FORMAT + "_int", Location.FORMAT_SECONDS);
+        int nFraction = prefs.getInt(
+                SettingsConstantsUI.KEY_PREF_COORD_FRACTION,
+                Constants.DEFAULT_COORDINATES_FRACTION_DIGITS);
+
         DecimalFormat df = new DecimalFormat("0.0");
 
         mLatView.setText(
                 getString(com.nextgis.maplibui.R.string.latitude_caption_short) + ": " +
                         LocationUtil.formatLatitude(
-                                location.getLatitude(), nFormat, getResources()));
+                                location.getLatitude(), nFormat, nFraction, getResources()));
 
         mLongView.setText(
                 getString(com.nextgis.maplibui.R.string.longitude_caption_short) + ": " +
                         LocationUtil.formatLongitude(
-                                location.getLongitude(), nFormat, getResources()));
+                                location.getLongitude(), nFormat, nFraction, getResources()));
 
         double altitude = location.getAltitude();
         mAltView.setText(
