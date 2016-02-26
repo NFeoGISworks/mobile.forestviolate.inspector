@@ -127,8 +127,6 @@ public class HeaderRow
      */
     private void initSecondLvlHeader()
     {
-        int secondLvlHeaderLblCount = this.secondLvlLabel.length;
-
         for (Object aSecondLvlLabel : this.secondLvlLabel) {
             LayoutParams firstLvlTextViewParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
@@ -220,8 +218,7 @@ public class HeaderRow
 
         int headerSecondLvlChildrenTotalWidth = 0;
 
-        for (int x = 0; x < headerSecondLvlChildrenCount; x++) {
-
+        for (int x = 0; x < headerSecondLvlChildrenCount; ++x) {
             headerSecondLvlChildrenTotalWidth +=
                     ViewSizeUtils.getViewWidth(secondLvlLinearLayout.getChildAt(x));
         }
@@ -234,7 +231,7 @@ public class HeaderRow
             return;
         }
 
-        for (int x = 0; x < headerSecondLvlChildrenCount; x++) {
+        for (int x = 0; x < headerSecondLvlChildrenCount; ++x) {
             View view = secondLvlLinearLayout.getChildAt(x);
             LinearLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
             params.width = params.width <= 0

@@ -106,7 +106,6 @@ public class Table
                 "Ticket Info",
                 new String[] {TICKET_VALID_UNTIL, TICKET_NUMBER, TICKET_SET_SEQUENCE});
         rightHeaders.put("Country Info", new String[] {COUNTRY_FROM, COUNTRY_TO});
-
     }
 
 
@@ -130,7 +129,7 @@ public class Table
 
     private void createTestData()
     {
-        for (int x = 0; x < 102; x++) {
+        for (int x = 0; x < 102; ++x) {
             Passenger passenger = new Passenger();
             passenger.name = "Passenger " + x;
             passenger.gender = x % 2 == 0 ? 'F' : 'M';
@@ -156,18 +155,14 @@ public class Table
         int totalPassenger = testData.size();
         //dataToBeLoad.clear();
 
-        for (int x = 0; x < pagination; x++) {
-
+        for (int x = 0; x < pagination; ++x) {
             int index = startingIndex + x;
 
             if (index < totalPassenger) {
-
                 passengers.add(testData.get(index));
-
             } else {
                 Log.e("no data", "no data");
             }
-
         }
 
         return passengers;
@@ -212,14 +207,11 @@ public class Table
         int rightHeaderFirstLvlHeighestHeight = 0;
         int rightHeaderFirstLvlHighestHeightIndex = 0;
 
-        for (int x = 0; x < rightHeaderLinearLayoutChildCount; x++) {
-
+        for (int x = 0; x < rightHeaderLinearLayoutChildCount; ++x) {
             HeaderRow row = (HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(x);
-
             int height = ViewSizeUtils.getViewHeight(row.firtLvlLinearLayout);
 
             if (rightHeaderFirstLvlHeighestHeight <= height) {
-
                 rightHeaderFirstLvlHeighestHeight = height;
                 rightHeaderFirstLvlHighestHeightIndex = x;
             }
@@ -231,14 +223,11 @@ public class Table
         int leftHeaderFirstLvlHeighestHeight = 0;
         int leftHeaderFirstLvlHighestHeightIndex = 0;
 
-        for (int x = 0; x < leftHeaderLinearLayoutChildCount; x++) {
-
+        for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             HeaderRow row = (HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(x);
-
             int height = ViewSizeUtils.getViewHeight(row.firtLvlLinearLayout);
 
             if (leftHeaderFirstLvlHeighestHeight <= height) {
-
                 leftHeaderFirstLvlHeighestHeight = height;
                 leftHeaderFirstLvlHighestHeightIndex = x;
             }
@@ -248,7 +237,7 @@ public class Table
         boolean isHighestHighInLeft =
                 leftHeaderFirstLvlHeighestHeight >= rightHeaderFirstLvlHeighestHeight;
 
-        for (int x = 0; x < rightHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < rightHeaderLinearLayoutChildCount; ++x) {
             LinearLayout firstLvlLinearLayout =
                     ((HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(
                             x)).firtLvlLinearLayout;
@@ -269,7 +258,7 @@ public class Table
             }
         }
 
-        for (int x = 0; x < leftHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             LinearLayout firstLvlLinearLayout =
                     ((HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(
                             x)).firtLvlLinearLayout;
@@ -300,7 +289,7 @@ public class Table
         int rightHeaderFirstLvlHeighestHeight = 0;
         int rightHeaderFirstLvlHighestHeightIndex = 0;
 
-        for (int x = 0; x < rightHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < rightHeaderLinearLayoutChildCount; ++x) {
             HeaderRow row = (HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(x);
             int height = ViewSizeUtils.getViewHeight(row.secondLvlLinearLayout);
 
@@ -316,7 +305,7 @@ public class Table
         int leftHeaderFirstLvlHeighestHeight = 0;
         int leftHeaderFirstLvlHighestHeightIndex = 0;
 
-        for (int x = 0; x < leftHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             HeaderRow row = (HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(x);
             int height = ViewSizeUtils.getViewHeight(row.secondLvlLinearLayout);
 
@@ -330,7 +319,7 @@ public class Table
         boolean isHighestHighInLeft =
                 leftHeaderFirstLvlHeighestHeight >= rightHeaderFirstLvlHeighestHeight;
 
-        for (int x = 0; x < rightHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < rightHeaderLinearLayoutChildCount; ++x) {
             LinearLayout secondLvlLinearLayout =
                     ((HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(
                             x)).secondLvlLinearLayout;
@@ -351,7 +340,7 @@ public class Table
             }
         }
 
-        for (int x = 0; x < leftHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             LinearLayout secondLvlLinearLayout =
                     ((HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(
                             x)).secondLvlLinearLayout;
@@ -414,7 +403,7 @@ public class Table
         int leftHeaderLinearLayoutChildCount =
                 leftTable.headerHorizontalLinearLayout.getChildCount();
 
-        for (int x = 0; x < leftHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             LinearLayout secondLvlLinearLayout =
                     ((HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(
                             x)).secondLvlLinearLayout;
@@ -436,7 +425,7 @@ public class Table
         int leftHeaderLinearLayoutChildCount =
                 rightTable.headerHorizontalLinearLayout.getChildCount();
 
-        for (int x = 0; x < leftHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             LinearLayout secondLvlLinearLayout =
                     ((HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(
                             x)).secondLvlLinearLayout;
@@ -458,13 +447,13 @@ public class Table
         int leftHeaderLinearLayoutChildCount =
                 leftTable.headerHorizontalLinearLayout.getChildCount();
 
-        for (int x = 0; x < leftHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             LinearLayout secondLvlLinearLayout =
                     ((HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(
                             x)).secondLvlLinearLayout;
             int leftColumnChildrenCount = secondLvlLinearLayout.getChildCount();
 
-            for (int y = 0; y < leftColumnChildrenCount; y++) {
+            for (int y = 0; y < leftColumnChildrenCount; ++y) {
                 View view = secondLvlLinearLayout.getChildAt(y);
                 LinearLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
 
@@ -488,13 +477,13 @@ public class Table
         int leftHeaderLinearLayoutChildCount =
                 rightTable.headerHorizontalLinearLayout.getChildCount();
 
-        for (int x = 0; x < leftHeaderLinearLayoutChildCount; x++) {
+        for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             LinearLayout secondLvlLinearLayout =
                     ((HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(
                             x)).secondLvlLinearLayout;
             int leftColumnChildrenCount = secondLvlLinearLayout.getChildCount();
 
-            for (int y = 0; y < leftColumnChildrenCount; y++) {
+            for (int y = 0; y < leftColumnChildrenCount; ++y) {
                 View view = secondLvlLinearLayout.getChildAt(y);
                 LinearLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
 
@@ -517,11 +506,11 @@ public class Table
         int leftHeaderColumnCount = leftTable.headerHorizontalLinearLayout.getChildCount();
         int rightHeaderColumnCount = rightTable.headerHorizontalLinearLayout.getChildCount();
 
-        for (int x = 0; x < leftHeaderColumnCount; x++) {
+        for (int x = 0; x < leftHeaderColumnCount; ++x) {
             HeaderRow tableRow = (HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(x);
             int headerRowChildCount = tableRow.secondLvlLinearLayout.getChildCount();
 
-            for (int y = 0; y < headerRowChildCount; y++) {
+            for (int y = 0; y < headerRowChildCount; ++y) {
                 View view = tableRow.secondLvlLinearLayout.getChildAt(y);
                 LinearLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
 
@@ -531,11 +520,11 @@ public class Table
             }
         }
 
-        for (int x = 0; x < rightHeaderColumnCount; x++) {
+        for (int x = 0; x < rightHeaderColumnCount; ++x) {
             HeaderRow tableRow = (HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(x);
             int headerRowChildCount = tableRow.secondLvlLinearLayout.getChildCount();
 
-            for (int y = 0; y < headerRowChildCount; y++) {
+            for (int y = 0; y < headerRowChildCount; ++y) {
                 View view = tableRow.secondLvlLinearLayout.getChildAt(y);
                 LinearLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
 
@@ -557,11 +546,11 @@ public class Table
         List<Integer> headerChildrenWidth = new ArrayList<>();
         int leftHeaderColumnCount = leftTable.headerHorizontalLinearLayout.getChildCount();
 
-        for (int x = 0; x < leftHeaderColumnCount; x++) {
+        for (int x = 0; x < leftHeaderColumnCount; ++x) {
             HeaderRow tableRow = (HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(x);
             int headerRowChildCount = tableRow.secondLvlLinearLayout.getChildCount();
 
-            for (int y = 0; y < headerRowChildCount; y++) {
+            for (int y = 0; y < headerRowChildCount; ++y) {
                 View view = tableRow.secondLvlLinearLayout.getChildAt(y);
                 LinearLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
                 int width = params.width <= 0 ? ViewSizeUtils.getViewWidth(view) : params.width;
@@ -583,11 +572,11 @@ public class Table
         List<Integer> headerChildrenWidth = new ArrayList<>();
         int rightHeaderColumnCount = rightTable.headerHorizontalLinearLayout.getChildCount();
 
-        for (int x = 0; x < rightHeaderColumnCount; x++) {
+        for (int x = 0; x < rightHeaderColumnCount; ++x) {
             HeaderRow tableRow = (HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(x);
             int headerRowChildCount = tableRow.secondLvlLinearLayout.getChildCount();
 
-            for (int y = 0; y < headerRowChildCount; y++) {
+            for (int y = 0; y < headerRowChildCount; ++y) {
                 View view = tableRow.secondLvlLinearLayout.getChildAt(y);
                 LinearLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
                 int width = params.width <= 0 ? ViewSizeUtils.getViewWidth(view) : params.width;
@@ -609,7 +598,7 @@ public class Table
         for (LinearLayout lin : leftTable.bodyLinearLayoutTempMem) {
             int childCount = lin.getChildCount();
 
-            for (int x = 0; x < childCount; x++) {
+            for (int x = 0; x < childCount; ++x) {
                 int width = ViewSizeUtils.getViewHeight(lin.getChildAt(x));
 
                 if (leftHeaderFirstLvlHighestHeight < width) {
@@ -623,7 +612,7 @@ public class Table
         for (LinearLayout lin : rightTable.bodyLinearLayoutTempMem) {
             int childCount = lin.getChildCount();
 
-            for (int x = 0; x < childCount; x++) {
+            for (int x = 0; x < childCount; ++x) {
                 int width = ViewSizeUtils.getViewHeight(lin.getChildAt(x));
                 if (rightHeaderFirstLvlHighestHeight < width) {
                     rightHeaderFirstLvlHighestHeight = width;
@@ -638,7 +627,7 @@ public class Table
         for (LinearLayout lin : leftTable.bodyLinearLayoutTempMem) {
             int childCount = lin.getChildCount();
 
-            for (int x = 0; x < childCount; x++) {
+            for (int x = 0; x < childCount; ++x) {
                 LinearLayout.LayoutParams params =
                         (LayoutParams) lin.getChildAt(x).getLayoutParams();
                 params.height = isHighestHighInLeft
@@ -650,7 +639,7 @@ public class Table
         for (LinearLayout lin : rightTable.bodyLinearLayoutTempMem) {
             int childCount = lin.getChildCount();
 
-            for (int x = 0; x < childCount; x++) {
+            for (int x = 0; x < childCount; ++x) {
                 LinearLayout.LayoutParams params =
                         (LayoutParams) lin.getChildAt(x).getLayoutParams();
                 params.height = isHighestHighInLeft

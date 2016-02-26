@@ -46,7 +46,7 @@ public class BodyTable
     LinearLayout generalVerticalLinearLayout;
     LinearLayout headerHorizontalLinearLayout;
 
-    ScrollView bodyScrollView;
+    ScrollView   bodyScrollView;
     LinearLayout bodyHorizontalLinearLayout;
 
     LinkedHashMap<Object, Object[]> headers;
@@ -64,7 +64,7 @@ public class BodyTable
             String scrollViewTag)
     {
         super(context);
-        // TODO Auto-generated constructor stub
+
         this.headers = headers;
         this.scrollViewTag = scrollViewTag;
         this.table = table;
@@ -129,7 +129,7 @@ public class BodyTable
     {
         int firstLvlHeaderCount = headers.size();
 
-        for (int x = 0; x < firstLvlHeaderCount; x++) {
+        for (int x = 0; x < firstLvlHeaderCount; ++x) {
             LinearLayout bodyLinear = new LinearLayout(this.getContext());
             bodyLinear.setOrientation(LinearLayout.VERTICAL);
 
@@ -169,10 +169,10 @@ public class BodyTable
         int passengerCount = dataToBeLoad.size();
         int numbering = ((table.pageNumber - 1) * table.pagination) + 1;
 
-        for (int z = 0; z < passengerCount; z++) {
+        for (int z = 0; z < passengerCount; ++z) {
             int childIndex = 0;
 
-            for (int x = 0; x < firstLvlHeaderCounts; x++) {
+            for (int x = 0; x < firstLvlHeaderCounts; ++x) {
                 LinearLayout bodyLinear = this.bodyLinearLayoutTempMem.get(x);
                 LinearLayout cellLinear = new LinearLayout(this.getContext());
                 cellLinear.setOrientation(LinearLayout.HORIZONTAL);
@@ -180,7 +180,7 @@ public class BodyTable
 
                 int secondLvlHeaderCount = secondLvlHeader.get(x).length;
 
-                for (int y = 0; y < secondLvlHeaderCount; y++) {
+                for (int y = 0; y < secondLvlHeaderCount; ++y) {
                     int width = headerChildrenWidth[childIndex];
                     Passenger passenger = dataToBeLoad.get(z);
 
