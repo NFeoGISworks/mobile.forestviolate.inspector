@@ -4,7 +4,7 @@
  * Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
  * Author:  NikitaFeodonit, nfeodonit@yandex.com
  * *****************************************************************************
- * Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+ * Copyright (c) 2015-2016. NextGIS, info@nextgis.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,28 +20,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nextgis.forestinspector.fragment;
+package com.justsimpleinfo.Table;
 
-import com.nextgis.forestinspector.adapter.ListFillerAdapter;
-import com.nextgis.forestinspector.adapter.ProductionListFillerAdapter;
-import com.nextgis.forestinspector.datasource.DocumentFeature;
-import com.nextgis.forestinspector.dialog.ListFillerDialog;
-import com.nextgis.forestinspector.dialog.ProductionListFillerDialog;
+import java.util.ArrayList;
+import java.util.Collection;
 
 
-public class ProductionListFillerFragment
-        extends ListFillerFragment
+public class TableRowData
+        extends ArrayList<Object>
 {
-    @Override
-    protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
+    public TableRowData()
     {
-        return new ProductionListFillerAdapter(getActivity(), feature);
     }
 
 
-    @Override
-    protected ListFillerDialog getFillerDialog()
+    public TableRowData(int capacity)
     {
-        return new ProductionListFillerDialog();
+        super(capacity);
+    }
+
+
+    public TableRowData(Collection<?> collection)
+    {
+        super(collection);
     }
 }

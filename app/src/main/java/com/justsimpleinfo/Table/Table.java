@@ -25,15 +25,22 @@ package com.justsimpleinfo.Table;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.DaveKoelle.AlphanumComparator;
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.NGWLookupTable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -51,10 +58,10 @@ public class Table
     /**
      * @IS_TWO_COLUMN_HEADER = set this to true if you want two column header with span.
      */
-    public static final boolean IS_TWO_COLUMN_HEADER      = true;
+    public static final boolean IS_TWO_COLUMN_HEADER      = false;
 
-    LinkedHashMap<Object, Object[]> leftHeaders  = new LinkedHashMap<>();
-    LinkedHashMap<Object, Object[]> rightHeaders = new LinkedHashMap<>();
+    Map<String, List<String>> leftHeaders  = new LinkedHashMap<>();
+    Map<String, List<String>> rightHeaders = new LinkedHashMap<>();
 
     BodyTable leftTable;
     BodyTable rightTable;
@@ -69,12 +76,25 @@ public class Table
 
     LoadingDialog loadingDialog;
 
+    DocumentsLayer mDocsLayer;
+
 
     public Table(Context context)
     {
         super(context);
 
-        this.headers();
+        MapBase map = MapBase.getInstance();
+        mDocsLayer = null;
+        for (int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                mDocsLayer = (DocumentsLayer) layer;
+                break;
+            }
+        }
+
+
+        this.createHeaders();
         this.properties();
         this.init();
 
@@ -85,90 +105,91 @@ public class Table
         this.leftTable.setHeaderChildrenWidth(this.leftHeaderChildrenWidth);
         this.rightTable.setHeaderChildrenWidth(this.rightHeaderChildrenWidht);
 
-        this.createTestData();
         this.loadData();
     }
 
 
-    public final static String NAME                = "Name";
-    public final static String GENDER              = "Gender";
-    public final static String TICKET_SET_SEQUENCE = "Set Sequence";
-    public final static String TICKET_NUMBER       = "Ticket Number";
-    public final static String TICKET_VALID_UNTIL  = "    Valid Until    ";
-    public final static String COUNTRY_FROM        = "  Country From  ";
-    public final static String COUNTRY_TO          = "  Country To  ";
-
-
-    public void headers()
+    public List<String> getDictData(
+            DocumentsLayer docsLayer,
+            String layerKey,
+            boolean numberSort)
     {
-        leftHeaders.put("Passenger Info", new String[] {NAME, GENDER});
-        rightHeaders.put(
-                "Ticket Info",
-                new String[] {TICKET_VALID_UNTIL, TICKET_NUMBER, TICKET_SET_SEQUENCE});
-        rightHeaders.put("Country Info", new String[] {COUNTRY_FROM, COUNTRY_TO});
+        NGWLookupTable table = (NGWLookupTable) docsLayer.getLayerByName(layerKey);
+
+        if (null != table) {
+            Map<String, String> data = table.getData();
+            List<String> dataArray = new ArrayList<>();
+
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                dataArray.add(entry.getKey());
+            }
+
+            if (numberSort) {
+                Collections.sort(dataArray, new AlphanumComparator());
+            } else {
+                Collections.sort(dataArray);
+            }
+
+            return dataArray;
+        }
+
+        return null;
     }
 
 
-    List<Passenger> testData     = new ArrayList<>();
-    List<Passenger> dataToBeLoad = new ArrayList<>();
-    int             pagination   = 20;
-    int             totalPage    = 0;
-    int             pageNumber   = 1;
+    public void createHeaders()
+    {
+        // TODO: strings
+        List<String> leftHeadersData = new ArrayList<>();
+        leftHeadersData.add("Диаметр пня");
+        leftHeaders.put("1", leftHeadersData);
+
+        if (null != mDocsLayer) {
+            List<String> species =
+                    getDictData(mDocsLayer, Constants.KEY_LAYER_SPECIES_TYPES, false);
+            rightHeaders.put("2", species);
+        }
+    }
+
+
+    int pagination = 20;
+    int totalPage  = 0;
+    int pageNumber = 1;
 
 
     public void loadData()
     {
-        this.dataToBeLoad = this.getDataToBeLoad();
+        TableData tableData = loadTableData();
+        leftTable.loadData(tableData);
+        rightTable.loadData(tableData);
 
-        leftTable.loadData(dataToBeLoad);
-        rightTable.loadData(dataToBeLoad);
-
-        this.resizeBodyChildrenHeight();
+        resizeBodyChildrenHeight();
     }
 
 
-    private void createTestData()
+    TableData loadTableData()
     {
-        for (int x = 0; x < 102; ++x) {
-            Passenger passenger = new Passenger();
-            passenger.name = "Passenger " + x;
-            passenger.gender = x % 2 == 0 ? 'F' : 'M';
-            passenger.ticketNum = x;
-            passenger.setSequence = "Set " + x;
-            passenger.validUntil = "May 01, 2015";
-            passenger.countryFrom = "Country " + x;
-            passenger.countryTo = x % 2 == 0 ? "Philippines" : "Country " + x;
+        List<String> thickness = getDictData(mDocsLayer, Constants.KEY_LAYER_THICKNESS_TYPES, true);
+        int columnCount = rightHeaders.get("2").size() + 1;
+        int rowCount = thickness.size();
+        TableData tableData = new TableData(rowCount);
 
-            testData.add(passenger);
-        }
+        for (int i = 0; i < rowCount; ++i) {
+            TableRowData rowData = new TableRowData(columnCount);
+            rowData.add(thickness.get(i));
 
-        this.totalPage = this.totalPage(testData, pagination);
-        /*this.dataToBeLoad = this.getDataToBeLoad();*/
-    }
-
-
-    private List<Passenger> getDataToBeLoad()
-    {
-        List<Passenger> passengers = new ArrayList<>();
-        int startingIndex = (pageNumber - 1) * pagination;
-
-        int totalPassenger = testData.size();
-        //dataToBeLoad.clear();
-
-        for (int x = 0; x < pagination; ++x) {
-            int index = startingIndex + x;
-
-            if (index < totalPassenger) {
-                passengers.add(testData.get(index));
-            } else {
-                Log.e("no data", "no data");
+            for (int j = 1; j < columnCount; ++j) {
+                rowData.add(0);
             }
+
+            tableData.add(rowData);
         }
 
-        return passengers;
+        return tableData;
     }
 
 
+/*
     private int totalPage(
             List<Passenger> testData,
             int pagination)
@@ -177,6 +198,7 @@ public class Table
         totalPage = totalPage + (testData.size() % 20 == 0 ? 0 : 1);
         return totalPage;
     }
+*/
 
 
     private void properties()
@@ -209,7 +231,7 @@ public class Table
 
         for (int x = 0; x < rightHeaderLinearLayoutChildCount; ++x) {
             HeaderRow row = (HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(x);
-            int height = ViewSizeUtils.getViewHeight(row.firtLvlLinearLayout);
+            int height = ViewSizeUtils.getViewHeight(row.firstLvlLinearLayout);
 
             if (rightHeaderFirstLvlHeighestHeight <= height) {
                 rightHeaderFirstLvlHeighestHeight = height;
@@ -220,31 +242,31 @@ public class Table
         int leftHeaderLinearLayoutChildCount =
                 leftTable.headerHorizontalLinearLayout.getChildCount();
 
-        int leftHeaderFirstLvlHeighestHeight = 0;
+        int leftHeaderFirstLvlHighestHeight = 0;
         int leftHeaderFirstLvlHighestHeightIndex = 0;
 
         for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             HeaderRow row = (HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(x);
-            int height = ViewSizeUtils.getViewHeight(row.firtLvlLinearLayout);
+            int height = ViewSizeUtils.getViewHeight(row.firstLvlLinearLayout);
 
-            if (leftHeaderFirstLvlHeighestHeight <= height) {
-                leftHeaderFirstLvlHeighestHeight = height;
+            if (leftHeaderFirstLvlHighestHeight <= height) {
+                leftHeaderFirstLvlHighestHeight = height;
                 leftHeaderFirstLvlHighestHeightIndex = x;
             }
         }
 
         // (if isHighestHighInLeft == false) apply right header height in left and right except for the index in highest height
         boolean isHighestHighInLeft =
-                leftHeaderFirstLvlHeighestHeight >= rightHeaderFirstLvlHeighestHeight;
+                leftHeaderFirstLvlHighestHeight >= rightHeaderFirstLvlHeighestHeight;
 
         for (int x = 0; x < rightHeaderLinearLayoutChildCount; ++x) {
             LinearLayout firstLvlLinearLayout =
                     ((HeaderRow) rightTable.headerHorizontalLinearLayout.getChildAt(
-                            x)).firtLvlLinearLayout;
+                            x)).firstLvlLinearLayout;
 
             if (isHighestHighInLeft) {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LayoutParams.MATCH_PARENT, leftHeaderFirstLvlHeighestHeight);
+                        LayoutParams.MATCH_PARENT, leftHeaderFirstLvlHighestHeight);
                 params.weight = 1;
                 firstLvlLinearLayout.setLayoutParams(params);
 
@@ -261,16 +283,16 @@ public class Table
         for (int x = 0; x < leftHeaderLinearLayoutChildCount; ++x) {
             LinearLayout firstLvlLinearLayout =
                     ((HeaderRow) leftTable.headerHorizontalLinearLayout.getChildAt(
-                            x)).firtLvlLinearLayout;
+                            x)).firstLvlLinearLayout;
 
             if (isHighestHighInLeft) {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LayoutParams.MATCH_PARENT, leftHeaderFirstLvlHeighestHeight);
+                        LayoutParams.MATCH_PARENT, leftHeaderFirstLvlHighestHeight);
                 params.weight = 1;
                 firstLvlLinearLayout.setLayoutParams(params);
 
             } else {
-                if (leftHeaderFirstLvlHeighestHeight != leftHeaderFirstLvlHighestHeightIndex) {
+                if (leftHeaderFirstLvlHighestHeight != leftHeaderFirstLvlHighestHeightIndex) {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                             LayoutParams.MATCH_PARENT, rightHeaderFirstLvlHeighestHeight);
                     params.weight = 1;
@@ -671,17 +693,5 @@ public class Table
             textView.setText("Please wait loading data..");
             this.setContentView(textView);
         }
-    }
-
-
-    class Passenger
-    {
-        String name;
-        char   gender;
-        int    ticketNum;
-        String validUntil;
-        String setSequence;
-        String countryFrom;
-        String countryTo;
     }
 }

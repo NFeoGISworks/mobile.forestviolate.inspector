@@ -31,7 +31,6 @@ import com.nextgis.forestinspector.dialog.VehicleListFillerDialog;
 
 public class VehicleListFillerFragment
         extends ListFillerFragment
-        implements ListFillerDialog.OnAddListener
 {
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)

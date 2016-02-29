@@ -22,6 +22,8 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.content.Intent;
+import com.nextgis.forestinspector.activity.SheetTableFillerActivity;
 import com.nextgis.forestinspector.adapter.ListFillerAdapter;
 import com.nextgis.forestinspector.adapter.SheetListFillerAdapter;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
@@ -31,7 +33,6 @@ import com.nextgis.forestinspector.dialog.SheetListFillerDialog;
 
 public class SheetListFillerFragment
         extends ListFillerFragment
-        implements ListFillerDialog.OnAddListener
 {
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
@@ -44,5 +45,14 @@ public class SheetListFillerFragment
     protected ListFillerDialog getFillerDialog()
     {
         return new SheetListFillerDialog();
+    }
+
+
+    @Override
+    protected void addItem()
+    {
+        Intent intent = new Intent(getActivity(), SheetTableFillerActivity.class);
+//        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
+        startActivity(intent);
     }
 }

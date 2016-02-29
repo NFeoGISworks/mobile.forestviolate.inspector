@@ -26,14 +26,15 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import com.justsimpleinfo.Table.Table.Passenger;
+import com.nextgis.forestinspector.R;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 
@@ -46,10 +47,10 @@ public class BodyTable
     LinearLayout generalVerticalLinearLayout;
     LinearLayout headerHorizontalLinearLayout;
 
-    ScrollView   bodyScrollView;
+    ScrollView bodyScrollView;
     LinearLayout bodyHorizontalLinearLayout;
 
-    LinkedHashMap<Object, Object[]> headers;
+    Map<String, List<String>> headers;
     List<LinearLayout> bodyLinearLayoutTempMem = new ArrayList<>();
     Integer[] headerChildrenWidth;
     String    scrollViewTag;
@@ -60,7 +61,7 @@ public class BodyTable
     public BodyTable(
             Context context,
             Table table,
-            LinkedHashMap<Object, Object[]> headers,
+            Map<String, List<String>> headers,
             String scrollViewTag)
     {
         super(context);
@@ -112,9 +113,9 @@ public class BodyTable
 
     private void initHeaders()
     {
-        for (Entry<Object, Object[]> header : headers.entrySet()) {
+        for (Entry<String, List<String>> header : headers.entrySet()) {
             String key = (String) header.getKey();
-            String[] values = (String[]) header.getValue();
+            List<String> values = header.getValue();
 
             headerRow = new HeaderRow(table, key, values, scrollViewTag);
             this.headerHorizontalLinearLayout.addView(headerRow);
@@ -155,89 +156,60 @@ public class BodyTable
     final int PADDING = 5;
 
 
-    public void loadData(List<Passenger> dataToBeLoad)
+    public void loadData(TableData tableData)
     {
         this.removeView();
 
         int firstLvlHeaderCounts = headers.size();
-        List<String[]> secondLvlHeader = new ArrayList<>();
+        List<List<String>> secondLvlHeader = new ArrayList<>();
 
-        for (Entry<Object, Object[]> header : headers.entrySet()) {
-            secondLvlHeader.add((String[]) header.getValue());
+        for (Entry<String, List<String>> header : headers.entrySet()) {
+            secondLvlHeader.add(header.getValue());
         }
 
-        int passengerCount = dataToBeLoad.size();
-        int numbering = ((table.pageNumber - 1) * table.pagination) + 1;
-
-        for (int z = 0; z < passengerCount; ++z) {
+        for (int z = 0; z < tableData.size(); ++z) {
+            TableRowData rowData = tableData.get(z);
             int childIndex = 0;
 
             for (int x = 0; x < firstLvlHeaderCounts; ++x) {
-                LinearLayout bodyLinear = this.bodyLinearLayoutTempMem.get(x);
                 LinearLayout cellLinear = new LinearLayout(this.getContext());
                 cellLinear.setOrientation(LinearLayout.HORIZONTAL);
+
+                LinearLayout bodyLinear = this.bodyLinearLayoutTempMem.get(x);
                 bodyLinear.addView(cellLinear);
 
-                int secondLvlHeaderCount = secondLvlHeader.get(x).length;
+                int secondLvlHeaderCount = secondLvlHeader.get(x).size();
 
                 for (int y = 0; y < secondLvlHeaderCount; ++y) {
                     int width = headerChildrenWidth[childIndex];
-                    Passenger passenger = dataToBeLoad.get(z);
 
                     if (/*childIndex == 0 &&*/ scrollViewTag.equals(
                             Table.LEFT_BODY_SCROLLVIEW_TAG)) {
+                        // child will be added in left
 
                         if (y == 0) {
-                            // name
-                            cellLinear.addView(
-                                    this.textView((numbering++) + ")\n" + passenger.name, width));
-                        } else if (y == 1) {
-                            // gender
-                            cellLinear.addView(this.textView(passenger.gender + "", width));
+                            cellLinear.addView(textView(rowData.get(0).toString()));
                         }
 
                     } else {
                         // child will be added in right
-                        if (x == 0) {
-                            // ticket info
+                        LinearLayout.LayoutParams params =
+                                new LinearLayout.LayoutParams(width, LayoutParams.MATCH_PARENT);
+                        params.setMargins(1, 1, 1, 1);
+                        params.weight = 1;
 
-                            if (y == 0) {
-                                cellLinear.addView(this.textView(passenger.validUntil, width));
+                        LinearLayout layout = new LinearLayout(this.getContext());
+                        layout.setOrientation(LinearLayout.HORIZONTAL);
+                        layout.setLayoutParams(params);
 
-                            } else if (y == 1) {
-                                cellLinear.addView(this.textView(passenger.ticketNum + "", width));
+                        layout.addView(textView(rowData.get(y + 1).toString()));
+                        layout.addView(buttonView(R.mipmap.ic_minus));
+                        layout.addView(buttonView(R.mipmap.ic_plus));
 
-                            } else if (y == 2) {
-                                cellLinear.addView(this.textView(passenger.setSequence, width));
-
-                            } else if (y == 3) {
-                                cellLinear.addView(this.textView(passenger.setSequence, width));
-
-                            } else {
-                                cellLinear.addView(this.textView("ddd", width));
-                            }
-
-                        } else if (x == 1) {
-                            // country info
-
-                            if (y == 0) {
-                                // country from
-                                cellLinear.addView(this.textView(passenger.countryFrom, width));
-
-                            } else if (y == 1) {
-                                // country to
-                                cellLinear.addView(this.textView(passenger.countryTo, width));
-
-                            } else {
-                                cellLinear.addView(this.textView("", width));
-                            }
-
-                        } else {
-                            cellLinear.addView(this.textView("", width));
-                        }
+                        cellLinear.addView(layout);
                     }
 
-                    childIndex++;
+                    ++childIndex;
                 }
             }
         }
@@ -246,26 +218,38 @@ public class BodyTable
 
     /**
      * @param label
-     * @param width
      *
      * @return
      */
-    private TextView textView(
-            String label,
-            int width)
+    private TextView textView(String label)
     {
-        LinearLayout.LayoutParams firstLvlTextViewParams =
-                new LinearLayout.LayoutParams(width, LayoutParams.MATCH_PARENT);
-        firstLvlTextViewParams.setMargins(1, 1, 1, 1);
-        firstLvlTextViewParams.weight = 1;
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+        params.setMargins(1, 1, 1, 1);
+        params.weight = 1;
 
         TextView textView = new TextView(this.getContext());
         textView.setText(label);
         textView.setPadding(PADDING, PADDING, PADDING, PADDING);
         textView.setBackgroundColor(Table.BODY_BACKROUND_COLOR);
         textView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-        textView.setLayoutParams(firstLvlTextViewParams);
+        textView.setLayoutParams(params);
 
         return textView;
+    }
+
+
+    private ImageButton buttonView(int resId)
+    {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(50, 50); // TODO: 50dp
+        params.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+
+        Context context = getContext();
+
+        ImageButton button = new ImageButton(context);
+        button.setImageDrawable(getContext().getResources().getDrawable(resId));
+        button.setLayoutParams(params);
+
+        return button;
     }
 }

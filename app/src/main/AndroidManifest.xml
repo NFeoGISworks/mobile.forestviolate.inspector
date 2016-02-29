@@ -169,6 +169,11 @@
             />
 
         <activity
+            android:name=".activity.SheetTableFillerActivity"
+            android:label="@string/add_data"
+            />
+
+        <activity
             android:name=".activity.SelectParcelsActivity"
             android:label="@string/action_cadastre"
             android:launchMode="singleTop"

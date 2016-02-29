@@ -27,6 +27,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.List;
+
 
 /**
  * @author http://justsimpleinfo.blogspot.ru/2015/04/android-scrolling-table-with-fixed.html
@@ -37,7 +39,7 @@ public class HeaderRow
     protected final static int NEXT_PAGINATION_TAG     = 19860116;
     protected final static int PREVIUOS_PAGINATION_TAG = 19860117;
     final                  int PADDING                 = 5;
-    LinearLayout firtLvlLinearLayout;
+    LinearLayout firstLvlLinearLayout;
     LinearLayout secondLvlLinearLayout;
 
     /**
@@ -46,9 +48,9 @@ public class HeaderRow
     TextView nextTextView;
     TextView previousTextView;
 
-    Object   firstLvlLabel;
-    Object[] secondLvlLabel;
-    String   scrollViewTag;
+    Object       firstLvlLabel;
+    List<String> secondLvlLabel;
+    String       scrollViewTag;
 
     OnClickListenerOfPagination onClickListenerOfPagination;
     Table                       table;
@@ -57,7 +59,7 @@ public class HeaderRow
     public HeaderRow(
             Table table,
             Object firstLvlLabel,
-            Object[] secondLvlLabel,
+            List<String> secondLvlLabel,
             String scrollViewTag)
     {
         super(table.getContext());
@@ -86,18 +88,16 @@ public class HeaderRow
     private void init()
     {
         this.onClickListenerOfPagination = new OnClickListenerOfPagination(table);
-        this.firtLvlLinearLayout = new LinearLayout(this.getContext());
-        this.firtLvlLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        this.firstLvlLinearLayout = new LinearLayout(this.getContext());
+        this.firstLvlLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         this.secondLvlLinearLayout = new LinearLayout(this.getContext());
         this.secondLvlLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         if (Table.IS_TWO_COLUMN_HEADER) {
-            this.addView(firtLvlLinearLayout);
-            this.addView(secondLvlLinearLayout);
-        } else {
-            this.addView(secondLvlLinearLayout);
+            this.addView(firstLvlLinearLayout);
         }
+        this.addView(secondLvlLinearLayout);
     }
 
 
@@ -118,7 +118,7 @@ public class HeaderRow
         firstLvlTextView.setGravity(Gravity.CENTER);
         firstLvlTextView.setLayoutParams(firstLvlTextViewParams);
 
-        this.firtLvlLinearLayout.addView(firstLvlTextView);
+        this.firstLvlLinearLayout.addView(firstLvlTextView);
     }
 
 
@@ -129,12 +129,13 @@ public class HeaderRow
     {
         for (Object aSecondLvlLabel : this.secondLvlLabel) {
             LayoutParams firstLvlTextViewParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+                    200, LayoutParams.MATCH_PARENT); // TODO: 200dp
             firstLvlTextViewParams.setMargins(1, 1, 1, 1);
 
             String labelString = aSecondLvlLabel.toString();
 
-            if (labelString.equalsIgnoreCase(Table.NAME)) {
+            // TODO: strings
+            if (labelString.equalsIgnoreCase("Диаметр пня")) {
                 LinearLayout paginationLinearLayout = this.paginationLinearLayout(labelString);
                 paginationLinearLayout.setPadding(PADDING, PADDING, PADDING, PADDING);
                 paginationLinearLayout.setBackgroundColor(Table.HEADER_BACKROUND_COLOR);
@@ -194,9 +195,9 @@ public class HeaderRow
         LinearLayout.LayoutParams previousTextViewParams =
                 new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 
-        paginationLinearLayout.addView(previousTextView, previousTextViewParams);
+//        paginationLinearLayout.addView(previousTextView, previousTextViewParams);
         paginationLinearLayout.addView(labelTextView, labelTextViewParams);
-        paginationLinearLayout.addView(nextTextView, nextTextViewParams);
+//        paginationLinearLayout.addView(nextTextView, nextTextViewParams);
 
         return paginationLinearLayout;
     }
@@ -213,7 +214,7 @@ public class HeaderRow
          * RIGHT = 1;
          * get first lvl header width + (number of second lvl * (PADDING * (LEFT + RIGHT)) )
          */
-        int headerFirstLvlWidth = ViewSizeUtils.getViewWidth(firtLvlLinearLayout.getChildAt(0)) + (
+        int headerFirstLvlWidth = ViewSizeUtils.getViewWidth(firstLvlLinearLayout.getChildAt(0)) + (
                 headerSecondLvlChildrenCount * (PADDING * 2));
 
         int headerSecondLvlChildrenTotalWidth = 0;
