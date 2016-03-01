@@ -28,13 +28,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import com.justsimpleinfo.Table.Table;
+import com.justsimpleinfo.Table.TableData;
+import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.SheetTableFillerActivity;
 
 
 public class SheetTableFillerFragment
         extends Fragment
+        implements SheetTableFillerActivity.OnSaveTableDataListener
 {
-    Table mTable;
+    LinearLayout mTableLayout;
+    Table        mTable;
 
 
     @Override
@@ -57,6 +63,27 @@ public class SheetTableFillerFragment
             ViewGroup container,
             Bundle savedInstanceState)
     {
-        return mTable;
+        View view = inflater.inflate(R.layout.fragment_sheet_table_filler, null);
+
+        mTableLayout = (LinearLayout) view.findViewById(R.id.table_layout);
+        mTableLayout.addView(mTable);
+
+        return view;
+    }
+
+
+    @Override
+    public void onDestroyView()
+    {
+        mTableLayout.removeView(mTable);
+        super.onDestroyView();
+    }
+
+
+    @Override
+    public void onSaveTableDataListener()
+    {
+        TableData tableData = mTable.getTableData();
+        // TODO:
     }
 }

@@ -35,6 +35,9 @@ import com.nextgis.forestinspector.util.Constants;
 public class SheetTableFillerActivity
         extends FIActivity
 {
+    OnSaveTableDataListener mOnSaveTableDataListener;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -51,6 +54,7 @@ public class SheetTableFillerActivity
 
         if (fillerFragment == null) {
             fillerFragment = new SheetTableFillerFragment();
+            setOnSaveTableDataListener(fillerFragment);
         }
 
         ft.replace(R.id.table, fillerFragment, Constants.FRAGMENT_SHEET_TABLE_FILLER);
@@ -71,7 +75,7 @@ public class SheetTableFillerActivity
     {
         switch (item.getItemId()) {
             case R.id.action_apply:
-//                apply();
+                saveTableData();
                 return true;
 
             case R.id.action_cancel:
@@ -80,5 +84,25 @@ public class SheetTableFillerActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void saveTableData()
+    {
+        if (null != mOnSaveTableDataListener) {
+            mOnSaveTableDataListener.onSaveTableDataListener();
+        }
+    }
+
+
+    public void setOnSaveTableDataListener(OnSaveTableDataListener onSaveTableDataListener)
+    {
+        mOnSaveTableDataListener = onSaveTableDataListener;
+    }
+
+
+    public interface OnSaveTableDataListener
+    {
+        void onSaveTableDataListener();
     }
 }

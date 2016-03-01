@@ -65,6 +65,10 @@ public class Table
     public int CELL_BACKROUND_COLOR;
     public static final int COLUMN_WIDTH = 120;
 
+    int pagination = 20;
+    int totalPage  = 0;
+    int pageNumber = 1;
+
     Map<String, List<String>> leftHeaders  = new LinkedHashMap<>();
     Map<String, List<String>> rightHeaders = new LinkedHashMap<>();
 
@@ -81,9 +85,9 @@ public class Table
 
     LoadingDialog loadingDialog;
 
+    Context        mContext;
     DocumentsLayer mDocsLayer;
-
-    Context mContext;
+    TableData      mTableData;
 
 
     public void init(Context context)
@@ -182,16 +186,17 @@ public class Table
     }
 
 
-    int pagination = 20;
-    int totalPage  = 0;
-    int pageNumber = 1;
+    public TableData getTableData()
+    {
+        return mTableData;
+    }
 
 
     public void loadData()
     {
-        TableData tableData = loadTableData();
-        leftTable.loadData(tableData);
-        rightTable.loadData(tableData);
+        mTableData = loadTableData();
+        leftTable.loadData(mTableData);
+        rightTable.loadData(mTableData);
 
         resizeBodyChildrenHeight();
     }
@@ -219,22 +224,9 @@ public class Table
     }
 
 
-/*
-    private int totalPage(
-            List<Passenger> testData,
-            int pagination)
-    {
-        int totalPage = testData.size() / pagination;
-        totalPage = totalPage + (testData.size() % 20 == 0 ? 0 : 1);
-        return totalPage;
-    }
-*/
-
-
     private void properties()
     {
         setBackgroundColor(BODY_BACKROUND_COLOR);
-//        setOrientation(LinearLayout.HORIZONTAL);
     }
 
 

@@ -184,7 +184,6 @@ public class BodyTable
             for (int x = 0; x < firstLvlHeaderCounts; ++x) {
                 LinearLayout rowLayout = new LinearLayout(mContext);
                 rowLayout.setOrientation(LinearLayout.HORIZONTAL);
-                rowLayout.setBackgroundColor(table.BODY_BACKROUND_COLOR);
 
                 LinearLayout bodyLayout = this.bodyLinearLayoutTempMem.get(x);
                 bodyLayout.addView(rowLayout);
