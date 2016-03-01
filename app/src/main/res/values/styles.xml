@@ -27,6 +27,9 @@
     <attr name="photoTableItemBackgroundColor" format="reference"/>
     <attr name="photoDescBackgroundColor" format="reference"/>
     <attr name="docItemBackgroundForCurrentUser" format="reference"/>
+    <attr name="tableHeaderBackgroundColor" format="reference"/>
+    <attr name="tableBodyBackgroundColor" format="reference"/>
+    <attr name="tableCellBackgroundColor" format="reference"/>
     <attr name="ic_action_map" format="reference"/>
 
     <!-- Base application theme. -->
@@ -37,6 +40,9 @@
         <item name="photoTableItemBackgroundColor">@color/color_grey_000</item>
         <item name="photoDescBackgroundColor">@color/color_grey_200</item>
         <item name="docItemBackgroundForCurrentUser">@color/color_grey_300</item>
+        <item name="tableHeaderBackgroundColor">@color/color_grey_300</item>
+        <item name="tableBodyBackgroundColor">@color/color_grey_900</item>
+        <item name="tableCellBackgroundColor">@color/color_grey_050</item>
         <item name="ic_action_map">@drawable/ic_maps_pin_light</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
@@ -48,6 +54,9 @@
         <item name="photoTableItemBackgroundColor">@color/color_grey_800</item>
         <item name="photoDescBackgroundColor">@color/color_grey_700</item>
         <item name="docItemBackgroundForCurrentUser">@color/color_grey_700</item>
+        <item name="tableHeaderBackgroundColor">@color/color_grey_700</item>
+        <item name="tableBodyBackgroundColor">@color/color_grey_600</item>
+        <item name="tableCellBackgroundColor">@color/color_grey_800</item>
         <item name="ic_action_map">@drawable/ic_maps_pin_dark</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
@@ -120,6 +129,13 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">10dp</item>
         <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="table_button">
+        <item name="android:layout_width">35dp</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:padding">1dp</item>
+        <item name="android:layout_gravity">right|center_vertical</item>
     </style>
 
     <style name="dialog_desc_text">

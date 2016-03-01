@@ -238,6 +238,7 @@ public interface Constants
     String FRAGMENT_NGW_SETTINGS             = "ngw_settings";
     String FRAGMENT_SYNC_SETTINGS            = "sync_settings";
     String FRAGMENT_LAYER_LIST               = "layer_list";
+    String FRAGMENT_SHEET_TABLE_FILLER       = "sheet_table_filler";
 
     int DOCS_VECTOR_SCOPE = 10000;
 
@@ -252,12 +253,12 @@ public interface Constants
     int TARGETING_LOADER = 2;
     int CLICKED_LOADER   = 3;
 
-    float LV_MIN_ZOOM = 0f;
-    float LV_MAX_ZOOM = 9.5f;
+    float LV_MIN_ZOOM  = 0f;
+    float LV_MAX_ZOOM  = 9.5f;
     float ULV_MIN_ZOOM = 9.5f;
     float ULV_MAX_ZOOM = 13.5f;
-    float KV_MIN_ZOOM = 13.5f;
-    float KV_MAX_ZOOM = 23f;
+    float KV_MIN_ZOOM  = 13.5f;
+    float KV_MAX_ZOOM  = 23f;
 
     int DEFAULT_COORDINATES_FRACTION_DIGITS = 2;
 }

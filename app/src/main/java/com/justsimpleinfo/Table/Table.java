@@ -24,12 +24,14 @@ package com.justsimpleinfo.Table;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
+import android.support.v7.internal.widget.ThemeUtils;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.DaveKoelle.AlphanumComparator;
+import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
@@ -51,14 +53,17 @@ public class Table
 {
     public static final String  PREVIOUS_ARROW            = "\u2190";
     public static final String  NEXT_ARROW                = "\u2192";
-    public static final int     HEADER_BACKROUND_COLOR    = Color.parseColor("#339999");
-    public static final int     BODY_BACKROUND_COLOR      = Color.parseColor("#99cccc");
     public static       String  LEFT_BODY_SCROLLVIEW_TAG  = "LEFT_BODY_SCROLLVIEW_TAG";
     public static       String  RIGHT_BODY_SCROLLVIEW_TAG = "RIGHT_BODY_SCROLLVIEW_TAG";
     /**
      * @IS_TWO_COLUMN_HEADER = set this to true if you want two column header with span.
      */
     public static final boolean IS_TWO_COLUMN_HEADER      = false;
+
+    public int BODY_BACKROUND_COLOR;
+    public int HEADER_BACKROUND_COLOR;
+    public int CELL_BACKROUND_COLOR;
+    public static final int COLUMN_WIDTH = 120;
 
     Map<String, List<String>> leftHeaders  = new LinkedHashMap<>();
     Map<String, List<String>> rightHeaders = new LinkedHashMap<>();
@@ -78,10 +83,19 @@ public class Table
 
     DocumentsLayer mDocsLayer;
 
+    Context mContext;
 
-    public Table(Context context)
+
+    public void init(Context context)
     {
-        super(context);
+        mContext = context;
+
+        BODY_BACKROUND_COLOR =
+                ThemeUtils.getThemeAttrColor(mContext, R.attr.tableBodyBackgroundColor);
+        HEADER_BACKROUND_COLOR =
+                ThemeUtils.getThemeAttrColor(mContext, R.attr.tableHeaderBackgroundColor);
+        CELL_BACKROUND_COLOR =
+                ThemeUtils.getThemeAttrColor(mContext, R.attr.tableCellBackgroundColor);
 
         MapBase map = MapBase.getInstance();
         mDocsLayer = null;
@@ -106,6 +120,22 @@ public class Table
         this.rightTable.setHeaderChildrenWidth(this.rightHeaderChildrenWidht);
 
         this.loadData();
+    }
+
+
+    public Table(Context context)
+    {
+        super(context);
+        init(context);
+    }
+
+
+    public Table(
+            Context context,
+            AttributeSet attrs)
+    {
+        super(context, attrs);
+        init(context);
     }
 
 
@@ -203,18 +233,16 @@ public class Table
 
     private void properties()
     {
-        this.setBackgroundColor(Color.WHITE);
-        this.setOrientation(LinearLayout.HORIZONTAL);
+        setBackgroundColor(BODY_BACKROUND_COLOR);
+//        setOrientation(LinearLayout.HORIZONTAL);
     }
 
 
     private void init()
     {
-        this.loadingDialog = new LoadingDialog(this.getContext());
-        this.leftTable =
-                new BodyTable(this.getContext(), this, leftHeaders, LEFT_BODY_SCROLLVIEW_TAG);
-        this.rightTable =
-                new BodyTable(this.getContext(), this, rightHeaders, RIGHT_BODY_SCROLLVIEW_TAG);
+        this.loadingDialog = new LoadingDialog(mContext);
+        this.leftTable = new BodyTable(mContext, this, leftHeaders, LEFT_BODY_SCROLLVIEW_TAG);
+        this.rightTable = new BodyTable(mContext, this, rightHeaders, RIGHT_BODY_SCROLLVIEW_TAG);
 
         this.addView(this.leftTable);
         this.addView(this.rightTable);
@@ -387,7 +415,7 @@ public class Table
 
     private void resizeHeaderSecondLvlWidhtToMatchInScreen()
     {
-        int screenWidth = ScreenUtils.getScreenWidth(this.getContext());
+        int screenWidth = ScreenUtils.getScreenWidth(mContext);
         int leftHeaderChildrenTotalWidth = this.leftSecondLvlHeaderChildrenTotalWidth();
         int rightHeaderChildrenTotalWidth = this.rightHeaderChildrenTotalWidth();
         int leftHeaderSecondLvlChildrenCount = this.leftSecondLvlHeaderChildrenCount();

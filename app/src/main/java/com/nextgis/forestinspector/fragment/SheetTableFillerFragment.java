@@ -20,25 +20,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.justsimpleinfo.Table;
+package com.nextgis.forestinspector.fragment;
 
-import android.content.Context;
-import android.content.res.Resources;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import com.justsimpleinfo.Table.Table;
 
 
-/**
- * @author http://justsimpleinfo.blogspot.ru/2015/04/android-scrolling-table-with-fixed.html
- */
-public class ScreenUtils
+public class SheetTableFillerFragment
+        extends Fragment
 {
-    public static int getScreenWidth(Context context)
+    Table mTable;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
     {
-        return Resources.getSystem().getDisplayMetrics().widthPixels;
+        super.onCreate(savedInstanceState);
+
+        if (null == getParentFragment()) {
+            setRetainInstance(true);
+        }
+
+        mTable = new Table(getActivity());
     }
 
 
-    public static int getScreenHeight(Context context)
+    @Nullable
+    @Override
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
     {
-        return Resources.getSystem().getDisplayMetrics().heightPixels;
+        return mTable;
     }
 }

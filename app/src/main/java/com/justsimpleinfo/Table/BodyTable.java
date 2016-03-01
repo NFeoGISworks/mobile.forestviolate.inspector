@@ -23,10 +23,12 @@
 package com.justsimpleinfo.Table;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.support.v7.internal.view.ContextThemeWrapper;
+import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -44,6 +46,9 @@ import java.util.Map.Entry;
 public class BodyTable
         extends HorizontalScrollView
 {
+    protected final int CELL_TEXT_PADDING = (int) TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, 5f, getResources().getDisplayMetrics());
+
     LinearLayout generalVerticalLinearLayout;
     LinearLayout headerHorizontalLinearLayout;
 
@@ -57,6 +62,9 @@ public class BodyTable
     Table     table;
     HeaderRow headerRow;
 
+    TableData mTableData;
+    Context   mContext;
+
 
     public BodyTable(
             Context context,
@@ -65,6 +73,8 @@ public class BodyTable
             String scrollViewTag)
     {
         super(context);
+
+        mContext = context;
 
         this.headers = headers;
         this.scrollViewTag = scrollViewTag;
@@ -87,17 +97,17 @@ public class BodyTable
      */
     private void init()
     {
-        this.generalVerticalLinearLayout = new LinearLayout(this.getContext());
+        this.generalVerticalLinearLayout = new LinearLayout(mContext);
         this.generalVerticalLinearLayout.setOrientation(LinearLayout.VERTICAL);
 
 
-        this.headerHorizontalLinearLayout = new LinearLayout(this.getContext());
+        this.headerHorizontalLinearLayout = new LinearLayout(mContext);
         this.headerHorizontalLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        this.bodyScrollView = new CustomScrollView(this.getContext(), table);
+        this.bodyScrollView = new CustomScrollView(mContext, table);
         this.bodyScrollView.setTag(scrollViewTag);
 
-        this.bodyHorizontalLinearLayout = new LinearLayout(this.getContext());
+        this.bodyHorizontalLinearLayout = new LinearLayout(mContext);
         this.bodyHorizontalLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         // add child to each parent
@@ -131,7 +141,7 @@ public class BodyTable
         int firstLvlHeaderCount = headers.size();
 
         for (int x = 0; x < firstLvlHeaderCount; ++x) {
-            LinearLayout bodyLinear = new LinearLayout(this.getContext());
+            LinearLayout bodyLinear = new LinearLayout(mContext);
             bodyLinear.setOrientation(LinearLayout.VERTICAL);
 
             bodyLinearLayoutTempMem.add(bodyLinear);
@@ -152,13 +162,10 @@ public class BodyTable
     }
 
 
-    final int bgColor = Color.GRAY;
-    final int PADDING = 5;
-
-
     public void loadData(TableData tableData)
     {
         this.removeView();
+        mTableData = tableData;
 
         int firstLvlHeaderCounts = headers.size();
         List<List<String>> secondLvlHeader = new ArrayList<>();
@@ -167,46 +174,62 @@ public class BodyTable
             secondLvlHeader.add(header.getValue());
         }
 
-        for (int z = 0; z < tableData.size(); ++z) {
-            TableRowData rowData = tableData.get(z);
+        int rowCount = tableData.size();
+
+        for (int row = 0; row < rowCount; ++row) {
+            TableRowData rowData = tableData.get(row);
+            int columnCount = rowData.size();
             int childIndex = 0;
 
             for (int x = 0; x < firstLvlHeaderCounts; ++x) {
-                LinearLayout cellLinear = new LinearLayout(this.getContext());
-                cellLinear.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout rowLayout = new LinearLayout(mContext);
+                rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+                rowLayout.setBackgroundColor(table.BODY_BACKROUND_COLOR);
 
-                LinearLayout bodyLinear = this.bodyLinearLayoutTempMem.get(x);
-                bodyLinear.addView(cellLinear);
+                LinearLayout bodyLayout = this.bodyLinearLayoutTempMem.get(x);
+                bodyLayout.addView(rowLayout);
 
                 int secondLvlHeaderCount = secondLvlHeader.get(x).size();
 
                 for (int y = 0; y < secondLvlHeaderCount; ++y) {
                     int width = headerChildrenWidth[childIndex];
 
+                    LinearLayout.LayoutParams params =
+                            new LinearLayout.LayoutParams(width, LayoutParams.MATCH_PARENT);
+                    params.setMargins(1, 1, 1, 1);
+                    params.weight = 1;
+
+                    LinearLayout cellLayout = new LinearLayout(mContext);
+                    cellLayout.setOrientation(LinearLayout.HORIZONTAL);
+                    cellLayout.setLayoutParams(params);
+                    cellLayout.setBackgroundColor(table.CELL_BACKROUND_COLOR);
+
+                    rowLayout.addView(cellLayout);
+
                     if (/*childIndex == 0 &&*/ scrollViewTag.equals(
                             Table.LEFT_BODY_SCROLLVIEW_TAG)) {
+
                         // child will be added in left
 
-                        if (y == 0) {
-                            cellLinear.addView(textView(rowData.get(0).toString()));
-                        }
+                        TextView textView = textView(rowData.get(0).toString());
+                        cellLayout.addView(textView);
 
                     } else {
                         // child will be added in right
-                        LinearLayout.LayoutParams params =
-                                new LinearLayout.LayoutParams(width, LayoutParams.MATCH_PARENT);
-                        params.setMargins(1, 1, 1, 1);
-                        params.weight = 1;
 
-                        LinearLayout layout = new LinearLayout(this.getContext());
-                        layout.setOrientation(LinearLayout.HORIZONTAL);
-                        layout.setLayoutParams(params);
+                        int column = y + 1;
+                        int tag = row * columnCount + column;
 
-                        layout.addView(textView(rowData.get(y + 1).toString()));
-                        layout.addView(buttonView(R.mipmap.ic_minus));
-                        layout.addView(buttonView(R.mipmap.ic_plus));
 
-                        cellLinear.addView(layout);
+                        TextView textView = textView(rowData.get(column).toString());
+                        textView.setId(tag);
+
+                        View buttonMinus = buttonView(row, column, false, tag);
+                        View buttonPlus = buttonView(row, column, true, tag);
+
+                        cellLayout.addView(textView);
+                        cellLayout.addView(buttonMinus);
+                        cellLayout.addView(buttonPlus);
                     }
 
                     ++childIndex;
@@ -228,10 +251,10 @@ public class BodyTable
         params.setMargins(1, 1, 1, 1);
         params.weight = 1;
 
-        TextView textView = new TextView(this.getContext());
+        TextView textView = new TextView(mContext);
         textView.setText(label);
-        textView.setPadding(PADDING, PADDING, PADDING, PADDING);
-        textView.setBackgroundColor(Table.BODY_BACKROUND_COLOR);
+        textView.setPadding(
+                CELL_TEXT_PADDING, CELL_TEXT_PADDING, CELL_TEXT_PADDING, CELL_TEXT_PADDING);
         textView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
         textView.setLayoutParams(params);
 
@@ -239,17 +262,37 @@ public class BodyTable
     }
 
 
-    private ImageButton buttonView(int resId)
+    private View buttonView(
+            final int row,
+            final int column,
+            final boolean plus,
+            final int tag)
     {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(50, 50); // TODO: 50dp
-        params.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+        Context context = new ContextThemeWrapper(mContext, R.style.table_button);
 
-        Context context = getContext();
+        View view = View.inflate(context, R.layout.table_button, null);
+        Button button = (Button) view.findViewById(R.id.table_button);
+        button.setTag(tag);
+        button.setText(plus ? "+" : "-");
 
-        ImageButton button = new ImageButton(context);
-        button.setImageDrawable(getContext().getResources().getDrawable(resId));
-        button.setLayoutParams(params);
+        button.setOnClickListener(
+                new OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        TableRowData rowData = mTableData.get(row);
+                        int res = (Integer) rowData.get(column);
+                        res = plus ? res + 1 : res - 1;
+                        rowData.set(column, res);
 
-        return button;
+                        Button button = (Button) view;
+                        int tag = (Integer) button.getTag();
+                        TextView textView = (TextView) findViewById(tag);
+                        textView.setText("" + res);
+                    }
+                });
+
+        return view;
     }
 }

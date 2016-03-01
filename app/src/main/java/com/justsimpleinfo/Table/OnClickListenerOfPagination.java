@@ -61,7 +61,7 @@ class OnClickListenerOfPagination
                 if (table.pageNumber == table.totalPage) {
                     table.leftTable.headerRow.nextTextView.setEnabled(false);
                     table.leftTable.headerRow.nextTextView.setTextColor(
-                            Table.HEADER_BACKROUND_COLOR);
+                            table.HEADER_BACKROUND_COLOR);
                 }
 
                 break;
@@ -77,7 +77,7 @@ class OnClickListenerOfPagination
                 if (table.pageNumber == 1) {
                     table.leftTable.headerRow.previousTextView.setEnabled(false);
                     table.leftTable.headerRow.previousTextView.setTextColor(
-                            Table.HEADER_BACKROUND_COLOR);
+                            table.HEADER_BACKROUND_COLOR);
 
                 }
 

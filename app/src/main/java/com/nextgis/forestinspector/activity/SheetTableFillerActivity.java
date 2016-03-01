@@ -23,10 +23,13 @@
 package com.nextgis.forestinspector.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.justsimpleinfo.Table.Table;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.fragment.SheetTableFillerFragment;
+import com.nextgis.forestinspector.util.Constants;
 
 
 public class SheetTableFillerActivity
@@ -37,16 +40,28 @@ public class SheetTableFillerActivity
     {
         super.onCreate(savedInstanceState);
 
-        Table table = new Table(this);
+        setContentView(R.layout.activity_sheet_list_filler);
+        setToolbar(R.id.main_toolbar);
 
-        setContentView(table);
+        final FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        SheetTableFillerFragment fillerFragment = (SheetTableFillerFragment) fm.findFragmentByTag(
+                Constants.FRAGMENT_SHEET_TABLE_FILLER);
+
+        if (fillerFragment == null) {
+            fillerFragment = new SheetTableFillerFragment();
+        }
+
+        ft.replace(R.id.table, fillerFragment, Constants.FRAGMENT_SHEET_TABLE_FILLER);
+        ft.commit();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.sheet_creator, menu);
+        getMenuInflater().inflate(R.menu.sheet_table_filler, menu);
         return true;
     }
 
