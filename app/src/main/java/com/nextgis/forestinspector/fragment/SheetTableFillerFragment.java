@@ -27,18 +27,30 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatSpinner;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.DaveKoelle.AlphanumComparator;
 import com.justsimpleinfo.Table.Table;
 import com.justsimpleinfo.Table.TableData;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.SheetTableFillerActivity;
+import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.map.MapBase;
+import com.nextgis.maplib.map.NGWLookupTable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
@@ -54,9 +66,15 @@ public class SheetTableFillerFragment
     protected final static int CREATE_TABLE_OK     = 1;
     protected final static int CREATE_TABLE_FAILED = 2;
 
-    LinearLayout mTableLayout;
-    TextView     mTableWarning;
-    Table        mTable;
+    protected Table mTable;
+
+    protected TextView         mTableWarning;
+    protected LinearLayout     mTableLayout;
+    protected AppCompatSpinner mHeightView;
+    protected AppCompatSpinner mCategoryView;
+
+    protected ArrayAdapter<String> mHeightAdapter;
+    protected ArrayAdapter<String> mCategoryAdapter;
 
 
     @Override
@@ -66,6 +84,21 @@ public class SheetTableFillerFragment
 
         if (null == getParentFragment()) {
             setRetainInstance(true);
+        }
+
+        MapBase map = MapBase.getInstance();
+        DocumentsLayer docs = null;
+        for (int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof DocumentsLayer) {
+                docs = (DocumentsLayer) layer;
+                break;
+            }
+        }
+
+        if (null != docs) {
+            mHeightAdapter = getArrayAdapter(docs, Constants.KEY_LAYER_HEIGHT_TYPES, true);
+            mCategoryAdapter = getArrayAdapter(docs, Constants.KEY_LAYER_TREES_TYPES, false);
         }
     }
 
@@ -80,6 +113,12 @@ public class SheetTableFillerFragment
         View view = inflater.inflate(R.layout.fragment_sheet_table_filler, null);
         mTableLayout = (LinearLayout) view.findViewById(R.id.table_layout);
         mTableWarning = (TextView) view.findViewById(R.id.table_warning);
+
+        mHeightView = (AppCompatSpinner) view.findViewById(R.id.height);
+        mHeightView.setAdapter(mHeightAdapter);
+
+        mCategoryView = (AppCompatSpinner) view.findViewById(R.id.category);
+        mCategoryView.setAdapter(mCategoryAdapter);
 
         if (null != mTable) {
             mTableWarning.setVisibility(View.GONE);
@@ -165,6 +204,39 @@ public class SheetTableFillerFragment
         mTableLayout.removeView(mTable);
         super.onDestroyView();
     }
+
+
+    protected ArrayAdapter<String> getArrayAdapter(
+            DocumentsLayer docsLayer,
+            String layerKey,
+            boolean numberSort)
+    {
+        NGWLookupTable table = (NGWLookupTable) docsLayer.getLayerByName(layerKey);
+
+        if (null != table) {
+            Map<String, String> data = table.getData();
+            List<String> dataArray = new ArrayList<>();
+
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                dataArray.add(entry.getKey());
+            }
+
+            if (numberSort) {
+                Collections.sort(dataArray, new AlphanumComparator());
+            } else {
+                Collections.sort(dataArray);
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    getActivity(), android.R.layout.simple_spinner_item, dataArray);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            return adapter;
+        }
+
+        return null;
+    }
+
 
 
     @Override
