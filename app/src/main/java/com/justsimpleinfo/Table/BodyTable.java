@@ -320,6 +320,11 @@ public class BodyTable
                     {
                         TableRowData rowData = mTableData.get(row);
                         Integer res = (Integer) rowData.get(column);
+
+                        if (!plus && res <= 0) {
+                            return;
+                        }
+
                         res = plus ? res + 1 : res - 1;
                         rowData.set(column, res);
 
