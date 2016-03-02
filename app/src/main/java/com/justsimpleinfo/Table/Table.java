@@ -181,6 +181,12 @@ public class Table
     }
 
 
+    public List<String> getSpecies()
+    {
+        return rightHeaders.get("2");
+    }
+
+
     public TableData getTableData()
     {
         return mTableData;
@@ -206,7 +212,7 @@ public class Table
 
         for (int i = 0; i < rowCount; ++i) {
             TableRowData rowData = new TableRowData(columnCount);
-            rowData.add(thickness.get(i));
+            rowData.add(Integer.valueOf(thickness.get(i)));
 
             for (int j = 1; j < columnCount; ++j) {
                 rowData.add(0);

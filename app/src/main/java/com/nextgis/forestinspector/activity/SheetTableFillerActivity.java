@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -34,10 +35,8 @@ import com.nextgis.forestinspector.util.Constants;
 
 public class SheetTableFillerActivity
         extends FIActivity
+        implements SheetTableFillerFragment.OnAddTreeStubsListener
 {
-    OnSaveTableDataListener mOnSaveTableDataListener;
-
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -52,9 +51,9 @@ public class SheetTableFillerActivity
         SheetTableFillerFragment fillerFragment = (SheetTableFillerFragment) fm.findFragmentByTag(
                 Constants.FRAGMENT_SHEET_TABLE_FILLER);
 
-        if (fillerFragment == null) {
+        if (null == fillerFragment) {
             fillerFragment = new SheetTableFillerFragment();
-            setOnSaveTableDataListener(fillerFragment);
+            fillerFragment.setOnAddTreeStubsListener(this);
         }
 
         ft.replace(R.id.table, fillerFragment, Constants.FRAGMENT_SHEET_TABLE_FILLER);
@@ -74,7 +73,7 @@ public class SheetTableFillerActivity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId()) {
-            case R.id.action_apply:
+            case R.id.action_add:
                 saveTableData();
                 return true;
 
@@ -89,20 +88,20 @@ public class SheetTableFillerActivity
 
     public void saveTableData()
     {
-        if (null != mOnSaveTableDataListener) {
-            mOnSaveTableDataListener.onSaveTableDataListener();
+        final FragmentManager fm = getSupportFragmentManager();
+        SheetTableFillerFragment fillerFragment = (SheetTableFillerFragment) fm.findFragmentByTag(
+                Constants.FRAGMENT_SHEET_TABLE_FILLER);
+        if (null != fillerFragment) {
+            fillerFragment.saveTableData();
         }
+        finish();
     }
 
 
-    public void setOnSaveTableDataListener(OnSaveTableDataListener onSaveTableDataListener)
+    @Override
+    public void onAddTreeStubs()
     {
-        mOnSaveTableDataListener = onSaveTableDataListener;
-    }
-
-
-    public interface OnSaveTableDataListener
-    {
-        void onSaveTableDataListener();
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
     }
 }

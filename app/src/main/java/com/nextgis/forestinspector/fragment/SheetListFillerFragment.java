@@ -22,7 +22,9 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import com.nextgis.forestinspector.activity.SheetTableFillerActivity;
 import com.nextgis.forestinspector.adapter.ListFillerAdapter;
 import com.nextgis.forestinspector.adapter.SheetListFillerAdapter;
@@ -34,6 +36,8 @@ import com.nextgis.forestinspector.dialog.SheetListFillerDialog;
 public class SheetListFillerFragment
         extends ListFillerFragment
 {
+    protected static final int REQUEST_ITEMS = 1;
+
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
@@ -51,8 +55,25 @@ public class SheetListFillerFragment
     @Override
     protected void addItem()
     {
-        Intent intent = new Intent(getActivity(), SheetTableFillerActivity.class);
-//        intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, mEditFeature.getId());
-        startActivity(intent);
+        Bundle extras = getActivity().getIntent().getExtras();
+        if (null != extras && extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+            long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+
+            Intent intent = new Intent(getActivity(), SheetTableFillerActivity.class);
+            intent.putExtra(com.nextgis.maplib.util.Constants.FIELD_ID, featureId);
+            startActivityForResult(intent, REQUEST_ITEMS);
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data)
+    {
+        if (requestCode == REQUEST_ITEMS && resultCode == Activity.RESULT_OK) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }

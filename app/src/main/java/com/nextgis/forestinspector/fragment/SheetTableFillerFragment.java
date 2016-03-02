@@ -33,19 +33,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.DaveKoelle.AlphanumComparator;
 import com.justsimpleinfo.Table.Table;
 import com.justsimpleinfo.Table.TableData;
+import com.justsimpleinfo.Table.TableRowData;
+import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
-import com.nextgis.forestinspector.activity.SheetTableFillerActivity;
+import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.datasource.GeoMultiPoint;
+import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
+import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplib.util.GeoConstants;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +68,6 @@ import static com.nextgis.maplib.util.Constants.TAG;
 
 public class SheetTableFillerFragment
         extends Fragment
-        implements SheetTableFillerActivity.OnSaveTableDataListener
 {
     protected final static int CREATE_TABLE_DONE   = 0;
     protected final static int CREATE_TABLE_OK     = 1;
@@ -68,13 +75,16 @@ public class SheetTableFillerFragment
 
     protected Table mTable;
 
-    protected TextView         mTableWarning;
-    protected LinearLayout     mTableLayout;
     protected AppCompatSpinner mHeightView;
     protected AppCompatSpinner mCategoryView;
+    protected EditText         mUnitView;
+    protected TextView         mTableWarning;
+    protected LinearLayout     mTableLayout;
 
     protected ArrayAdapter<String> mHeightAdapter;
     protected ArrayAdapter<String> mCategoryAdapter;
+
+    protected OnAddTreeStubsListener mOnAddTreeStubsListener;
 
 
     @Override
@@ -119,6 +129,8 @@ public class SheetTableFillerFragment
 
         mCategoryView = (AppCompatSpinner) view.findViewById(R.id.category);
         mCategoryView.setAdapter(mCategoryAdapter);
+
+        mUnitView = (EditText) view.findViewById(R.id.unit);
 
         if (null != mTable) {
             mTableWarning.setVisibility(View.GONE);
@@ -238,11 +250,115 @@ public class SheetTableFillerFragment
     }
 
 
-
-    @Override
-    public void onSaveTableDataListener()
+    public void saveTableData()
     {
+        MainApplication app = (MainApplication) getActivity().getApplication();
+        DocumentsLayer docLayer = app.getDocsLayer();
+        if (null == docLayer) {
+            return;
+        }
+        VectorLayer subDocLayer = (VectorLayer) docLayer.getLayerByName(Constants.KEY_LAYER_SHEET);
+        if (null == subDocLayer) {
+            return;
+        }
+        DocumentFeature docFeature = getDocumentFeature();
+
+        String height = mHeightView.getSelectedItem().toString();
+        String category = mCategoryView.getSelectedItem().toString();
+        String unit = mUnitView.getText().toString(); // TODO: empty?
         TableData tableData = mTable.getTableData();
-        // TODO:
+
+//        GeoPoint pt = new GeoPoint(mLocation.getLongitude(), mLocation.getLatitude());
+        GeoPoint pt = new GeoPoint(0, 0); // TODO: mLocation
+        pt.setCRS(GeoConstants.CRS_WGS84);
+        pt.project(GeoConstants.CRS_WEB_MERCATOR);
+        GeoMultiPoint geometryValue = new GeoMultiPoint();
+        geometryValue.add(pt);
+
+        int rowCount = tableData.size();
+        boolean isDataAdded = false;
+
+        for (int i = 0; i < rowCount; ++i) {
+            TableRowData rowData = tableData.get(i);
+            int columnCount = rowData.size();
+
+            for (int j = 1; j < columnCount; ++j) {
+                Integer treeCount = (Integer) rowData.get(j);
+
+                if (treeCount > 0) {
+                    TreeStub treeStub = new TreeStub();
+                    treeStub.mHeight = height;
+                    treeStub.mCategory = category;
+                    treeStub.mUnit = unit;
+                    treeStub.mSpecies = mTable.getSpecies().get(j - 1);
+                    treeStub.mThickness = (Integer) rowData.get(0);
+                    treeStub.mCount = treeCount;
+
+                    Feature subFeature = docLayer.getNewTempSubFeature(docFeature, subDocLayer);
+                    subFeature.setGeometry(geometryValue);
+                    setFeatureFieldsValues(subFeature, treeStub);
+                    subDocLayer.updateFeatureWithFlags(subFeature);
+                    isDataAdded = true;
+                }
+            }
+        }
+
+        if (isDataAdded && null != mOnAddTreeStubsListener) {
+            mOnAddTreeStubsListener.onAddTreeStubs();
+        }
+    }
+
+
+    protected DocumentFeature getDocumentFeature()
+    {
+        Bundle extras = getActivity().getIntent().getExtras();
+        if (null != extras && extras.containsKey(com.nextgis.maplib.util.Constants.FIELD_ID)) {
+            long featureId = extras.getLong(com.nextgis.maplib.util.Constants.FIELD_ID);
+            MainApplication app = (MainApplication) getActivity().getApplication();
+            return app.getEditFeature(featureId);
+        }
+        return null;
+    }
+
+
+    protected void setFeatureFieldsValues(
+            Feature feature,
+            TreeStub treeStub)
+    {
+        feature.setFieldValue(
+                Constants.FIELD_SHEET_HEIGHTS, treeStub.mHeight);
+        feature.setFieldValue(
+                Constants.FIELD_SHEET_CATEGORY, treeStub.mCategory);
+        feature.setFieldValue(
+                Constants.FIELD_SHEET_UNIT, treeStub.mUnit);
+        feature.setFieldValue(
+                Constants.FIELD_SHEET_SPECIES, treeStub.mSpecies);
+        feature.setFieldValue(
+                Constants.FIELD_SHEET_THICKNESS, treeStub.mThickness);
+        feature.setFieldValue(
+                Constants.FIELD_SHEET_COUNT, treeStub.mCount);
+    }
+
+
+    public void setOnAddTreeStubsListener(OnAddTreeStubsListener listener)
+    {
+        mOnAddTreeStubsListener = listener;
+    }
+
+
+    public interface OnAddTreeStubsListener
+    {
+        void onAddTreeStubs();
+    }
+
+
+    protected class TreeStub
+    {
+        String  mHeight;
+        String  mCategory;
+        String  mUnit;
+        String  mSpecies;
+        Integer mThickness;
+        Integer mCount;
     }
 }
