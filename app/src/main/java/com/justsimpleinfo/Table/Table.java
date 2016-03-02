@@ -22,14 +22,11 @@
 
 package com.justsimpleinfo.Table;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.support.v7.internal.widget.ThemeUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import com.DaveKoelle.AlphanumComparator;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.map.DocumentsLayer;
@@ -82,8 +79,6 @@ public class Table
      * rightHeaderChildrenWidht = value will be set on adjust header width to match in screen width
      */
     Integer[] rightHeaderChildrenWidht;
-
-    LoadingDialog loadingDialog;
 
     Context        mContext;
     DocumentsLayer mDocsLayer;
@@ -232,7 +227,6 @@ public class Table
 
     private void init()
     {
-        this.loadingDialog = new LoadingDialog(mContext);
         this.leftTable = new BodyTable(mContext, this, leftHeaders, LEFT_BODY_SCROLLVIEW_TAG);
         this.rightTable = new BodyTable(mContext, this, rightHeaders, RIGHT_BODY_SCROLLVIEW_TAG);
 
@@ -688,30 +682,6 @@ public class Table
                                 ? leftHeaderFirstLvlHighestHeight
                                 : rightHeaderFirstLvlHighestHeight;
             }
-        }
-    }
-
-
-    /**
-     * @author lauro
-     */
-    class LoadingDialog
-            extends Dialog
-    {
-        LoadingDialog(Context context)
-        {
-            super(context);
-            this.setCancelable(false);
-            this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            this.init(context);
-        }
-
-
-        private void init(Context context)
-        {
-            TextView textView = new TextView(context);
-            textView.setText("Please wait loading data..");
-            this.setContentView(textView);
         }
     }
 }

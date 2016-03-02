@@ -37,24 +37,15 @@ import java.util.List;
 public class HeaderRow
         extends LinearLayout
 {
-    protected final static int NEXT_PAGINATION_TAG     = 19860116;
-    protected final static int PREVIUOS_PAGINATION_TAG = 19860117;
-    final                  int PADDING                 = 5;
+    final int PADDING = 5;
     LinearLayout firstLvlLinearLayout;
     LinearLayout secondLvlLinearLayout;
-
-    /**
-     * @nextTextView and @previousTextView = for pagination
-     */
-    TextView nextTextView;
-    TextView previousTextView;
 
     Object       firstLvlLabel;
     List<String> secondLvlLabel;
     String       scrollViewTag;
 
-    OnClickListenerOfPagination onClickListenerOfPagination;
-    Table                       table;
+    Table table;
 
 
     public HeaderRow(
@@ -88,7 +79,6 @@ public class HeaderRow
      */
     private void init()
     {
-        this.onClickListenerOfPagination = new OnClickListenerOfPagination(table);
         this.firstLvlLinearLayout = new LinearLayout(this.getContext());
         this.firstLvlLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -142,16 +132,17 @@ public class HeaderRow
 
             // TODO: strings
             if (labelString.equalsIgnoreCase("Диаметр пня")) {
-                LinearLayout paginationLinearLayout = this.paginationLinearLayout(labelString);
-                paginationLinearLayout.setPadding(PADDING, PADDING, PADDING, PADDING);
-                paginationLinearLayout.setBackgroundColor(table.HEADER_BACKROUND_COLOR);
-                paginationLinearLayout.setLayoutParams(firstLvlTextViewParams);
-                this.secondLvlLinearLayout.addView(paginationLinearLayout);
+                TextView secondLvlTextView = new TextView(this.getContext());
+                secondLvlTextView.setText(labelString);
+                secondLvlTextView.setPadding(PADDING, PADDING, PADDING, PADDING);
+                secondLvlTextView.setBackgroundColor(table.HEADER_BACKROUND_COLOR);
+                secondLvlTextView.setGravity(Gravity.CENTER);
+                secondLvlTextView.setLayoutParams(firstLvlTextViewParams);
+                this.secondLvlLinearLayout.addView(secondLvlTextView);
 
             } else {
                 TextView secondLvlTextView = new TextView(this.getContext());
-                secondLvlTextView.setText(
-                        labelString.equalsIgnoreCase("Product") ? "Product" : labelString);
+                secondLvlTextView.setText(labelString);
                 secondLvlTextView.setPadding(PADDING, PADDING, PADDING, PADDING);
                 secondLvlTextView.setBackgroundColor(table.HEADER_BACKROUND_COLOR);
                 secondLvlTextView.setGravity(Gravity.CENTER);
@@ -159,53 +150,6 @@ public class HeaderRow
                 this.secondLvlLinearLayout.addView(secondLvlTextView);
             }
         }
-    }
-
-
-    /**
-     * layout for pagination
-     *
-     * @param label
-     *
-     * @return
-     */
-    private LinearLayout paginationLinearLayout(String label)
-    {
-        LinearLayout paginationLinearLayout = new LinearLayout(this.getContext());
-
-        TextView labelTextView = new TextView(this.getContext());
-        labelTextView.setGravity(Gravity.CENTER);
-        labelTextView.setText(label);
-        LinearLayout.LayoutParams labelTextViewParams =
-                new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
-        labelTextViewParams.weight = 1;
-
-        this.nextTextView = new TextView(this.getContext());
-        this.nextTextView.setText("   " + Table.NEXT_ARROW + "   ");
-        this.nextTextView.setGravity(Gravity.CENTER);
-        this.nextTextView.setTag(NEXT_PAGINATION_TAG);
-        this.nextTextView.setBackgroundDrawable(new CustomStateListDrawable(nextTextView));
-        this.nextTextView.setOnClickListener(this.onClickListenerOfPagination);
-
-        LinearLayout.LayoutParams nextTextViewParams =
-                new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-
-        this.previousTextView = new TextView(this.getContext());
-        this.previousTextView.setText("   " + Table.PREVIOUS_ARROW + "   ");
-        this.previousTextView.setGravity(Gravity.CENTER);
-        this.previousTextView.setTag(PREVIUOS_PAGINATION_TAG);
-        this.previousTextView.setTextColor(table.HEADER_BACKROUND_COLOR);
-        this.previousTextView.setBackgroundDrawable(new CustomStateListDrawable(previousTextView));
-        this.previousTextView.setOnClickListener(this.onClickListenerOfPagination);
-
-        LinearLayout.LayoutParams previousTextViewParams =
-                new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-
-//        paginationLinearLayout.addView(previousTextView, previousTextViewParams);
-        paginationLinearLayout.addView(labelTextView, labelTextViewParams);
-//        paginationLinearLayout.addView(nextTextView, nextTextViewParams);
-
-        return paginationLinearLayout;
     }
 
 
