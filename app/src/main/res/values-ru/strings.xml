@@ -312,4 +312,6 @@
     <string name="layer_props">Настройки слоев</string>
     <string name="action_layer_props">Настройки слоев</string>
 
+    <string name="input_amount">Введите количество</string>
+
 </resources>

@@ -239,6 +239,7 @@ public interface Constants
     String FRAGMENT_SYNC_SETTINGS            = "sync_settings";
     String FRAGMENT_LAYER_LIST               = "layer_list";
     String FRAGMENT_SHEET_TABLE_FILLER       = "sheet_table_filler";
+    String FRAGMENT_TABLE_NUMBER_DIALOG      = "table_number_dialog";
 
     int DOCS_VECTOR_SCOPE = 10000;
 

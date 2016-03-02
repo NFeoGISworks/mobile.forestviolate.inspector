@@ -22,7 +22,9 @@
 
 package com.justsimpleinfo.Table;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.internal.view.ContextThemeWrapper;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -33,6 +35,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.dialog.TableNumberDialog;
+import com.nextgis.forestinspector.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +56,7 @@ public class BodyTable
     LinearLayout generalVerticalLinearLayout;
     LinearLayout headerHorizontalLinearLayout;
 
-    ScrollView bodyScrollView;
+    ScrollView   bodyScrollView;
     LinearLayout bodyHorizontalLinearLayout;
 
     Map<String, List<String>> headers;
@@ -210,7 +214,7 @@ public class BodyTable
 
                         // child will be added in left
 
-                        TextView textView = textView(rowData.get(0).toString());
+                        TextView textView = textView(rowData.get(0).toString(), row, 0);
                         cellLayout.addView(textView);
 
                     } else {
@@ -220,7 +224,7 @@ public class BodyTable
                         int tag = row * columnCount + column;
 
 
-                        TextView textView = textView(rowData.get(column).toString());
+                        TextView textView = textView(rowData.get(column).toString(), row, column);
                         textView.setId(tag);
 
                         View buttonMinus = buttonView(row, column, false, tag);
@@ -243,7 +247,10 @@ public class BodyTable
      *
      * @return
      */
-    private TextView textView(String label)
+    private TextView textView(
+            final String label,
+            final int row,
+            final int column)
     {
         LinearLayout.LayoutParams params =
                 new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
@@ -256,6 +263,36 @@ public class BodyTable
                 CELL_TEXT_PADDING, CELL_TEXT_PADDING, CELL_TEXT_PADDING, CELL_TEXT_PADDING);
         textView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
         textView.setLayoutParams(params);
+
+        textView.setOnClickListener(
+                new OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        AppCompatActivity activity = (AppCompatActivity) mContext;
+                        final TextView text = (TextView) view;
+
+                        final TableNumberDialog dialog = new TableNumberDialog();
+                        dialog.setNumberText(text.getText().toString());
+                        dialog.setOnPositiveClickedListener(
+                                new TableNumberDialog.OnPositiveClickedListener()
+                                {
+                                    @SuppressLint("SetTextI18n")
+                                    @Override
+                                    public void onPositiveClicked()
+                                    {
+                                        Integer res = Integer.valueOf(dialog.getText());
+                                        TableRowData rowData = mTableData.get(row);
+                                        rowData.set(column, res);
+                                        text.setText(res.toString());
+                                    }
+                                });
+                        dialog.show(
+                                activity.getSupportFragmentManager(),
+                                Constants.FRAGMENT_TABLE_NUMBER_DIALOG);
+                    }
+                });
 
         return textView;
     }
@@ -277,18 +314,19 @@ public class BodyTable
         button.setOnClickListener(
                 new OnClickListener()
                 {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onClick(View view)
                     {
                         TableRowData rowData = mTableData.get(row);
-                        int res = (Integer) rowData.get(column);
+                        Integer res = (Integer) rowData.get(column);
                         res = plus ? res + 1 : res - 1;
                         rowData.set(column, res);
 
                         Button button = (Button) view;
                         int tag = (Integer) button.getTag();
                         TextView textView = (TextView) findViewById(tag);
-                        textView.setText("" + res);
+                        textView.setText(res.toString());
                     }
                 });
 
