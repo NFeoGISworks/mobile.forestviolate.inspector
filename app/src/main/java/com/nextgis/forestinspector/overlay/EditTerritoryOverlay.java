@@ -40,6 +40,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import com.nextgis.forestinspector.MainApplication;
+import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.maplib.api.IGISApplication;
@@ -543,7 +544,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                     toolbar.getMenu().clear();
                 }
 
-                toolbar.inflateMenu(com.nextgis.maplibui.R.menu.edit_multipolygon);
+                toolbar.inflateMenu(R.menu.edit_multipolygon);
 
                 toolbar.setOnMenuItemClickListener(
                         new BottomToolbar.OnMenuItemClickListener()
@@ -556,7 +557,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                                 }
 
                                 if (menuItem.getItemId() ==
-                                        com.nextgis.maplibui.R.id.menu_edit_move_point_to_center) {
+                                        R.id.menu_edit_move_point_to_center) {
                                     if (!isItemValid()) {
                                         return false;
                                     }
@@ -564,7 +565,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                                     moveSelectedPoint(mCanvasCenterX, mCanvasCenterY);
 
                                 } else if (menuItem.getItemId() ==
-                                        com.nextgis.maplibui.R.id.menu_edit_move_point_to_current_location) {
+                                        R.id.menu_edit_move_point_to_current_location) {
                                     if (!isItemValid()) {
                                         return false;
                                     }
@@ -583,30 +584,21 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                                         GeoPoint screenPt = mapDrawable.mapToScreen(pt);
                                         moveSelectedPoint((float) screenPt.getX(), (float) screenPt.getY());
                                     }
-                                } else if (menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_add_new_point) {
+                                } else if (menuItem.getItemId() == R.id.menu_edit_add_new_point) {
                                     return addGeometry(GeoConstants.GTPoint);
                                 } else if (
-                                        menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_add_new_multipoint) {
-                                    return addGeometry(GeoConstants.GTMultiPoint);
-                                } else if (
-                                        menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_add_new_line) {
+                                        menuItem.getItemId() == R.id.menu_edit_add_new_line) {
                                     return addGeometry(GeoConstants.GTLineString);
                                 } else if (
-                                        menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_add_new_multiline) {
-                                    return addGeometry(GeoConstants.GTMultiLineString);
-                                } else if (
-                                        menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_add_new_polygon) {
+                                        menuItem.getItemId() == R.id.menu_edit_add_new_polygon) {
                                     return addGeometry(GeoConstants.GTPolygon);
                                 } else if (
-                                        menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_add_new_multipolygon) {
+                                        menuItem.getItemId() == R.id.menu_edit_add_new_multipolygon) {
                                     return addGeometry(GeoConstants.GTMultiPolygon);
-                                } else if (
-                                        menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_delete_multipoint ||
-                                                menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_delete_line ||
-                                                menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_delete_multiline ||
-                                                menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_delete_polygon) {
+                                } else if (menuItem.getItemId() == R.id.menu_edit_delete_line ||
+                                           menuItem.getItemId() == R.id.menu_edit_delete_polygon) {
                                     return deleteGeometry();
-                                } else if (menuItem.getItemId() == com.nextgis.maplibui.R.id.menu_edit_delete_point) {
+                                } else if (menuItem.getItemId() == R.id.menu_edit_delete_point) {
                                     return deletePoint();
                                 }
                                 return true;
