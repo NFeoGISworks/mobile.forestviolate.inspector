@@ -145,7 +145,6 @@ public class FieldWorksCreatorActivity
                 mContractTypeSpinner.setAdapter(adapter);
             }
 
-            // TODO: request only date
             mContractDate = (DateTime) findViewById(R.id.contract_date);
             mContractDate.setPickerType(ConstantsUI.DATE);
             mContractDate.init(null, null, null);

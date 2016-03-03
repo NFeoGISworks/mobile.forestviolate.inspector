@@ -81,7 +81,7 @@ public abstract class ListFillerDialog
     public static final String UNKNOWN_LOCATION = "-";
     public static final int    REQUEST_LOCATION = 1;
 
-    protected Feature mFeature;
+    protected Feature  mFeature;
     protected Location mFeatureLocation;
 
     protected TextView mLatView;

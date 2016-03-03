@@ -22,9 +22,14 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
@@ -32,8 +37,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,18 +51,29 @@ import com.justsimpleinfo.Table.TableData;
 import com.justsimpleinfo.Table.TableRowData;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
+import com.nextgis.forestinspector.activity.MapActivity;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
+import com.nextgis.forestinspector.util.SettingsConstants;
+import com.nextgis.maplib.api.GpsEventListener;
+import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoMultiPoint;
 import com.nextgis.maplib.datasource.GeoPoint;
+import com.nextgis.maplib.datasource.GeoPolygon;
+import com.nextgis.maplib.location.GpsEventSource;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.GeoConstants;
+import com.nextgis.maplib.util.LocationUtil;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
 
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,12 +87,23 @@ import static com.nextgis.maplib.util.Constants.TAG;
 
 public class SheetTableFillerFragment
         extends Fragment
+        implements GpsEventListener
 {
+    public static final int    REQUEST_LOCATION = 1;
+
     protected final static int CREATE_TABLE_DONE   = 0;
     protected final static int CREATE_TABLE_OK     = 1;
     protected final static int CREATE_TABLE_FAILED = 2;
 
     protected Table mTable;
+
+    protected GpsEventSource mGpsEventSource;
+    protected Location       mLocation;
+
+    protected TextView mLatView;
+    protected TextView mLongView;
+    protected TextView mAltView;
+    protected TextView mAccView;
 
     protected AppCompatSpinner mHeightView;
     protected AppCompatSpinner mCategoryView;
@@ -95,6 +125,9 @@ public class SheetTableFillerFragment
         if (null == getParentFragment()) {
             setRetainInstance(true);
         }
+
+        IGISApplication app = (IGISApplication) getActivity().getApplication();
+        mGpsEventSource = app.getGpsEventSource();
 
         MapBase map = MapBase.getInstance();
         DocumentsLayer docs = null;
@@ -121,6 +154,9 @@ public class SheetTableFillerFragment
             Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_sheet_table_filler, null);
+
+        createLocationPanelView(view);
+
         mTableLayout = (LinearLayout) view.findViewById(R.id.table_layout);
         mTableWarning = (TextView) view.findViewById(R.id.table_warning);
 
@@ -218,6 +254,202 @@ public class SheetTableFillerFragment
     }
 
 
+    @Override
+    public void onPause()
+    {
+        mGpsEventSource.removeListener(this);
+        super.onPause();
+    }
+
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        mGpsEventSource.addListener(this);
+    }
+
+
+    protected void createLocationPanelView(View view)
+    {
+        mLatView = (TextView) view.findViewById(R.id.latitude_view);
+        mLongView = (TextView) view.findViewById(R.id.longitude_view);
+        mAltView = (TextView) view.findViewById(R.id.altitude_view);
+        mAccView = (TextView) view.findViewById(R.id.accuracy_view);
+
+        final ImageButton refreshLocation = (ImageButton) view.findViewById(R.id.refresh);
+
+        refreshLocation.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        RotateAnimation rotateAnimation = new RotateAnimation(
+                                0, 360, Animation.RELATIVE_TO_SELF, 0.5f,
+                                Animation.RELATIVE_TO_SELF, 0.5f);
+                        rotateAnimation.setDuration(700);
+                        rotateAnimation.setRepeatCount(0);
+                        refreshLocation.startAnimation(rotateAnimation);
+
+                        mLocation = mGpsEventSource.getLastKnownLocation();
+                        setLocationText(mLocation);
+                    }
+                });
+
+
+        ImageButton openMap = (ImageButton) view.findViewById(R.id.open_map);
+        openMap.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        DocumentFeature feature = getDocumentFeature();
+                        GeoGeometry geometry = null;
+                        Intent intent = new Intent(getActivity(), MapActivity.class);
+
+                        if (null != feature) {
+                            geometry = feature.getGeometry();
+                        }
+
+                        if (null == geometry) {
+                            final SharedPreferences prefs =
+                                    PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            float minX =
+                                    prefs.getFloat(SettingsConstants.KEY_PREF_USERMINX, -2000.0f);
+                            float minY =
+                                    prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
+                            float maxX =
+                                    prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
+                            float maxY =
+                                    prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
+
+                            GeoPolygon polygon = new GeoPolygon();
+                            polygon.add(new GeoPoint(minX, minY));
+                            polygon.add(new GeoPoint(minX, maxY));
+                            polygon.add(new GeoPoint(maxX, maxY));
+                            polygon.add(new GeoPoint(maxX, minY));
+
+                            geometry = polygon;
+                        }
+
+                        try {
+                            intent.putExtra(MapActivity.PARAM_GEOMETRY, geometry.toBlob());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        startActivityForResult(intent, REQUEST_LOCATION);
+                    }
+                });
+
+        if (null != mLocation) {
+            setLocationText(mLocation);
+        } else {
+            mLocation = mGpsEventSource.getLastKnownLocation();
+            setLocationText(mLocation);
+        }
+    }
+
+
+    protected void setLocationText(Location location)
+    {
+        if (null == mLatView || null == mLongView || null == mAccView || null == mAltView) {
+            return;
+        }
+
+        if (null == location) {
+
+            mLatView.setText(
+                    getString(com.nextgis.maplibui.R.string.latitude_caption_short) + ": " +
+                            getString(com.nextgis.maplibui.R.string.n_a));
+            mLongView.setText(
+                    getString(com.nextgis.maplibui.R.string.longitude_caption_short) + ": " +
+                            getString(com.nextgis.maplibui.R.string.n_a));
+            mAltView.setText(
+                    getString(com.nextgis.maplibui.R.string.altitude_caption_short) + ": " +
+                            getString(com.nextgis.maplibui.R.string.n_a));
+            mAccView.setText(
+                    getString(com.nextgis.maplibui.R.string.accuracy_caption_short) + ": " +
+                            getString(com.nextgis.maplibui.R.string.n_a));
+
+            return;
+        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        int nFormat = prefs.getInt(
+                SettingsConstantsUI.KEY_PREF_COORD_FORMAT + "_int", Location.FORMAT_SECONDS);
+        int nFraction = prefs.getInt(
+                SettingsConstantsUI.KEY_PREF_COORD_FRACTION,
+                Constants.DEFAULT_COORDINATES_FRACTION_DIGITS);
+        DecimalFormat df = new DecimalFormat("0.0");
+
+        mLatView.setText(
+                getString(com.nextgis.maplibui.R.string.latitude_caption_short) + ": " +
+                        LocationUtil.formatLatitude(
+                                location.getLatitude(), nFormat, nFraction, getResources()));
+
+        mLongView.setText(
+                getString(com.nextgis.maplibui.R.string.longitude_caption_short) + ": " +
+                        LocationUtil.formatLongitude(
+                                location.getLongitude(), nFormat, nFraction, getResources()));
+
+        double altitude = location.getAltitude();
+        mAltView.setText(
+                getString(com.nextgis.maplibui.R.string.altitude_caption_short) + ": " +
+                        df.format(altitude) + " " +
+                        getString(com.nextgis.maplibui.R.string.unit_meter));
+
+        float accuracy = location.getAccuracy();
+        mAccView.setText(
+                getString(com.nextgis.maplibui.R.string.accuracy_caption_short) + ": " +
+                        df.format(accuracy) + " " +
+                        getString(com.nextgis.maplibui.R.string.unit_meter));
+    }
+
+
+    @Override
+    public void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data)
+    {
+        if (requestCode == REQUEST_LOCATION && resultCode == Activity.RESULT_OK) {
+            double latitude = data.getDoubleExtra(MapActivity.LOCATION_LATITUDE, 0);
+            double longitude = data.getDoubleExtra(MapActivity.LOCATION_LONGITUDE, 0);
+
+            Location location = new Location("");
+            location.setLatitude(latitude);
+            location.setLongitude(longitude);
+
+            setLocationText(location);
+        }
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location)
+    {
+
+    }
+
+
+    @Override
+    public void onBestLocationChanged(Location location)
+    {
+
+    }
+
+
+    @Override
+    public void onGpsStatusChanged(int event)
+    {
+
+    }
+
+
     protected ArrayAdapter<String> getArrayAdapter(
             DocumentsLayer docsLayer,
             String layerKey,
@@ -250,26 +482,35 @@ public class SheetTableFillerFragment
     }
 
 
-    public void saveTableData()
+    public boolean saveTableData()
     {
+        if (null == mLocation) {
+            Log.d(Constants.FITAG, "saveTableData(), null == mLocation");
+            Toast.makeText(
+                    getActivity(), R.string.coordinates_not_defined_specify_on_map,
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+
         MainApplication app = (MainApplication) getActivity().getApplication();
         DocumentsLayer docLayer = app.getDocsLayer();
         if (null == docLayer) {
-            return;
+            Log.d(Constants.FITAG, "saveTableData() error, null == docLayer");
+            return false;
         }
         VectorLayer subDocLayer = (VectorLayer) docLayer.getLayerByName(Constants.KEY_LAYER_SHEET);
         if (null == subDocLayer) {
-            return;
+            Log.d(Constants.FITAG, "saveTableData() error, null == subDocLayer");
+            return false;
         }
         DocumentFeature docFeature = getDocumentFeature();
 
         String height = mHeightView.getSelectedItem().toString();
         String category = mCategoryView.getSelectedItem().toString();
-        String unit = mUnitView.getText().toString(); // TODO: empty?
+        String unit = mUnitView.getText().toString();
         TableData tableData = mTable.getTableData();
 
-//        GeoPoint pt = new GeoPoint(mLocation.getLongitude(), mLocation.getLatitude());
-        GeoPoint pt = new GeoPoint(0, 0); // TODO: mLocation
+        GeoPoint pt = new GeoPoint(mLocation.getLongitude(), mLocation.getLatitude());
         pt.setCRS(GeoConstants.CRS_WGS84);
         pt.project(GeoConstants.CRS_WEB_MERCATOR);
         GeoMultiPoint geometryValue = new GeoMultiPoint();
@@ -306,6 +547,8 @@ public class SheetTableFillerFragment
         if (isDataAdded && null != mOnAddTreeStubsListener) {
             mOnAddTreeStubsListener.onAddTreeStubs();
         }
+
+        return true;
     }
 
 

@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.nextgis.forestinspector.R;
@@ -92,9 +93,13 @@ public class SheetTableFillerActivity
         SheetTableFillerFragment fillerFragment = (SheetTableFillerFragment) fm.findFragmentByTag(
                 Constants.FRAGMENT_SHEET_TABLE_FILLER);
         if (null != fillerFragment) {
-            fillerFragment.saveTableData();
+            if (fillerFragment.saveTableData()) {
+                finish();
+            }
+            return;
         }
-        finish();
+
+        Log.d(Constants.FITAG, "saveTableData() error, null == fillerFragment");
     }
 
 
