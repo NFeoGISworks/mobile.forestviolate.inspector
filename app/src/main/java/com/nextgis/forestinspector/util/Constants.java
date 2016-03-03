@@ -85,9 +85,10 @@ public interface Constants
     /**
      * inspectors keys
      */
-    String KEY_INSPECTOR_USER         = "user";
-    String KEY_INSPECTOR_USER_DESC    = "user_desc";
-    String KEY_INSPECTOR_USER_PASS_ID = "pass_id";
+    String KEY_INSPECTOR_USER         = "user"; // STRING
+    String KEY_INSPECTOR_USER_DESC    = "user_desc"; // STRING
+    String KEY_INSPECTOR_LOGIN        = "login"; // STRING
+    String KEY_INSPECTOR_USER_PASS_ID = "pass_id"; // STRING
 
     /**
      * notes keys
@@ -111,35 +112,35 @@ public interface Constants
     int STEP_STATE_FINISH = 3;
     int STEP_STATE_ERROR  = 4;
 
-    String FIELD_DOC_ID                    = "doc_id";
     /**
      * documents fields
      */
-    String FIELD_DOCUMENTS_TYPE            = "type";
-    String FIELD_DOCUMENTS_DATE            = "date";
-    String FIELD_DOCUMENTS_NUMBER          = "number";
-    String FIELD_DOCUMENTS_STATUS          = "status";
-    String FIELD_DOCUMENTS_AUTHOR          = "author";
-    String FIELD_DOCUMENTS_USER            = "user";
-    String FIELD_DOCUMENTS_PLACE           = "place";
-    String FIELD_DOCUMENTS_VIOLATION_TYPE  = "violate";
-    String FIELD_DOCUMENTS_LAW             = "law";
-    String FIELD_DOCUMENTS_DATE_PICK       = "date_pick";
-    String FIELD_DOCUMENTS_USER_PICK       = "user_pick";
-    String FIELD_DOCUMENTS_USER_TRANS      = "user_trans";
-    String FIELD_DOCUMENTS_DATE_VIOLATE    = "date_violate";
-    String FIELD_DOCUMENTS_CRIME           = "crime";
-    String FIELD_DOCUMENTS_DESC_DETECTOR   = "desc_detector";
-    String FIELD_DOCUMENTS_DESC_CRIME      = "desc_crime";
-    String FIELD_DOCUMENTS_DESC_AUTHOR     = "desc_author";
-    String FIELD_DOCUMENTS_DESCRIPTION     = "descript";
-    String FIELD_DOCUMENTS_FOREST_CAT_TYPE = "forest_cat";
-    String FIELD_DOCUMENTS_TERRITORY       = "territory";
-    String FIELD_DOCUMENTS_REGION          = "region";
-    String FIELD_DOCUMENTS_VECTOR          = "vector";
-    String FIELD_DOCUMENTS_POS             = "pos";
-    String FIELD_DOCUMENTS_USER_ID         = "user_id";
-    String FIELD_DOCUMENTS_CONTRACT_DATE   = "contract_date";
+    String FIELD_DOCUMENTS_TYPE           = "type"; // INTEGER
+    String FIELD_DOCUMENTS_DATE           = "date"; // DATETIME
+    String FIELD_DOCUMENTS_PLACE          = "place"; // STRING
+    String FIELD_DOCUMENTS_NUMBER         = "number"; // STRING
+    String FIELD_DOCUMENTS_USER           = "user"; // STRING
+    String FIELD_DOCUMENTS_VIOLATION_TYPE = "violate"; // STRING
+    String FIELD_DOCUMENTS_LAW            = "law"; // STRING
+    String FIELD_DOCUMENTS_POS            = "pos"; // STRING
+    String FIELD_DOCUMENTS_USER_PICK      = "user_pick"; // STRING
+    String FIELD_DOCUMENTS_CRIME          = "crime"; // STRING
+    String FIELD_DOCUMENTS_USER_TRANS     = "user_trans"; // STRING
+    String FIELD_DOCUMENTS_AUTHOR         = "author"; // STRING
+    String FIELD_DOCUMENTS_DESCRIPTION    = "descript"; // STRING
+    String FIELD_DOCUMENTS_VECTOR         = "vector"; // STRING
+    String FIELD_DOCUMENTS_STATUS         = "status"; // INTEGER
+    String FIELD_DOCUMENTS_DATE_PICK      = "date_pick"; // DATETIME
+    String FIELD_DOCUMENTS_DOC_ID         = "doc_id"; // INTEGER
+    String FIELD_DOCUMENTS_FOREST_CAT_TYPE = "forest_cat"; // STRING
+    String FIELD_DOCUMENTS_DATE_VIOLATE    = "date_violate"; // STRING
+    String FIELD_DOCUMENTS_DESC_DETECTOR   = "desc_detector"; // STRING
+    String FIELD_DOCUMENTS_DESC_CRIME      = "desc_crime"; // STRING
+    String FIELD_DOCUMENTS_DESC_AUTHOR     = "desc_author"; // STRING
+    String FIELD_DOCUMENTS_TERRITORY       = "territory"; // STRING
+    String FIELD_DOCUMENTS_REGION          = "region"; // STRING
+    String FIELD_DOCUMENTS_USER_ID         = "user_id"; // INTEGER
+    String FIELD_DOCUMENTS_CONTRACT_DATE   = "contract_date"; // DATE
 
     /**
      * notes fields

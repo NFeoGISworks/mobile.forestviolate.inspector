@@ -116,7 +116,7 @@ public class DocumentsLayer extends NGWVectorLayer {
                 VectorLayer subLayer = (VectorLayer) layer;
                 Cursor cur = subLayer.query(
                         new String[] {com.nextgis.maplib.util.Constants.FIELD_ID},
-                        Constants.FIELD_DOC_ID + " = " + oldFeatureId, null, null, null);
+                        Constants.FIELD_DOCUMENTS_DOC_ID + " = " + oldFeatureId, null, null, null);
                 List<Long> ids = new ArrayList<>();
                 if(null != cur && cur.moveToFirst()) {
                     do {
@@ -127,7 +127,7 @@ public class DocumentsLayer extends NGWVectorLayer {
 
                 for(Long id : ids){
                     ContentValues values = new ContentValues();
-                    values.put(Constants.FIELD_DOC_ID, newFeatureId);
+                    values.put(Constants.FIELD_DOCUMENTS_DOC_ID, newFeatureId);
                     Uri uri = Uri.parse("content://" + SettingsConstants.AUTHORITY + "/" +
                             subLayer.getPath().getName() + "/" + id);
                     subLayer.update(uri, values, null, null);
@@ -337,7 +337,7 @@ public class DocumentsLayer extends NGWVectorLayer {
         DocumentFeature documentFeature = new DocumentFeature(feature);
 
         //get documents connected with this one
-        Cursor cur = query(null, Constants.FIELD_DOC_ID + " = " + featureId, null, null, null);
+        Cursor cur = query(null, Constants.FIELD_DOCUMENTS_DOC_ID + " = " + featureId, null, null, null);
         if (null != cur) {
             if (cur.moveToFirst()) {
                 int idPos = cur.getColumnIndex(FIELD_ID);
@@ -362,7 +362,7 @@ public class DocumentsLayer extends NGWVectorLayer {
             if (layer instanceof VectorLayer) {
                 VectorLayer subLayer = (VectorLayer) layer;
                 cur = subLayer.query(
-                        null, Constants.FIELD_DOC_ID + " = " + featureId, null, null, null);
+                        null, Constants.FIELD_DOCUMENTS_DOC_ID + " = " + featureId, null, null, null);
                 if (null != cur) {
                     if (cur.moveToFirst()) {
                         do {

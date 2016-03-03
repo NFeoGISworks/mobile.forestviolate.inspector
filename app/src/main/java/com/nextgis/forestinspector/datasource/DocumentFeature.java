@@ -71,7 +71,7 @@ public class DocumentFeature
         super.setId(id);
         for (Map.Entry<String, List<Feature>> entry : mSubFeatures.entrySet()) {
             for (Feature feature : entry.getValue()) {
-                feature.setFieldValue(Constants.FIELD_DOC_ID, id);
+                feature.setFieldValue(Constants.FIELD_DOCUMENTS_DOC_ID, id);
             }
         }
     }
@@ -89,7 +89,7 @@ public class DocumentFeature
             features = new ArrayList<>();
         }
 
-        feature.setFieldValue(Constants.FIELD_DOC_ID, getId());
+        feature.setFieldValue(Constants.FIELD_DOCUMENTS_DOC_ID, getId());
         features.add(feature);
 
         mSubFeatures.put(layerName, features);

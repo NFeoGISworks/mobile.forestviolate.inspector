@@ -333,7 +333,7 @@ public abstract class DocumentCreatorActivity
             mEditFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_STATUS, Constants.DOCUMENT_STATUS_NEW);
             mEditFeature.setFieldValue(
-                    Constants.FIELD_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
+                    Constants.FIELD_DOCUMENTS_DOC_ID, com.nextgis.maplib.util.Constants.NOT_FOUND);
             mEditFeature.setFieldValue(
                     Constants.FIELD_DOCUMENTS_USER_ID, userId);
             mEditFeature.setFieldValue(

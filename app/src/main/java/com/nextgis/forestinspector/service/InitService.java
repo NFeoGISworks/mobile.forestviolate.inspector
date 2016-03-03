@@ -42,6 +42,7 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.IProgressor;
+import com.nextgis.maplib.datasource.Field;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
 import com.nextgis.maplib.datasource.GeoGeometryFactory;
@@ -346,7 +347,47 @@ public class InitService
             keys.put(Constants.KEY_FV, -1L);
             keys.put(Constants.KEY_FV_REGIONS, -1L);
 
-            if (!checkServerLayers(connection, keys)) {
+            Map<String, List<String>> keysFields = new HashMap<>(keys.size());
+
+            List<String> inspectorsFields = new LinkedList<>();
+            inspectorsFields.add(Constants.KEY_INSPECTOR_USER);
+            inspectorsFields.add(Constants.KEY_INSPECTOR_USER_DESC);
+            inspectorsFields.add(Constants.KEY_INSPECTOR_LOGIN);
+            inspectorsFields.add(Constants.KEY_INSPECTOR_USER_PASS_ID);
+            keysFields.put(Constants.KEY_INSPECTORS, inspectorsFields);
+
+            List<String> documentsFields = new LinkedList<>();
+            documentsFields.add(Constants.FIELD_DOCUMENTS_TYPE);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_DATE);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_PLACE);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_NUMBER);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_USER);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_VIOLATION_TYPE);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_LAW);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_POS);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_USER_PICK);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_CRIME);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_USER_TRANS);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_AUTHOR);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_DESCRIPTION);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_VECTOR);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_STATUS);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_DATE_PICK);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_DOC_ID);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_DATE_VIOLATE);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_DESC_DETECTOR);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_DESC_CRIME);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_DESC_AUTHOR);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_TERRITORY);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_REGION);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_USER_ID);
+            documentsFields.add(Constants.FIELD_DOCUMENTS_CONTRACT_DATE);
+            keysFields.put(Constants.KEY_DOCUMENTS, documentsFields);
+
+            // TODO: add fields names for all keys
+
+            if (!checkServerLayers(connection, keys, keysFields)) {
                 publishProgress(getString(R.string.error_wrong_server), Constants.STEP_STATE_ERROR);
 
                 try {
@@ -822,9 +863,47 @@ public class InitService
         }
 
 
+        protected boolean checkFields(
+                Connection connection,
+                long remoteId,
+                List<String> fieldsNames)
+                throws JSONException, NGException, IOException
+        {
+            String data = NetworkUtil.get(
+                    NGWUtil.getResourceMetaUrl(connection.getURL(), remoteId),
+                    connection.getLogin(), connection.getPassword());
+
+            if (null == data) {
+                throw new NGException(getString(R.string.error_download_data));
+            }
+
+            JSONObject geoJSONObject = new JSONObject(data);
+
+            JSONObject featureLayerJSONObject = geoJSONObject.getJSONObject("feature_layer");
+            JSONArray fieldsJSONArray = featureLayerJSONObject.getJSONArray(NGWUtil.NGWKEY_FIELDS);
+            List<Field> remoteFields = NGWUtil.getFieldsFromJson(fieldsJSONArray);
+
+            for (String name : fieldsNames) {
+                boolean isNameContained = false;
+                for (Field field : remoteFields) {
+                    if (field.getName().equals(name)) {
+                        isNameContained = true;
+                        break;
+                    }
+                }
+                if (!isNameContained) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
         protected boolean checkServerLayers(
                 INGWResource resource,
-                Map<String, Long> keys)
+                Map<String, Long> keys,
+                Map<String, List<String>> keysFields)
         {
             if (resource instanceof Connection) {
                 Connection connection = (Connection) resource;
@@ -839,6 +918,20 @@ public class InitService
 
                 if (keys.containsKey(childResource.getKey()) && childResource instanceof Resource) {
                     Resource ngwResource = (Resource) childResource;
+                    Connection connection = ngwResource.getConnection();
+
+                    try {
+                        if (!checkFields(
+                                connection, ngwResource.getRemoteId(),
+                                keysFields.get(childResource.getKey()))) {
+                            Log.d(Constants.FITAG, "checkFields(): fields are not exist");
+                            return false;
+                        }
+                    } catch (JSONException | NGException | IOException e) {
+                        Log.d(Constants.FITAG, "checkFields() error: " + e.getLocalizedMessage());
+                        return false;
+                    }
+
                     keys.put(ngwResource.getKey(), ngwResource.getRemoteId());
                 }
 
@@ -854,7 +947,7 @@ public class InitService
                     return true;
                 }
 
-                if (checkServerLayers(childResource, keys)) {
+                if (checkServerLayers(childResource, keys, keysFields)) {
                     return true;
                 }
             }
@@ -1178,7 +1271,7 @@ public class InitService
             // http://stackoverflow.com/a/16909821
             ngwVectorLayer.setServerWhere(
                     String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY) +
-                    "&status=" + Uri.encode(Constants.FV_STATUS_NEW_FOREST_CHANGE));
+                            "&status=" + Uri.encode(Constants.FV_STATUS_NEW_FOREST_CHANGE));
 
             ngwVectorLayer.setVisible(true);
             ngwVectorLayer.setAccountName(accountName);
