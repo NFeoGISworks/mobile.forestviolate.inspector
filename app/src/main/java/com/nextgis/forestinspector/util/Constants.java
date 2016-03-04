@@ -112,26 +112,31 @@ public interface Constants
     int STEP_STATE_FINISH = 3;
     int STEP_STATE_ERROR  = 4;
 
+
+    /**
+     * common fields
+     */
+    String FIELD_DOC_ID = "doc_id"; // INTEGER
+
     /**
      * documents fields
      */
-    String FIELD_DOCUMENTS_TYPE           = "type"; // INTEGER
-    String FIELD_DOCUMENTS_DATE           = "date"; // DATETIME
-    String FIELD_DOCUMENTS_PLACE          = "place"; // STRING
-    String FIELD_DOCUMENTS_NUMBER         = "number"; // STRING
-    String FIELD_DOCUMENTS_USER           = "user"; // STRING
-    String FIELD_DOCUMENTS_VIOLATION_TYPE = "violate"; // STRING
-    String FIELD_DOCUMENTS_LAW            = "law"; // STRING
-    String FIELD_DOCUMENTS_POS            = "pos"; // STRING
-    String FIELD_DOCUMENTS_USER_PICK      = "user_pick"; // STRING
-    String FIELD_DOCUMENTS_CRIME          = "crime"; // STRING
-    String FIELD_DOCUMENTS_USER_TRANS     = "user_trans"; // STRING
-    String FIELD_DOCUMENTS_AUTHOR         = "author"; // STRING
-    String FIELD_DOCUMENTS_DESCRIPTION    = "descript"; // STRING
-    String FIELD_DOCUMENTS_VECTOR         = "vector"; // STRING
-    String FIELD_DOCUMENTS_STATUS         = "status"; // INTEGER
-    String FIELD_DOCUMENTS_DATE_PICK      = "date_pick"; // DATETIME
-    String FIELD_DOCUMENTS_DOC_ID         = "doc_id"; // INTEGER
+    String FIELD_DOCUMENTS_TYPE            = "type"; // INTEGER
+    String FIELD_DOCUMENTS_DATE            = "date"; // DATETIME
+    String FIELD_DOCUMENTS_PLACE           = "place"; // STRING
+    String FIELD_DOCUMENTS_NUMBER          = "number"; // STRING
+    String FIELD_DOCUMENTS_USER            = "user"; // STRING
+    String FIELD_DOCUMENTS_VIOLATION_TYPE  = "violate"; // STRING
+    String FIELD_DOCUMENTS_LAW             = "law"; // STRING
+    String FIELD_DOCUMENTS_POS             = "pos"; // STRING
+    String FIELD_DOCUMENTS_USER_PICK       = "user_pick"; // STRING
+    String FIELD_DOCUMENTS_CRIME           = "crime"; // STRING
+    String FIELD_DOCUMENTS_USER_TRANS      = "user_trans"; // STRING
+    String FIELD_DOCUMENTS_AUTHOR          = "author"; // STRING
+    String FIELD_DOCUMENTS_DESCRIPTION     = "descript"; // STRING
+    String FIELD_DOCUMENTS_VECTOR          = "vector"; // STRING
+    String FIELD_DOCUMENTS_STATUS          = "status"; // INTEGER
+    String FIELD_DOCUMENTS_DATE_PICK       = "date_pick"; // DATETIME
     String FIELD_DOCUMENTS_FOREST_CAT_TYPE = "forest_cat"; // STRING
     String FIELD_DOCUMENTS_DATE_VIOLATE    = "date_violate"; // STRING
     String FIELD_DOCUMENTS_DESC_DETECTOR   = "desc_detector"; // STRING
@@ -141,6 +146,27 @@ public interface Constants
     String FIELD_DOCUMENTS_REGION          = "region"; // STRING
     String FIELD_DOCUMENTS_USER_ID         = "user_id"; // INTEGER
     String FIELD_DOCUMENTS_CONTRACT_DATE   = "contract_date"; // DATE
+
+    /**
+     * sheet fields
+     */
+    String FIELD_SHEET_UNIT      = "unit"; // STRING
+    String FIELD_SHEET_SPECIES   = "poroda"; // STRING
+    String FIELD_SHEET_CATEGORY  = "additions"; // STRING
+    String FIELD_SHEET_COUNT     = "count"; // INTEGER
+    String FIELD_SHEET_THICKNESS = "diameter"; // INTEGER
+    String FIELD_SHEET_CHANGE    = "change"; // DATETIME
+    String FIELD_SHEET_HEIGHTS   = "heights"; // STRING
+
+    /**
+     * production fields
+     */
+    String FIELD_PRODUCTION_TYPE      = "type_desc"; // STRING
+    String FIELD_PRODUCTION_THICKNESS = "diameter"; // REAL
+    String FIELD_PRODUCTION_LENGTH    = "length"; // REAL
+    String FIELD_PRODUCTION_COUNT     = "count"; // INTEGER
+    String FIELD_PRODUCTION_CHANGE    = "change"; // DATETIME
+    String FIELD_PRODUCTION_SPECIES   = "poroda"; // STRING
 
     /**
      * notes fields
@@ -174,16 +200,6 @@ public interface Constants
     String FIELD_VEHICLE_USER        = "user";
 
     /**
-     * sheet fields
-     */
-    String FIELD_SHEET_UNIT      = "unit";
-    String FIELD_SHEET_SPECIES   = "poroda";
-    String FIELD_SHEET_CATEGORY  = "additions";
-    String FIELD_SHEET_THICKNESS = "diameter";
-    String FIELD_SHEET_HEIGHTS   = "heights";
-    String FIELD_SHEET_COUNT     = "count";
-
-    /**
      * cadastre fields
      */
     String FIELD_CADASTRE_REGION = "REGION";
@@ -197,15 +213,6 @@ public interface Constants
     String FIELD_REGIONS_NAME_RU = "NAME_RU";
     String FIELD_REGIONS_NAME_EN = "NAME_EN";
     String FIELD_REGIONS_PHONE   = "PHONE";
-
-    /**
-     * production fields
-     */
-    String FIELD_PRODUCTION_SPECIES   = "poroda";
-    String FIELD_PRODUCTION_TYPE      = "type_desc";
-    String FIELD_PRODUCTION_LENGTH    = "length";
-    String FIELD_PRODUCTION_THICKNESS = "diameter";
-    String FIELD_PRODUCTION_COUNT     = "count";
 
     int DOWNLOAD_SEPARATE_THREADS = 10;
 

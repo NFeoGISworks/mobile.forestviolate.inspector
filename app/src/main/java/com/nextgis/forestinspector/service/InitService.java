@@ -357,6 +357,7 @@ public class InitService
             keysFields.put(Constants.KEY_INSPECTORS, inspectorsFields);
 
             List<String> documentsFields = new LinkedList<>();
+            documentsFields.add(Constants.FIELD_DOC_ID);
             documentsFields.add(Constants.FIELD_DOCUMENTS_TYPE);
             documentsFields.add(Constants.FIELD_DOCUMENTS_DATE);
             documentsFields.add(Constants.FIELD_DOCUMENTS_PLACE);
@@ -373,7 +374,6 @@ public class InitService
             documentsFields.add(Constants.FIELD_DOCUMENTS_VECTOR);
             documentsFields.add(Constants.FIELD_DOCUMENTS_STATUS);
             documentsFields.add(Constants.FIELD_DOCUMENTS_DATE_PICK);
-            documentsFields.add(Constants.FIELD_DOCUMENTS_DOC_ID);
             documentsFields.add(Constants.FIELD_DOCUMENTS_FOREST_CAT_TYPE);
             documentsFields.add(Constants.FIELD_DOCUMENTS_DATE_VIOLATE);
             documentsFields.add(Constants.FIELD_DOCUMENTS_DESC_DETECTOR);
@@ -385,7 +385,26 @@ public class InitService
             documentsFields.add(Constants.FIELD_DOCUMENTS_CONTRACT_DATE);
             keysFields.put(Constants.KEY_DOCUMENTS, documentsFields);
 
-            // TODO: add fields names for all keys
+            List<String> sheetFields = new LinkedList<>();
+            sheetFields.add(Constants.FIELD_DOC_ID);
+            sheetFields.add(Constants.FIELD_SHEET_UNIT);
+            sheetFields.add(Constants.FIELD_SHEET_SPECIES);
+            sheetFields.add(Constants.FIELD_SHEET_CATEGORY);
+            sheetFields.add(Constants.FIELD_SHEET_COUNT);
+            sheetFields.add(Constants.FIELD_SHEET_THICKNESS);
+            sheetFields.add(Constants.FIELD_SHEET_CHANGE);
+            sheetFields.add(Constants.FIELD_SHEET_HEIGHTS);
+            keysFields.put(Constants.KEY_SHEET, sheetFields);
+
+            List<String> productionFields = new LinkedList<>();
+            productionFields.add(Constants.FIELD_DOC_ID);
+            productionFields.add(Constants.FIELD_PRODUCTION_TYPE);
+            productionFields.add(Constants.FIELD_PRODUCTION_THICKNESS);
+            productionFields.add(Constants.FIELD_PRODUCTION_LENGTH);
+            productionFields.add(Constants.FIELD_PRODUCTION_COUNT);
+            productionFields.add(Constants.FIELD_PRODUCTION_CHANGE);
+            productionFields.add(Constants.FIELD_PRODUCTION_SPECIES);
+            keysFields.put(Constants.KEY_PRODUCTION, productionFields);
 
             if (!checkServerLayers(connection, keys, keysFields)) {
                 publishProgress(getString(R.string.error_wrong_server), Constants.STEP_STATE_ERROR);
@@ -869,6 +888,11 @@ public class InitService
                 List<String> fieldsNames)
                 throws JSONException, NGException, IOException
         {
+            if (null == fieldsNames) {
+                Log.d(Constants.FITAG, "checkFields() is not required");
+                return true;
+            }
+
             String data = NetworkUtil.get(
                     NGWUtil.getResourceMetaUrl(connection.getURL(), remoteId),
                     connection.getLogin(), connection.getPassword());
@@ -896,6 +920,7 @@ public class InitService
                 }
             }
 
+            Log.d(Constants.FITAG, "checkFields() is OK");
             return true;
         }
 
@@ -917,6 +942,7 @@ public class InitService
                 INGWResource childResource = resource.getChild(i);
 
                 if (keys.containsKey(childResource.getKey()) && childResource instanceof Resource) {
+                    Log.d(Constants.FITAG, "checkServerLayers() for: " + childResource.getKey());
                     Resource ngwResource = (Resource) childResource;
                     Connection connection = ngwResource.getConnection();
 
@@ -924,11 +950,11 @@ public class InitService
                         if (!checkFields(
                                 connection, ngwResource.getRemoteId(),
                                 keysFields.get(childResource.getKey()))) {
-                            Log.d(Constants.FITAG, "checkFields(): fields are not exist");
+                            Log.d(Constants.FITAG, "checkFields() ERROR: fields are not exist");
                             return false;
                         }
                     } catch (JSONException | NGException | IOException e) {
-                        Log.d(Constants.FITAG, "checkFields() error: " + e.getLocalizedMessage());
+                        Log.d(Constants.FITAG, "checkFields() ERROR: " + e.getLocalizedMessage());
                         return false;
                     }
 

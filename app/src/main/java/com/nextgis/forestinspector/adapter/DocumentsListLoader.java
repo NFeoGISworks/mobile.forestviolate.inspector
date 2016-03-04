@@ -155,7 +155,7 @@ public class DocumentsListLoader
                     com.nextgis.maplib.util.Constants.FIELD_ID,
                     Constants.FIELD_DOCUMENTS_USER_ID,
                     Constants.FIELD_DOCUMENTS_TYPE,
-                    Constants.FIELD_DOCUMENTS_DOC_ID,
+                    Constants.FIELD_DOC_ID,
                     Constants.FIELD_DOCUMENTS_DATE,
                     Constants.FIELD_DOCUMENTS_NUMBER,
                     Constants.FIELD_DOCUMENTS_STATUS,
@@ -177,7 +177,7 @@ public class DocumentsListLoader
                 int idPos = cursor.getColumnIndex(com.nextgis.maplib.util.Constants.FIELD_ID);
                 int userIdPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_USER_ID);
                 int typePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_TYPE);
-                int docIdPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DOC_ID);
+                int docIdPos = cursor.getColumnIndex(Constants.FIELD_DOC_ID);
                 int datePos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_DATE);
                 int numberPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_NUMBER);
                 int statusPos = cursor.getColumnIndex(Constants.FIELD_DOCUMENTS_STATUS);
