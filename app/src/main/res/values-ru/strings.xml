@@ -165,7 +165,7 @@
     <string name="select_violation_territory">После ввода территории щелкните на галку, чтобы сохранить изменения, или на крест, чтобы отменить</string>
     <string name="action_territory">Территория лесонарушения</string>
     <string name="action_apply">Применить</string>
-    <string name="error_sheet_is_empty">The sheet is empty</string>
+    <string name="error_sheet_is_empty">Ведомость перечета пуста</string>
     <string name="action_cadastre">Лесоделение</string>
     <string name="action_filter">Показать все/выбранное</string>
     <string name="action_search">Найти кварталы</string>
@@ -212,11 +212,11 @@
     <string name="territory_from_sheet">Охват по пням</string>
     <string name="territory_by_walk">Обходом</string>
     <string name="territory_by_hand">Вручную</string>
-    <string name="get_text_from_parcels">Get text from parcels</string>
-    <string name="input_text">Type text</string>
-    <string name="input_territory_text">Input territory text</string>
-    <string name="lv">forestry</string>
-    <string name="ulv">Subforestry</string>
+    <string name="get_text_from_parcels">Получить текст из лесных кварталов</string>
+    <string name="input_text">Набрать текст</string>
+    <string name="input_territory_text">Введите текст для территории</string>
+    <string name="lv">лесничество</string>
+    <string name="ulv">участковое лесничество</string>
     <string name="note_initial_term">Начальный срок заметки</string>
     <string name="skip">Пропустить</string>
     <string name="show_all_targets">Показать все целеуказания</string>
