@@ -198,7 +198,7 @@
                 android:id="@+id/table_warning"
                 android:text="@string/creating_of_table_please_wait"
                 android:visibility="visible"
-                style="@style/table_warnig"
+                style="@style/table_warning"
                 />
 
         </LinearLayout>
