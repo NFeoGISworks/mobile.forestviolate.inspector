@@ -40,7 +40,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -53,6 +52,7 @@ import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.MapActivity;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
+import com.nextgis.forestinspector.dialog.UnitEditorDialog;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
@@ -89,7 +89,7 @@ public class SheetTableFillerFragment
         extends Fragment
         implements GpsEventListener
 {
-    public static final int    REQUEST_LOCATION = 1;
+    public static final int REQUEST_LOCATION = 1;
 
     protected final static int CREATE_TABLE_DONE   = 0;
     protected final static int CREATE_TABLE_OK     = 1;
@@ -107,9 +107,11 @@ public class SheetTableFillerFragment
 
     protected AppCompatSpinner mHeightView;
     protected AppCompatSpinner mCategoryView;
-    protected EditText         mUnitView;
+    protected TextView         mUnitView;
     protected TextView         mTableWarning;
     protected LinearLayout     mTableLayout;
+
+    protected String mUnitText;
 
     protected ArrayAdapter<String> mHeightAdapter;
     protected ArrayAdapter<String> mCategoryAdapter;
@@ -166,7 +168,35 @@ public class SheetTableFillerFragment
         mCategoryView = (AppCompatSpinner) view.findViewById(R.id.category);
         mCategoryView.setAdapter(mCategoryAdapter);
 
-        mUnitView = (EditText) view.findViewById(R.id.unit);
+        mUnitView = (TextView) view.findViewById(R.id.unit);
+
+        if (null != mUnitText) {
+            mUnitView.setText(mUnitText);
+        }
+
+        mUnitView.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        final UnitEditorDialog dialog = new UnitEditorDialog();
+                        dialog.setUnitDesc(mUnitView.getText().toString());
+                        dialog.setOnPositiveClickedListener(
+                                new UnitEditorDialog.OnPositiveClickedListener()
+                                {
+                                    @Override
+                                    public void onPositiveClicked()
+                                    {
+                                        mUnitText = dialog.getText();
+                                        mUnitView.setText(mUnitText);
+                                    }
+                                });
+                        dialog.show(
+                                getActivity().getSupportFragmentManager(),
+                                Constants.FRAGMENT_UNIT_EDITOR_DIALOG);
+                    }
+                });
 
         if (null != mTable) {
             mTableWarning.setVisibility(View.GONE);

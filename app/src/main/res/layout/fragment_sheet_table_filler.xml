@@ -152,7 +152,7 @@
                 style="@style/dialog_desc_text"
                 />
 
-            <EditText
+            <TextView
                 android:id="@+id/unit"
                 android:hint="@string/unit_hint"
                 style="@style/dialog_edit_text"

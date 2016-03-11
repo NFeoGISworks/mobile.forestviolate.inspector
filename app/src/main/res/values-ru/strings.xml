@@ -140,7 +140,8 @@
     <string name="parcel">квартал</string>
     <string name="unit">выдел(а)</string>
     <string name="unit_caps">Выдел(а)</string>
-    <string name="unit_hint">Введите номер(а) выдел(ов)</string>
+    <string name="unit_hint">Введите номер(а) выдела(ов)</string>
+    <string name="unit_desc">Номер(а) выдела(ов)</string>
     <string name="possible_crime_desc">На месте незаконной рубки обнаружены лица, предположительно осуществляющие незаконную заготовку древесины</string>
     <string name="officer_desc">Орудия незаконной рубки переданы сотруднику ОВД</string>
     <string name="inspector_desc">Лесной инспектор</string>
