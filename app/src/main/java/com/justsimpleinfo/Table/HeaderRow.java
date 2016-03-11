@@ -119,34 +119,44 @@ public class HeaderRow
      */
     private void initSecondLvlHeader()
     {
+        int padding = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, PADDING,
+                getResources().getDisplayMetrics());
+        int headerWidth = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, table.COLUMN_HEADER_WIDTH,
+                getResources().getDisplayMetrics());
         int width = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, table.COLUMN_WIDTH,
                 getResources().getDisplayMetrics());
 
         for (Object aSecondLvlLabel : this.secondLvlLabel) {
-            LayoutParams firstLvlTextViewParams =
-                    new LayoutParams(width, LayoutParams.MATCH_PARENT);
-            firstLvlTextViewParams.setMargins(1, 1, 1, 1);
-
             String labelString = aSecondLvlLabel.toString();
 
             // TODO: strings
             if (labelString.equalsIgnoreCase("Диаметр пня")) {
+                LayoutParams layoutParams =
+                        new LayoutParams(headerWidth, LayoutParams.MATCH_PARENT);
+                layoutParams.setMargins(1, 1, 1, 1);
+
                 TextView secondLvlTextView = new TextView(this.getContext());
                 secondLvlTextView.setText(labelString);
-                secondLvlTextView.setPadding(PADDING, PADDING, PADDING, PADDING);
+                secondLvlTextView.setPadding(padding, padding, padding, padding);
                 secondLvlTextView.setBackgroundColor(table.HEADER_BACKROUND_COLOR);
                 secondLvlTextView.setGravity(Gravity.CENTER);
-                secondLvlTextView.setLayoutParams(firstLvlTextViewParams);
+                secondLvlTextView.setLayoutParams(layoutParams);
                 this.secondLvlLinearLayout.addView(secondLvlTextView);
 
             } else {
+                LayoutParams layoutParams =
+                        new LayoutParams(width, LayoutParams.MATCH_PARENT);
+                layoutParams.setMargins(1, 1, 1, 1);
+
                 TextView secondLvlTextView = new TextView(this.getContext());
                 secondLvlTextView.setText(labelString);
-                secondLvlTextView.setPadding(PADDING, PADDING, PADDING, PADDING);
+                secondLvlTextView.setPadding(padding, padding, padding, padding);
                 secondLvlTextView.setBackgroundColor(table.HEADER_BACKROUND_COLOR);
                 secondLvlTextView.setGravity(Gravity.CENTER);
-                secondLvlTextView.setLayoutParams(firstLvlTextViewParams);
+                secondLvlTextView.setLayoutParams(layoutParams);
                 this.secondLvlLinearLayout.addView(secondLvlTextView);
             }
         }

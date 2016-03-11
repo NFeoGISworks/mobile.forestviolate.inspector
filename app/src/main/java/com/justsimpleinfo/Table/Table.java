@@ -60,7 +60,8 @@ public class Table
     public int BODY_BACKROUND_COLOR;
     public int HEADER_BACKROUND_COLOR;
     public int CELL_BACKROUND_COLOR;
-    public static final int COLUMN_WIDTH = 120;
+    public static final int COLUMN_HEADER_WIDTH = 121;
+    public static final int COLUMN_WIDTH = 171;
 
     int pagination = 20;
     int totalPage  = 0;
@@ -111,12 +112,12 @@ public class Table
         this.properties();
         this.init();
 
-        this.resizeFirstLvlHeaderHeight();
-        this.resizeSecondLvlHeaderHeight();
-        this.resizeHeaderSecondLvlWidhtToMatchInScreen();
+//        this.resizeFirstLvlHeaderHeight();
+//        this.resizeSecondLvlHeaderHeight();
+//        this.resizeHeaderSecondLvlWidhtToMatchInScreen();
 
-        this.leftTable.setHeaderChildrenWidth(this.leftHeaderChildrenWidth);
-        this.rightTable.setHeaderChildrenWidth(this.rightHeaderChildrenWidht);
+//        this.leftTable.setHeaderChildrenWidth(this.leftHeaderChildrenWidth);
+//        this.rightTable.setHeaderChildrenWidth(this.rightHeaderChildrenWidht);
 
         this.loadData();
     }
@@ -198,7 +199,6 @@ public class Table
         mTableData = loadTableData();
         leftTable.loadData(mTableData);
         rightTable.loadData(mTableData);
-
         resizeBodyChildrenHeight();
     }
 

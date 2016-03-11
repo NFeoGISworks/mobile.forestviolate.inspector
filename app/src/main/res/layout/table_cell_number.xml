@@ -23,15 +23,38 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_width="170dp"
+    android:layout_height="60dp"
+    android:layout_margin="1dp"
+    android:background="?attr/tableCellBackgroundColor"
+    android:orientation="horizontal"
     >
 
+    <TextView
+        android:id="@+id/number"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="start|center_vertical"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        />
+
     <Button
-        android:id="@+id/table_button"
-        android:text="@string/sign_and_send"
-        style="@style/table_button"
+        android:id="@+id/button_minus"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:text="-"
+        />
+
+    <Button
+        android:id="@+id/button_plus"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:text="+"
         />
 
 </LinearLayout>
