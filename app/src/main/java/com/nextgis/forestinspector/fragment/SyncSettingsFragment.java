@@ -326,7 +326,7 @@ public class SyncSettingsFragment
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mStyledContext);
 
-        dialogBuilder.setIcon(com.nextgis.maplibui.R.drawable.ic_action_warning)
+        dialogBuilder.setIcon(com.nextgis.maplibui.R.drawable.ic_action_warning_light)
                 .setTitle(R.string.warning_not_sent_data)
                 .setMessage(
                         isChanges

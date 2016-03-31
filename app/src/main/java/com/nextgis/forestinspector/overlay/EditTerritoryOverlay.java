@@ -886,7 +886,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         // start service
         Intent trackerService = new Intent(mContext, WalkEditService.class);
         trackerService.setAction(WalkEditService.ACTION_START);
-        trackerService.putExtra(ConstantsUI.KEY_GEOMETRY_TYPE, GeoConstants.GTPolygon);
+        trackerService.putExtra(ConstantsUI.KEY_GEOMETRY, GeoConstants.GTPolygon);
         DocumentsLayer layer = mEditFeature.getDocumentsLayer();
         if(null != layer)
             trackerService.putExtra(ConstantsUI.KEY_LAYER_ID, layer.getId());
