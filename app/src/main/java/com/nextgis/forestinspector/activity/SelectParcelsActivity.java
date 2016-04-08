@@ -55,7 +55,7 @@ public class SelectParcelsActivity
 {
     protected static String KEY_QUERY = "query";
 
-    protected ListView            mListView;
+    protected ListView mListView;
     protected ParcelCursorAdapter mAdapter;
     protected DocumentEditFeature mEditFeature;
     protected boolean mFiltered = false;
@@ -190,9 +190,9 @@ public class SelectParcelsActivity
                 String fullQuery = mEditFeature.getWhereClauseForParcelIds();
                 Bundle bundle = new Bundle();
                 bundle.putString(KEY_QUERY, fullQuery);
-                getSupportLoaderManager().restartLoader(0, bundle, this);
+                getSupportLoaderManager().restartLoader(Constants.PARCELS_LOADER, bundle, this);
             } else {
-                getSupportLoaderManager().restartLoader(0, null, this);
+                getSupportLoaderManager().restartLoader(Constants.PARCELS_LOADER, null, this);
             }
             mFiltered = !mFiltered;
 
@@ -253,7 +253,7 @@ public class SelectParcelsActivity
                         public void onClick(View v)
                         {
                             getSupportLoaderManager().restartLoader(
-                                    0, null, SelectParcelsActivity.this);
+                                    Constants.PARCELS_LOADER, null, SelectParcelsActivity.this);
                         }
                     });
         }
@@ -263,7 +263,8 @@ public class SelectParcelsActivity
         public void onActionViewCollapsed()
         {
             super.onActionViewCollapsed();
-            getSupportLoaderManager().restartLoader(0, null, SelectParcelsActivity.this);
+            getSupportLoaderManager().restartLoader(
+                    Constants.PARCELS_LOADER, null, SelectParcelsActivity.this);
         }
     }
 }
