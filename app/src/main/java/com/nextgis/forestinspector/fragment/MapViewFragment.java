@@ -103,7 +103,7 @@ public class MapViewFragment
         MainApplication app = (MainApplication) activity.getApplication();
 
         mMap = new MapViewOverlays(activity, (MapDrawable) app.getMap());
-        mMap.setId(999);
+        mMap.setId(R.id.map_view);
 
         //search relative view of map, if not found - add it
         mMapRelativeLayout = (RelativeLayout) view.findViewById(R.id.maprl);

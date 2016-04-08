@@ -152,7 +152,7 @@ public class MapFragment
         MainApplication app = (MainApplication) getActivity().getApplication();
 
         mMap = new MapViewOverlays(getActivity(), (MapDrawable) app.getMap());
-        mMap.setId(999);
+        mMap.setId(R.id.map_view);
 
         if (null != mEnvelopeParam) {
             mMap.zoomToExtent(mEnvelopeParam);
