@@ -1030,7 +1030,7 @@ public class InitService
                 edit.putFloat(SettingsConstants.KEY_PREF_USERMAXX, (float) env.getMaxX());
                 edit.putFloat(SettingsConstants.KEY_PREF_USERMAXY, (float) env.getMaxY());
                 return edit.commit();
-            } catch (IOException | JSONException e) {
+            } catch (IOException | JSONException | NGException e) {
                 e.printStackTrace();
                 return false;
             }
