@@ -118,11 +118,14 @@ public class MainApplication
 
                         Account account = getAccount();
 
-                        ContentResolver.removePeriodicSync(account, getAuthority(), Bundle.EMPTY);
-                        ContentResolver.setSyncAutomatically(account, getAuthority(), false);
-                        ContentResolver.cancelSync(account, getAuthority());
+                        if (null != account) {
+                            ContentResolver.removePeriodicSync(
+                                    account, getAuthority(), Bundle.EMPTY);
+                            ContentResolver.setSyncAutomatically(account, getAuthority(), false);
+                            ContentResolver.cancelSync(account, getAuthority());
 
-                        removeAccount(account);
+                            removeAccount(account);
+                        }
 
                         //delete map
                         MapBase map = getMap();
