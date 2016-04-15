@@ -187,6 +187,11 @@ public class DocumentsListLoader
 
                 if (cursor.moveToFirst()) {
                     do {
+                        long docId = cursor.getLong(idPos);
+                        if (docs.hasFeatureTempFlag(docId)) {
+                            continue;
+                        }
+
                         int nParentDocId = cursor.getInt(docIdPos);
                         if (nParentDocId > 0) //don't show connected documents
                         {
@@ -229,9 +234,9 @@ public class DocumentsListLoader
                         doc.mDate = calendar.getTime();
                         doc.mTypeName += " " + cursor.getString(numberPos);
                         doc.mStatus = cursor.getInt(statusPos);
-                        doc.mId = cursor.getLong(idPos);
+                        doc.mId = docId;
                         doc.mUserId = cursor.getLong(userIdPos);
-                        doc.mIsSigned = !docs.hasFeatureNotSyncFlag(doc.mId);
+                        doc.mIsSigned = !docs.hasFeatureNotSyncFlag(docId);
 
                         documents.add(doc);
 
