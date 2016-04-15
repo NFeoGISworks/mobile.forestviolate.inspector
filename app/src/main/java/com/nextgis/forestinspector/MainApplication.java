@@ -427,11 +427,13 @@ public class MainApplication
             // delete all layers from map if any
             map.delete();
 
-            //set sync with server
-            ContentResolver.setSyncAutomatically(account, getAuthority(), true);
-            ContentResolver.addPeriodicSync(
-                    account, getAuthority(), Bundle.EMPTY,
-                    com.nextgis.maplib.util.Constants.DEFAULT_SYNC_PERIOD);
+            if (null != account) {
+                //set sync with server
+                ContentResolver.setSyncAutomatically(account, getAuthority(), true);
+                ContentResolver.addPeriodicSync(
+                        account, getAuthority(), Bundle.EMPTY,
+                        com.nextgis.maplib.util.Constants.DEFAULT_SYNC_PERIOD);
+            }
 
             // goto step 2
             if (null != mOnAccountAddedListener) {
