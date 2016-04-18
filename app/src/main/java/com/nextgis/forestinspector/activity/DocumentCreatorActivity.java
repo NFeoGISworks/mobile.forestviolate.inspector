@@ -297,11 +297,8 @@ public abstract class DocumentCreatorActivity
         mAuthor.setText(
                 (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_AUTHOR));
 
-        // TODO: restore DocumentEditFeature.mParcelIds from FIELD_DOCUMENTS_TERRITORY
-        if (mEditFeature.getParcelIds().size() > 0) {
-            mTerritory.setText(
-                    (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
-        }
+        mTerritory.setText(
+                (String) mEditFeature.getFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY));
     }
 
 
