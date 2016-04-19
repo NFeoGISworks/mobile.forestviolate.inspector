@@ -24,6 +24,8 @@ package com.nextgis.forestinspector.util;
 
 public interface SettingsConstants
 {
+    String WWF_URL = "http://wwf.ru";
+
     String AUTHORITY      = "com.nextgis.forestinspector.provider";
     String SITE_URL       = "http://176.9.38.120/fv";
     String KOSOSNIMKI_URL = "http://{a,b,c}.tile.cart.kosmosnimki.ru/rs/{z}/{x}/{y}.png";

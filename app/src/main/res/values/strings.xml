@@ -27,6 +27,7 @@
     <string name="title_map">Map</string>
     <string name="action_settings">Settings</string>
     <string name="app_description">The application for fulfil forest violation forms, send them to the central server and check their status, create and manage personal notifications.</string>
+    <string name="wwf_support"><![CDATA[The program was created with the financial support of the<br><a href=\"http://wwf.ru\">World Wide Fund for Nature (WWF)</a>.]]></string>
     <string name="credits_intro">Credits:</string>
     <string name="credits"><![CDATA[Some icons used in the application are from <a href=\"http://romannurik.github.io/AndroidAssetStudio/icons-launcher.html\">romannurik.github.io</a>, licensed under a <a href=\"http://creativecommons.org/licenses/by/3.0/\">CC BY 3.0 license</a>]]></string>
     <string name="copyright"><![CDATA[Copyright © <a href=\"http://nextgis.com\">NextGIS</a>, 2015]]></string>

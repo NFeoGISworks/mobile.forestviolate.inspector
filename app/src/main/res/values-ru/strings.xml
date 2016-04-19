@@ -28,6 +28,7 @@
     <string name="title_map">Карта</string>
     <string name="action_settings">Настройки</string>
     <string name="app_description">Приложение для заполнения акта о лесонарушении, отправки его на центральный сервер, отслеживании его статуса, а также создания и изменения напоминаний о контроле участков леса.</string>
+    <string name="wwf_support"><![CDATA[Программа создана при финансовой поддержке<br><a href=\"http://wwf.ru\">Всемирного фонда дикой природы (WWF)</a>.]]></string>
     <string name="credits_intro">Лицензии:</string>
     <string name="credits"><![CDATA[Некоторые иконки использованные в приложении получены с сайта <a href=\"http://romannurik.github.io/AndroidAssetStudio/icons-launcher.html\">romannurik.github.io</a>, <a href=\"http://creativecommons.org/licenses/by/3.0/\">CC BY 3.0 license</a>]]></string>
     <string name="copyright"><![CDATA[Copyright © <a href=\"http://nextgis.com\">NextGIS</a>, 2015]]></string>

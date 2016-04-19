@@ -21,16 +21,21 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.nextgis.forestinspector.R;
-import com.nextgis.maplibui.activity.NGActivity;
+import com.nextgis.forestinspector.util.SettingsConstants;
 
-public class AboutActivity extends FIActivity
+
+public class AboutActivity
+        extends FIActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,6 +57,24 @@ public class AboutActivity extends FIActivity
             e.printStackTrace();
             txtVersion.setText("");
         }
+
+        ImageView wwfLogo = (ImageView) findViewById(R.id.wwf_logo);
+        wwfLogo.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse(SettingsConstants.WWF_URL));
+                startActivity(intent);
+            }
+        });
+
+        TextView wwfSupportText = (TextView) findViewById(R.id.wwf_support);
+        wwfSupportText.setText(Html.fromHtml(getString(R.string.wwf_support)));
+        wwfSupportText.setMovementMethod(LinkMovementMethod.getInstance());
 
         TextView txtCreditsText = (TextView) findViewById(R.id.credits);
         txtCreditsText.setText(Html.fromHtml(getString(R.string.credits)));
