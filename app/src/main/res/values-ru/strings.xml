@@ -318,4 +318,6 @@
     <string name="creating_of_table_please_wait">Таблица формируется, пожалуйста, подождите</string>
     <string name="coordinates_not_defined_specify_on_map">Координаты не определены, укажите точку на карте</string>
 
+    <string name="edit_account_summary">Изменение пароля пользователя</string>
+
 </resources>
