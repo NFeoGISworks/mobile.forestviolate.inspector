@@ -24,6 +24,7 @@ package com.nextgis.forestinspector.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +58,7 @@ public class LoginFragment
         mPassword = (EditText) view.findViewById(R.id.password);
         mSignInButton = (Button) view.findViewById(R.id.signin);
 
-        TextWatcher watcher = new LocalTextWatcher();
+        TextWatcher watcher = new FvTextWatcher();
         mURL.addTextChangedListener(watcher);
         mLogin.addTextChangedListener(watcher);
         mPassword.addTextChangedListener(watcher);
@@ -91,7 +92,16 @@ public class LoginFragment
         if (mForNewAccount) {
             mLogin.setText(mLogin.getText().toString().trim());
         }
-        super.onClick(v);
+
+        if (v == mSignInButton) {
+            if (null != mLoader && mLoader.isStarted()) {
+                mLoader = getLoaderManager().restartLoader(R.id.auth_token_loader, null, this);
+            } else {
+                mLoader = getLoaderManager().initLoader(R.id.auth_token_loader, null, this);
+            }
+        }
+
+        mSignInButton.setEnabled(false);
     }
 
 
@@ -102,5 +112,46 @@ public class LoginFragment
     {
         accountName = getString(R.string.account_name);
         super.onTokenReceived(accountName, token);
+    }
+
+
+    protected void updateButtonState()
+    {
+        if (checkEditText(mURL) && checkEditText(mLogin) && checkEditText(mPassword)) {
+            mSignInButton.setEnabled(true);
+        }
+    }
+
+
+    public class FvTextWatcher
+            implements TextWatcher
+    {
+        public void afterTextChanged(Editable s)
+        {
+            updateButtonState();
+            mUrlText = mURL.getText().toString().trim();
+
+            if (null != mManual && !mManual.isChecked()) {
+                mUrlText += ENDING;
+            }
+        }
+
+
+        public void beforeTextChanged(
+                CharSequence s,
+                int start,
+                int count,
+                int after)
+        {
+        }
+
+
+        public void onTextChanged(
+                CharSequence s,
+                int start,
+                int before,
+                int count)
+        {
+        }
     }
 }

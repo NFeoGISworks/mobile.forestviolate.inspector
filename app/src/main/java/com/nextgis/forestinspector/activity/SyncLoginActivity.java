@@ -72,12 +72,12 @@ public class SyncLoginActivity
             ngwLoginFragment.setLoginText(mLoginText);
             ngwLoginFragment.setChangeAccountUrl(mChangeAccountUrl);
             ngwLoginFragment.setChangeAccountLogin(mChangeAccountLogin);
+
+            ngwLoginFragment.setOnAddAccountListener(this);
+
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.login_frame, ngwLoginFragment, "SyncLogin");
+            ft.commit();
         }
-
-        ngwLoginFragment.setOnAddAccountListener(this);
-
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.login_frame, ngwLoginFragment, "SyncLogin");
-        ft.commit();
     }
 }
