@@ -49,7 +49,7 @@ public abstract class CadastreLayer
 
 
     @Override
-    protected Style getDefaultStyle()
+    public Style getDefaultStyle()
             throws Exception
     {
         return CadastreStyleRule.getDefaultStyle(mContext);

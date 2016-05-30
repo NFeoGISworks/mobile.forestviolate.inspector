@@ -237,7 +237,6 @@ public class SyncSettingsFragment
     {
         Preference preference = new Preference(mStyledContext);
         preference.setTitle(com.nextgis.maplibui.R.string.add_account);
-        preference.setSummary(com.nextgis.maplibui.R.string.add_account_summary);
 
         Intent intent = new Intent(mStyledContext, SyncLoginActivity.class);
         intent.putExtra(NGWLoginActivity.FOR_NEW_ACCOUNT, true);

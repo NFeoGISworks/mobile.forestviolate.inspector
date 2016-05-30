@@ -201,7 +201,6 @@ public class NGWSettingsFragment
             //add "Add account" preference
             Preference preference = new Preference(mStyledContext);
             preference.setTitle(R.string.add_account);
-            preference.setSummary(R.string.add_account_summary);
             Intent intent = new Intent(mStyledContext, NGWLoginActivity.class);
             preference.setIntent(intent);
 

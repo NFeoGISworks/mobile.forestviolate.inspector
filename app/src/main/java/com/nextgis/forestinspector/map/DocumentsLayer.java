@@ -654,7 +654,7 @@ public class DocumentsLayer extends NGWVectorLayer {
 
 
     @Override
-    protected Style getDefaultStyle()
+    public Style getDefaultStyle()
             throws Exception
     {
         return DocumentStyleRule.getDefaultStyle();
