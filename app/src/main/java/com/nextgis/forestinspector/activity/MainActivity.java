@@ -105,32 +105,33 @@ public class MainActivity
         // check if first run
         final MainApplication app = (MainApplication) getApplication();
         if (app == null) {
-            Log.d(Constants.FITAG, "failed to get main application");
+            Log.d(Constants.FITAG, "MainActivity. Failed to get main application");
             // should never happen
             mFirstRun = true;
             createFirstStartView();
+            return;
         }
 
         final Account account = app.getAccount();
         if (account == null) {
-            Log.d(
-                    Constants.FITAG,
-                    "No account" + getString(R.string.account_name) + " created. Run first step.");
+            Log.d(Constants.FITAG, "MainActivity. No account " + getString(R.string.account_name)
+                    + " created. Run first step.");
             mFirstRun = true;
             createFirstStartView();
         } else {
             MapBase map = app.getMap();
             if (map.getLayerCount() <= 0 || app.isInitServiceRunning()) {
-                Log.d(
-                        Constants.FITAG, "Account" + getString(R.string.account_name) +
-                                " created. Run second step.");
+                Log.d(Constants.FITAG, "MainActivity. Account " + getString(R.string.account_name) +
+                        " created. Run second step.");
                 mFirstRun = true;
                 createSecondStartView(account);
             } else {
-                Log.d(Constants.FITAG, "Account" + getString(R.string.account_name) + " created.");
-                Log.d(Constants.FITAG, "Map data updating.");
+                Log.d(
+                        Constants.FITAG,
+                        "MainActivity. Account " + getString(R.string.account_name) + " created.");
+                Log.d(Constants.FITAG, "MainActivity. Map data updating.");
                 updateMap(map);
-                Log.d(Constants.FITAG, "Layers created. Run normal view.");
+                Log.d(Constants.FITAG, "MainActivity. Layers created. Run normal view.");
                 mFirstRun = false;
                 createNormalView();
             }

@@ -138,8 +138,8 @@ public class InitService
                     Log.d(Constants.FITAG, "reportSync()");
                     reportSync();
                 } else {
-                    Log.d(Constants.FITAG, "reportFinish()");
-                    reportFinish();
+                    Log.d(Constants.FITAG, "reportState() for finish");
+                    reportState(getString(R.string.done), Constants.STEP_STATE_FINISH);
                 }
                 break;
         }
@@ -156,13 +156,15 @@ public class InitService
     }
 
 
-    private void reportFinish()
+    private void reportState(
+            String message,
+            int state)
     {
         Intent intent = new Intent(Constants.BROADCAST_MESSAGE);
 
         intent.putExtra(Constants.KEY_STEP, MAX_SYNC_STEP);
-        intent.putExtra(Constants.KEY_MESSAGE, getString(R.string.done));
-        intent.putExtra(Constants.KEY_STATE, Constants.STEP_STATE_FINISH);
+        intent.putExtra(Constants.KEY_MESSAGE, message);
+        intent.putExtra(Constants.KEY_STATE, state);
 
         sendBroadcast(intent);
         stopSync();
@@ -181,14 +183,19 @@ public class InitService
     {
         final MainApplication app = (MainApplication) getApplication();
         if (app == null) {
-            Log.d(Constants.FITAG, "failed to get main application");
+            String error = "InitService. Failed to get main application";
+            Log.d(Constants.FITAG, error);
+            reportState(error, Constants.STEP_STATE_ERROR);
+            return;
         }
 
         final Account account = app.getAccount(getString(R.string.account_name));
         if (account == null) {
-            Log.d(
-                    Constants.FITAG,
-                    "No account" + getString(R.string.account_name) + " created. Run first step.");
+            String error = "InitService. No account " + getString(R.string.account_name)
+                    + " created. Run first step.";
+            Log.d(Constants.FITAG, error);
+            reportState(error, Constants.STEP_STATE_ERROR);
+            return;
         }
 
         mThread = new InitialSyncThread(account);

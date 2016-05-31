@@ -23,6 +23,7 @@
 package com.nextgis.forestinspector;
 
 import android.accounts.Account;
+import android.accounts.AccountManagerFuture;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -124,12 +125,23 @@ public class MainApplication
                             ContentResolver.setSyncAutomatically(account, getAuthority(), false);
                             ContentResolver.cancelSync(account, getAuthority());
 
-                            removeAccount(account);
+                            AccountManagerFuture<Boolean> future = removeAccount(account);
+
+                            while (!future.isDone()) {
+                                // wait until the removing is complete
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
 
                         //delete map
                         MapBase map = getMap();
+                        map.delete();
                         FileUtil.deleteRecursive(map.getPath());
+                        mMap = null;
 
                         reloadMap();
                         break;
@@ -437,6 +449,7 @@ public class MainApplication
 
             // goto step 2
             if (null != mOnAccountAddedListener) {
+                mIsAccountCreated = false;
                 mOnAccountAddedListener.onAccountAdded();
             }
 
@@ -454,6 +467,7 @@ public class MainApplication
         map.load(); // reload map without listener
 
         if (null != mOnAccountDeletedListener) {
+            mIsAccountDeleted = false;
             mOnAccountDeletedListener.onAccountDeleted();
         }
     }
@@ -467,6 +481,7 @@ public class MainApplication
         mIsMapReloaded = true;
 
         if (null != mOnReloadMapListener) {
+            mIsMapReloaded = false;
             mOnReloadMapListener.onReloadMap();
         }
     }
