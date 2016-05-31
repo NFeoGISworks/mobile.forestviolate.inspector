@@ -109,7 +109,8 @@ public class MainApplication
 
                 switch (state) {
 
-                    case Constants.STEP_STATE_ERROR: {
+                    case Constants.STEP_STATE_ERROR:
+                    case Constants.STEP_STATE_CANCEL: {
 
                         try {
                             Thread.sleep(4000);

@@ -230,7 +230,8 @@ public class MainActivity
 
                 switch (state) {
                     case Constants.STEP_STATE_FINISH:
-                        refreshActivityView();
+                    case Constants.STEP_STATE_CANCEL:
+                          // refreshActivityView(); // performed by reloadMap from MainApplication
                         break;
 
                     case Constants.STEP_STATE_WAIT:

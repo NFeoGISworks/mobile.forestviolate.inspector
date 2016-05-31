@@ -131,6 +131,7 @@ public class InitService
                 break;
             case ACTION_STOP:
                 Log.d(Constants.FITAG, "stopSync()");
+                reportState(getString(R.string.operaton_canceled), Constants.STEP_STATE_CANCEL);
                 stopSync();
                 break;
             case ACTION_REPORT:
@@ -140,6 +141,7 @@ public class InitService
                 } else {
                     Log.d(Constants.FITAG, "reportState() for finish");
                     reportState(getString(R.string.done), Constants.STEP_STATE_FINISH);
+                    stopSync();
                 }
                 break;
         }
@@ -167,7 +169,6 @@ public class InitService
         intent.putExtra(Constants.KEY_STATE, state);
 
         sendBroadcast(intent);
-        stopSync();
     }
 
 
@@ -186,6 +187,7 @@ public class InitService
             String error = "InitService. Failed to get main application";
             Log.d(Constants.FITAG, error);
             reportState(error, Constants.STEP_STATE_ERROR);
+            stopSync();
             return;
         }
 
@@ -195,6 +197,7 @@ public class InitService
                     + " created. Run first step.";
             Log.d(Constants.FITAG, error);
             reportState(error, Constants.STEP_STATE_ERROR);
+            stopSync();
             return;
         }
 
@@ -313,6 +316,7 @@ public class InitService
             final String sURL = app.getAccountUrl(mAccount);
 
             if (null == sURL || null == sPassword || null == sLogin) {
+                publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             }
 
@@ -678,6 +682,8 @@ public class InitService
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
+            if (isCanceled()) { return false; }
+
             // step 8: forest violation targeting
 
             mStep = 7;
@@ -691,6 +697,8 @@ public class InitService
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
 
+            if (isCanceled()) { return false; }
+
             // step 9: regions
 
             mStep = 8;
@@ -703,6 +711,8 @@ public class InitService
             } else {
                 publishProgress(getString(R.string.done), Constants.STEP_STATE_DONE);
             }
+
+            if (isCanceled()) { return false; }
 
             //TODO: load additional tables
 

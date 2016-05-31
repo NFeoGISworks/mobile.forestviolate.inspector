@@ -111,6 +111,7 @@ public interface Constants
     int STEP_STATE_DONE   = 2;
     int STEP_STATE_FINISH = 3;
     int STEP_STATE_ERROR  = 4;
+    int STEP_STATE_CANCEL = 5;
 
 
     /**

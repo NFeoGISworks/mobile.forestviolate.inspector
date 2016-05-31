@@ -131,6 +131,7 @@ public class InitStepListAdapter extends BaseAdapter {
                 break;
             case Constants.STEP_STATE_DONE:
             case Constants.STEP_STATE_FINISH:
+            case Constants.STEP_STATE_CANCEL:
                 ivIcon.setImageDrawable( mContext.getResources().getDrawable(R.drawable.ic_action_file_cloud_done));
                 break;
             case Constants.STEP_STATE_ERROR:
