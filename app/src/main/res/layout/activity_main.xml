@@ -102,6 +102,8 @@
                 fab:fab_title="@string/action_field_works"
                 />
 
+            <!--TODO: turn notes on-->
+<!--
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/add_note"
                 android:layout_width="wrap_content"
@@ -112,6 +114,7 @@
                 fab:fab_colorPressed="?attr/colorAccent"
                 fab:fab_title="@string/action_notes"
                 />
+-->
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </RelativeLayout>

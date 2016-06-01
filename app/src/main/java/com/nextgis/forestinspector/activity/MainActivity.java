@@ -343,6 +343,8 @@ public class MainActivity
                     });
         }
 
+/*
+        // TODO: turn notes on
         final View addNote = findViewById(R.id.add_note);
         if (null != addNote) {
             addNote.setOnClickListener(
@@ -355,6 +357,7 @@ public class MainActivity
                         }
                     });
         }
+*/
     }
 
 
@@ -466,9 +469,12 @@ public class MainActivity
                 addFieldWorks();
                 return true;
 
+/*
+            // TODO: turn notes on
             case R.id.action_add_note:
                 addNote();
                 return true;
+*/
 // for debug
 //            case R.id.action_sync:
 //                ((MainApplication) app).runSync();

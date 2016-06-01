@@ -675,7 +675,8 @@ public class InitService
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, map, this)) {
+            //if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, map, this)) {
+            if (false) { // TODO: turn notes on
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             } else {
