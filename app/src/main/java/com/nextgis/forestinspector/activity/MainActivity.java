@@ -112,8 +112,6 @@ public class MainActivity
             return;
         }
 
-        app.clearAllTemps();
-
         final Account account = app.getAccount();
         if (account == null) {
             Log.d(Constants.FITAG, "MainActivity. No account " + getString(R.string.account_name)
@@ -564,8 +562,16 @@ public class MainActivity
     }
 
 
+    protected void clearAllTemps()
+    {
+        MainApplication app = (MainApplication) getApplication();
+        app.clearAllTemps();
+    }
+
+
     public void addIndictment()
     {
+        clearAllTemps();
         Intent intentIndictment = new Intent(this, IndictmentCreatorActivity.class);
         startActivity(intentIndictment);
     }
@@ -573,6 +579,7 @@ public class MainActivity
 
     public void addFieldWorks()
     {
+        clearAllTemps();
         Intent intentFieldWorks = new Intent(this, FieldWorksCreatorActivity.class);
         startActivity(intentFieldWorks);
     }
@@ -580,6 +587,7 @@ public class MainActivity
 
     public void addSheet()
     {
+        clearAllTemps();
         Intent intentSheet = new Intent(this, SheetCreatorActivity.class);
         startActivity(intentSheet);
     }
