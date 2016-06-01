@@ -112,6 +112,8 @@ public class MainActivity
             return;
         }
 
+        app.clearAllTemps();
+
         final Account account = app.getAccount();
         if (account == null) {
             Log.d(Constants.FITAG, "MainActivity. No account " + getString(R.string.account_name)

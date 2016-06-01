@@ -92,8 +92,6 @@ public class MainApplication
 
         mNet = new NetworkUtil(this);
 
-        clearAllTemps();
-
         BroadcastReceiver initSyncStatusReceiver = new BroadcastReceiver()
         {
             @Override
