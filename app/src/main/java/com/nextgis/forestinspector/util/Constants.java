@@ -48,6 +48,7 @@ public interface Constants
     String KEY_SHEET            = "sheet";
     String KEY_PRODUCTION       = "production";
     String KEY_NOTES            = "notes";
+    String KEY_NOTES_QUERY      = "notes_query";
     String KEY_VEHICLES         = "vehicles";
     String KEY_KV               = "kv";
     String KEY_LV               = "lv";
@@ -227,10 +228,11 @@ public interface Constants
     /**
      * layer types
      */
-    int LAYERTYPE_DOCS = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
-    int LAYERTYPE_LV   = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 2);
-    int LAYERTYPE_ULV  = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 3);
-    int LAYERTYPE_KV   = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 4);
+    int LAYERTYPE_DOCS  = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 1);
+    int LAYERTYPE_LV    = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 2);
+    int LAYERTYPE_ULV   = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 3);
+    int LAYERTYPE_KV    = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 4);
+    int LAYERTYPE_NOTES = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 5);
 
     String FRAGMENT_PRODUCTION_FILLER        = "production_filler";
     String FRAGMENT_SHEET_FILLER             = "sheet_filler";

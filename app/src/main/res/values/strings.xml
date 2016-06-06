@@ -312,6 +312,7 @@
     <string name="lv_layer">Forestries</string>
     <string name="ulv_layer">District forestries</string>
     <string name="kv_layer">Parcels</string>
+    <string name="notes_layer">Notes</string>
 
     <string name="layer_props">Layer properties</string>
     <string name="action_layer_props">Layer properties</string>

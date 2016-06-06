@@ -312,6 +312,7 @@
     <string name="lv_layer">Лесничества</string>
     <string name="ulv_layer">Участковые лесничества</string>
     <string name="kv_layer">Лесные кварталы</string>
+    <string name="notes_layer">Заметки</string>
 
     <string name="layer_props">Настройки слоев</string>
     <string name="action_layer_props">Настройки слоев</string>

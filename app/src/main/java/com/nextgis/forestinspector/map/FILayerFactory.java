@@ -65,6 +65,9 @@ public class FILayerFactory extends LayerFactoryUI{
                 case Constants.LAYERTYPE_KV:
                     layer = new KvLayer(context, path);
                     break;
+                case Constants.LAYERTYPE_NOTES:
+                    layer = new NotesLayerUI(context, path);
+                    break;
             }
         } catch (IOException | JSONException e) {
             Log.d(TAG, e.getLocalizedMessage());
@@ -84,6 +87,8 @@ public class FILayerFactory extends LayerFactoryUI{
                 return context.getString(R.string.ulv_layer);
             case Constants.LAYERTYPE_KV:
                 return context.getString(R.string.kv_layer);
+            case Constants.LAYERTYPE_NOTES:
+                return context.getString(R.string.notes_layer);
             default:
                 return super.getLayerTypeString(context, type);
         }

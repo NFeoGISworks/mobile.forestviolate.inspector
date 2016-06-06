@@ -37,6 +37,7 @@ import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.map.DocumentsLayer;
 import com.nextgis.forestinspector.map.KvLayer;
 import com.nextgis.forestinspector.map.LvLayer;
+import com.nextgis.forestinspector.map.NotesLayerUI;
 import com.nextgis.forestinspector.map.UlvLayer;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.forestinspector.util.SettingsConstants;
@@ -51,6 +52,7 @@ import com.nextgis.maplib.datasource.ngw.Connection;
 import com.nextgis.maplib.datasource.ngw.INGWResource;
 import com.nextgis.maplib.datasource.ngw.Resource;
 import com.nextgis.maplib.datasource.ngw.ResourceGroup;
+import com.nextgis.maplib.datasource.ngw.ResourceWithoutChildren;
 import com.nextgis.maplib.display.SimpleFeatureRenderer;
 import com.nextgis.maplib.display.SimpleMarkerStyle;
 import com.nextgis.maplib.map.MapBase;
@@ -343,6 +345,7 @@ public class InitService
             keys.put(Constants.KEY_SHEET, -1L);
             keys.put(Constants.KEY_PRODUCTION, -1L);
             keys.put(Constants.KEY_NOTES, -1L);
+            keys.put(Constants.KEY_NOTES_QUERY, -1L);
             keys.put(Constants.KEY_VEHICLES, -1L);
             keys.put(Constants.KEY_KV, -1L);
             keys.put(Constants.KEY_LV, -1L);
@@ -675,7 +678,9 @@ public class InitService
 
             publishProgress(getString(R.string.working), Constants.STEP_STATE_WORK);
 
-            if (!loadNotes(keys.get(Constants.KEY_NOTES), mAccount.name, map, this)) {
+            if (!loadNotes(
+                    keys.get(Constants.KEY_NOTES), keys.get(Constants.KEY_NOTES_QUERY),
+                    mAccount.name, map, this)) {
                 publishProgress(getString(R.string.error_unexpected), Constants.STEP_STATE_ERROR);
                 return false;
             } else {
@@ -959,14 +964,14 @@ public class InitService
                 INGWResource childResource = resource.getChild(i);
 
                 if (keys.containsKey(childResource.getKey()) && childResource instanceof Resource) {
-                    Log.d(Constants.FITAG, "checkServerLayers() for: " + childResource.getKey());
                     Resource ngwResource = (Resource) childResource;
+                    Log.d(Constants.FITAG, "checkServerLayers() for: " + ngwResource.getKey());
                     Connection connection = ngwResource.getConnection();
 
                     try {
                         if (!checkFields(
                                 connection, ngwResource.getRemoteId(),
-                                keysFields.get(childResource.getKey()))) {
+                                keysFields.get(ngwResource.getKey()))) {
                             Log.d(Constants.FITAG, "checkFields() ERROR: fields are not exist");
                             return false;
                         }
@@ -976,6 +981,45 @@ public class InitService
                     }
 
                     keys.put(ngwResource.getKey(), ngwResource.getRemoteId());
+
+                    if (ngwResource.getKey().equals(Constants.KEY_NOTES)) {
+                        Resource queryLayer = null;
+                        try {
+                            String url =
+                                    connection.getURL() + "/resource/" + ngwResource.getRemoteId()
+                                            + "/child/";
+                            String response = NetworkUtil.get(url, connection.getLogin(),
+                                    connection.getPassword());
+                            if (null != response) {
+                                JSONArray children = new JSONArray(response);
+
+                                for (int k = 0; k < children.length(); ++k) {
+                                    JSONObject data = children.getJSONObject(k);
+                                    try {
+                                        String type =
+                                                data.getJSONObject("resource").getString("cls");
+                                        if (!type.equals("query_layer")) {
+                                            continue;
+                                        }
+                                    } catch (JSONException e) {
+                                        continue;
+                                    }
+
+                                    queryLayer = new ResourceWithoutChildren(data, connection);
+                                    //queryLayer.setParent(ngwResource);
+                                    //queryLayer.fillPermissions();
+                                    //ngwResource.getChildren().add(queryLayer);
+                                }
+                            }
+
+                        } catch (IOException | JSONException | NGException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (null != queryLayer) {
+                            keys.put(Constants.KEY_NOTES_QUERY, queryLayer.getRemoteId());
+                        }
+                    }
                 }
 
                 boolean bIsFill = true;
@@ -1251,6 +1295,7 @@ public class InitService
 
         protected boolean loadNotes(
                 long resourceId,
+                long queryResourceId,
                 String accountName,
                 MapBase map,
                 IProgressor progressor)
@@ -1259,16 +1304,17 @@ public class InitService
                     InitService.this);
             long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
 
-            NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(
+            NotesLayerUI notesLayer = new NotesLayerUI(
                     getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_NOTES));
-            ngwVectorLayer.setName(getString(R.string.notes));
-            ngwVectorLayer.setRemoteId(resourceId);
-            ngwVectorLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);
-            ngwVectorLayer.setVisible(true);
-            ngwVectorLayer.setAccountName(accountName);
-            ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
-            ngwVectorLayer.setMinZoom(0);
-            ngwVectorLayer.setMaxZoom(25);
+            notesLayer.setName(getString(R.string.notes));
+            notesLayer.setRemoteId(resourceId);
+            notesLayer.setQueryRemoteId(queryResourceId);
+            notesLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);
+            notesLayer.setVisible(true);
+            notesLayer.setAccountName(accountName);
+            notesLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+            notesLayer.setMinZoom(0);
+            notesLayer.setMaxZoom(25);
 
             // TODO: make with RuleStyle for Constants.FIELD_NOTES_DATE_END + " >= " + System.currentTimeMillis()
             SimpleMarkerStyle style = new SimpleMarkerStyle();
@@ -1277,13 +1323,13 @@ public class InitService
             style.setOutlineColor(Color.GREEN);
             style.setSize(9);
             style.setWidth(3);
-            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
-            ngwVectorLayer.setRenderer(renderer);
+            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(notesLayer, style);
+            notesLayer.setRenderer(renderer);
 
-            map.addLayer(ngwVectorLayer);
+            map.addLayer(notesLayer);
 
             try {
-                ngwVectorLayer.createFromNGW(progressor);
+                notesLayer.createFromNGW(progressor);
             } catch (NGException | IOException | JSONException e) {
                 e.printStackTrace();
                 return false;
