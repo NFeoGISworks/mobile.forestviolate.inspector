@@ -84,7 +84,7 @@ public class VehicleViewFragment
                 place.setText(feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_PLACE));
 
                 //intro
-                Date date = (Date) feature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
+                Date date = new Date((Long) feature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
                 String sDate = DateFormat.getDateInstance().format(date);
                 String sIndictmentNum =
                         feature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);

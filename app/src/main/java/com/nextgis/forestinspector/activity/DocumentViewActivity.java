@@ -122,7 +122,7 @@ public class DocumentViewActivity
         setContentView(R.layout.activity_document_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         String sNum = mDocFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_NUMBER);
-        Date date = (Date) mDocFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE);
+        Date date = new Date((Long) mDocFeature.getFieldValue(Constants.FIELD_DOCUMENTS_DATE));
         String sDate = DateFormat.getDateInstance().format(date);
         toolbar.setSubtitle(sNum + " " + getString(R.string.on) + " " + sDate);
         toolbar.getBackground().setAlpha(getToolbarAlpha());
