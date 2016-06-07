@@ -38,7 +38,7 @@ import java.io.File;
 public class NotesLayerUI
         extends NGWVectorLayerUI
 {
-    protected static final String JSON_INSERT_ID_KEY = "insert_id";
+    protected static final String JSON_QUERY_ID_KEY = "query_id";
 
 
     protected long mQueryRemoteId;
@@ -72,8 +72,8 @@ public class NotesLayerUI
     {
         super.fromJSON(jsonObject);
 
-        if (jsonObject.has(JSON_INSERT_ID_KEY)) {
-            mQueryRemoteId = jsonObject.getLong(JSON_INSERT_ID_KEY);
+        if (jsonObject.has(JSON_QUERY_ID_KEY)) {
+            mQueryRemoteId = jsonObject.getLong(JSON_QUERY_ID_KEY);
         }
     }
 
@@ -83,7 +83,7 @@ public class NotesLayerUI
             throws JSONException
     {
         JSONObject rootConfig = super.toJSON();
-        rootConfig.put(JSON_INSERT_ID_KEY, mQueryRemoteId);
+        rootConfig.put(JSON_QUERY_ID_KEY, mQueryRemoteId);
 
         return rootConfig;
     }
