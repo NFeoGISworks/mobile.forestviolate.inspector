@@ -92,11 +92,6 @@ public interface Constants
     String KEY_INSPECTOR_USER_PASS_ID = "pass_id"; // STRING
 
     /**
-     * notes keys
-     */
-    String KEY_NOTES_USERID = "user_id";
-
-    /**
      * document types
      */
     int DOC_TYPE_FIELD_WORKS  = 1;

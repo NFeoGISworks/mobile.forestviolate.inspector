@@ -1300,16 +1300,11 @@ public class InitService
                 MapBase map,
                 IProgressor progressor)
         {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
-                    InitService.this);
-            long inspectorId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
-
             NotesLayerUI notesLayer = new NotesLayerUI(
                     getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_NOTES));
             notesLayer.setName(getString(R.string.notes));
             notesLayer.setRemoteId(resourceId);
             notesLayer.setQueryRemoteId(queryResourceId);
-            notesLayer.setServerWhere(Constants.KEY_NOTES_USERID + "=" + inspectorId);
             notesLayer.setVisible(true);
             notesLayer.setAccountName(accountName);
             notesLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
