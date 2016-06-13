@@ -45,6 +45,6 @@ public class DocumentsListItem
             @NonNull
             DocumentsListItem another)
     {
-        return mDate.compareTo(another.mDate);
+        return (-1) * mDate.compareTo(another.mDate);
     }
 }

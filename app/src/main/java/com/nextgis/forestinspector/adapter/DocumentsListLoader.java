@@ -367,7 +367,7 @@ public class DocumentsListLoader
                         {
                             int res = compareTypes(lhs.mType, rhs.mType);
                             if (res == 0) {
-                                return lhs.mDate.compareTo(rhs.mDate);
+                                return lhs.compareTo(rhs);
                             }
                             return res;
                         }
