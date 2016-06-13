@@ -60,6 +60,7 @@ public class SyncSettingsFragment
 {
     MainApplication mApp;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -85,7 +86,8 @@ public class SyncSettingsFragment
             PreferenceGroup screen,
             Account account)
     {
-        final IGISApplication application = (IGISApplication) mStyledContext.getApplicationContext();
+        final IGISApplication application =
+                (IGISApplication) mStyledContext.getApplicationContext();
 
         // add sync settings group
         PreferenceCategory syncCategory = new PreferenceCategory(mStyledContext);
@@ -97,6 +99,9 @@ public class SyncSettingsFragment
 
         // add time for periodic sync
         addPeriodicSyncTime(application, account, syncCategory);
+
+        // add sync notification
+        addSyncNotification(syncCategory);
 
         // add actions group
         PreferenceCategory actionCategory = new PreferenceCategory(mStyledContext);
@@ -123,8 +128,9 @@ public class SyncSettingsFragment
             final Account account,
             PreferenceGroup syncCategory)
     {
-        SharedPreferences sharedPreferences = mStyledContext.getSharedPreferences(
-                Constants.PREFERENCES, Constants.MODE_MULTI_PROCESS);
+        SharedPreferences sharedPreferences =
+                mStyledContext.getSharedPreferences(Constants.PREFERENCES,
+                        Constants.MODE_MULTI_PROCESS);
 
         CheckBoxPreference enablePeriodicSync = new CheckBoxPreference(mStyledContext);
         enablePeriodicSync.setKey(SettingsConstantsUI.KEY_PREF_SYNC_PERIODICALLY);
@@ -133,19 +139,18 @@ public class SyncSettingsFragment
         boolean isAccountSyncEnabled = isAccountSyncEnabled(account, application.getAuthority());
         enablePeriodicSync.setChecked(isAccountSyncEnabled);
 
-        enablePeriodicSync.setOnPreferenceChangeListener(
-                new Preference.OnPreferenceChangeListener()
-                {
-                    @Override
-                    public boolean onPreferenceChange(
-                            Preference preference,
-                            Object newValue)
-                    {
-                        boolean isChecked = (boolean) newValue;
-                        setAccountSyncEnabled(account, application.getAuthority(), isChecked);
-                        return true;
-                    }
-                });
+        enablePeriodicSync.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            @Override
+            public boolean onPreferenceChange(
+                    Preference preference,
+                    Object newValue)
+            {
+                boolean isChecked = (boolean) newValue;
+                setAccountSyncEnabled(account, application.getAuthority(), isChecked);
+                return true;
+            }
+        });
 
         long timeStamp =
                 sharedPreferences.getLong(SettingsConstants.KEY_PREF_LAST_SYNC_TIMESTAMP, 0);
@@ -203,7 +208,49 @@ public class SyncSettingsFragment
             }
         }
 
-        timeInterval.setOnPreferenceChangeListener(
+        timeInterval.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            @Override
+            public boolean onPreferenceChange(
+                    Preference preference,
+                    Object newValue)
+            {
+                long value = Long.parseLong(newValue.toString());
+                int id = ((ListPreference) preference).findIndexOfValue((String) newValue);
+                CharSequence summary = ((ListPreference) preference).getEntries()[id];
+                preference.setSummary(summary);
+
+                preference.getSharedPreferences()
+                        .edit()
+                        .putLong(SettingsConstantsUI.KEY_PREF_SYNC_PERIOD_SEC_LONG, value)
+                        .commit();
+
+                final Account account = mApp.getAccount(getString(R.string.account_name));
+                ContentResolver.addPeriodicSync(account, mApp.getAuthority(), Bundle.EMPTY, value);
+
+                return true;
+            }
+        });
+
+        syncCategory.addPreference(timeInterval);
+        timeInterval.setDependency(SettingsConstantsUI.KEY_PREF_SYNC_PERIODICALLY);
+    }
+
+
+    protected void addSyncNotification(PreferenceGroup syncCategory)
+    {
+        final SharedPreferences prefs = mStyledContext.getSharedPreferences(Constants.PREFERENCES,
+                Constants.MODE_MULTI_PROCESS);
+        boolean isShow = prefs.getBoolean(
+                com.nextgis.forestinspector.util.SettingsConstants.KEY_PREF_SHOW_SYNC_NOTIFICATION,
+                true);
+
+        CheckBoxPreference enableSyncNotification = new CheckBoxPreference(mStyledContext);
+        enableSyncNotification.setTitle(R.string.show_sync_notification);
+        enableSyncNotification.setSummary(R.string.show_sync_notification_summary);
+        enableSyncNotification.setChecked(isShow);
+
+        enableSyncNotification.setOnPreferenceChangeListener(
                 new Preference.OnPreferenceChangeListener()
                 {
                     @Override
@@ -211,25 +258,18 @@ public class SyncSettingsFragment
                             Preference preference,
                             Object newValue)
                     {
-                        long value = Long.parseLong(newValue.toString());
-                        int id = ((ListPreference) preference).findIndexOfValue(
-                                (String) newValue);
-                        CharSequence summary = ((ListPreference) preference).getEntries()[id];
-                        preference.setSummary(summary);
+                        boolean isChecked = (boolean) newValue;
 
-                        preference.getSharedPreferences().edit().putLong(
-                                SettingsConstantsUI.KEY_PREF_SYNC_PERIOD_SEC_LONG, value).commit();
-
-                        final Account account = mApp.getAccount(getString(R.string.account_name));
-                        ContentResolver.addPeriodicSync(
-                                account, mApp.getAuthority(), Bundle.EMPTY, value);
-
+                        SharedPreferences.Editor edit = prefs.edit();
+                        edit.putBoolean(
+                                com.nextgis.forestinspector.util.SettingsConstants.KEY_PREF_SHOW_SYNC_NOTIFICATION,
+                                isChecked);
+                        edit.commit();
                         return true;
                     }
                 });
 
-        syncCategory.addPreference(timeInterval);
-        timeInterval.setDependency(SettingsConstantsUI.KEY_PREF_SYNC_PERIODICALLY);
+        syncCategory.addPreference(enableSyncNotification);
     }
 
 
@@ -309,8 +349,8 @@ public class SyncSettingsFragment
             Account account,
             PreferenceGroup actionCategory)
     {
-        Preference preferenceDelete = super.addDeleteAccountAction(
-                application, account, actionCategory);
+        Preference preferenceDelete =
+                super.addDeleteAccountAction(application, account, actionCategory);
 
         if (null == preferenceDelete) {
             return null;
@@ -327,59 +367,55 @@ public class SyncSettingsFragment
 
         dialogBuilder.setIcon(com.nextgis.maplibui.R.drawable.ic_action_warning_light)
                 .setTitle(R.string.warning_not_sent_data)
-                .setMessage(
-                        isChanges
-                        ? R.string.warning_not_sent_data_msg
-                        : R.string.warning_saved_not_sent_data_msg)
+                .setMessage(isChanges
+                            ? R.string.warning_not_sent_data_msg
+                            : R.string.warning_saved_not_sent_data_msg)
 
-                .setNegativeButton(
-                        R.string.delete, new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(
-                                    DialogInterface dialog,
-                                    int which)
-                            {
-                                if (null != oldClickListener) {
-                                    oldClickListener.onPreferenceClick(null);
-                                }
-                            }
-                        });
+                .setNegativeButton(R.string.delete, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(
+                            DialogInterface dialog,
+                            int which)
+                    {
+                        if (null != oldClickListener) {
+                            oldClickListener.onPreferenceClick(null);
+                        }
+                    }
+                });
 
         if (isChanges) {
-            dialogBuilder.setPositiveButton(
-                    R.string.send, new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(
-                                DialogInterface dialog,
-                                int which)
-                        {
-                            MainApplication app = (MainApplication) application;
-                            app.runSync();
-                            mActivity.finish();
-                        }
-                    });
+            dialogBuilder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(
+                        DialogInterface dialog,
+                        int which)
+                {
+                    MainApplication app = (MainApplication) application;
+                    app.runSync();
+                    mActivity.finish();
+                }
+            });
         } else {
             dialogBuilder.setPositiveButton(R.string.cancel, null);
         }
 
 
-        preferenceDelete.setOnPreferenceClickListener(
-                new Preference.OnPreferenceClickListener()
-                {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference)
-                    {
-                        if (isChanges || haveFeaturesNotSyncFlag) {
-                            dialogBuilder.show();
-                        } else {
-                            oldClickListener.onPreferenceClick(null);
-                        }
+        preferenceDelete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener()
+        {
+            @Override
+            public boolean onPreferenceClick(Preference preference)
+            {
+                if (isChanges || haveFeaturesNotSyncFlag) {
+                    dialogBuilder.show();
+                } else {
+                    oldClickListener.onPreferenceClick(null);
+                }
 
-                        return true;
-                    }
-                });
+                return true;
+            }
+        });
 
 
         return preferenceDelete;

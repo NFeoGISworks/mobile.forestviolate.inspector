@@ -277,6 +277,8 @@
     <string name="sync_settings_summary">Настройки параметров синхронизации данных с сервером системы</string>
 
     <string name="action_sync_settings">Настройки синхронизации</string>
+    <string name="show_sync_notification">Сообщение о синхронизации</string>
+    <string name="show_sync_notification_summary">Показывать всплывающее сообщение о статусе синхронизации</string>
 
     <string name="synchronization">Синхронизация</string>
     <string name="sync_started">Синхронизация начата</string>

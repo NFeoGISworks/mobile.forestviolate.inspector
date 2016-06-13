@@ -277,6 +277,8 @@
     <string name="sync_settings_summary">Data synchronization settings with the server system</string>
 
     <string name="action_sync_settings">Sync Settings</string>
+    <string name="show_sync_notification">Sync notification</string>
+    <string name="show_sync_notification_summary">Show sync status notification</string>
 
     <string name="synchronization">Synchronization</string>
     <string name="sync_started">Synchronization started</string>

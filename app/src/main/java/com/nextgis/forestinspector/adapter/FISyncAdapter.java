@@ -29,6 +29,7 @@ import android.app.PendingIntent;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -114,6 +115,16 @@ public class FISyncAdapter
             int notificationType,
             String errorMsg)
     {
+        final SharedPreferences prefs = context.getSharedPreferences(Constants.PREFERENCES,
+                Constants.MODE_MULTI_PROCESS);
+        boolean isShow = prefs.getBoolean(
+                com.nextgis.forestinspector.util.SettingsConstants.KEY_PREF_SHOW_SYNC_NOTIFICATION,
+                true);
+
+        if (!isShow) {
+            return;
+        }
+
         Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(
                 Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
