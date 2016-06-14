@@ -33,6 +33,6 @@ public class SheetListViewerFragment
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        return new SheetListViewerAdapter(getActivity(), feature);
+        return new SheetListViewerAdapter(feature);
     }
 }

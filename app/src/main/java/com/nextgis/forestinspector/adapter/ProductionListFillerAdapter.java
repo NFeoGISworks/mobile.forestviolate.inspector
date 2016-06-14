@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import com.nextgis.forestinspector.R;
@@ -34,11 +33,9 @@ import com.nextgis.maplib.datasource.Feature;
 public class ProductionListFillerAdapter
         extends ListFillerAdapter
 {
-    public ProductionListFillerAdapter(
-            Context context,
-            DocumentFeature feature)
+    public ProductionListFillerAdapter(DocumentFeature feature)
     {
-        super(context, feature);
+        super(feature);
     }
 
 

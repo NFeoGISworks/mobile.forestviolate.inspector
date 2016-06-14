@@ -75,12 +75,12 @@ public class DocumentsListAdapter
 
     public DocumentsListAdapter(Context context)
     {
-        super(context);
+        super();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         mUserId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
         mUserItemBackgroundColor =
-                ThemeUtils.getThemeAttrColor(mContext, R.attr.docItemBackgroundForCurrentUser);
+                ThemeUtils.getThemeAttrColor(context, R.attr.docItemBackgroundForCurrentUser);
 
         mMap = (MapEventSource) MapBase.getInstance();
 
@@ -106,6 +106,8 @@ public class DocumentsListAdapter
     @Override
     protected ListSelectorAdapter.ViewHolder getViewHolder(View itemView)
     {
+        final Context context = itemView.getContext();
+
         setOnItemClickListener(
                 new ListSelectorAdapter.ViewHolder.OnItemClickListener()
                 {
@@ -116,25 +118,25 @@ public class DocumentsListAdapter
                         Intent intent = null;
                         if (item.mType == Constants.DOC_TYPE_NOTE) {
                             //show note activity
-                            intent = new Intent(mContext, NoteCreatorActivity.class);
+                            intent = new Intent(context, NoteCreatorActivity.class);
                         } else {
                             if (item.mIsSigned) {
                                 //show documents viewer activity
-                                intent = new Intent(mContext, DocumentViewActivity.class);
+                                intent = new Intent(context, DocumentViewActivity.class);
                                 intent.putExtra(Constants.DOCUMENT_VIEWER, true);
                             } else {
                                 //show documents creator activity
                                 switch (item.mType) {
                                     case Constants.DOC_TYPE_INDICTMENT:
                                         intent = new Intent(
-                                                mContext, IndictmentCreatorActivity.class);
+                                                context, IndictmentCreatorActivity.class);
                                         break;
                                     case Constants.DOC_TYPE_SHEET:
-                                        intent = new Intent(mContext, SheetCreatorActivity.class);
+                                        intent = new Intent(context, SheetCreatorActivity.class);
                                         break;
                                     case Constants.DOC_TYPE_FIELD_WORKS:
                                         intent = new Intent(
-                                                mContext, FieldWorksCreatorActivity.class);
+                                                context, FieldWorksCreatorActivity.class);
                                         break;
                                 }
 
@@ -146,7 +148,7 @@ public class DocumentsListAdapter
 
                         if (null != intent) {
                             intent.putExtra(FIELD_ID, item.mId);
-                            mContext.startActivity(intent);
+                            context.startActivity(intent);
                         }
                     }
                 });
@@ -181,7 +183,7 @@ public class DocumentsListAdapter
 
                             String[] columns = new String[] {FIELD_GEOM};
 
-                            Cursor cursor = mContext.getContentResolver()
+                            Cursor cursor = context.getContentResolver()
                                     .query(uri, columns, null, null, null);
 
                             if (null != cursor) {
@@ -239,25 +241,27 @@ public class DocumentsListAdapter
     {
         super.onBindViewHolder(holder, position);
 
+        Context context = holder.mCheckBox.getContext();
+
         DocumentsListAdapter.ViewHolder viewHolder = (DocumentsListAdapter.ViewHolder) holder;
         DocumentsListItem item = mDocuments.get(position);
 
         switch (item.mType) {
             case Constants.DOC_TYPE_INDICTMENT:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_indicment));
+                        context.getResources().getDrawable(R.mipmap.ic_indicment));
                 break;
             case Constants.DOC_TYPE_SHEET:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_sheet));
+                        context.getResources().getDrawable(R.mipmap.ic_sheet));
                 break;
             case Constants.DOC_TYPE_FIELD_WORKS:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_fieldworks));
+                        context.getResources().getDrawable(R.mipmap.ic_fieldworks));
                 break;
             case Constants.DOC_TYPE_NOTE:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_bookmark));
+                        context.getResources().getDrawable(R.mipmap.ic_bookmark));
                 break;
         }
 
@@ -294,18 +298,18 @@ public class DocumentsListAdapter
         switch (item.mStatus) {
             case Constants.DOCUMENT_STATUS_NEW:
                 viewHolder.mStateIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.drawable.ic_document_status_new));
+                        context.getResources().getDrawable(R.drawable.ic_document_status_new));
                 break;
 
             case Constants.DOCUMENT_STATUS_FOR_SEND:
                 viewHolder.mStateIcon.setImageDrawable(
-                        mContext.getResources()
+                        context.getResources()
                                 .getDrawable(R.drawable.ic_document_status_sent_partially));
                 break;
 
             case Constants.DOCUMENT_STATUS_OK:
                 viewHolder.mStateIcon.setImageDrawable(
-                        mContext.getResources()
+                        context.getResources()
                                 .getDrawable(R.drawable.ic_document_status_sent_full));
                 break;
 
@@ -413,7 +417,7 @@ public class DocumentsListAdapter
                         .build();
             }
 
-            if (mContext.getContentResolver().delete(uri, null, null) <= 0) {
+            if (mMap.getContext().getContentResolver().delete(uri, null, null) <= 0) {
                 Log.d(Constants.FITAG, "delete feature into " + layerPathName + " failed");
             }
         }

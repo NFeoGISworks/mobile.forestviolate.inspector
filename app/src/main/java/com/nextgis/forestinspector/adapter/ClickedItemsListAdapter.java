@@ -86,6 +86,8 @@ public class ClickedItemsListAdapter
             ListSelectorAdapter.ViewHolder holder,
             int position)
     {
+        Context context = holder.mCheckBox.getContext();
+
         ClickedItemsListAdapter.ViewHolder viewHolder = (ClickedItemsListAdapter.ViewHolder) holder;
         DocumentsListItem item = mDocuments.get(position);
 
@@ -95,23 +97,23 @@ public class ClickedItemsListAdapter
         switch (item.mType) {
             case Constants.DOC_TYPE_INDICTMENT:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_indicment));
+                        context.getResources().getDrawable(R.mipmap.ic_indicment));
                 break;
             case Constants.DOC_TYPE_SHEET:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_sheet));
+                        context.getResources().getDrawable(R.mipmap.ic_sheet));
                 break;
             case Constants.DOC_TYPE_FIELD_WORKS:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_fieldworks));
+                        context.getResources().getDrawable(R.mipmap.ic_fieldworks));
                 break;
             case Constants.DOC_TYPE_NOTE:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_bookmark));
+                        context.getResources().getDrawable(R.mipmap.ic_bookmark));
                 break;
             case Constants.DOC_TYPE_TARGET:
                 viewHolder.mTypeIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.mipmap.ic_target));
+                        context.getResources().getDrawable(R.mipmap.ic_target));
                 viewHolder.mDocDesc.setMaxLines(4);
                 break;
         }
@@ -142,18 +144,18 @@ public class ClickedItemsListAdapter
         switch (item.mStatus) {
             case Constants.DOCUMENT_STATUS_NEW:
                 viewHolder.mStateIcon.setImageDrawable(
-                        mContext.getResources().getDrawable(R.drawable.ic_document_status_new));
+                        context.getResources().getDrawable(R.drawable.ic_document_status_new));
                 break;
 
             case Constants.DOCUMENT_STATUS_FOR_SEND:
                 viewHolder.mStateIcon.setImageDrawable(
-                        mContext.getResources()
+                        context.getResources()
                                 .getDrawable(R.drawable.ic_document_status_sent_partially));
                 break;
 
             case Constants.DOCUMENT_STATUS_OK:
                 viewHolder.mStateIcon.setImageDrawable(
-                        mContext.getResources()
+                        context.getResources()
                                 .getDrawable(R.drawable.ic_document_status_sent_full));
                 break;
 

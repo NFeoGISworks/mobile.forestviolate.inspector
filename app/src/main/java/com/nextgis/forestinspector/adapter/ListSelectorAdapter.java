@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -41,8 +40,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class ListSelectorAdapter
         extends RecyclerView.Adapter<ListSelectorAdapter.ViewHolder>
 {
-    protected Context mContext;
-
     protected SparseBooleanArray mSelectedItems;
     protected boolean mSelectState      = false;
     protected boolean mHideCheckBox     = false;
@@ -72,9 +69,8 @@ public abstract class ListSelectorAdapter
     }
 
 
-    public ListSelectorAdapter(Context context)
+    public ListSelectorAdapter()
     {
-        mContext = context;
         mOnSelectionChangedListeners = new ConcurrentLinkedQueue<>();
         mSelectedItems = new SparseBooleanArray();
     }
@@ -85,7 +81,7 @@ public abstract class ListSelectorAdapter
             ViewGroup parent,
             int viewType)
     {
-        View itemView = LayoutInflater.from(mContext).inflate(
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(
                 getItemViewResId(), parent, false);
         return getViewHolder(itemView);
     }

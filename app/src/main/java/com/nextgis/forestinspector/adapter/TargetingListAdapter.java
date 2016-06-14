@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.widget.TextView;
@@ -44,11 +43,9 @@ public class TargetingListAdapter
     protected int mTerritoryColumn;
 
 
-    public TargetingListAdapter(
-            Context context,
-            Cursor cursor)
+    public TargetingListAdapter(Cursor cursor)
     {
-        super(context, cursor);
+        super(cursor);
     }
 
 

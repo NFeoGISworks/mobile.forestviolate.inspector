@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 
@@ -42,11 +41,9 @@ public abstract class ListSelectorCursorAdapter
     protected DataSetObserver mDataSetObserver;
 
 
-    public ListSelectorCursorAdapter(
-            Context context,
-            Cursor cursor)
+    public ListSelectorCursorAdapter(Cursor cursor)
     {
-        super(context);
+        super();
 
         mDataSetObserver = new NotifyingDataSetObserver();
 

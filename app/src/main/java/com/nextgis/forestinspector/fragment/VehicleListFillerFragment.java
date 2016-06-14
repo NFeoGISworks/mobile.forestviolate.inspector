@@ -35,7 +35,7 @@ public class VehicleListFillerFragment
     @Override
     protected ListFillerAdapter getFillerAdapter(DocumentFeature feature)
     {
-        return new VehicleListFillerAdapter(getActivity(), feature);
+        return new VehicleListFillerAdapter(feature);
     }
 
 

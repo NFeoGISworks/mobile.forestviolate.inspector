@@ -22,18 +22,15 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.content.Context;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 
 
 public class SheetListViewerAdapter
         extends SheetListFillerAdapter
 {
-    public SheetListViewerAdapter(
-            Context context,
-            DocumentFeature feature)
+    public SheetListViewerAdapter(DocumentFeature feature)
     {
-        super(context, feature);
+        super(feature);
         mHideCheckBox = true;
     }
 }

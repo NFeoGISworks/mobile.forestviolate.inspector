@@ -22,7 +22,6 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.maplib.datasource.Feature;
@@ -41,11 +40,9 @@ public abstract class ListFillerAdapter
     protected abstract String getLayerName();
 
 
-    public ListFillerAdapter(
-            Context context,
-            DocumentFeature feature)
+    public ListFillerAdapter(DocumentFeature feature)
     {
-        super(context);
+        super();
         mFeature = feature;
         mFeatures = mFeature.getSubFeatures(getLayerName());
         registerAdapterDataObserver(new CheckListDataObserver());

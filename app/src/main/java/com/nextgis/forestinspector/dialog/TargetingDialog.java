@@ -106,7 +106,7 @@ public class TargetingDialog
         mGpsEventSource = app.getGpsEventSource();
         mLocation = mGpsEventSource.getLastKnownLocation();
 
-        mAdapter = new TargetingListAdapter(mContext, null);
+        mAdapter = new TargetingListAdapter(null);
         mAdapter.setSingleSelectable(true);
         mAdapter.addOnSelectionChangedListener(this);
 
