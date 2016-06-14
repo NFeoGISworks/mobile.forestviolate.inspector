@@ -24,7 +24,7 @@ package com.nextgis.forestinspector.adapter;
 
 import android.content.ContentUris;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.maplib.util.AttachItem;
@@ -43,15 +43,15 @@ public class PhotoTableCursorAdapter
 
 
     public PhotoTableCursorAdapter(
-            AppCompatActivity activity,
+            Fragment parentFragment,
             long featureId,
             Map<String, AttachItem> attachItemMap,
             boolean isDocumentViewer,
             boolean isOnePhotoViewer)
     {
-        super(activity, featureId, attachItemMap, isDocumentViewer, isOnePhotoViewer);
+        super(parentFragment, featureId, attachItemMap, isDocumentViewer, isOnePhotoViewer);
 
-        MainApplication app = (MainApplication) activity.getApplication();
+        MainApplication app = (MainApplication) parentFragment.getActivity().getApplication();
         String docsLayerPathName = app.getDocsLayer().getPath().getName();
 
         mAttachesUri = Uri.parse(
@@ -69,7 +69,7 @@ public class PhotoTableCursorAdapter
 
         InputStream inputStream;
         try {
-            inputStream = mActivity.getContentResolver().openInputStream(attachUri);
+            inputStream = mFragment.getActivity().getContentResolver().openInputStream(attachUri);
 
         } catch (FileNotFoundException e) {
             Log.d(

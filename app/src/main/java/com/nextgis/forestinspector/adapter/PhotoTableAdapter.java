@@ -22,12 +22,13 @@
 
 package com.nextgis.forestinspector.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.internal.widget.ThemeUtils;
 import android.util.Log;
 import android.view.View;
@@ -67,10 +68,10 @@ public abstract class PhotoTableAdapter
 
     protected int mImageSizePx;
 
-    protected AppCompatActivity mActivity;
-    protected long              mFeatureId;
-    protected boolean           mIsDocumentViewer;
-    protected boolean           mIsOnePhotoViewer;
+    protected Fragment mFragment;
+    protected long     mFeatureId;
+    protected boolean  mIsDocumentViewer;
+    protected boolean  mIsOnePhotoViewer;
 
     protected Map<String, AttachItem>             mAttachItemMap;
     protected List<Map.Entry<String, AttachItem>> mAttachItemList;
@@ -86,15 +87,15 @@ public abstract class PhotoTableAdapter
 
 
     public PhotoTableAdapter(
-            AppCompatActivity activity,
+            Fragment parentFragment,
             long featureId,
             Map<String, AttachItem> attachItemMap,
             boolean isDocumentViewer,
             boolean isOnePhotoViewer)
     {
-        super(activity);
+        super();
 
-        mActivity = activity;
+        mFragment = parentFragment;
         mFeatureId = featureId;
         mIsDocumentViewer = isDocumentViewer;
         mIsOnePhotoViewer = isOnePhotoViewer;
@@ -204,6 +205,8 @@ public abstract class PhotoTableAdapter
     {
         super.onBindViewHolder(holder, position);
 
+        final Context context = holder.mCheckBox.getContext();
+
         final PhotoTableAdapter.ViewHolder viewHolder = (PhotoTableAdapter.ViewHolder) holder;
 
         if (mIsOnePhotoViewer) {
@@ -213,7 +216,7 @@ public abstract class PhotoTableAdapter
             viewHolder.mPhotoDesc.setMaxLines(999);
 
             int backgroundColor =
-                    ThemeUtils.getThemeAttrColor(mActivity, R.attr.photoDescBackgroundColor);
+                    ThemeUtils.getThemeAttrColor(context, R.attr.photoDescBackgroundColor);
 
             viewHolder.mPhotoDesc.setBackgroundColor(backgroundColor);
         }
@@ -224,7 +227,7 @@ public abstract class PhotoTableAdapter
             viewHolder.mPhotoDesc.setText(getDescription(position));
         } catch (IOException e) {
             Toast.makeText(
-                    mActivity, "onBindViewHolder() ERROR: " + e.getLocalizedMessage(),
+                    context, "onBindViewHolder() ERROR: " + e.getLocalizedMessage(),
                     Toast.LENGTH_LONG).show();
         }
 
@@ -262,7 +265,7 @@ public abstract class PhotoTableAdapter
                                         }
                                     });
                             dialog.show(
-                                    mActivity.getSupportFragmentManager(),
+                                    mFragment.getFragmentManager(),
                                     Constants.FRAGMENT_PHOTO_DESC_EDITOR_DIALOG);
                         }
                     });
@@ -288,13 +291,13 @@ public abstract class PhotoTableAdapter
 
                             String key = mAttachItemList.get(mClickedId).getKey();
 
-                            Intent intent = new Intent(mActivity, PhotoTableFillerActivity.class);
+                            Intent intent = new Intent(context, PhotoTableFillerActivity.class);
                             intent.putExtra(PhotoTableFragment.PHOTO_VIEWER, true);
                             intent.putExtra(PhotoTableFragment.PHOTO_ITEM_KEY, key);
                             intent.putExtra(Constants.DOCUMENT_VIEWER, mIsDocumentViewer);
                             intent.putExtra(
                                     com.nextgis.maplib.util.Constants.FIELD_ID, mFeatureId);
-                            mActivity.startActivity(intent);
+                            context.startActivity(intent);
                         }
                     });
 
@@ -317,7 +320,7 @@ public abstract class PhotoTableAdapter
 
                     case CREATE_PREVIEW_FAILED:
                         Toast.makeText(
-                                mActivity, "onBindViewHolder() ERROR: " + msg.obj,
+                                context, "onBindViewHolder() ERROR: " + msg.obj,
                                 Toast.LENGTH_LONG).show();
                         break;
                 }

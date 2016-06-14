@@ -21,7 +21,6 @@
 
 package com.nextgis.forestinspector.fragment;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import java.util.Locale;
@@ -46,16 +45,5 @@ public class TabFragment
     {
         Locale l = Locale.getDefault();
         mFragmentName = fragmentName.toUpperCase(l);
-    }
-
-
-    // http://stackoverflow.com/a/10261438
-    @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
-        //first saving my state, so the bundle wont be empty.
-        //https://code.google.com/p/android/issues/detail?id=19917
-        outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
-        super.onSaveInstanceState(outState);
     }
 }

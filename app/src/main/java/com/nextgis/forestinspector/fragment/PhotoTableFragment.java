@@ -163,7 +163,7 @@ public class PhotoTableFragment
         }
 
         mPhotoTableAdapter = new PhotoTableCursorAdapter(
-                activity, featureId, attaches, mIsDocumentViewer, mIsOnePhotoViewer);
+                this, featureId, attaches, mIsDocumentViewer, mIsOnePhotoViewer);
         mPhotoTableAdapter.setOnAttachChangingListener(this);
         mPhotoTableAdapter.setOnDeleteSelectedListener(this);
     }

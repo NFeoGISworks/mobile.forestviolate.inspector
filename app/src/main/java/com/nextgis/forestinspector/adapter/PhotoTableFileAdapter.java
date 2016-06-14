@@ -22,7 +22,7 @@
 
 package com.nextgis.forestinspector.adapter;
 
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.maplib.util.AttachItem;
@@ -44,15 +44,16 @@ public class PhotoTableFileAdapter
 
 
     public PhotoTableFileAdapter(
-            AppCompatActivity activity,
+            Fragment parentFragment,
             long featureId,
             Map<String, AttachItem> attachItemMap,
             boolean isDocumentViewer,
             boolean isOnePhotoViewer)
     {
-        super(activity, featureId, attachItemMap, isDocumentViewer, isOnePhotoViewer);
+        super(parentFragment, featureId, attachItemMap, isDocumentViewer, isOnePhotoViewer);
 
-        MainApplication app = (MainApplication) mActivity.getApplicationContext();
+        MainApplication app =
+                (MainApplication) parentFragment.getActivity().getApplicationContext();
         mAttachDir = app.getDocFeatureFolder();
     }
 
