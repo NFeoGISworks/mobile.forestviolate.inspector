@@ -68,6 +68,9 @@ public class FILayerFactory extends LayerFactoryUI{
                 case Constants.LAYERTYPE_NOTES:
                     layer = new NotesLayerUI(context, path);
                     break;
+                case Constants.LAYERTYPE_FV:
+                    layer = new FvLayerUI(context, path);
+                    break;
             }
         } catch (IOException | JSONException e) {
             Log.d(TAG, e.getLocalizedMessage());

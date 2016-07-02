@@ -35,6 +35,7 @@ import android.util.Log;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.map.DocumentsLayer;
+import com.nextgis.forestinspector.map.FvLayerUI;
 import com.nextgis.forestinspector.map.KvLayer;
 import com.nextgis.forestinspector.map.LvLayer;
 import com.nextgis.forestinspector.map.NotesLayerUI;
@@ -71,7 +72,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -1347,21 +1350,30 @@ public class InitService
             float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
             float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
 
-            NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(
+            FvLayerUI fvLayerUI = new FvLayerUI(
                     getApplicationContext(), map.createLayerStorage(Constants.KEY_LAYER_FV));
-            ngwVectorLayer.setName(getString(R.string.targeting));
-            ngwVectorLayer.setRemoteId(resourceId);
+            fvLayerUI.setName(getString(R.string.targeting));
+            fvLayerUI.setRemoteId(resourceId);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.add(Calendar.MONTH, Constants.MONTH_TO_LOAD_FV_DATA);
+//            calendar.roll(Calendar.MONTH, Constants.MONTH_TO_LOAD_FV_DATA);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
             // http://stackoverflow.com/a/16909821
-            ngwVectorLayer.setServerWhere(
+            fvLayerUI.setServerWhere(
                     String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY) +
-                            "&status=" + Uri.encode(Constants.FV_STATUS_NEW_FOREST_CHANGE));
+                            "&" + Constants.FIELD_FV_STATUS + "=" + Uri.encode(
+                            Constants.FV_STATUS_NEW_FOREST_CHANGE) + "&" +
+                            Constants.FIELD_FV_DATE + "={\"gt\":\"" + sdf.format(calendar.getTime())
+                            + "T00:00:00Z\"}");
 
-            ngwVectorLayer.setVisible(true);
-            ngwVectorLayer.setAccountName(accountName);
-            ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
-            ngwVectorLayer.setMinZoom(0);
-            ngwVectorLayer.setMaxZoom(25);
+            fvLayerUI.setVisible(true);
+            fvLayerUI.setAccountName(accountName);
+            fvLayerUI.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+            fvLayerUI.setMinZoom(0);
+            fvLayerUI.setMaxZoom(25);
 
             // TODO: make with RuleStyle for Constants.FIELD_FV_STATUS + " = " + Constants.FV_STATUS_NEW_FOREST_CHANGE
             SimpleMarkerStyle style = new SimpleMarkerStyle();
@@ -1370,13 +1382,13 @@ public class InitService
             style.setOutlineColor(Color.YELLOW);
             style.setSize(9);
             style.setWidth(3);
-            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(ngwVectorLayer, style);
-            ngwVectorLayer.setRenderer(renderer);
+            SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(fvLayerUI, style);
+            fvLayerUI.setRenderer(renderer);
 
-            map.addLayer(ngwVectorLayer);
+            map.addLayer(fvLayerUI);
 
             try {
-                ngwVectorLayer.createFromNGW(progressor);
+                fvLayerUI.createFromNGW(progressor);
             } catch (NGException | IOException | JSONException e) {
                 e.printStackTrace();
                 return false;

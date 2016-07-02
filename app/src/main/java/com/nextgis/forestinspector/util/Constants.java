@@ -31,6 +31,7 @@ public interface Constants
     String FITAG                        = "forest inspector";
     int    MAX_DOCUMENTS                = 100;
     int    MAX_NOTES                    = 100;
+    int    MONTH_TO_LOAD_FV_DATA        = -6;
     String TEMP_DOCUMENT_FEATURE_FOLDER = "temp_document";
     String SIGN_FILENAME                = "sign.png";
     String SIGN_DESCRIPTION             = "sign";
@@ -228,6 +229,7 @@ public interface Constants
     int LAYERTYPE_ULV   = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 3);
     int LAYERTYPE_KV    = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 4);
     int LAYERTYPE_NOTES = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 5);
+    int LAYERTYPE_FV    = 1 << (com.nextgis.maplib.util.Constants.LAYERTYPE_SYSMAX + 6);
 
     String FRAGMENT_PRODUCTION_FILLER        = "production_filler";
     String FRAGMENT_SHEET_FILLER             = "sheet_filler";
