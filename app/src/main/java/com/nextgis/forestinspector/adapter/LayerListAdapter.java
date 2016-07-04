@@ -65,6 +65,7 @@ public class LayerListAdapter
                 R.attr.ic_action_visibility_on, R.attr.ic_action_visibility_off};
         TypedArray ta = mActivity.obtainStyledAttributes(attrs);
         mVisibilityOn = ta.getDrawable(0);
+        //noinspection ResourceType
         mVisibilityOff = ta.getDrawable(1);
         ta.recycle();
 
