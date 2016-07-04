@@ -104,6 +104,10 @@ public class MapEditFragment
             mainButton.setVisibility(View.GONE);
         }
 
+        if (null != mStatusPanel) {
+            mStatusPanel.removeAllViews();
+        }
+
         mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_EDIT);
         final BottomToolbar toolbar = activity.getBottomToolbar();
         toolbar.setVisibility(View.VISIBLE);
@@ -141,6 +145,15 @@ public class MapEditFragment
             mainButton.setVisibility(View.VISIBLE);
         }
 
+        if (null != mStatusPanel) {
+            if (mShowStatusPanel) {
+                mStatusPanel.setVisibility(View.VISIBLE);
+                fillStatusPanel(null);
+            } else {
+                mStatusPanel.removeAllViews();
+            }
+        }
+
         // Ask for text from user input or intersect with parcels
         activity.showAskParcelTextDialog();
 
@@ -154,6 +167,10 @@ public class MapEditFragment
         View mainButton = activity.getFAB();
         if (null != mainButton) {
             mainButton.setVisibility(View.GONE);
+        }
+
+        if (null != mStatusPanel) {
+            mStatusPanel.removeAllViews();
         }
 
         mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_EDIT_BY_WALK);
