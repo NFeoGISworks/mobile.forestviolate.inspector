@@ -247,7 +247,7 @@ public class SelectTerritoryActivity
                 return true;
 
             case R.id.action_cancel:
-                finish();
+                apply();
                 return true;
 
             case R.id.action_settings:
@@ -256,6 +256,14 @@ public class SelectTerritoryActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onBackPressed()
+    {
+        apply();
+        super.onBackPressed();
     }
 
 

@@ -613,7 +613,6 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
                                 stopGeometryByWalk();
                                 setMode(MODE_EDIT);
                                 setToolbar(toolbar);
-
                             }
                         });
 
@@ -872,8 +871,9 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
     protected void startGeometryByWalk()
     {
         GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mEditFeature.getGeometry();
-        if(null == multiPolygon) {
+        if (null == multiPolygon) {
             multiPolygon = new GeoMultiPolygon();
+            multiPolygon.add(new GeoPolygon());
             mEditFeature.setGeometry(multiPolygon);
         }
 
@@ -883,14 +883,22 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         mReceiver = new WalkEditReceiver();
         mContext.registerReceiver(mReceiver, intentFilter);
 
-        // start service
+        if (WalkEditService.isServiceRunning(mContext)) {
+            return;
+        }
+
+        // start service if not started yet
+        DocumentsLayer layer = DocumentEditFeature.getDocumentsLayer();
+        GeoGeometry geometry = multiPolygon.get(0).getOuterRing();
+
         Intent trackerService = new Intent(mContext, WalkEditService.class);
         trackerService.setAction(WalkEditService.ACTION_START);
-        trackerService.putExtra(ConstantsUI.KEY_GEOMETRY, GeoConstants.GTPolygon);
-        DocumentsLayer layer = mEditFeature.getDocumentsLayer();
-        if(null != layer)
+        trackerService.putExtra(ConstantsUI.KEY_GEOMETRY, geometry);
+        if (null != layer) {
             trackerService.putExtra(ConstantsUI.KEY_LAYER_ID, layer.getId());
+        }
         trackerService.putExtra(ConstantsUI.TARGET_CLASS, mContext.getClass().getName());
+
         mContext.startService(trackerService);
     }
 
@@ -912,10 +920,10 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            GeoGeometry geometry = (GeoGeometry) intent.getSerializableExtra(ConstantsUI.KEY_GEOMETRY);
+            GeoLinearRing outerRing = (GeoLinearRing) intent.getSerializableExtra(ConstantsUI.KEY_GEOMETRY);
             GeoMultiPolygon multiPolygon = (GeoMultiPolygon) mEditFeature.getGeometry();
-            multiPolygon.set(0, geometry);
-            mEditFeature.setGeometry(multiPolygon);
+            GeoPolygon polygon = multiPolygon.get(0);
+            polygon.setOuterRing(outerRing);
             mMapViewOverlays.postInvalidate();
         }
     }

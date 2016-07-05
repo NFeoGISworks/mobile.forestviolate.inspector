@@ -455,6 +455,7 @@ public class MapFragment
                 mStatusPanel.setVisibility(View.VISIBLE);
                 fillStatusPanel(null);
             } else {
+                mStatusPanel.setVisibility(View.GONE);
                 mStatusPanel.removeAllViews();
             }
         }

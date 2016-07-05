@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.fragment;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,16 +44,33 @@ public class MapEditFragment
         extends MapFragment
         implements EditEventListener
 {
+    public static final String SHOW_EDIT_MODE_PANEL = "show_edit_mode_panel";
+
     protected DocumentEditFeature mEditFeature;
 
     protected EditTerritoryOverlay mTerritoryOverlay;
     protected float                mTolerancePX;
+
+    protected boolean mShowEditModePanel = false;
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(SHOW_EDIT_MODE_PANEL, mShowEditModePanel);
+    }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        if (null != savedInstanceState) {
+            mShowEditModePanel = savedInstanceState.getBoolean(SHOW_EDIT_MODE_PANEL);
+        }
 
         Bundle extras = getActivity().getIntent().getExtras();
 
@@ -86,6 +104,23 @@ public class MapEditFragment
 
 
     @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
+        BottomToolbar toolbar = activity.getBottomToolbar();
+
+        if (toolbar.getVisibility() == View.VISIBLE) {
+            if (null != mStatusPanel) {
+                mStatusPanel.setVisibility(View.GONE);
+                mStatusPanel.removeAllViews();
+            }
+        }
+    }
+
+
+    @Override
     public void updateTerritory(GeoGeometry geometry)
     {
         if (null != geometry) {
@@ -105,8 +140,11 @@ public class MapEditFragment
         }
 
         if (null != mStatusPanel) {
+            mStatusPanel.setVisibility(View.GONE);
             mStatusPanel.removeAllViews();
         }
+
+        mShowEditModePanel = true;
 
         mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_EDIT);
         final BottomToolbar toolbar = activity.getBottomToolbar();
@@ -134,6 +172,10 @@ public class MapEditFragment
         if (mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_NONE
                 || mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_HIGHLIGHT) { return; }
 
+        if (mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_EDIT_BY_WALK) {
+            mTerritoryOverlay.stopGeometryByWalk();
+        }
+
         SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
         final BottomToolbar toolbar = activity.getBottomToolbar();
         if (null != toolbar) {
@@ -145,11 +187,14 @@ public class MapEditFragment
             mainButton.setVisibility(View.VISIBLE);
         }
 
+        mShowEditModePanel = false;
+
         if (null != mStatusPanel) {
             if (mShowStatusPanel) {
                 mStatusPanel.setVisibility(View.VISIBLE);
                 fillStatusPanel(null);
             } else {
+                mStatusPanel.setVisibility(View.GONE);
                 mStatusPanel.removeAllViews();
             }
         }
@@ -172,6 +217,8 @@ public class MapEditFragment
         if (null != mStatusPanel) {
             mStatusPanel.removeAllViews();
         }
+
+        mShowEditModePanel = true;
 
         mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_EDIT_BY_WALK);
         final BottomToolbar toolbar = activity.getBottomToolbar();
@@ -209,5 +256,16 @@ public class MapEditFragment
                 addByHand();
             }
         }
+    }
+
+
+    @Override
+    protected void fillStatusPanel(Location location)
+    {
+        if (mShowEditModePanel) {
+            return;
+        }
+
+        super.fillStatusPanel(location);
     }
 }
