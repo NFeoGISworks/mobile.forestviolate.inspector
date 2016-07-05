@@ -331,6 +331,8 @@ public class SelectTerritoryActivity
 
     public String getTerritoryText()
     {
-        return mEditFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY);
+        return null == mEditFeature
+               ? ""
+               : mEditFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY);
     }
 }
