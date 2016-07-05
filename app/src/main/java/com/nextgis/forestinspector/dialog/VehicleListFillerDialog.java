@@ -110,9 +110,9 @@ public class VehicleListFillerDialog
             return false;
         }
 
-        if (TextUtils.isEmpty(mNameView.getText().toString()) ||
-            TextUtils.isEmpty(mDescView.getText().toString()) ||
-            TextUtils.isEmpty(mNumsView.getText().toString()) ||
+        if (TextUtils.isEmpty(mNameView.getText().toString()) &&
+            TextUtils.isEmpty(mDescView.getText().toString()) &&
+            TextUtils.isEmpty(mNumsView.getText().toString()) &&
             TextUtils.isEmpty(mUserView.getText().toString())) {
 
             Toast.makeText(
