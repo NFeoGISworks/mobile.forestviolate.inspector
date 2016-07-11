@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import com.nextgis.forestinspector.MainApplication;
 import com.nextgis.forestinspector.activity.SelectTerritoryActivity;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
+import com.nextgis.forestinspector.dialog.InputParcelTextDialog;
 import com.nextgis.forestinspector.overlay.EditTerritoryOverlay;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoGeometry;
@@ -42,7 +43,8 @@ import com.nextgis.maplibui.util.ConstantsUI;
 
 public class MapEditFragment
         extends MapFragment
-        implements EditEventListener
+        implements EditEventListener,
+                   SelectTerritoryActivity.EventListener
 {
     public static final String SHOW_EDIT_MODE_PANEL = "show_edit_mode_panel";
 
@@ -104,6 +106,15 @@ public class MapEditFragment
 
 
     @Override
+    public void onDestroyView()
+    {
+        mTerritoryOverlay.removeListener(this);
+
+        super.onDestroyView();
+    }
+
+
+    @Override
     public void onResume()
     {
         super.onResume();
@@ -131,7 +142,7 @@ public class MapEditFragment
     }
 
 
-    public void addByHand()
+    protected BottomToolbar setEditToolbarsView()
     {
         SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
         View mainButton = activity.getFAB();
@@ -146,8 +157,7 @@ public class MapEditFragment
 
         mShowEditModePanel = true;
 
-        mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_EDIT);
-        final BottomToolbar toolbar = activity.getBottomToolbar();
+        BottomToolbar toolbar = activity.getBottomToolbar();
         toolbar.setVisibility(View.VISIBLE);
         toolbar.getBackground().setAlpha(128);
         Menu menu = toolbar.getMenu();
@@ -155,27 +165,12 @@ public class MapEditFragment
             menu.clear();
         }
 
-        mTerritoryOverlay.setToolbar(toolbar);
+        return toolbar;
     }
 
 
-    @Override
-    public void onStartEditSession()
+    protected void setNormalToolbarsView()
     {
-
-    }
-
-
-    @Override
-    public void onFinishEditSession()
-    {
-        if (mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_NONE
-                || mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_HIGHLIGHT) { return; }
-
-        if (mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_EDIT_BY_WALK) {
-            mTerritoryOverlay.stopGeometryByWalk();
-        }
-
         SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
         final BottomToolbar toolbar = activity.getBottomToolbar();
         if (null != toolbar) {
@@ -198,38 +193,100 @@ public class MapEditFragment
                 mStatusPanel.removeAllViews();
             }
         }
+    }
 
-        // Ask for text from user input or intersect with parcels
-        activity.showAskParcelTextDialog();
-
-        mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_HIGHLIGHT);
+    public void addByHand()
+    {
+        BottomToolbar toolbar = setEditToolbarsView();
+        mTerritoryOverlay.setEditModeToolbar(toolbar);
     }
 
 
     public void addByWalk()
     {
+        BottomToolbar toolbar = setEditToolbarsView();
+        mTerritoryOverlay.setEditByWalkModeToolbar(toolbar);
+    }
+
+
+    protected void finishEditSession(boolean closeActivity)
+    {
+        setNormalToolbarsView();
+
+        if (mTerritoryOverlay.getMode() == EditTerritoryOverlay.MODE_EDIT) {
+            mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_HIGHLIGHT);
+
+            // Ask for text from user input or intersect with parcels
+            InputParcelTextDialog dialog = new InputParcelTextDialog();
+            dialog.setCloseActivity(closeActivity);
+            dialog.show(getFragmentManager(), "input_parcel_text");
+
+        } else if (closeActivity) {
+            getActivity().finish();
+        }
+    }
+
+
+    protected void finishEditByWalkSession(boolean closeActivity)
+    {
+        mTerritoryOverlay.stopGeometryByWalk();
+        mTerritoryOverlay.setEditModeToolbar(null); // to edit mode toolbar
+
+        finishEditSession(closeActivity);
+    }
+
+
+    protected void cancelEditSession()
+    {
+        setNormalToolbarsView();
+        mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_NONE);
+
         SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
-        View mainButton = activity.getFAB();
-        if (null != mainButton) {
-            mainButton.setVisibility(View.GONE);
+        activity.clearTerritoryGeometry();
+    }
+
+
+    @Override
+    public void onStartEditSession()
+    {
+
+    }
+
+
+    @Override
+    public void onFinishEditSession()
+    {
+        finishEditSession(false);
+    }
+
+
+    @Override
+    public void onFinishEditByWalkSession()
+    {
+        finishEditByWalkSession(false);
+    }
+
+
+    @Override
+    public void onApply()
+    {
+        switch (mTerritoryOverlay.getMode()) {
+            case EditTerritoryOverlay.MODE_EDIT:
+            default:
+                finishEditSession(true);
+                break;
+
+            case EditTerritoryOverlay.MODE_EDIT_BY_WALK:
+                finishEditByWalkSession(true);
+                break;
         }
+    }
 
-        if (null != mStatusPanel) {
-            mStatusPanel.removeAllViews();
-        }
 
-        mShowEditModePanel = true;
-
-        mTerritoryOverlay.setMode(EditTerritoryOverlay.MODE_EDIT_BY_WALK);
-        final BottomToolbar toolbar = activity.getBottomToolbar();
-        toolbar.setVisibility(View.VISIBLE);
-        toolbar.getBackground().setAlpha(128);
-        Menu menu = toolbar.getMenu();
-        if (null != menu) {
-            menu.clear();
-        }
-
-        mTerritoryOverlay.setToolbar(toolbar);
+    @Override
+    public void onCancel()
+    {
+        cancelEditSession();
     }
 
 

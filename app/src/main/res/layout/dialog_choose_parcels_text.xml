@@ -3,6 +3,7 @@
   ~ Project: Forest violations
   ~ Purpose: Mobile application for registering facts of the forest violations.
   ~ Author:  Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
   ~ *****************************************************************************
   ~ Copyright (c) 2015. NextGIS, info@nextgis.com
   ~
@@ -20,32 +21,51 @@
   ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    >
 
-    <RadioGroup
-        android:id="@+id/ck_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    <RadioButton
-        android:layout_width="wrap_content"
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:text="@string/get_text_from_parcels"
-        android:id="@+id/ck_from_parcels"
-        android:checked="true"/>
-
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/input_text"
-        android:id="@+id/ck_input_text"/>
-    </RadioGroup>
-    <EditText
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/ed_parcel_text"
-        android:enabled="false"
-        android:hint="@string/territory"/>
+        android:orientation="vertical"
+        >
+
+        <RadioGroup
+            android:id="@+id/ck_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+
+            <RadioButton
+                android:id="@+id/ck_from_parcels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_text_from_parcels"
+                android:checked="true"
+                />
+
+            <RadioButton
+                android:id="@+id/ck_input_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/input_text"
+                />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/parcel_text_editor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start|top"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:enabled="false"
+            android:hint="@string/territory"
+            />
+
+    </LinearLayout>
+
 </LinearLayout>

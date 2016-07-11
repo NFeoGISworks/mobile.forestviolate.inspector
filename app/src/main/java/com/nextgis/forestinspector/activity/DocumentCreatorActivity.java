@@ -418,6 +418,10 @@ public abstract class DocumentCreatorActivity
 
         GeoEnvelope env = mEditFeature.getGeometry().getEnvelope();
 
+        if (!env.isInit()) {
+            return;
+        }
+
         Uri uri = Uri.parse(
                 "content://" + mApp.getAuthority() + "/" + Constants.KEY_LAYER_KV);
         uri = uri.buildUpon()

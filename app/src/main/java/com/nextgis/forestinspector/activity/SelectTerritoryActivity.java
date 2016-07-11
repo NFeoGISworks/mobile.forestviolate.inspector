@@ -24,6 +24,7 @@ package com.nextgis.forestinspector.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,12 +44,26 @@ import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 public class SelectTerritoryActivity
         extends FIActivity
+        implements InputParcelTextDialog.EventListener
 {
     protected static final int TERRITORY_ACTIVITY = 55;
 
     protected DocumentEditFeature mEditFeature;
     protected TextView            mTerritoryText;
     protected View                mMainButton;
+
+    protected EventListener mEventListener;
+
+
+    @Override
+    public void onAttachFragment(Fragment fragment)
+    {
+        super.onAttachFragment(fragment);
+
+        if (fragment instanceof SelectTerritoryActivity.EventListener) {
+            setEventListener((SelectTerritoryActivity.EventListener) fragment);
+        }
+    }
 
 
     @Override
@@ -220,6 +235,15 @@ public class SelectTerritoryActivity
     }
 
 
+    public void setTerritoryTextByGeom()
+    {
+        String text = mEditFeature.getTerritoryTextByGeom(
+                getString(R.string.forestry), getString(R.string.district_forestry),
+                getString(R.string.parcel), getString(R.string.unit));
+        setTerritoryText(text);
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -243,11 +267,11 @@ public class SelectTerritoryActivity
                 return true;
 
             case R.id.action_apply:
-                apply();
+                applyAction();
                 return true;
 
             case R.id.action_cancel:
-                apply();
+                cancelAction();
                 return true;
 
             case R.id.action_settings:
@@ -262,8 +286,26 @@ public class SelectTerritoryActivity
     @Override
     public void onBackPressed()
     {
-        apply();
+        cancelAction();
         super.onBackPressed();
+    }
+
+
+    protected void applyAction()
+    {
+        if (null != mEventListener) {
+            mEventListener.onApply();
+        }
+    }
+
+
+    protected void cancelAction()
+    {
+        if (null != mEventListener) {
+            mEventListener.onCancel();
+        }
+
+        finish();
     }
 
 
@@ -271,15 +313,6 @@ public class SelectTerritoryActivity
     {
         LayerListDialog dialog = new LayerListDialog();
         dialog.show(getSupportFragmentManager(), Constants.FRAGMENT_LAYER_LIST);
-    }
-
-
-    private void apply()
-    {
-        MapEditFragment mapFragment =
-                (MapEditFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        if (null != mapFragment) { mapFragment.onFinishEditSession(); }
-        finish();
     }
 
 
@@ -317,15 +350,11 @@ public class SelectTerritoryActivity
     public void clearTerritoryGeometry()
     {
         mEditFeature.setGeometry(null);
-    }
+        mEditFeature.setFieldValue(Constants.FIELD_DOCUMENTS_TERRITORY, "");
 
-
-    public void setTerritoryTextByGeom()
-    {
-        String text = mEditFeature.getTerritoryTextByGeom(
-                getString(R.string.forestry), getString(R.string.district_forestry),
-                getString(R.string.parcel), getString(R.string.unit));
-        setTerritoryText(text);
+        if (null != mTerritoryText) {
+            mTerritoryText.setText("");
+        }
     }
 
 
@@ -334,5 +363,40 @@ public class SelectTerritoryActivity
         return null == mEditFeature
                ? ""
                : mEditFeature.getFieldValueAsString(Constants.FIELD_DOCUMENTS_TERRITORY);
+    }
+
+
+    @Override
+    public void onParcelTextSelected()
+    {
+        finish();
+    }
+
+
+    @Override
+    public void onEditorTextSelected()
+    {
+        finish();
+    }
+
+
+    @Override
+    public void onCancelDialog()
+    {
+        finish();
+    }
+
+
+    public void setEventListener(EventListener listener)
+    {
+        mEventListener = listener;
+    }
+
+
+    public interface EventListener
+    {
+        void onApply();
+
+        void onCancel();
     }
 }

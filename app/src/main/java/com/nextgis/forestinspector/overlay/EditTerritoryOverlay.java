@@ -176,7 +176,6 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         fillDrawItems(mEditFeature.getGeometry());
 
         if (mode == MODE_EDIT) {
-
             for (EditEventListener listener : mListeners) {
                 listener.onStartEditSession();
             }
@@ -514,110 +513,140 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
         mDrawItems.fillGeometry(0, mEditFeature.getGeometry(), mapDrawable);
     }
 
-    public void setToolbar(final BottomToolbar toolbar)
+
+    public void setEditModeToolbar(final BottomToolbar toolbar)
+    {
+        if (null == toolbar && null == mCurrentToolbar) {
+            return;
+        }
+
+        if (null != toolbar && mCurrentToolbar != toolbar) {
+            mCurrentToolbar = toolbar;
+        }
+
+        setMode(MODE_EDIT);
+
+        mCurrentToolbar.setNavigationIcon(com.nextgis.maplibui.R.drawable.ic_action_apply_dark);
+        mCurrentToolbar.setNavigationContentDescription(com.nextgis.maplibui.R.string.apply);
+
+        mCurrentToolbar.setNavigationOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                finishEditSession();
+            }
+        });
+
+        if (mCurrentToolbar.getMenu() != null) {
+            mCurrentToolbar.getMenu().clear();
+        }
+
+        mCurrentToolbar.inflateMenu(R.menu.edit_multipolygon);
+
+        mCurrentToolbar.setOnMenuItemClickListener(new BottomToolbar.OnMenuItemClickListener()
+        {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem)
+            {
+                if (null == mEditFeature) {
+                    return false;
+                }
+
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_edit_move_point_to_center:
+                        if (!isItemValid()) {
+                            return false;
+                        }
+                        moveSelectedPoint(mCanvasCenterX, mCanvasCenterY);
+                        break;
+
+                    case R.id.menu_edit_move_point_to_current_location:
+                        if (!isItemValid()) {
+                            return false;
+                        }
+
+                        Activity parent = (Activity) mContext;
+                        GpsEventSource gpsEventSource =
+                                ((IGISApplication) parent.getApplication()).getGpsEventSource();
+                        Location location = gpsEventSource.getLastKnownLocation();
+                        if (null != location) {
+                            //change to screen coordinates
+                            GeoPoint pt = new GeoPoint(location.getLongitude(), location.getLatitude());
+                            pt.setCRS(GeoConstants.CRS_WGS84);
+                            pt.project(GeoConstants.CRS_WEB_MERCATOR);
+                            MapDrawable mapDrawable = mMapViewOverlays.getMap();
+                            GeoPoint screenPt = mapDrawable.mapToScreen(pt);
+                            moveSelectedPoint((float) screenPt.getX(), (float) screenPt.getY());
+                        }
+                        break;
+
+                    case R.id.menu_edit_add_new_point:
+                        return addGeometry(GeoConstants.GTPoint);
+
+                    case R.id.menu_edit_add_new_line:
+                        return addGeometry(GeoConstants.GTLineString);
+
+                    case R.id.menu_edit_add_new_polygon:
+                        return addGeometry(GeoConstants.GTPolygon);
+
+                    case R.id.menu_edit_add_new_multipolygon:
+                        return addGeometry(GeoConstants.GTMultiPolygon);
+
+                    case R.id.menu_edit_delete_line:
+                    case R.id.menu_edit_delete_polygon:
+                        return deleteGeometry();
+
+                    case R.id.menu_edit_delete_point:
+                        return deletePoint();
+                }
+
+                return true;
+            }
+        });
+    }
+
+
+    public void setEditByWalkModeToolbar(final BottomToolbar toolbar)
     {
         if (null == toolbar) {
             return;
         }
 
-        mCurrentToolbar = toolbar;
+        setMode(MODE_EDIT_BY_WALK);
+
+        if (mCurrentToolbar != toolbar) {
+            mCurrentToolbar = toolbar;
+        }
+
         mCurrentToolbar.setNavigationIcon(com.nextgis.maplibui.R.drawable.ic_action_apply_dark);
         mCurrentToolbar.setNavigationContentDescription(com.nextgis.maplibui.R.string.apply);
 
-        switch (mMode) {
-            case MODE_EDIT:
-                toolbar.setNavigationOnClickListener(
-                        new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View view)
-                            {
-                                for (EditEventListener listener : mListeners) {
-                                    listener.onFinishEditSession();
-                                }
+        mCurrentToolbar.setNavigationOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                finishEditByWalkSession();
+            }
+        });
 
-                                setMode(MODE_HIGHLIGHT);
-                            }
-                        });
+        startGeometryByWalk();
+    }
 
-                if (toolbar.getMenu() != null) {
-                    toolbar.getMenu().clear();
-                }
 
-                toolbar.inflateMenu(R.menu.edit_multipolygon);
+    public void finishEditSession()
+    {
+        for (EditEventListener listener : mListeners) {
+            listener.onFinishEditSession();
+        }
+    }
 
-                toolbar.setOnMenuItemClickListener(
-                        new BottomToolbar.OnMenuItemClickListener()
-                        {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem)
-                            {
-                                if (null == mEditFeature) {
-                                    return false;
-                                }
 
-                                if (menuItem.getItemId() ==
-                                        R.id.menu_edit_move_point_to_center) {
-                                    if (!isItemValid()) {
-                                        return false;
-                                    }
-
-                                    moveSelectedPoint(mCanvasCenterX, mCanvasCenterY);
-
-                                } else if (menuItem.getItemId() ==
-                                        R.id.menu_edit_move_point_to_current_location) {
-                                    if (!isItemValid()) {
-                                        return false;
-                                    }
-
-                                    Activity parent = (Activity) mContext;
-                                    GpsEventSource gpsEventSource =
-                                            ((IGISApplication) parent.getApplication()).getGpsEventSource();
-                                    Location location = gpsEventSource.getLastKnownLocation();
-                                    if (null != location) {
-                                        //change to screen coordinates
-                                        GeoPoint pt = new GeoPoint(
-                                                location.getLongitude(), location.getLatitude());
-                                        pt.setCRS(GeoConstants.CRS_WGS84);
-                                        pt.project(GeoConstants.CRS_WEB_MERCATOR);
-                                        MapDrawable mapDrawable = mMapViewOverlays.getMap();
-                                        GeoPoint screenPt = mapDrawable.mapToScreen(pt);
-                                        moveSelectedPoint((float) screenPt.getX(), (float) screenPt.getY());
-                                    }
-                                } else if (menuItem.getItemId() == R.id.menu_edit_add_new_point) {
-                                    return addGeometry(GeoConstants.GTPoint);
-                                } else if (
-                                        menuItem.getItemId() == R.id.menu_edit_add_new_line) {
-                                    return addGeometry(GeoConstants.GTLineString);
-                                } else if (
-                                        menuItem.getItemId() == R.id.menu_edit_add_new_polygon) {
-                                    return addGeometry(GeoConstants.GTPolygon);
-                                } else if (
-                                        menuItem.getItemId() == R.id.menu_edit_add_new_multipolygon) {
-                                    return addGeometry(GeoConstants.GTMultiPolygon);
-                                } else if (menuItem.getItemId() == R.id.menu_edit_delete_line ||
-                                           menuItem.getItemId() == R.id.menu_edit_delete_polygon) {
-                                    return deleteGeometry();
-                                } else if (menuItem.getItemId() == R.id.menu_edit_delete_point) {
-                                    return deletePoint();
-                                }
-                                return true;
-                            }
-                        });
-                break;
-            case MODE_EDIT_BY_WALK:
-                toolbar.setNavigationOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                stopGeometryByWalk();
-                                setMode(MODE_EDIT);
-                                setToolbar(toolbar);
-                            }
-                        });
-
-                startGeometryByWalk();
-                break;
+    public void finishEditByWalkSession()
+    {
+        for (EditEventListener listener : mListeners) {
+            listener.onFinishEditByWalkSession();
         }
     }
 

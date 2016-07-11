@@ -21,103 +21,213 @@
 
 package com.nextgis.forestinspector.dialog;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.activity.SelectTerritoryActivity;
+import com.nextgis.maplibui.dialog.StyledDialogFragment;
+import com.nextgis.maplibui.util.SettingsConstantsUI;
 
-/**
- * Created by bishop on 05.12.15.
- */
+
 public class InputParcelTextDialog
-        extends DialogFragment {
+        extends StyledDialogFragment
+{
+    protected static final String KEY_TEXT           = "text";
+    protected static final String KEY_CLOSE_ACTIVITY = "key_close_activity";
 
-    protected final String KEY_TEXT = "text";
-    protected EditText mParcelTextView;
+    protected EditText    mParcelTextEditor;
+    protected RadioButton mRbFromParcels;
+    protected RadioButton mRbInputText;
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    protected EventListener mEventListener;
 
-        final SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
-        String parcelText;
-        if (null != savedInstanceState) {
-            parcelText = savedInstanceState.getString(KEY_TEXT);
-        }
-        else{
-            parcelText = activity.getTerritoryText();
-        }
+    protected boolean mCloseActivity = false;
 
-
-        View view = View.inflate(activity, R.layout.dialog_choose_parcels_text, null);
-
-        mParcelTextView = (EditText) view.findViewById(R.id.ed_parcel_text);
-        if(!TextUtils.isEmpty(parcelText))
-            mParcelTextView.setText(parcelText);
-
-        RadioGroup radiogroup = (RadioGroup) view.findViewById(R.id.ck_group);
-        radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.ck_from_parcels:
-                        mParcelTextView.setEnabled(false);
-                        break;
-                    case R.id.ck_input_text:
-                        mParcelTextView.setEnabled(true);
-                        break;
-                }
-            }
-        });
-
-        final RadioButton rbFillFromParcels = (RadioButton) view.findViewById(R.id.ck_from_parcels);
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(R.string.input_territory_text).setView(view).setPositiveButton(
-                R.string.save, new DialogInterface.OnClickListener() {
-                    public void onClick(
-                            DialogInterface dialog,
-                            int id) {
-                        if(rbFillFromParcels.isChecked()){
-                            activity.setTerritoryTextByGeom();
-                        }
-                        else{
-                            activity.setTerritoryText(mParcelTextView.getText().toString());
-                        }
-
-                    }
-                }).setNegativeButton(
-                R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(
-                            DialogInterface dialog,
-                            int id) {
-                        // User cancelled the dialog
-                        activity.clearTerritoryGeometry();
-                    }
-                });
-        // Create the AlertDialog object and return it
-        AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(false);
-        return dialog;
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
-        outState.putString(KEY_TEXT, mParcelTextView.getText().toString());
+        outState.putString(KEY_TEXT, mParcelTextEditor.getText().toString());
+        outState.putBoolean(KEY_CLOSE_ACTIVITY, mCloseActivity);
         super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onAttach(Context context)
+    {
+        super.onAttach(context);
+
+        if (mCloseActivity) {
+            FragmentActivity activity = getActivity();
+
+            if (activity instanceof EventListener) {
+                setEventListener((EventListener) activity);
+            } else {
+                throw new RuntimeException("Activity must implement EventListener.");
+            }
+        }
+    }
+
+
+    @Override
+    public void onDetach()
+    {
+        setEventListener(null);
+
+        super.onDetach();
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        setKeepInstance(true);
+        setCancelable(false);
+        setThemeDark(isAppThemeDark());
+
+        super.onCreate(savedInstanceState);
+    }
+
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState)
+    {
+        final SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
+        String parcelText;
+        if (null != savedInstanceState) {
+            parcelText = savedInstanceState.getString(KEY_TEXT);
+            mCloseActivity = savedInstanceState.getBoolean(KEY_CLOSE_ACTIVITY);
+        } else {
+            parcelText = activity.getTerritoryText();
+            mCloseActivity = false;
+        }
+
+
+        View view = inflateThemedLayout(R.layout.dialog_choose_parcels_text);
+        mParcelTextEditor = (EditText) view.findViewById(R.id.parcel_text_editor);
+        mRbFromParcels = (RadioButton) view.findViewById(R.id.ck_from_parcels);
+        mRbInputText = (RadioButton) view.findViewById(R.id.ck_input_text);
+
+
+        if (isThemeDark()) {
+            setIcon(R.drawable.ic_action_edit_light);
+        } else {
+            setIcon(R.drawable.ic_action_edit_light);
+        }
+
+        setTitle(R.string.input_territory_text);
+        setView(view, true);
+        setPositiveText(R.string.save);
+        setNegativeText(R.string.cancel);
+
+
+        if (!TextUtils.isEmpty(parcelText)) {
+            mParcelTextEditor.setText(parcelText);
+        }
+
+        View.OnClickListener radioListener = new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                RadioButton rb = (RadioButton) v;
+
+                switch (rb.getId()) {
+                    case R.id.ck_from_parcels:
+                    default:
+                        mParcelTextEditor.setEnabled(false);
+                        break;
+
+                    case R.id.ck_input_text:
+                        mParcelTextEditor.setEnabled(true);
+                        break;
+                }
+            }
+        };
+
+        mRbFromParcels.setOnClickListener(radioListener);
+        mRbInputText.setOnClickListener(radioListener);
+
+
+        setOnPositiveClickedListener(new OnPositiveClickedListener()
+        {
+            @Override
+            public void onPositiveClicked()
+            {
+                SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
+
+                if (mRbFromParcels.isChecked()) {
+                    activity.setTerritoryTextByGeom();
+                    if (null != mEventListener) {
+                        mEventListener.onParcelTextSelected();
+                    }
+                } else {
+                    activity.setTerritoryText(mParcelTextEditor.getText().toString());
+                    if (null != mEventListener) {
+                        mEventListener.onEditorTextSelected();
+                    }
+                }
+            }
+        });
+
+        setOnNegativeClickedListener(new OnNegativeClickedListener()
+        {
+            @Override
+            public void onNegativeClicked()
+            {
+                SelectTerritoryActivity activity = (SelectTerritoryActivity) getActivity();
+                activity.clearTerritoryGeometry();
+                if (null != mEventListener) {
+                    mEventListener.onCancelDialog();
+                }
+            }
+        });
+
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+
+    // TODO: this is hack, make it via GISApplication
+    public boolean isAppThemeDark()
+    {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(SettingsConstantsUI.KEY_PREF_THEME, "light")
+                .equals("dark");
+    }
+
+
+    public void setCloseActivity(boolean closeActivity)
+    {
+        mCloseActivity = closeActivity;
+    }
+
+
+    public void setEventListener(EventListener listener)
+    {
+        mEventListener = listener;
+    }
+
+
+    public interface EventListener
+    {
+        void onParcelTextSelected();
+
+        void onEditorTextSelected();
+
+        void onCancelDialog();
     }
 }
