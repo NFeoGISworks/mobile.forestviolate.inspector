@@ -595,6 +595,7 @@ public class EditTerritoryOverlay extends Overlay implements MapViewEventListene
 
                     case R.id.menu_edit_delete_line:
                     case R.id.menu_edit_delete_polygon:
+                    case R.id.menu_edit_delete_multipolygon:
                         return deleteGeometry();
 
                     case R.id.menu_edit_delete_point:
