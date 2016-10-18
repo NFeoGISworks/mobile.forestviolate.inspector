@@ -788,7 +788,7 @@ public class InitService
             if (extent.isInit()) {
                 //download
                 try {
-                    downloadTiles(ksLayer, extent, 5, 11);
+                    downloadTiles(ksLayer, extent, 5, 7);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
