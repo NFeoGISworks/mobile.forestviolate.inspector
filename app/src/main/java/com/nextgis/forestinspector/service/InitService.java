@@ -755,7 +755,7 @@ public class InitService
             osmLayer.setURL(layerURL);
             osmLayer.setTMSType(GeoConstants.TMSTYPE_OSM);
             osmLayer.setMaxZoom(22);
-            osmLayer.setMinZoom(12.4f);
+            osmLayer.setMinZoom(11.4f);
             osmLayer.setVisible(true);
 
             map.addLayer(osmLayer);
@@ -778,7 +778,7 @@ public class InitService
             ksLayer.setName(kosmosnimkiLayerName);
             ksLayer.setURL(kosmosnimkiLayerURL);
             ksLayer.setTMSType(GeoConstants.TMSTYPE_OSM);
-            ksLayer.setMaxZoom(12.4f);
+            ksLayer.setMaxZoom(11.4f);
             ksLayer.setMinZoom(0);
             ksLayer.setVisible(true);
 
@@ -788,7 +788,7 @@ public class InitService
             if (extent.isInit()) {
                 //download
                 try {
-                    downloadTiles(ksLayer, extent, 5, 12);
+                    downloadTiles(ksLayer, extent, 5, 11);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
