@@ -28,7 +28,7 @@ public interface SettingsConstants
 
     String AUTHORITY      = "com.nextgis.forestinspector.provider";
     String SITE_URL       = "http://176.9.38.120/fv";
-    String KOSOSNIMKI_URL = "http://dev.citorus.ru/siren/relief/{z}/{x}/{y}.png";
+    String SPUTNIK_URL    = "http://tiles.maps.sputnik.ru/tiles/kmt2/{z}/{x}/{y}.png";
     String VIOLATIONS_URL =
             "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=96BBFFE869E14CE8B739874798E39B60&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png";
     //String VIOLATIONS_URL = "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=8D71968D94F644B5BFD7123A2937ADFC&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png";

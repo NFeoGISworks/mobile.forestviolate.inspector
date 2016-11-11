@@ -66,7 +66,6 @@ import com.nextgis.maplib.util.NGWUtil;
 import com.nextgis.maplib.util.NetworkUtil;
 import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
 import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
-import com.nextgis.maplibui.util.SettingsConstantsUI;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -745,22 +744,23 @@ public class InitService
             float minY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMINY, -2000.0f);
             float maxX = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXX, 2000.0f);
             float maxY = prefs.getFloat(SettingsConstants.KEY_PREF_USERMAXY, 2000.0f);
-
-            //add OpenStreetMap layer on application first run
-            String layerName = getString(R.string.osm);
-            String layerURL = SettingsConstantsUI.OSM_URL;
-            final RemoteTMSLayerUI osmLayer =
-                    new RemoteTMSLayerUI(getApplicationContext(), map.createLayerStorage());
-            osmLayer.setName(layerName);
-            osmLayer.setURL(layerURL);
-            osmLayer.setTMSType(GeoConstants.TMSTYPE_OSM);
-            osmLayer.setMaxZoom(22);
-            osmLayer.setMinZoom(11.4f);
-            osmLayer.setVisible(true);
-
-            map.addLayer(osmLayer);
-            //mMap.moveLayer(0, osmLayer);
             GeoEnvelope extent = new GeoEnvelope(minX, maxX, minY, maxY);
+
+//            //add OpenStreetMap layer on application first run
+//            String layerName = getString(R.string.osm);
+//            String layerURL = SettingsConstantsUI.OSM_URL;
+//            final RemoteTMSLayerUI osmLayer =
+//                    new RemoteTMSLayerUI(getApplicationContext(), map.createLayerStorage());
+//            osmLayer.setName(layerName);
+//            osmLayer.setURL(layerURL);
+//            osmLayer.setTMSType(GeoConstants.TMSTYPE_OSM);
+//            osmLayer.setMaxZoom(22);
+//            osmLayer.setMinZoom(11.4f);
+//            osmLayer.setVisible(true);
+//
+//            map.addLayer(osmLayer);
+//            //mMap.moveLayer(0, osmLayer);
+
 
         /*
         if(extent.isInit()) {
@@ -771,24 +771,24 @@ public class InitService
             }
         }*/
 
-            String kosmosnimkiLayerName = getString(R.string.topo);
-            String kosmosnimkiLayerURL = SettingsConstants.KOSOSNIMKI_URL;
-            RemoteTMSLayerUI ksLayer =
+            String sputnikLayerName = getString(R.string.topo);
+            String sputnikLayerURL = SettingsConstants.SPUTNIK_URL;
+            RemoteTMSLayerUI sputnikLayer =
                     new RemoteTMSLayerUI(getApplicationContext(), map.createLayerStorage());
-            ksLayer.setName(kosmosnimkiLayerName);
-            ksLayer.setURL(kosmosnimkiLayerURL);
-            ksLayer.setTMSType(GeoConstants.TMSTYPE_OSM);
-            ksLayer.setMaxZoom(11.4f);
-            ksLayer.setMinZoom(0);
-            ksLayer.setVisible(true);
+            sputnikLayer.setName(sputnikLayerName);
+            sputnikLayer.setURL(sputnikLayerURL);
+            sputnikLayer.setTMSType(GeoConstants.TMSTYPE_OSM);
+            sputnikLayer.setMaxZoom(19);
+            sputnikLayer.setMinZoom(0);
+            sputnikLayer.setVisible(true);
 
-            map.addLayer(ksLayer);
-            //mMap.moveLayer(1, ksLayer);
+            map.addLayer(sputnikLayer);
+            //mMap.moveLayer(1, sputnikLayer);
 
             if (extent.isInit()) {
                 //download
                 try {
-                    downloadTiles(ksLayer, extent, 5, 7);
+                    downloadTiles(sputnikLayer, extent, 5, 7);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
