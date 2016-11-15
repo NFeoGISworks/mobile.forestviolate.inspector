@@ -184,6 +184,7 @@ public class MainApplication
         mMap = new MapDrawable(bkBitmap, this, mapFullPath, new FILayerFactory());
         mMap.setName(mapName);
         mMap.load();
+        mMap.setMaxZoom(19);
 
         return mMap;
     }
