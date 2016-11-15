@@ -32,8 +32,8 @@ import android.widget.Spinner;
 import com.nextgis.forestinspector.R;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.map.NGWLookupTable;
+import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplibui.control.DateTime;
-import com.nextgis.maplibui.util.ConstantsUI;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -146,7 +146,7 @@ public class FieldWorksCreatorActivity
             }
 
             mContractDate = (DateTime) findViewById(R.id.contract_date);
-            mContractDate.setPickerType(ConstantsUI.DATE);
+            mContractDate.setPickerType(GeoConstants.FTDate);
             mContractDate.init(null, null, null);
 
             mContractNumber = (EditText) findViewById(R.id.contract_number);

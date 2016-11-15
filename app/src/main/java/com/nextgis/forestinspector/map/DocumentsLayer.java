@@ -30,6 +30,7 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
 import com.nextgis.forestinspector.datasource.DocumentFeature;
 import com.nextgis.forestinspector.util.Constants;
@@ -80,6 +81,7 @@ public class DocumentsLayer extends NGWVectorLayer {
     @Override
     public void sync(
             String authority,
+            Pair<Integer, Integer> ver,
             SyncResult syncResult)
     {
         if (0 != (mSyncType & com.nextgis.maplib.util.Constants.SYNC_NONE) || mFields.isEmpty()) {
@@ -90,7 +92,7 @@ public class DocumentsLayer extends NGWVectorLayer {
         for (ILayer layer : mLayers) {
             if (layer instanceof NGWLookupTable) {
                 NGWLookupTable ngwLayer = (NGWLookupTable) layer;
-                ngwLayer.sync(authority, syncResult);
+                ngwLayer.sync(authority, ver, syncResult);
             }
         }
 

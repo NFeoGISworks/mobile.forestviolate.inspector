@@ -1015,7 +1015,7 @@ public class InitService
                                 }
                             }
 
-                        } catch (IOException | JSONException | NGException e) {
+                        } catch (IOException | JSONException  e) {
                             e.printStackTrace();
                         }
 
@@ -1074,7 +1074,7 @@ public class InitService
                 JSONObject jsonDetail = features.getJSONObject(0);
                 int id = jsonDetail.getInt(NGWUtil.NGWKEY_ID);
                 GeoGeometry geom = GeoGeometryFactory.fromWKT(
-                        jsonDetail.getString(NGWUtil.NGWKEY_GEOM));
+                        jsonDetail.getString(NGWUtil.NGWKEY_GEOM), GeoConstants.CRS_WEB_MERCATOR);
                 GeoEnvelope env = geom.getEnvelope();
 
                 JSONObject fields = jsonDetail.getJSONObject(NGWUtil.NGWKEY_FIELDS);
@@ -1094,7 +1094,7 @@ public class InitService
                 edit.putFloat(SettingsConstants.KEY_PREF_USERMAXX, (float) env.getMaxX());
                 edit.putFloat(SettingsConstants.KEY_PREF_USERMAXY, (float) env.getMaxY());
                 return edit.commit();
-            } catch (IOException | JSONException | NGException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
                 return false;
             }

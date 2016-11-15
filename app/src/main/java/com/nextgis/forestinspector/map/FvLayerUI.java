@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.Pair;
 import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapContentProviderHelper;
@@ -53,6 +54,7 @@ public class FvLayerUI
     @Override
     public void sync(
             String authority,
+            Pair<Integer, Integer> ver,
             SyncResult syncResult)
     {
         Calendar calendar = Calendar.getInstance();
@@ -91,6 +93,6 @@ public class FvLayerUI
                     dateEnd, mServerWhere.length());
         }
 
-        super.sync(authority, syncResult);
+        super.sync(authority, ver, syncResult);
     }
 }

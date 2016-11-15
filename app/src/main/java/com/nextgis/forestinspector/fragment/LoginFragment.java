@@ -45,7 +45,7 @@ public class LoginFragment
 {
 
     @Override
-    public View onCreateView(
+    public View     onCreateView(
             LayoutInflater inflater,
             @Nullable
             ViewGroup container,
@@ -130,10 +130,6 @@ public class LoginFragment
         {
             updateButtonState();
             mUrlText = mURL.getText().toString().trim();
-
-            if (null != mManual && !mManual.isChecked()) {
-                mUrlText += ENDING;
-            }
         }
 
 
