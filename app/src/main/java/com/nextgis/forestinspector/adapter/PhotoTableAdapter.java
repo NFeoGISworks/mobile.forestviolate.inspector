@@ -24,12 +24,12 @@ package com.nextgis.forestinspector.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v7.internal.widget.ThemeUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -215,8 +215,10 @@ public abstract class PhotoTableAdapter
             viewHolder.mPhotoDesc.setEllipsize(null);
             viewHolder.mPhotoDesc.setMaxLines(999);
 
-            int backgroundColor =
-                    ThemeUtils.getThemeAttrColor(context, R.attr.photoDescBackgroundColor);
+            int[] attrs = new int[] {R.attr.photoDescBackgroundColor};
+            TypedArray ta = context.obtainStyledAttributes(attrs);
+            int backgroundColor = ta.getColor(0, 0);
+            ta.recycle();
 
             viewHolder.mPhotoDesc.setBackgroundColor(backgroundColor);
         }

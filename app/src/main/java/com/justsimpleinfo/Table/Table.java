@@ -23,7 +23,7 @@
 package com.justsimpleinfo.Table;
 
 import android.content.Context;
-import android.support.v7.internal.widget.ThemeUtils;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -90,12 +90,15 @@ public class Table
     {
         mContext = context;
 
-        BODY_BACKROUND_COLOR =
-                ThemeUtils.getThemeAttrColor(mContext, R.attr.tableBodyBackgroundColor);
-        HEADER_BACKROUND_COLOR =
-                ThemeUtils.getThemeAttrColor(mContext, R.attr.tableHeaderBackgroundColor);
-        CELL_BACKROUND_COLOR =
-                ThemeUtils.getThemeAttrColor(mContext, R.attr.tableCellBackgroundColor);
+        int[] attrs = new int[] {
+                R.attr.tableBodyBackgroundColor,
+                R.attr.tableHeaderBackgroundColor,
+                R.attr.tableCellBackgroundColor};
+        TypedArray ta = mContext.obtainStyledAttributes(attrs);
+        BODY_BACKROUND_COLOR = ta.getColor(0, 0);
+        HEADER_BACKROUND_COLOR = ta.getColor(1, 0);
+        CELL_BACKROUND_COLOR = ta.getColor(2, 0);
+        ta.recycle();
 
         MapBase map = MapBase.getInstance();
         mDocsLayer = null;

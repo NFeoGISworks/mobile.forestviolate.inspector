@@ -32,7 +32,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
-import android.support.v7.internal.widget.ThemeUtils;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -128,8 +127,11 @@ public class FloatingActionsMenu
         mLabelsMargin = getResources().getDimensionPixelSize(R.dimen.fab_labels_margin);
         mLabelsVerticalOffset = getResources().getDimensionPixelSize(R.dimen.fab_shadow_offset);
 
-        int primaryColor = ThemeUtils.getThemeAttrColor(context, R.attr.colorPrimary);
-        int accentColor = ThemeUtils.getThemeAttrColor(context, R.attr.colorAccent);
+        int[] attrs = new int[] {R.attr.colorPrimary, R.attr.colorAccent};
+        TypedArray ta = context.obtainStyledAttributes(attrs);
+        int primaryColor = ta.getColor(0, 0);
+        int accentColor = ta.getColor(1, 0);
+        ta.recycle();
 
         TypedArray attr =
                 context.obtainStyledAttributes(attributeSet, R.styleable.FloatingActionsMenu, 0, 0);

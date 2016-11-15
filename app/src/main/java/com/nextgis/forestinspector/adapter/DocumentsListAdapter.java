@@ -25,12 +25,12 @@ package com.nextgis.forestinspector.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v7.internal.widget.ThemeUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -79,8 +79,11 @@ public class DocumentsListAdapter
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         mUserId = prefs.getInt(SettingsConstants.KEY_PREF_USERID, -1);
-        mUserItemBackgroundColor =
-                ThemeUtils.getThemeAttrColor(context, R.attr.docItemBackgroundForCurrentUser);
+
+        int[] attrs = new int[] {R.attr.docItemBackgroundForCurrentUser};
+        TypedArray ta = context.obtainStyledAttributes(attrs);
+        mUserItemBackgroundColor = ta.getColor(0, 0);
+        ta.recycle();
 
         mMap = (MapEventSource) MapBase.getInstance();
 

@@ -23,6 +23,7 @@
 package com.nextgis.forestinspector.overlay;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -30,7 +31,6 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationManager;
-import android.support.v7.internal.widget.ThemeUtils;
 import android.view.MotionEvent;
 import android.widget.Toast;
 import com.nextgis.forestinspector.R;
@@ -81,10 +81,11 @@ public class SelectLocationOverlay
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        mFillColor =
-                ThemeUtils.getThemeAttrColor(mContext, com.nextgis.maplibui.R.attr.colorPrimary);
-        mOutlineColor = ThemeUtils.getThemeAttrColor(
-                mContext, com.nextgis.maplibui.R.attr.colorPrimaryDark);
+        int[] attrs = new int[] {R.attr.colorPrimary, R.attr.colorPrimaryDark};
+        TypedArray ta = mContext.obtainStyledAttributes(attrs);
+        mFillColor = ta.getColor(0, 0);
+        mOutlineColor = ta.getColor(1, 0);
+        ta.recycle();
 
         mAnchor = BitmapFactory.decodeResource(
                 mContext.getResources(), com.nextgis.maplibui.R.drawable.ic_action_anchor);
