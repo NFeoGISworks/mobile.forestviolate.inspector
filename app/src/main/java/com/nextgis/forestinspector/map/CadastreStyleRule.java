@@ -26,7 +26,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import com.nextgis.forestinspector.R;
 import com.nextgis.maplib.api.IStyleRule;
-import com.nextgis.maplib.display.SimpleTextPolygonStyle;
+import com.nextgis.maplib.display.SimplePolygonStyle;
 import com.nextgis.maplib.display.Style;
 import com.nextgis.maplib.map.NGWVectorLayer;
 
@@ -48,11 +48,11 @@ public abstract class CadastreStyleRule
 
     public static Style getDefaultStyle(Context context)
     {
-        SimpleTextPolygonStyle polygonStyle = new SimpleTextPolygonStyle();
+        SimplePolygonStyle polygonStyle = new SimplePolygonStyle();
         polygonStyle.setColor(context.getResources().getColor(R.color.primary_dark));
         polygonStyle.setWidth(3);
         polygonStyle.setFill(false);
-        polygonStyle.setTextSize(25);
+        polygonStyle.setTextSize(25.0f);
         return polygonStyle;
     }
 
@@ -68,7 +68,7 @@ public abstract class CadastreStyleRule
             text = "";
         }
 
-        SimpleTextPolygonStyle polygonStyle = (SimpleTextPolygonStyle) style;
+        SimplePolygonStyle polygonStyle = (SimplePolygonStyle) style;
         polygonStyle.setText(text);
     }
 }
