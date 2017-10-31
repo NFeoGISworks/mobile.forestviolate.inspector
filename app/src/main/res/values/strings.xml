@@ -325,4 +325,9 @@
 
     <string name="edit_account_summary">Editing a user password</string>
 
+    <string name="add_account">Add account</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_account_ask">Delete account?</string>
+    <string name="delete_account_summary">Delete account. All layers connected with this account will be deleted too. Active synchronization will be stopped.</string>
+    <string name="delete_account_warn_msg">Account will be deleted!\nAll account layers will be deleted!\nCurrent sync will be stopped!</string>
 </resources>

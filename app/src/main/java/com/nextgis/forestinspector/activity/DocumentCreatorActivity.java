@@ -50,6 +50,9 @@ import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplibui.control.DateTime;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -519,6 +522,15 @@ public abstract class DocumentCreatorActivity
     @Override
     public void onSign(File signatureFile)
     {
+        InputStream signatureStream;
+        try {
+            signatureStream = new FileInputStream(signatureFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(this, getString(R.string.error_db_insert), Toast.LENGTH_LONG).show();
+            return;
+        }
+
         AttachItem attachItem = mDocsLayer.getNewTempAttach(mEditFeature);
 
         if (null == attachItem) {
@@ -533,7 +545,7 @@ public abstract class DocumentCreatorActivity
         long featureId = mEditFeature.getId();
         long attachId = Long.parseLong(attachItem.getAttachId());
 
-        boolean res = mDocsLayer.insertAttachFile(featureId, attachId, signatureFile);
+        boolean res = mDocsLayer.insertAttachFile(featureId, attachId, signatureStream);
 
         if (res) {
             res = mDocsLayer.updateAttachWithFlags(mEditFeature, attachItem) > 0;

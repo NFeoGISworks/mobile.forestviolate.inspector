@@ -54,7 +54,10 @@ import com.nextgis.forestinspector.util.Constants;
 import com.nextgis.maplib.util.AttachItem;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -339,6 +342,15 @@ public class PhotoTableFragment
 
     protected void onPhotoTook(File tempPhotoFile)
     {
+        InputStream tempStream;
+        try {
+            tempStream = new FileInputStream(tempPhotoFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.d(TAG, "onPhotoTook(), tempStream == null");
+            return;
+        }
+
         AttachItem photoAttach = mDocsLayer.getNewTempAttach(mEditFeature);
 
         if (null == photoAttach) {
@@ -353,7 +365,7 @@ public class PhotoTableFragment
         long featureId = mEditFeature.getId();
         long attachId = Long.parseLong(photoAttach.getAttachId());
 
-        boolean res = mDocsLayer.insertAttachFile(featureId, attachId, tempPhotoFile);
+        boolean res = mDocsLayer.insertAttachFile(featureId, attachId, tempStream);
 
         if (res) {
             res = mDocsLayer.updateAttachWithFlags(mEditFeature, photoAttach) > 0;

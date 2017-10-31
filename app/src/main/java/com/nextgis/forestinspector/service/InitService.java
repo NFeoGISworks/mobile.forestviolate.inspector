@@ -60,6 +60,7 @@ import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.util.GeoConstants;
+import com.nextgis.maplib.util.HttpResponse;
 import com.nextgis.maplib.util.MapUtil;
 import com.nextgis.maplib.util.NGException;
 import com.nextgis.maplib.util.NGWUtil;
@@ -871,7 +872,7 @@ public class InitService
                                     {
                                         android.os.Process.setThreadPriority(
                                                 com.nextgis.maplib.util.Constants.DEFAULT_DRAW_THREAD_PRIORITY);
-                                        osmLayer.downloadTile(tile);
+                                        osmLayer.downloadTile(tile, false);
                                     }
                                 }));
             }
@@ -918,10 +919,11 @@ public class InitService
                 return true;
             }
 
-            String data = NetworkUtil.get(
+            HttpResponse response = NetworkUtil.get(
                     NGWUtil.getResourceMetaUrl(connection.getURL(), remoteId),
-                    connection.getLogin(), connection.getPassword());
+                    connection.getLogin(), connection.getPassword(), false);
 
+            String data = response.getResponseBody();
             if (null == data) {
                 throw new NGException(getString(R.string.error_download_data));
             }
@@ -991,16 +993,17 @@ public class InitService
                             String url =
                                     connection.getURL() + "/resource/" + ngwResource.getRemoteId()
                                             + "/child/";
-                            String response = NetworkUtil.get(url, connection.getLogin(),
-                                    connection.getPassword());
-                            if (null != response) {
-                                JSONArray children = new JSONArray(response);
+                            HttpResponse response = NetworkUtil.get(url, connection.getLogin(),
+                                    connection.getPassword(), false);
+                            String data = response.getResponseBody();
+                            if (null != data) {
+                                JSONArray children = new JSONArray(data);
 
                                 for (int k = 0; k < children.length(); ++k) {
-                                    JSONObject data = children.getJSONObject(k);
+                                    JSONObject jsonData = children.getJSONObject(k);
                                     try {
                                         String type =
-                                                data.getJSONObject("resource").getString("cls");
+                                                jsonData.getJSONObject("resource").getString("cls");
                                         if (!type.equals("query_layer")) {
                                             continue;
                                         }
@@ -1008,7 +1011,7 @@ public class InitService
                                         continue;
                                     }
 
-                                    queryLayer = new ResourceWithoutChildren(data, connection);
+                                    queryLayer = new ResourceWithoutChildren(jsonData, connection);
                                     //queryLayer.setParent(ngwResource);
                                     //queryLayer.fillPermissions();
                                     //ngwResource.getChildren().add(queryLayer);
@@ -1064,11 +1067,13 @@ public class InitService
             String sURL = NGWUtil.getFeaturesUrl(connection.getURL(), resourceId, "login=" + login);
 
             try {
-                String sResponse = NetworkUtil.get(
-                        sURL, connection.getLogin(), connection.getPassword());
-                if (null == sResponse) { return false; }
+                HttpResponse response =
+                        NetworkUtil.get(sURL, connection.getLogin(), connection.getPassword(),
+                                false);
+                String data = response.getResponseBody();
+                if (null == data) { return false; }
 
-                JSONArray features = new JSONArray(sResponse);
+                JSONArray features = new JSONArray(data);
                 if (features.length() == 0) { return false; }
 
                 JSONObject jsonDetail = features.getJSONObject(0);
@@ -1318,7 +1323,7 @@ public class InitService
             SimpleMarkerStyle style = new SimpleMarkerStyle();
             style.setType(SimpleMarkerStyle.MarkerStyleCircle);
             style.setColor(Color.BLUE);
-            style.setOutlineColor(Color.GREEN);
+            style.setOutColor(Color.GREEN);
             style.setSize(9);
             style.setWidth(3);
             SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(notesLayer, style);
@@ -1379,7 +1384,7 @@ public class InitService
             SimpleMarkerStyle style = new SimpleMarkerStyle();
             style.setType(SimpleMarkerStyle.MarkerStyleCircle);
             style.setColor(Color.RED);
-            style.setOutlineColor(Color.YELLOW);
+            style.setOutColor(Color.YELLOW);
             style.setSize(9);
             style.setWidth(3);
             SimpleFeatureRenderer renderer = new SimpleFeatureRenderer(fvLayerUI, style);

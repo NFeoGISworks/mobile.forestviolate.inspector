@@ -51,7 +51,8 @@ import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import java.util.List;
 
-import static com.nextgis.maplibui.util.SettingsConstantsUI.KEY_PREF_SYNC_PERIOD_SEC_LONG;
+import static com.nextgis.maplib.util.Constants.NOT_FOUND;
+import static com.nextgis.maplibui.util.SettingsConstantsUI.KEY_PREF_SYNC_PERIOD;
 
 
 public class SyncSettingsFragment
@@ -179,10 +180,9 @@ public class SyncSettingsFragment
             if (null != syncs && !syncs.isEmpty()) {
                 for (PeriodicSync sync : syncs) {
                     Bundle bundle = sync.extras;
-                    long period =
-                            bundle.getLong(KEY_PREF_SYNC_PERIOD_SEC_LONG, Constants.NOT_FOUND);
-                    if (period > 0) {
-                        prefValue = "" + period;
+                    String value = bundle.getString(SettingsConstantsUI.KEY_PREF_SYNC_PERIOD);
+                    if (value != null) {
+                        prefValue = value;
                         break;
                     }
                 }
@@ -215,18 +215,31 @@ public class SyncSettingsFragment
                     Preference preference,
                     Object newValue)
             {
-                long value = Long.parseLong(newValue.toString());
-                int id = ((ListPreference) preference).findIndexOfValue((String) newValue);
-                CharSequence summary = ((ListPreference) preference).getEntries()[id];
-                preference.setSummary(summary);
+                String value =(String) newValue;
+                long interval = Long.parseLong(value);
 
-                preference.getSharedPreferences()
-                        .edit()
-                        .putLong(SettingsConstantsUI.KEY_PREF_SYNC_PERIOD_SEC_LONG, value)
-                        .commit();
+                for (int i = 0; i < values.length; i++) {
+                    if (values[i].equals(newValue)) {
+                        timeInterval.setSummary(keys[i]);
+                        break;
+                    }
+                }
+
+                Bundle bundle = new Bundle();
+                bundle.putString(KEY_PREF_SYNC_PERIOD, value);
 
                 final Account account = mApp.getAccount(getString(R.string.account_name));
-                ContentResolver.addPeriodicSync(account, mApp.getAuthority(), Bundle.EMPTY, value);
+                if (interval == NOT_FOUND) {
+                    ContentResolver.removePeriodicSync(
+                            account, mApp.getAuthority(), bundle);
+                } else {
+                    ContentResolver.addPeriodicSync(
+                            account, mApp.getAuthority(), bundle, interval);
+                }
+
+                int id = ((ListPreference) preference).findIndexOfValue(value);
+                CharSequence summary = ((ListPreference) preference).getEntries()[id];
+                preference.setSummary(summary);
 
                 return true;
             }
@@ -276,7 +289,7 @@ public class SyncSettingsFragment
     protected void addAddAccountAction(PreferenceGroup actionCategory)
     {
         Preference preference = new Preference(mStyledContext);
-        preference.setTitle(com.nextgis.maplibui.R.string.add_account);
+        preference.setTitle(R.string.add_account);
 
         Intent intent = new Intent(mStyledContext, SyncLoginActivity.class);
         intent.putExtra(NGWLoginActivity.FOR_NEW_ACCOUNT, true);

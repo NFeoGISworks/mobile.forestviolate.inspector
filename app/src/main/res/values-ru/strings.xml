@@ -325,4 +325,9 @@
 
     <string name="edit_account_summary">Изменение пароля пользователя</string>
 
+    <string name="add_account">Добавить аккаунт</string>
+    <string name="delete_account">Удалить учетную запись</string>
+    <string name="delete_account_ask">Удалить учетную запись?</string>
+    <string name="delete_account_summary">Удаление учетной записи. Все слои связанные с этой учетной записью тоже будут удалены. Синхронизация будет остановлена.</string>
+    <string name="delete_account_warn_msg">Учетная запись будет удалена!\nВсе слои будут удалены!\nСинхронизация будет остановлена!</string>
 </resources>

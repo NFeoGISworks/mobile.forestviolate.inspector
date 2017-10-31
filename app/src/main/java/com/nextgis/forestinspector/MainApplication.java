@@ -224,6 +224,27 @@ public class MainApplication
         startActivity(intentSet);
     }
 
+    @Override
+    public void sendEvent(
+            String category,
+            String action,
+            String label)
+    {
+
+    }
+
+    @Override
+    public void sendScreen(String name)
+    {
+
+    }
+
+    @Override
+    public String getAccountsType()
+    {
+        return com.nextgis.maplib.util.Constants.NGW_ACCOUNT_TYPE;
+    }
+
 
     @Override
     protected int getThemeId(boolean isDark)
