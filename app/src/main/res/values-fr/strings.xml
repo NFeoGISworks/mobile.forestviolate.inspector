@@ -1,0 +1,333 @@
+<!--
+  ~ Project: Forest violations
+  ~ Purpose: Mobile application for registering facts of the forest violations.
+  ~ Author:  Dmitry Baryshnikov (aka Bishop), bishop.dev@gmail.com
+  ~ Author:  NikitaFeodonit, nfeodonit@yandex.com
+  ~ ******************************************************************************
+  ~ Copyright (c) 2015-2015. NextGIS, info@nextgis.com
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="app_name">Forest inspector</string>
+    <string name="account_name">Forest inspector</string>
+    <string name="title_documents">Documents</string>
+    <string name="title_map">Map</string>
+    <string name="action_settings">Settings</string>
+    <string name="app_description">The application for fulfil forest violation forms, send them to the central server and check their status, create and manage personal notifications.</string>
+    <string name="wwf_support"><![CDATA[The program was created with the financial support of the<br><a href=\"http://wwf.ru\">World Wide Fund for Nature (WWF)</a>.]]></string>
+    <string name="credits_intro">Credits:</string>
+    <string name="credits"><![CDATA[Some icons used in the application are from <a href=\"http://romannurik.github.io/AndroidAssetStudio/icons-launcher.html\">romannurik.github.io</a>, licensed under a <a href=\"http://creativecommons.org/licenses/by/3.0/\">CC BY 3.0 license</a>]]></string>
+    <string name="copyright"><![CDATA[Copyright © <a href=\"http://nextgis.com\">NextGIS</a>, 2015]]></string>
+    <string name="action_about">About</string>
+    <string name="topo">Topo</string>
+    <string name="geomixer_fv_tiles">GeoMixer violation tiles</string>
+    <string name="fi_login_title">Forest inspector account</string>
+    <string name="fi_login_description"><![CDATA[Input your login and password to the forest violation accounting server. After click \"Login\" the application will connect to the server. If connection will success, the downloading your working data from server will start. This process need a lot of traffic, so Wi-Fi connection recommended.]]></string>
+    <string name="fi_edit_pass_description">Enter new password to connect to the system server</string>
+    <string name="first_run">First run</string>
+    <string name="fi_url">Server URL</string>
+    <string name="error_init">Failed to initialize</string>
+    <string name="initialization">Initial setup</string>
+    <string name="create_base_layers">Create base layers</string>
+    <string name="check_server">Check server</string>
+    <string name="get_inspector_details">Get inspector details</string>
+    <string name="get_forest_cadastre">Get forest cadastre</string>
+    <string name="load_documents">Load documents</string>
+    <string name="load_linked_layers">Load linked layers</string>
+    <string name="load_notes">Load notes</string>
+    <string name="load_targeting">Load targeting</string>
+    <string name="load_regions">Load regions</string>
+    <string name="connecting">Connecting to server…</string>
+    <string name="connected">Connected</string>
+    <string name="check_tables_exist">Check tables exist</string>
+    <string name="error_wrong_server">The incompatible server</string>
+    <string name="done">Done</string>
+    <string name="working">Working…</string>
+    <string name="error_get_inspector_detail">Failed to get inspector detail</string>
+    <string name="error_unexpected">Unexpected error occurred</string>
+    <string name="cadastre">Forest cadastre</string>
+    <string name="show_status_panel">Status info panel</string>
+    <string name="show_status_panel_summary">Show current status info at bottom panel</string>
+    <string name="show_current_location">Show current location</string>
+    <string name="coordinates_format">Coordinates format</string>
+    <string name="coordinates_fraction_digits">Decimal places</string>
+    <string name="select_coordinates_format">Select coordinates format</string>
+    <string name="coordinates_format_summary">Coordinate text format</string>
+    <string name="keep_screen_on">Keep screen on</string>
+    <string name="keep_screen_on_summary">Do not turn off screen</string>
+    <string name="show_zoom_controls">Show zoom controls</string>
+    <string name="show_zoom_controls_summary">Show zoom in/zoom out control on the map</string>
+    <string name="click_to_change_account">Change account settings</string>
+    <string name="theme">Application theme</string>
+    <string name="of">of</string>
+    <string name="indictment">Indictment</string>
+    <string name="sheet_title">Tree sheet</string>
+    <string name="sheet_head">Head</string>
+    <string name="sheet_link">See tab \"Sheet\"</string>
+    <string name="sheet_item_name">Sheet</string>
+    <string name="notes">Notes</string>
+    <string name="targeting">Targeting</string>
+    <string name="regions">Regions</string>
+    <string name="targeting_selection">Targeting selection</string>
+    <string name="note_title">Note</string>
+    <string name="note_changing_title">Note changing</string>
+    <string name="note_item_name">Note</string>
+    <string name="note_start_date">Start Date</string>
+    <string name="note_end_date">End Date</string>
+    <string name="note_text">Note text</string>
+    <string name="note_hint">Enter a note text</string>
+    <string name="action_indictment">Indictment</string>
+    <string name="date_time_create_desc">Creation date and time</string>
+    <string name="creation_place_desc">Place</string>
+    <string name="violation_type">1. Violation type</string>
+    <string name="author">Indictment author, rank, id</string>
+    <string name="code_num">Code article</string>
+    <string name="code_num_def">Responsibility for violations of forest provides this article. 269 of the Criminal Code</string>
+    <string name="place_violation">2. The place of forest violations</string>
+    <string name="place_create_hint">Put place here</string>
+    <string name="forest_cat">Forest category</string>
+    <string name="violation_found_by">3. When and where detect violation</string>
+    <string name="violation_found_by_desc">name and details of organization, authority, municipal authority, position, name, if available - ID number, citizen address</string>
+    <string name="who_hint">Enter who violation was detected</string>
+    <string name="violation_when">4. When the committed violations of forest</string>
+    <string name="violation_when_desc">Date, time, when it is impossible to establish - presumably</string>
+    <string name="when_hint">Enter date here</string>
+    <string name="territory">Name of forestry, forest district, forest area, room blocks, allocating, sharing</string>
+    <string name="sign_and_send">Sign and send</string>
+    <string name="create_sheet">Create sheet</string>
+    <string name="create_production">Fill production form</string>
+    <string name="create_note">Create note</string>
+    <string name="crime">5. A supposed person who commits violations of forest</string>
+    <string name="crime_desc">Name of the legal entity, name of the individual entrepreneur, legal and postal address, bank details, name the year of birth of citizens, data of identity document, current address, and other information allowing to identify the person - offender</string>
+    <string name="crime_hint">Enter offender details</string>
+    <string name="description">Description</string>
+    <string name="description_hint">Enter description here</string>
+    <string name="description_desc">Number and date of the act in the direction of the competent authorities, # criminal case or an administrative offense protocol, other service marks</string>
+    <string name="people_info">7. Post persons who found violations of forest, constitutes an act of forest violations</string>
+    <string name="people_info_desc">The circumstances of the detection, the description of the place of commission, evidence of the commission, including material, and other information that allow qualified forest violations and prove the guilt of individuals; Was found himself face - intruder resistance compiler Act, the person to identify violations of forest, who is affected, and what is expressed</string>
+    <string name="crime_say">8. Explanations of the person (s) - the offender (s)</string>
+    <string name="crime_say_desc">In the case of an explanation on a separate sheet, this is done is appropriate record</string>
+    <string name="create_vehicles">Fill vehicles form</string>
+    <string name="create_photo_table">Fill photo table</string>
+    <string name="people_say">9. Explanation of persons involved in the detection of forest violations and drafting the act</string>
+    <string name="people_say_desc">In the case of an explanation on a separate sheet of this entry is</string>
+    <string name="downloaded">downloaded</string>
+    <string name="passid_is">, pass id is</string>
+    <string name="action_notes">Notification</string>
+    <string name="documents_layer">Documents</string>
+    <string name="no_selected_documents">The document is not selected</string>
+    <string name="indictment_tab_name">Indictment</string>
+    <string name="sheet_tab_name">Sheet</string>
+    <string name="production_tab_name">Production</string>
+    <string name="vehicle_tab_name">Vehicle</string>
+    <string name="photo_table_tab_name">Photo table</string>
+    <string name="on">on</string>
+    <string name="forestry">forestry</string>
+    <string name="district_forestry">district forestry</string>
+    <string name="parcel">parcel</string>
+    <string name="unit">unit(s)</string>
+    <string name="unit_caps">Unit(s)</string>
+    <string name="unit_hint">Enter a unit number(s)</string>
+    <string name="unit_desc">Unit number(s)</string>
+    <string name="possible_crime_desc">At the site of illegal logging are found individuals allegedly engaged in illegal logging</string>
+    <string name="officer_desc">Guns illegal logging handed enforcement officers</string>
+    <string name="inspector_desc">Inspector</string>
+    <string name="civil_desc">Those present</string>
+    <string name="number">#</string>
+    <string name="found_logging">Found illegal logging</string>
+    <string name="vehicles_found">At the site (near the site) found committing illegal logging following tools, mechanisms and objects timber</string>
+    <string name="owner_details">owner details</string>
+    <string name="species">Species</string>
+    <string name="thickness">Thickness</string>
+    <string name="stump_diameter">Stump diameter</string>
+    <string name="count">Count</string>
+    <string name="height_rank">Height rank</string>
+    <string name="category">Category</string>
+    <string name="click_to_set_value">Click here to set value</string>
+    <string name="error_number_mast_be_set">The number must be set</string>
+    <string name="error_author_must_be_set">The author must be set</string>
+    <string name="error_sheet_not_contain_entries">The sheet don\'t contain entries</string>
+    <string name="set_territory">Select territory</string>
+    <string name="error_territory_must_be_set">The violate territory must be set</string>
+    <string name="fix">Fix</string>
+    <string name="select_violation_territory">Then click check to apply or cross to cancel</string>
+    <string name="action_territory">Violation territory</string>
+    <string name="action_apply">Apply</string>
+    <string name="error_sheet_is_empty">The sheet is empty</string>
+    <string name="action_cadastre">Forest cadastre</string>
+    <string name="action_filter">Show all/selected</string>
+    <string name="action_search">Search parcels</string>
+    <string name="search_hint">Type search string here</string>
+    <string name="error_documents_layer_not_found">The documents layer not found</string>
+    <string name="sync_switch">Switch sync on/off</string>
+    <string name="length">Length</string>
+    <string name="production">6. Type and number of products subject to withdrawal, as well as products that are seized at the site forest violations.</string>
+    <string name="production_link">See tab \"Production\"</string>
+    <string name="user_trans">The official products for the removal of the transmitter</string>
+    <string name="action_production">Confiscate production</string>
+    <string name="add">Add</string>
+    <string name="add_production">Add production</string>
+    <string name="add_trees">Add trees</string>
+    <string name="species_detail">Product Type (whips, assortments, otherwise), tree species</string>
+    <string name="type_detail">Business or wood</string>
+    <string name="length_detail">Length (meter)</string>
+    <string name="thickness_detail">Thickness</string>
+    <string name="count_detail">Count</string>
+    <string name="action_sheet">Trees sheet</string>
+    <string name="action_vehicle">Vehicles form</string>
+    <string name="action_phototable">Photo table</string>
+    <string name="action_map">Map</string>
+    <string name="coordinates">Coordinates</string>
+    <string name="error_invalid_input">Invalid input parameters</string>
+    <string name="photo_desc">Photo description</string>
+    <string name="enter_photo_desc">Enter a photo description</string>
+    <string name="photos_will_be_deleted">Photos will be deleted</string>
+    <string name="sel_items_will_be_deleted">Selected will be deleted</string>
+    <string name="view_photo">View photo</string>
+    <string name="action_sync">Synchronization</string>
+    <string name="add_data">Add data</string>
+    <string name="change_data">Change data</string>
+    <string name="add_vehicle">Add vehicle</string>
+    <string name="vehicle_name">Equipment name</string>
+    <string name="vehicle_name_hint">Enter an equipment name</string>
+    <string name="vehicle_desc">Equipment description</string>
+    <string name="vehicle_desc_hint">Enter an equipment description</string>
+    <string name="vehicle_engine_nums">Aggregates numbers</string>
+    <string name="vehicle_engine_nums_hint">Enter an aggregates numbers</string>
+    <string name="vehicle_user">Proprietor\'s information</string>
+    <string name="vehicle_user_hint">Enter a proprietor\'s information</string>
+    <string name="territory_from_list">List</string>
+    <string name="territory_from_sheet">Hull of sheet</string>
+    <string name="territory_by_walk">By walk</string>
+    <string name="territory_by_hand">By hand</string>
+    <string name="get_text_from_parcels">Get text from parcels</string>
+    <string name="input_text">Type text</string>
+    <string name="input_territory_text">Input territory text</string>
+    <string name="lv">forestry</string>
+    <string name="ulv">Subforestry</string>
+    <string name="note_initial_term">Note initial term</string>
+    <string name="skip">Skip</string>
+    <string name="show_all_targets">Show all targeting</string>
+    <string name="show_nearest_targets">Show nearest targeting</string>
+    <string name="docs_filter">Document filter</string>
+    <string name="show_indictments">Show indictments</string>
+    <string name="show_sheets">Show sheets</string>
+    <string name="show_field_works">Show field works</string>
+    <string name="show_notes">Show notes</string>
+
+    <!-- TODO: make EN strings-->
+    <string name="action_field_works">Field works indictment</string>
+    <string name="field_works_title">Field works indictment</string>
+    <string name="field_works_item_title">field_works_item_title</string>
+    <string name="field_works_tab_name">field_works_tab_name</string>
+    <string name="field_works_item_name">Field works</string>
+
+    <string name="field_works_item_law_base">field_works_item_law_base</string>
+    <string name="field_works_item_i_we">I (We)</string>
+    <string name="field_works_author_desc">Full name(s), rank(s) of the author(s)</string>
+    <string name="field_works_item_in_presence">In presence</string>
+    <string name="field_works_representative_desc">field_works_representative_desc</string>
+    <string name="field_works_item_made_inspections_for">field_works_item_made_inspections</string>
+    <string name="field_works_item_territory">field_works_item_territory</string>
+    <string name="field_works_item_in_relation">In relation</string>
+    <string name="field_works_contract_desc">field_works_contract_desc</string>
+    <string name="field_works_item_from">From</string>
+    <string name="field_works_item_number">Number</string>
+    <string name="field_works_item_set_following">field_works_item_set_following</string>
+    <string name="field_works_item_cutting_area_clean_quality">1. cutting_area_clean_quality:</string>
+    <string name="field_works_item_cutting_area_cultivation_quality">2. cutting_area_cultivation_quality:</string>
+    <string name="field_works_item_violation">3. violation:</string>
+    <string name="field_works_item_attachments">attachments_list:</string>
+    <string name="field_works_create_attachments_table">create_attachments_table</string>
+    <string name="field_works_create_photo_table">Create photo table</string>
+    <string name="field_works_item_inspectors_signatures">inspectors_signatures</string>
+    <string name="field_works_item_participants_signatures">participants_signatures</string>
+    <string name="field_works_item_alleged_infringer_data">alleged_infringer_data</string>
+    <string name="field_works_item_infringer_organisation_name">infringer_organisation_name</string>
+    <string name="field_works_item_infringer_full_name">infringer_full_name</string>
+    <string name="field_works_infringer_signature_desc">(signature)</string>
+    <string name="field_works_item_infringer_living_place">Living place:</string>
+    <string name="field_works_item_infringers_signatures">infringers_signatures:</string>
+    <string name="field_works_add_signature">Add signature</string>
+    <string name="field_works_sign">Sign</string>
+    <string name="field_works_for">for</string>
+    <string name="action_create_indictment">Create indictment</string>
+    <string name="action_create_sheet">Create sheet</string>
+    <string name="action_create_field_works">Create field works indictment</string>
+    <string name="action_create_note">Create note</string>
+
+    <string name="general_settings">General settings</string>
+    <string name="general_settings_summary">The application general settings</string>
+    <string name="map_settings">Map settings</string>
+    <string name="map_settings_summary">Map parameters settings</string>
+    <string name="sync_settings">Sync settings</string>
+    <string name="sync_settings_summary">Data synchronization settings with the server system</string>
+
+    <string name="action_sync_settings">Sync Settings</string>
+    <string name="show_sync_notification">Sync notification</string>
+    <string name="show_sync_notification_summary">Show sync status notification</string>
+
+    <string name="synchronization">Synchronization</string>
+    <string name="sync_started">Synchronization started</string>
+    <string name="sync_finished">Synchronization finished</string>
+    <string name="sync_canceled">Synchronization canceled</string>
+    <string name="sync_error">ERROR of synchronization</string>
+    <string name="sync_progress">Synchronization in progress</string>
+
+    <string name="operaton_canceled">Operation is canceled</string>
+
+    <string name="warning_not_sent_data">Not sent data!</string>
+    <string name="warning_not_sent_data_msg">There are not sent data! Send?</string>
+    <string name="warning_saved_not_sent_data_msg">There are saved, but not sent data! Delete?</string>
+    <string name="send">Send</string>
+    <string name="delete">Delete</string>
+
+    <string name="target_item_name">Targeting</string>
+    <string name="selected_items">Selected items</string>
+
+    <string name="open_map">Open map</string>
+
+    <string name="location">Location settings</string>
+    <string name="location_summary">Location and geometry by walking settings</string>
+    <string name="pref_location_accuracy">Location accuracy</string>
+    <string name="pref_min_time">Minimum update time</string>
+    <string name="pref_min_distance">Minimum update distance</string>
+    <string name="accurate_measures_count">Count of GPS measures</string>
+    <string name="pref_location_accuracy_gps">GPS</string>
+    <string name="pref_location_accuracy_cell">Other networks</string>
+    <string name="tracks_reload">Restart current track to apply changes</string>
+    <string name="frequentest">, as frequent as possible</string>
+
+    <string name="lv_layer">Forestries</string>
+    <string name="ulv_layer">District forestries</string>
+    <string name="kv_layer">Parcels</string>
+    <string name="notes_layer">Notes</string>
+
+    <string name="layer_props">Layer properties</string>
+    <string name="action_layer_props">Layer properties</string>
+
+    <string name="input_amount">Input amount</string>
+    <string name="creating_of_table_please_wait">Creating of the table, please wait</string>
+    <string name="coordinates_not_defined_specify_on_map">The coordinates are not defined, specify a point on the map</string>
+
+    <string name="edit_account_summary">Editing a user password</string>
+
+    <string name="add_account">Add account</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_account_ask">Delete account?</string>
+    <string name="delete_account_summary">Delete account. All layers connected with this account will be deleted too. Active synchronization will be stopped.</string>
+    <string name="delete_account_warn_msg">Account will be deleted!\nAll account layers will be deleted!\nCurrent sync will be stopped!</string>
+</resources>
