@@ -271,4 +271,6 @@ public interface Constants
     float KV_MAX_ZOOM  = 23f;
 
     int DEFAULT_COORDINATES_FRACTION_DIGITS = 2;
+
+    String PERMISSION_READ_CONTACTS         = "android.permission.READ_CONTACTS";
 }

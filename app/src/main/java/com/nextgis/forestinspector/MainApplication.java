@@ -48,6 +48,7 @@ import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.FileUtil;
 import com.nextgis.maplib.util.NetworkUtil;
+import com.nextgis.maplib.util.PermissionUtil;
 import com.nextgis.maplib.util.SettingsConstants;
 import com.nextgis.maplibui.GISApplication;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
@@ -423,6 +424,20 @@ public class MainApplication
         return getAccount(getString(R.string.account_name));
     }
 
+    @Override
+    public boolean addAccount(
+            String name,
+            String url,
+            String login,
+            String password,
+            String token)
+    {
+        if(!PermissionUtil.hasPermission(this, Constants.PERMISSION_READ_CONTACTS)){
+            return false;
+        }
+
+        return super.addAccount(name, url, login, password, token);
+    }
 
     public boolean runSync()
     {
