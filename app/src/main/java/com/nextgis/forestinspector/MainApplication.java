@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManagerFuture;
 import android.app.ActivityManager;
@@ -31,10 +32,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 import com.nextgis.forestinspector.activity.FIPreferencesActivity;
 import com.nextgis.forestinspector.datasource.DocumentEditFeature;
@@ -48,7 +51,6 @@ import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.FileUtil;
 import com.nextgis.maplib.util.NetworkUtil;
-import com.nextgis.maplib.util.PermissionUtil;
 import com.nextgis.maplib.util.SettingsConstants;
 import com.nextgis.maplibui.GISApplication;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
@@ -432,7 +434,8 @@ public class MainApplication
             String password,
             String token)
     {
-        if(!PermissionUtil.hasPermission(this, Constants.PERMISSION_READ_CONTACTS)){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS)
+                != PackageManager.PERMISSION_GRANTED) {
             return false;
         }
 
