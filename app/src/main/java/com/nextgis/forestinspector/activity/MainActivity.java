@@ -22,6 +22,7 @@
 
 package com.nextgis.forestinspector.activity;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -72,6 +73,7 @@ public class MainActivity
                    DocumentsListAdapter.OnDocLongClickListener,
                    IActivityWithMap
 {
+    protected final static int PERMISSIONS_REQUEST = 1;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -101,6 +103,17 @@ public class MainActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        if (!hasPermissions()) {
+            String[] permissions = new String[] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.GET_ACCOUNTS,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            requestPermissions(
+                    R.string.permissions, R.string.requested_permissions, PERMISSIONS_REQUEST,
+                    permissions);
+        }
 
         // check if first run
         final MainApplication app = (MainApplication) getApplication();
@@ -136,6 +149,14 @@ public class MainActivity
                 createNormalView();
             }
         }
+    }
+
+
+    protected boolean hasPermissions() {
+        return isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) &&
+                isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                isPermissionGranted(Manifest.permission.GET_ACCOUNTS) &&
+                isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
 
