@@ -2,24 +2,19 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.1'
     defaultConfig {
         applicationId "com.nextgis.forestinspector"
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 4
         versionName '1.2'
+        archivesBaseName = "fvi-$versionName"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-// Do not work with gradle pluging version 3.0.0
-//            applicationVariants.all { variant ->
-//                variant.outputs.each { output ->
-//                    output.outputFile = new File(output.outputFile.parent, "fvi-" + defaultConfig.versionName + ".apk")
-//                }
-//            }
         }
     }
     productFlavors {
