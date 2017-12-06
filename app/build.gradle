@@ -7,7 +7,7 @@ android {
         applicationId "com.nextgis.forestinspector"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 4
+        versionCode 5
         versionName '1.2'
         archivesBaseName = "fvi-$versionName"
     }
