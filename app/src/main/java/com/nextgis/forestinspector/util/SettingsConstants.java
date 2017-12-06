@@ -28,9 +28,11 @@ public interface SettingsConstants
 
     String AUTHORITY      = "com.nextgis.forestinspector.provider";
     String SITE_URL       = "http://176.9.38.120/fv";
-    String SPUTNIK_URL    = "http://tiles.maps.sputnik.ru/tiles/kmt2/{z}/{x}/{y}.png";
-    String VIOLATIONS_URL =
-            "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=96BBFFE869E14CE8B739874798E39B60&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png";
+    String SPUTNIK_URL    = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    String VIOLATIONS_URL = "http://91.239.142.111:3800/tiles/{z}/{y}/{x}?begin=1&end=300";
+//    String SPUTNIK_URL    = "http://tiles.maps.sputnik.ru/tiles/kmt2/{z}/{x}/{y}.png";
+//    String VIOLATIONS_URL =
+//            "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=96BBFFE869E14CE8B739874798E39B60&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png";
     //String VIOLATIONS_URL = "http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=8D71968D94F644B5BFD7123A2937ADFC&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png";
     //"http://maps.kosmosnimki.ru/TileService.ashx?request=gettile&layername=15CBBFB4151E48ECAE0F699FD4F9223A&srs=EPSG:3857&z={z}&x={x}&y={y}&format=png&Map=1D116AC56D694C0B8CDCA87C06D1961A";
 
