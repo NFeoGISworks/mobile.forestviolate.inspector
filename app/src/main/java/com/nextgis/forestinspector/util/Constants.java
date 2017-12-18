@@ -187,7 +187,7 @@ public interface Constants
     String FIELD_FV_TERRITORY = "territory";
 
 
-    String FV_STATUS_NEW_FOREST_CHANGE = "Новое лесоизменение";
+    String FV_STATUS_NEW_FOREST_CHANGE = "Новый";
 
     /**
      * vehicle fields

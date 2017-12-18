@@ -27,7 +27,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -1367,12 +1366,16 @@ public class InitService
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
             // http://stackoverflow.com/a/16909821
+//            fvLayerUI.setServerWhere(
+//                    String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY) +
+//                            "&" + Constants.FIELD_FV_STATUS + "=" + Uri.encode(
+//                            Constants.FV_STATUS_NEW_FOREST_CHANGE) + "&" +
+//                            Constants.FIELD_FV_DATE + "={\"gt\":\"" + sdf.format(calendar.getTime())
+//                            + "T00:00:00Z\"}");
             fvLayerUI.setServerWhere(
-                    String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY) +
-                            "&" + Constants.FIELD_FV_STATUS + "=" + Uri.encode(
-                            Constants.FV_STATUS_NEW_FOREST_CHANGE) + "&" +
-                            Constants.FIELD_FV_DATE + "={\"gt\":\"" + sdf.format(calendar.getTime())
-                            + "T00:00:00Z\"}");
+                    String.format(Locale.US, "bbox=%f,%f,%f,%f", minX, minY, maxX, maxY) + "&"
+                            + Constants.FIELD_FV_DATE + "={\"gt\":\"" + sdf.format(
+                            calendar.getTime()) + "T00:00:00Z\"}");
 
             fvLayerUI.setVisible(true);
             fvLayerUI.setAccountName(accountName);
