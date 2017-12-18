@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.2'
     defaultConfig {
         applicationId "com.nextgis.forestinspector"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 6
+        versionCode 7
         versionName '1.2'
         archivesBaseName = "fvi-$versionName"
     }
